@@ -4,7 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../hooks/useTheme';
 import { usePlaceholder } from '../hooks/usePlaceholder';
 
-const navLinks = ['Platform', 'Resources', 'Solutions', 'Pricing'];
+const navLinks = [
+  { label: 'Platform', id: 'platform' },
+  { label: 'Resources', id: 'resources' },
+  { label: 'Solutions', id: 'solutions' },
+  { label: 'Pricing', id: 'pricing' },
+];
 
 export function Navbar() {
   const { toggle } = useTheme();
@@ -44,6 +49,13 @@ export function Navbar() {
   const navHeight = scrolled ? 'h-16' : 'h-20';
   const menuTop = scrolled ? '4rem' : '5rem';
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       {/* ── Main nav bar ── */}
@@ -79,11 +91,14 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
               <a
-                key={link}
-                onClick={go}
+                key={link.label}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection(link.id);
+                }}
                 className="font-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer relative group"
               >
-                {link}
+                {link.label}
                 <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
@@ -166,14 +181,14 @@ export function Navbar() {
                 {/* Nav links */}
                 {navLinks.map((link, idx) => (
                   <motion.button
-                    key={link}
+                    key={link.label}
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.055, duration: 0.2 }}
-                    onClick={() => { setMobileOpen(false); go(); }}
+                    onClick={() => { setMobileOpen(false); scrollToSection(link.id); }}
                     className="text-left font-body-md text-on-surface-variant hover:text-primary transition-colors py-3.5 border-b border-outline-variant/10 last:border-0"
                   >
-                    {link}
+                    {link.label}
                   </motion.button>
                 ))}
 

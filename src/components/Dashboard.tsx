@@ -83,7 +83,7 @@ export function DashboardPreview() {
   };
 
   return (
-    <section className="py-32 px-6 bg-surface-container-low">
+    <section id="platform" className="py-32 px-6 bg-surface-container-low">
       <div className="max-w-7xl mx-auto mb-20 text-center reveal">
         <h2 className="font-headline-lg text-4xl md:text-6xl mb-6 text-on-surface">A unified platform for everyone</h2>
         <p className="font-body-md text-on-surface-variant">Tailored experiences for every stakeholder in the learning ecosystem.</p>
@@ -159,7 +159,7 @@ export function FeaturesSection() {
   };
 
   return (
-    <section className="py-32 px-6 relative">
+    <section id="resources" className="py-32 px-6 relative">
       <div className="max-w-7xl mx-auto text-center mb-20 reveal">
         <h2 className="font-headline-lg text-4xl md:text-6xl mb-6 text-on-surface">Everything You Need</h2>
         <p className="font-body-md text-on-surface-variant max-w-xl mx-auto">

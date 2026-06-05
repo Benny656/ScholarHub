@@ -139,7 +139,7 @@ export function SolutionSection() {
   };
 
   return (
-    <section className="py-32 px-6 relative overflow-hidden">
+    <section id="solutions" className="py-32 px-6 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[120px] rounded-full"></div>
 
       <div className="max-w-7xl mx-auto text-center mb-20 relative z-10 reveal">

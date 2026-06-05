@@ -26,7 +26,7 @@ const plans = [
   {
     name: 'Pro',
     icon: Zap,
-    price: { monthly: 9, annual: 7 },
+    price: { monthly: 299, annual: 239 },
     description: 'For serious learners who want the full AI-powered experience, unlocked.',
     color: 'primary',
     textColor: 'text-primary',
@@ -45,7 +45,7 @@ const plans = [
   {
     name: 'Institution',
     icon: Building2,
-    price: { monthly: 49, annual: 39 },
+    price: { monthly: 999, annual: 799 },
     description: 'Built for schools, universities, and forward-thinking enterprises.',
     color: 'tertiary',
     textColor: 'text-tertiary',
@@ -116,7 +116,7 @@ function PricingCard({
             className="flex items-end gap-1"
           >
             <span className={`text-5xl font-bold ${plan.textColor}`}>
-              {price === 0 ? 'Free' : `$${price}`}
+              {price === 0 ? 'Free' : `₹${price}`}
             </span>
             {price > 0 && (
               <span className="text-on-surface-variant font-body-md mb-1.5">/mo</span>
@@ -182,7 +182,7 @@ export function PricingSection() {
   };
 
   return (
-    <section className="py-32 px-6 relative overflow-hidden">
+    <section id="pricing" className="py-32 px-6 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
 
