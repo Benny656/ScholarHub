@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #d8bcea;
+  --color-on-primary: #3c284c;
+  --color-secondary: #d0c2d6;
+  --color-on-secondary: #362d3c;
+  --color-tertiary: #f3b6cd;
+  --color-on-tertiary: #4c2335;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-background: #151315;
+  --color-on-background: #e7e1e4;
+  --color-surface: #151315;
+  --color-on-surface: #e7e1e4;
+  --color-surface-variant: #373437;
+  --color-on-surface-variant: #cdc4cd;
+  --color-outline: #968e97;
+  --color-outline-variant: #4b454d;
+  --color-surface-container-lowest: #0f0e10;
+  --color-surface-container-low: #1d1b1d;
+  --color-surface-container: #211f21;
+  --color-surface-container-high: #2c292c;
+  --color-surface-container-highest: #373437;
+  --color-surface-dim: #151315;
+  --color-surface-bright: #3b383b;
+  --color-inverse-surface: #e7e1e4;
+  --color-inverse-on-surface: #323032;
+  --color-inverse-primary: #6c557d;
+  --color-surface-tint: #d8bcea;
+}
+
+html.light {
+  --color-primary: #1978e5;
+  --color-on-primary: #ffffff;
+  --color-secondary: #555f71;
+  --color-on-secondary: #ffffff;
+  --color-tertiary: #6e5676;
+  --color-on-tertiary: #ffffff;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-background: #f9f9ff;
+  --color-on-background: #191c20;
+  --color-surface: #f9f9ff;
+  --color-on-surface: #191c20;
+  --color-surface-variant: #e0e2ec;
+  --color-on-surface-variant: #44474e;
+  --color-outline: #74777f;
+  --color-outline-variant: #c4c6d0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f3fc;
+  --color-surface-container: #ebedf6;
+  --color-surface-container-high: #e5e8f1;
+  --color-surface-container-highest: #e0e2ec;
+  --color-surface-dim: #d7dae3;
+  --color-surface-bright: #f9f9ff;
+  --color-inverse-surface: #2e3035;
+  --color-inverse-on-surface: #f0f0f7;
+  --color-inverse-primary: #aac7ff;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  transition: background-color 0.5s ease, color 0.5s ease;
+  scroll-behavior: smooth;
+  @apply antialiased overflow-x-hidden;
+}
+
+/* Hide OS cursor when custom cursor is active (pointer devices only) */
+@media (pointer: fine) {
+  body.custom-cursor,
+  body.custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+
+@layer components {
+  .glass {
+    background: rgba(21, 19, 21, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(107, 92, 102, 0.1);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 30px rgba(216, 188, 234, 0.15);
+  }
+
+  .glow-purple:hover {
+    box-shadow: 0 0 50px rgba(216, 188, 234, 0.3);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-title-anim {
+    animation: float-text 6s ease-in-out infinite;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    @apply hidden;
+  }
+
+  .step-line {
+    position: relative;
+  }
+
+  .step-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: rgba(150, 142, 151, 0.2);
+    z-index: -1;
+  }
+
+  @media (max-width: 768px) {
+    .step-line::after {
+      @apply hidden;
+    }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .stagger-1 {
+    transition-delay: 100ms;
+  }
+
+  .stagger-2 {
+    transition-delay: 200ms;
+  }
+
+  .stagger-3 {
+    transition-delay: 300ms;
+  }
+
+  .stagger-4 {
+    transition-delay: 400ms;
+  }
+
+  .stagger-5 {
+    transition-delay: 500ms;
+  }
+
+  .stagger-6 {
+    transition-delay: 600ms;
+  }
+
+  .btn-hover-lift {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .btn-hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .ripple-btn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+  }
+
+  .card-lift {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .card-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .shimmer-btn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 100%;
+    height: 200%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: rotate(45deg);
+    transition: left 0.6s ease-in-out;
+  }
+
+  .shimmer-btn:hover::after {
+    left: 150%;
+  }
+
+  .group:hover .icon-bounce {
+    transform: scale(1.1);
+  }
+
+  .group:hover .icon-rotate {
+    transform: rotate(5deg) scale(1.1);
+  }
+
+  .icon-bounce,
+  .icon-rotate {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+@keyframes float-text {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.cursor-glow-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.cursor-glow-card::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(216, 188, 234, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.cursor-glow-card:hover::before {
+  opacity: 1;
+}
+
+.blur-reveal {
+  filter: blur(20px);
+  transition: filter 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.blur-reveal.active {
+  filter: blur(0);
+}
