@@ -50,7 +50,7 @@ export function Register() {
     if (!validateStep2()) return;
     try {
       await register({ ...form, role: role as UserRole });
-      toast.success('Welcome to NexLearn! 🎉');
+      toast.success('Welcome to ScholarHub! 🎉');
       navigate(role === 'student' ? '/student/dashboard' : '/teacher/dashboard');
     } catch (err) {
       toast.error('Registration failed. Please try again.');
@@ -62,7 +62,7 @@ export function Register() {
   const inputStyle = { background: 'rgba(255,255,255,0.05)', fontFamily: 'Inter, sans-serif' };
 
   return (
-    <AuthLayout title="Create your account" subtitle="Join 12,000+ learners on NexLearn">
+    <AuthLayout title="Create your account" subtitle="Join 12,000+ learners on ScholarHub">
       {/* Role */}
       <div className="grid grid-cols-2 gap-3 mb-6">
         {(['student', 'teacher'] as const).map(r => (

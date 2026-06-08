@@ -16,7 +16,7 @@ const CONVERSATIONS = [
 ];
 
 const ANNOUNCEMENTS = [
-  { id: 'a1', title: 'Platform Maintenance Notice', body: 'NexLearn will undergo scheduled maintenance on Sunday, June 22 from 2-4 AM UTC. Expect brief downtime.', from: 'System Admin', time: '2 days ago', pinned: true },
+  { id: 'a1', title: 'Platform Maintenance Notice', body: 'ScholarHub will undergo scheduled maintenance on Sunday, June 22 from 2-4 AM UTC. Expect brief downtime.', from: 'System Admin', time: '2 days ago', pinned: true },
   { id: 'a2', title: 'New AI Features Released!', body: 'The AI Assignment Checker now supports longer submissions and has 40% better feedback quality. Try it out!', from: 'Dr. Sarah Chen', time: '3 days ago', pinned: false },
   { id: 'a3', title: 'Summer Course Registration Open', body: 'Registration for Summer 2024 courses is now open. Enroll early to secure your spot in limited-capacity workshops.', from: 'Registrar', time: '1 week ago', pinned: false },
 ];

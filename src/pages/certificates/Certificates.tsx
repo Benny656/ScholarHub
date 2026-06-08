@@ -110,7 +110,7 @@ function CertificateViewer({ cert, onClose }: { cert: Certificate; onClose: () =
 
           <div className="flex items-center justify-center gap-2 text-xs text-emerald-400">
             <CheckCircle size={14} />
-            <span>Verified on NexLearn Platform</span>
+            <span>Verified on ScholarHub Platform</span>
           </div>
         </div>
 

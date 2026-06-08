@@ -82,7 +82,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 className="font-bold text-lg text-white whitespace-nowrap"
                 style={{ fontFamily: 'Geist, Inter, sans-serif' }}
               >
-                NexLearn
+                ScholarHub
               </motion.span>
             )}
           </AnimatePresence>
@@ -184,7 +184,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
                     <BookMarked size={18} className="text-white" />
                   </div>
-                  <span className="font-bold text-lg text-white">NexLearn</span>
+                  <span className="font-bold text-lg text-white">ScholarHub</span>
                 </div>
                 <button onClick={() => setMobileSidebarOpen(false)} className="text-slate-400 hover:text-white">
                   <X size={20} />

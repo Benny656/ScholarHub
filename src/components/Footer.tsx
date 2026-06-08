@@ -10,6 +10,7 @@ const footerLinks = {
 
 export function Footer() {
   const navigate = useNavigate();
+  const go = () => navigate('/login');
 
   const containerVariants = {
     hidden: { opacity: 0 },

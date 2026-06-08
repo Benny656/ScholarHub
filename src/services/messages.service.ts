@@ -91,7 +91,7 @@ const MOCK_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'ann2',
     title: 'Platform Maintenance — June 10',
-    content: 'NexLearn will undergo scheduled maintenance on June 10 from 2:00 AM to 4:00 AM UTC. The platform may be temporarily unavailable.',
+    content: 'ScholarHub will undergo scheduled maintenance on June 10 from 2:00 AM to 4:00 AM UTC. The platform may be temporarily unavailable.',
     authorId: 'u3',
     authorName: 'Marcus Rivera',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),

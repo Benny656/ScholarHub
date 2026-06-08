@@ -1,4 +1,4 @@
-// Shared UI Components for NexLearn App Screens
+// Shared UI Components for ScholarHub App Screens
 
 // ─── StatCard ─────────────────────────────────────────────────────────────────
 interface StatCardProps {

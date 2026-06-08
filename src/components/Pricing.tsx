@@ -163,6 +163,7 @@ function PricingCard({
 export function PricingSection() {
   const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing>('monthly');
+  const go = () => navigate('/register');
 
   const containerVariants = {
     hidden: { opacity: 0 },

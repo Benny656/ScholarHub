@@ -55,7 +55,7 @@ export function Login() {
   };
 
   return (
-    <AuthLayout title="Sign in to NexLearn" subtitle="Your AI-powered learning journey awaits">
+    <AuthLayout title="Sign in to ScholarHub" subtitle="Your AI-powered learning journey awaits">
       {/* Role selector */}
       <div className="grid grid-cols-3 gap-2 mb-6">
         {ROLES.map((r) => (
