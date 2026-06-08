@@ -94,16 +94,16 @@ export function CalendarPage() {
         {/* Controls */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <button onClick={prevMonth} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"><ChevronLeft size={18} /></button>
-            <h2 className="text-xl font-bold text-white min-w-[160px] text-center" style={{ fontFamily: 'Geist, sans-serif' }}>
+            <button onClick={prevMonth} className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"><ChevronLeft size={18} /></button>
+            <h2 className="text-xl font-bold text-on-surface min-w-[160px] text-center" style={{ fontFamily: 'Geist, sans-serif' }}>
               {MONTHS[month]} {year}
             </h2>
-            <button onClick={nextMonth} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"><ChevronRight size={18} /></button>
-            <button onClick={() => setDate(new Date())} className="px-3 py-1.5 rounded-xl text-xs font-medium border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 transition-all">Today</button>
+            <button onClick={nextMonth} className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"><ChevronRight size={18} /></button>
+            <button onClick={() => setDate(new Date())} className="px-3 py-1.5 rounded-xl text-xs font-medium border border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all">Today</button>
           </div>
-          <div className="flex items-center gap-1 border border-white/10 rounded-xl overflow-hidden">
+          <div className="flex items-center gap-1 border border-outline-variant/20 rounded-xl overflow-hidden">
             {(['month', 'week', 'list'] as const).map(v => (
-              <button key={v} onClick={() => setView(v)} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium capitalize transition-all ${view === v ? 'bg-purple-500 text-white' : 'text-slate-400 hover:text-white'}`}>
+              <button key={v} onClick={() => setView(v)} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium capitalize transition-all ${view === v ? 'bg-[#7C3AED] text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}>
                 {v === 'month' ? <CalIcon size={13} /> : v === 'week' ? <ChevronRight size={13} /> : <List size={13} />}
                 {v}
               </button>
@@ -117,15 +117,15 @@ export function CalendarPage() {
             <div className="lg:col-span-3">
               <GlassCard padding="p-0">
                 {/* Day headers */}
-                <div className="grid grid-cols-7 border-b border-white/5">
+                <div className="grid grid-cols-7 border-b border-outline-variant/10">
                   {DAYS.map(d => (
-                    <div key={d} className="py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{d}</div>
+                    <div key={d} className="py-2.5 text-center text-xs font-semibold text-on-surface-variant uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{d}</div>
                   ))}
                 </div>
                 {/* Calendar days */}
                 <div className="grid grid-cols-7">
                   {Array.from({ length: firstDay }, (_, i) => (
-                    <div key={`empty-${i}`} className="h-24 border-b border-r border-white/5" />
+                    <div key={`empty-${i}`} className="h-24 border-b border-r border-outline-variant/10" />
                   ))}
                   {Array.from({ length: daysInMonth }, (_, i) => {
                     const day = i + 1;
@@ -140,9 +140,9 @@ export function CalendarPage() {
                         key={day}
                         onClick={() => setSelectedDay(new Date(year, month, day))}
                         whileHover={{ scale: 0.98 }}
-                        className={`h-24 border-b border-r border-white/5 p-2 cursor-pointer transition-all ${isSelected ? 'bg-purple-500/15' : 'hover:bg-white/3'}`}
+                        className={`h-24 border-b border-r border-outline-variant/10 p-2 cursor-pointer transition-all ${isSelected ? 'bg-[#7C3AED]/15' : 'hover:bg-on-surface/[0.03]'}`}
                       >
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${isToday ? 'bg-purple-500 text-white' : 'text-slate-400'}`}>
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${isToday ? 'bg-[#7C3AED] text-on-surface' : 'text-on-surface-variant'}`}>
                           {day}
                         </span>
                         <div className="space-y-0.5">
@@ -154,7 +154,7 @@ export function CalendarPage() {
                               </div>
                             );
                           })}
-                          {dayEvents.length > 2 && <div className="text-xs text-slate-500">+{dayEvents.length - 2} more</div>}
+                          {dayEvents.length > 2 && <div className="text-xs text-on-surface-variant">+{dayEvents.length - 2} more</div>}
                         </div>
                       </motion.div>
                     );
@@ -167,11 +167,11 @@ export function CalendarPage() {
             <div className="space-y-4">
               {selectedDay && (
                 <GlassCard>
-                  <h3 className="text-sm font-bold text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>
+                  <h3 className="text-sm font-bold text-on-surface mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>
                     {selectedDay.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                   </h3>
                   {selectedDayEvents.length === 0 ? (
-                    <p className="text-xs text-slate-500">No events this day</p>
+                    <p className="text-xs text-on-surface-variant">No events this day</p>
                   ) : (
                     <div className="space-y-2">
                       {selectedDayEvents.map(ev => {
@@ -181,7 +181,7 @@ export function CalendarPage() {
                             <span style={{ color: tc.text }}>{TYPE_ICONS[ev.type]}</span>
                             <div>
                               <p className="text-xs font-semibold" style={{ color: tc.text }}>{ev.title}</p>
-                              <p className="text-xs text-slate-500">{new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                              <p className="text-xs text-on-surface-variant">{new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                             </div>
                           </div>
                         );
@@ -192,7 +192,7 @@ export function CalendarPage() {
               )}
 
               <GlassCard>
-                <h3 className="text-sm font-bold text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Upcoming Events</h3>
+                <h3 className="text-sm font-bold text-on-surface mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Upcoming Events</h3>
                 <div className="space-y-2.5">
                   {displayEvents.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()).slice(0, 5).map(ev => {
                     const tc = TYPE_COLORS[ev.type];
@@ -200,8 +200,8 @@ export function CalendarPage() {
                       <div key={ev.id} className="flex items-start gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5" style={{ background: tc.text }} />
                         <div>
-                          <p className="text-xs font-medium text-white">{ev.title}</p>
-                          <p className="text-xs text-slate-500">{new Date(ev.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                          <p className="text-xs font-medium text-on-surface">{ev.title}</p>
+                          <p className="text-xs text-on-surface-variant">{new Date(ev.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                         </div>
                         <Badge variant={tc.badge} size="sm">{ev.type}</Badge>
                       </div>
@@ -212,7 +212,7 @@ export function CalendarPage() {
 
               {/* Legend */}
               <GlassCard>
-                <h3 className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Legend</h3>
+                <h3 className="text-xs font-semibold text-on-surface-variant mb-2 uppercase tracking-wide">Legend</h3>
                 <div className="space-y-1.5">
                   {Object.entries(TYPE_COLORS).map(([type, { text, bg }]) => (
                     <div key={type} className="flex items-center gap-2">
@@ -228,7 +228,7 @@ export function CalendarPage() {
 
         {view === 'list' && (
           <GlassCard>
-            <h2 className="text-base font-bold text-white mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>All Events</h2>
+            <h2 className="text-base font-bold text-on-surface mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>All Events</h2>
             <div className="space-y-3">
               {displayEvents.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()).map((ev, i) => {
                 const tc = TYPE_COLORS[ev.type];
@@ -236,16 +236,16 @@ export function CalendarPage() {
                   <motion.div key={ev.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                     className="flex items-start gap-4 p-4 rounded-xl border" style={{ background: tc.bg, borderColor: `${tc.text}30` }}>
                     <div className="flex-shrink-0 text-center min-w-[50px]">
-                      <p className="text-lg font-black text-white">{new Date(ev.startTime).getDate()}</p>
-                      <p className="text-xs text-slate-400">{MONTHS[new Date(ev.startTime).getMonth()].slice(0, 3)}</p>
+                      <p className="text-lg font-black text-on-surface">{new Date(ev.startTime).getDate()}</p>
+                      <p className="text-xs text-on-surface-variant">{MONTHS[new Date(ev.startTime).getMonth()].slice(0, 3)}</p>
                     </div>
                     <div className="w-px self-stretch" style={{ background: `${tc.text}40` }} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-semibold text-white">{ev.title}</p>
+                        <p className="text-sm font-semibold text-on-surface">{ev.title}</p>
                         <Badge variant={tc.badge}>{ev.type}</Badge>
                       </div>
-                      <p className="text-xs text-slate-400">{ev.courseName} · {new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}{ev.location ? ` · ${ev.location}` : ''}</p>
+                      <p className="text-xs text-on-surface-variant">{ev.courseName} · {new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}{ev.location ? ` · ${ev.location}` : ''}</p>
                     </div>
                   </motion.div>
                 );
@@ -256,10 +256,10 @@ export function CalendarPage() {
 
         {view === 'week' && (
           <GlassCard>
-            <p className="text-center text-slate-400 py-10">
+            <p className="text-center text-on-surface-variant py-10">
               Week view — time slot grid with events overlaid
               <br />
-              <span className="text-xs text-slate-600 mt-1 block">(Full implementation uses the same data; this placeholder indicates the pattern)</span>
+              <span className="text-xs text-outline mt-1 block">(Full implementation uses the same data; this placeholder indicates the pattern)</span>
             </p>
           </GlassCard>
         )}
@@ -273,17 +273,17 @@ export function CalendarPage() {
             onClick={() => setShowEventModal(false)}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl p-6 border border-white/10" style={{ background: '#0d1421' }}>
+              className="w-full max-w-md rounded-2xl p-6 border border-outline-variant/20" style={{ background: '#0d1421' }}>
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>Add Event</h3>
-                <button onClick={() => setShowEventModal(false)} className="text-slate-500 hover:text-white transition-colors"><X size={18} /></button>
+                <h3 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>Add Event</h3>
+                <button onClick={() => setShowEventModal(false)} className="text-on-surface-variant hover:text-on-surface transition-colors"><X size={18} /></button>
               </div>
               <div className="space-y-3">
                 {['Event Title', 'Date', 'Time', 'Course (optional)'].map(label => (
                   <div key={label}>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">{label}</label>
+                    <label className="block text-sm font-medium text-on-surface-variant mb-1">{label}</label>
                     <input type={label.toLowerCase().includes('date') ? 'date' : label.toLowerCase().includes('time') ? 'time' : 'text'}
-                      className="w-full px-4 py-2.5 rounded-xl border border-white/10 text-white text-sm outline-none focus:border-purple-500/60"
+                      className="w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 text-on-surface text-sm outline-none focus:border-[#7C3AED]/60"
                       style={{ background: 'rgba(255,255,255,0.05)', fontFamily: 'Inter, sans-serif' }} />
                   </div>
                 ))}

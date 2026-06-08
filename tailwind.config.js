@@ -65,10 +65,12 @@ export default {
         gutter: '16px',
       },
       fontFamily: {
-        'label-md': ['Montserrat'],
-        'headline-md': ['Playfair Display'],
-        'headline-lg': ['Playfair Display'],
-        'body-md': ['Montserrat'],
+        sans: ['Montserrat', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
+        'label-md': ['Montserrat', 'sans-serif'],
+        'headline-md': ['Playfair Display', 'serif'],
+        'headline-lg': ['Playfair Display', 'serif'],
+        'body-md': ['Montserrat', 'sans-serif'],
       },
       fontSize: {
         'label-md': ['14px', { lineHeight: '1.2', fontWeight: '500' }],

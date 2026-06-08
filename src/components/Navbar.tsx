@@ -6,9 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const publicLinks = [
-  { label: 'Platform', id: 'platform' },
+  { label: 'Platform', path: '/courses' },
   { label: 'Courses', path: '/courses' },
-  { label: 'Pricing', id: 'pricing' },
+  { label: 'Pricing', path: '/register' },
 ];
 
 const privateLinks = [
@@ -82,11 +82,12 @@ export function Navbar() {
             onClick={() => navigate('/')}
           >
             <div
-              className={`bg-primary rounded-xl flex items-center justify-center text-on-primary shadow-lg group-hover:rotate-12 transition-all duration-300 ${
+              className={`bg-transparent flex items-center justify-center group-hover:scale-105 transition-all duration-300 ${
                 scrolled ? 'w-8 h-8' : 'w-10 h-10'
               }`}
             >
-              <Brain className={scrolled ? 'w-5 h-5' : 'w-6 h-6'} />
+              <img src="/logo-dark.png" alt="ScholarHub Logo" className="w-full h-full object-contain hidden dark:block" />
+              <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain block dark:hidden" />
             </div>
             <span
               className={`font-bold tracking-tight text-on-surface transition-all duration-300 ${

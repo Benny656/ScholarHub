@@ -7,8 +7,9 @@ import {
   LayoutDashboard, BookOpen, Users, BarChart3, Calendar,
   MessageSquare, ClipboardList, GraduationCap, Award,
   User, Settings, LogOut, Bell, Menu, X, ChevronDown,
-  Mic, Video, Shield, BookMarked,
+  Mic, Video, Shield, BookMarked, Moon, Sun, Home,
 } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 interface NavItem {
   label: string;
@@ -18,6 +19,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { label: 'Home', icon: <Home size={18} />, path: '/', roles: ['student', 'teacher', 'admin'] },
   { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/student/dashboard', roles: ['student'] },
   { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/teacher/dashboard', roles: ['teacher'] },
   { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/admin/dashboard', roles: ['admin'] },
@@ -34,6 +36,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
+  const { toggle } = useTheme();
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,6 +53,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     navigate('/login');
   };
 
+  const currentAccent = location.pathname.includes('/student') ? '#6366F1' :
+                        location.pathname.includes('/teacher') ? '#0D9488' :
+                        location.pathname.includes('/admin') ? '#F59E0B' : 'var(--color-primary)';
+
   // Close dropdowns on outside click
   useEffect(() => {
     const handler = () => { setNotifOpen(false); setProfileOpen(false); };
@@ -60,18 +67,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const sidebarWidth = sidebarOpen ? 240 : 72;
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#0b1326' }}>
+    <div className="flex h-screen overflow-hidden bg-background text-on-surface transition-colors duration-500" style={{ '--sidebar-accent': currentAccent, background: 'var(--color-background)' } as React.CSSProperties}>
       {/* Desktop Sidebar */}
       <motion.aside
         animate={{ width: sidebarWidth }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="hidden md:flex flex-col flex-shrink-0 h-full border-r border-white/5 overflow-hidden"
-        style={{ background: 'rgba(13,18,40,0.98)', width: sidebarWidth }}
+        className="hidden md:flex flex-col flex-shrink-0 h-full border-r border-outline-variant/10 overflow-hidden"
+        style={{ background: 'var(--color-surface)', width: sidebarWidth }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-            <BookMarked size={18} className="text-white" />
+        <Link to="/" className="flex items-center gap-3 px-4 py-5 border-b border-outline-variant/10 hover:bg-on-surface/5 transition-colors cursor-pointer">
+          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+            <img src="/logo-dark.png" alt="ScholarHub Logo" className="w-full h-full object-contain hidden dark:block" />
+            <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain block dark:hidden" />
           </div>
           <AnimatePresence>
             {sidebarOpen && (
@@ -79,14 +87,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="font-bold text-lg text-white whitespace-nowrap"
+                className="font-bold text-lg text-on-surface whitespace-nowrap"
                 style={{ fontFamily: 'Geist, Inter, sans-serif' }}
               >
                 ScholarHub
               </motion.span>
             )}
           </AnimatePresence>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-2 scrollbar-hide">
@@ -98,11 +106,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 to={item.path}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all duration-200 group relative ${
                   isActive
-                    ? 'bg-purple-500/20 text-purple-300'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? ''
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'
                 }`}
+                style={isActive ? { background: 'color-mix(in srgb, var(--sidebar-accent) 20%, transparent)', color: 'var(--sidebar-accent)' } : {}}
               >
-                <span className={`flex-shrink-0 ${isActive ? 'text-purple-400' : 'group-hover:text-purple-400'} transition-colors`}>
+                <span className={`flex-shrink-0 transition-colors`}>
                   {item.icon}
                 </span>
                 <AnimatePresence>
@@ -121,7 +130,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 {isActive && (
                   <motion.div
                     layoutId="activeIndicator"
-                    className="absolute left-0 top-0 bottom-0 w-0.5 rounded-r bg-purple-500"
+                    className="absolute left-0 top-0 bottom-0 w-0.5 rounded-r"
+                    style={{ background: 'var(--sidebar-accent)' }}
                   />
                 )}
               </Link>
@@ -130,10 +140,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User section */}
-        <div className="p-3 border-t border-white/5">
+        <div className="p-3 border-t border-outline-variant/10">
           <Link
             to="/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
               {user?.name?.[0] || 'U'}
@@ -141,8 +151,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <AnimatePresence>
               {sidebarOpen && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-                  <p className="text-xs text-slate-500 capitalize">{user?.role}</p>
+                  <p className="text-sm font-medium text-on-surface truncate">{user?.name}</p>
+                  <p className="text-xs text-on-surface-variant capitalize">{user?.role}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -152,7 +162,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Collapse toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="flex items-center justify-center h-10 border-t border-white/5 text-slate-500 hover:text-white transition-colors"
+          className="flex items-center justify-center h-10 border-t border-outline-variant/10 text-on-surface-variant hover:text-on-surface transition-colors"
         >
           <motion.div animate={{ rotate: sidebarOpen ? 0 : 180 }}>
             <ChevronDown size={16} className="-rotate-90" />
@@ -177,16 +187,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25 }}
               className="fixed left-0 top-0 bottom-0 w-64 z-50 md:hidden flex flex-col"
-              style={{ background: 'rgba(13,18,40,0.99)', borderRight: '1px solid rgba(255,255,255,0.05)' }}
+              style={{ background: 'var(--color-surface)', borderRight: '1px solid var(--color-outline-variant)' }}
             >
-              <div className="flex items-center justify-between px-4 py-5 border-b border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                    <BookMarked size={18} className="text-white" />
+              <div className="flex items-center justify-between px-4 py-5 border-b border-outline-variant/10">
+                <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                  <div className="w-10 h-10 flex items-center justify-center">
+                    <img src="/logo-dark.png" alt="ScholarHub Logo" className="w-full h-full object-contain hidden dark:block" />
+                    <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain block dark:hidden" />
                   </div>
-                  <span className="font-bold text-lg text-white">ScholarHub</span>
-                </div>
-                <button onClick={() => setMobileSidebarOpen(false)} className="text-slate-400 hover:text-white">
+                  <span className="font-bold text-lg text-on-surface">ScholarHub</span>
+                </Link>
+                <button onClick={() => setMobileSidebarOpen(false)} className="text-on-surface-variant hover:text-on-surface">
                   <X size={20} />
                 </button>
               </div>
@@ -199,8 +210,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       to={item.path}
                       onClick={() => setMobileSidebarOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all ${
-                        isActive ? 'bg-purple-500/20 text-purple-300' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        isActive ? '' : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'
                       }`}
+                      style={isActive ? { background: 'color-mix(in srgb, var(--sidebar-accent) 20%, transparent)', color: 'var(--sidebar-accent)' } : {}}
                     >
                       {item.icon}
                       <span className="text-sm font-medium">{item.label}</span>
@@ -217,105 +229,109 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top header */}
         <header
-          className="flex-shrink-0 h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/5"
-          style={{ background: 'rgba(11,19,38,0.95)', backdropFilter: 'blur(12px)' }}
+          className="flex-shrink-0 h-16 flex items-center justify-between px-4 md:px-6 border-b border-outline-variant/10"
+          style={{ background: 'color-mix(in srgb, var(--color-surface) 95%, transparent)', backdropFilter: 'blur(12px)' }}
         >
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5"
+              className="md:hidden p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5"
             >
               <Menu size={20} />
             </button>
             <div>
-              <h2 className="text-sm font-semibold text-white capitalize" style={{ fontFamily: 'Geist, sans-serif' }}>
+              <h2 className="text-sm font-semibold text-on-surface capitalize" style={{ fontFamily: 'Geist, sans-serif' }}>
                 {location.pathname.split('/').filter(Boolean).pop()?.replace(/-/g, ' ') || 'Dashboard'}
               </h2>
-              <p className="text-xs text-slate-500" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+              <p className="text-xs text-on-surface-variant" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                 {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Theme toggle */}
+            <button
+              onClick={toggle}
+              className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"
+              aria-label="Toggle theme"
+            >
+              <Moon className="w-5 h-5 dark:hidden" />
+              <Sun className="w-5 h-5 hidden dark:block" />
+            </button>
             {/* Notifications */}
-            <div className="relative" onClick={e => e.stopPropagation()}>
+            <div className="relative">
               <button
                 onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
-                className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                className="relative p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"
               >
-                <Bell size={18} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-purple-500" />
+                <Bell size={20} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-surface" />
               </button>
               <AnimatePresence>
                 {notifOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden"
-                    style={{ background: 'rgba(13,20,45,0.98)', backdropFilter: 'blur(20px)' }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-80 rounded-2xl border border-outline-variant/20 shadow-2xl overflow-hidden z-50 glass"
+                    style={{ background: 'var(--color-surface)' }}
                   >
-                    <div className="p-4 border-b border-white/5">
-                      <h3 className="text-sm font-semibold text-white">Notifications</h3>
+                    <div className="p-4 border-b border-outline-variant/10 flex items-center justify-between">
+                      <h3 className="font-bold text-on-surface">Notifications</h3>
+                      <button className="text-xs text-[#6366F1] hover:underline">Mark all read</button>
                     </div>
-                    {[
-                      { icon: '✅', title: 'Assignment Graded', msg: 'UX Research: 87/100', time: '30m ago', color: 'text-emerald-400' },
-                      { icon: '💬', title: 'New Message', msg: 'Dr. Chen sent you a message', time: '1h ago', color: 'text-blue-400' },
-                      { icon: '⚠️', title: 'Due Soon', msg: 'React Assignment due in 3 days', time: '2h ago', color: 'text-yellow-400' },
-                      { icon: '🎓', title: 'Certificate Ready', msg: "UI/UX Design Masterclass complete!", time: '5h ago', color: 'text-purple-400' },
-                    ].map((n, i) => (
-                      <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors">
-                        <span className="text-lg flex-shrink-0">{n.icon}</span>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-semibold ${n.color}`}>{n.title}</p>
-                          <p className="text-xs text-slate-400 truncate">{n.msg}</p>
-                          <p className="text-xs text-slate-600 mt-0.5">{n.time}</p>
+                    <div className="max-h-80 overflow-y-auto">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="p-4 border-b border-outline-variant/10 hover:bg-on-surface/5 transition-colors cursor-pointer">
+                          <p className="text-sm text-on-surface mb-1">New assignment posted in Web Dev</p>
+                          <p className="text-xs text-on-surface-variant">2 hours ago</p>
                         </div>
-                      </div>
-                    ))}
-                    <Link to="/messages" onClick={() => setNotifOpen(false)} className="block p-3 text-center text-xs text-purple-400 hover:text-purple-300 border-t border-white/5 transition-colors">
-                      View all notifications
-                    </Link>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
             {/* Profile */}
-            <div className="relative" onClick={e => e.stopPropagation()}>
+            <div className="relative">
               <button
-                onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
-                className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-white/5 transition-all"
+                onClick={(e) => { e.stopPropagation(); setProfileOpen(!profileOpen); setNotifOpen(false); }}
+                className="flex items-center gap-2 p-1 pl-2 rounded-xl hover:bg-on-surface/5 transition-all border border-transparent hover:border-outline-variant/10"
               >
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                <span className="text-sm font-medium text-on-surface hidden sm:block">{user?.name?.split(' ')[0]}</span>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold shadow-md">
                   {user?.name?.[0] || 'U'}
                 </div>
-                <span className="hidden sm:block text-sm text-white font-medium">{user?.name?.split(' ')[0]}</span>
-                <ChevronDown size={14} className="text-slate-400" />
               </button>
+
               <AnimatePresence>
                 {profileOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden"
-                    style={{ background: 'rgba(13,20,45,0.98)', backdropFilter: 'blur(20px)' }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-56 rounded-2xl border border-outline-variant/20 shadow-2xl overflow-hidden z-50 glass"
+                    style={{ background: 'var(--color-surface)' }}
                   >
-                    <div className="p-3 border-b border-white/5">
-                      <p className="text-sm font-semibold text-white">{user?.name}</p>
-                      <p className="text-xs text-slate-400 capitalize">{user?.role}</p>
+                    <div className="p-4 border-b border-outline-variant/10">
+                      <p className="font-bold text-on-surface truncate">{user?.name}</p>
+                      <p className="text-xs text-on-surface-variant truncate">{user?.email}</p>
                     </div>
                     <div className="p-2">
-                      <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all text-sm">
-                        <User size={15} /> Profile
+                      <Link to="/profile" className="flex items-center gap-3 w-full px-3 py-2 text-sm text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 rounded-xl transition-all">
+                        <User size={16} /> Profile
                       </Link>
-                      <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all text-sm">
-                        <Settings size={15} /> Settings
-                      </Link>
-                      <button onClick={handleLogout} className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all text-sm">
-                        <LogOut size={15} /> Sign out
+                      <button className="flex items-center gap-3 w-full px-3 py-2 text-sm text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 rounded-xl transition-all">
+                        <Settings size={16} /> Settings
+                      </button>
+                    </div>
+                    <div className="p-2 border-t border-outline-variant/10">
+                      <button onClick={handleLogout} className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all">
+                        <LogOut size={16} /> Sign out
                       </button>
                     </div>
                   </motion.div>

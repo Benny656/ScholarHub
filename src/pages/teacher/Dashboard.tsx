@@ -64,10 +64,10 @@ export function TeacherDashboard() {
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
+            <h1 className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
               Teacher Dashboard
             </h1>
-            <p className="text-sm text-slate-400 mt-0.5">Welcome back, {user?.name?.split(' ')[0]}. Here's your classroom overview.</p>
+            <p className="text-sm text-on-surface-variant mt-0.5">Welcome back, {user?.name?.split(' ')[0]}. Here's your classroom overview.</p>
           </div>
           <Link to="/courses/create">
             <Button variant="primary" icon={<Plus size={16} />}>New Course</Button>
@@ -93,10 +93,10 @@ export function TeacherDashboard() {
           <div className="xl:col-span-2 space-y-6">
             {/* Course Management Table */}
             <GlassCard padding="p-0">
-              <div className="flex items-center justify-between p-5 border-b border-white/5">
+              <div className="flex items-center justify-between p-5 border-b border-outline-variant/10">
                 <div>
-                  <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>My Courses</h2>
-                  <p className="text-sm text-slate-400">{filteredCourses.length} courses</p>
+                  <h2 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>My Courses</h2>
+                  <p className="text-sm text-on-surface-variant">{filteredCourses.length} courses</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <SearchInput value={courseSearch} onChange={setCourseSearch} placeholder="Search courses..." />
@@ -105,9 +105,9 @@ export function TeacherDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-white/5">
+                    <tr className="border-b border-outline-variant/10">
                       {['Course', 'Students', 'Rating', 'Status', 'Updated', 'Actions'].map(h => (
-                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
+                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -118,18 +118,18 @@ export function TeacherDashboard() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="border-b border-white/5 hover:bg-white/3 transition-colors"
+                        className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors"
                       >
                         <td className="px-5 py-3.5">
                           <div>
-                            <p className="font-medium text-white" style={{ fontFamily: 'Inter, sans-serif' }}>{course.title}</p>
-                            <p className="text-xs text-slate-500">{course.lessons} lessons</p>
+                            <p className="font-medium text-on-surface" style={{ fontFamily: 'Inter, sans-serif' }}>{course.title}</p>
+                            <p className="text-xs text-on-surface-variant">{course.lessons} lessons</p>
                           </div>
                         </td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-1.5">
                             <Users size={13} className="text-blue-400" />
-                            <span className="text-slate-300">{course.students}</span>
+                            <span className="text-on-surface-variant">{course.students}</span>
                           </div>
                         </td>
                         <td className="px-5 py-3.5">
@@ -138,17 +138,17 @@ export function TeacherDashboard() {
                         <td className="px-5 py-3.5">
                           <Badge variant={course.status === 'Active' ? 'emerald' : 'slate'}>{course.status}</Badge>
                         </td>
-                        <td className="px-5 py-3.5 text-slate-500 text-xs">{course.updated}</td>
+                        <td className="px-5 py-3.5 text-on-surface-variant text-xs">{course.updated}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-1">
                             <Link to={`/courses/${course.id}/edit`}>
-                              <button className="p-1.5 rounded-lg hover:bg-blue-500/15 text-slate-400 hover:text-blue-400 transition-all" title="Edit">
+                              <button className="p-1.5 rounded-lg hover:bg-blue-500/15 text-on-surface-variant hover:text-blue-400 transition-all" title="Edit">
                                 <Edit2 size={14} />
                               </button>
                             </Link>
                             <button
                               onClick={() => handleDelete(course.id)}
-                              className="p-1.5 rounded-lg hover:bg-red-500/15 text-slate-400 hover:text-red-400 transition-all"
+                              className="p-1.5 rounded-lg hover:bg-red-500/15 text-on-surface-variant hover:text-red-400 transition-all"
                               title="Delete"
                             >
                               <Trash2 size={14} />
@@ -164,19 +164,19 @@ export function TeacherDashboard() {
 
             {/* Student Roster */}
             <GlassCard padding="p-0">
-              <div className="flex items-center justify-between p-5 border-b border-white/5">
+              <div className="flex items-center justify-between p-5 border-b border-outline-variant/10">
                 <div>
-                  <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>Student Roster</h2>
-                  <p className="text-sm text-slate-400">{filteredStudents.length} students</p>
+                  <h2 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>Student Roster</h2>
+                  <p className="text-sm text-on-surface-variant">{filteredStudents.length} students</p>
                 </div>
                 <SearchInput value={studentSearch} onChange={setStudentSearch} placeholder="Search students..." />
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-white/5">
+                    <tr className="border-b border-outline-variant/10">
                       {['Student', 'Course', 'Progress', 'Grade', 'Attendance', 'Status'].map(h => (
-                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
+                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -187,28 +187,28 @@ export function TeacherDashboard() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: i * 0.04 }}
-                        className="border-b border-white/5 hover:bg-white/3 transition-colors"
+                        className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors"
                       >
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2.5">
                             <Avatar name={s.name} size="sm" online={s.status === 'Active'} />
                             <div>
-                              <p className="font-medium text-white" style={{ fontFamily: 'Inter, sans-serif' }}>{s.name}</p>
-                              <p className="text-xs text-slate-500">{s.email}</p>
+                              <p className="font-medium text-on-surface" style={{ fontFamily: 'Inter, sans-serif' }}>{s.name}</p>
+                              <p className="text-xs text-on-surface-variant">{s.email}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 text-slate-400 text-xs">{s.course}</td>
+                        <td className="px-5 py-3.5 text-on-surface-variant text-xs">{s.course}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2 min-w-[100px]">
                             <ProgressBar value={s.progress} color={s.progress >= 80 ? 'emerald' : s.progress >= 60 ? 'blue' : 'amber'} />
-                            <span className="text-xs text-slate-400 w-8">{s.progress}%</span>
+                            <span className="text-xs text-on-surface-variant w-8">{s.progress}%</span>
                           </div>
                         </td>
                         <td className="px-5 py-3.5">
                           <span className={`font-semibold text-sm ${s.grade.startsWith('A') ? 'text-emerald-400' : s.grade.startsWith('B') ? 'text-blue-400' : 'text-amber-400'}`}>{s.grade}</span>
                         </td>
-                        <td className="px-5 py-3.5 text-slate-300">{s.attendance}</td>
+                        <td className="px-5 py-3.5 text-on-surface-variant">{s.attendance}</td>
                         <td className="px-5 py-3.5">
                           <Badge variant={s.status === 'Active' ? 'emerald' : 'red'}>{s.status}</Badge>
                         </td>
@@ -235,7 +235,7 @@ export function TeacherDashboard() {
                     <XAxis dataKey="day" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} width={40} />
                     <Tooltip contentStyle={{ background: 'rgba(13,20,45,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#e2e8f0', fontSize: 12 }} />
-                    <Line type="monotone" dataKey="active" stroke="#3B82F6" strokeWidth={2.5} dot={{ fill: '#3B82F6', r: 4 }} activeDot={{ r: 6 }} isAnimationActive animationDuration={1200} />
+                    <Line type="monotone" dataKey="active" stroke="#0D9488" strokeWidth={2.5} dot={{ fill: '#0D9488', r: 4 }} activeDot={{ r: 6 }} isAnimationActive animationDuration={1200} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -246,16 +246,16 @@ export function TeacherDashboard() {
               <SectionHeader title="Quick Actions" />
               <div className="space-y-2">
                 {[
-                  { label: 'Create Assignment', icon: <ClipboardList size={16} />, link: '/assignments', color: 'text-purple-400' },
+                  { label: 'Create Assignment', icon: <ClipboardList size={16} />, link: '/assignments', color: 'text-[#0D9488]' },
                   { label: 'Schedule Class', icon: <Calendar size={16} />, link: '/calendar', color: 'text-blue-400' },
                   { label: 'View Attendance', icon: <Users size={16} />, link: '/attendance', color: 'text-emerald-400' },
                   { label: 'View Analytics', icon: <TrendingUp size={16} />, link: '/analytics', color: 'text-amber-400' },
                 ].map((a, i) => (
                   <Link key={i} to={a.link}>
-                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/8">
+                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-on-surface/5 transition-all group border border-transparent hover:border-outline-variant/15">
                       <span className={a.color}>{a.icon}</span>
-                      <span className="text-sm text-slate-300 group-hover:text-white transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>{a.label}</span>
-                      <span className="ml-auto text-slate-600 group-hover:text-slate-400 transition-colors text-lg">→</span>
+                      <span className="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>{a.label}</span>
+                      <span className="ml-auto text-outline group-hover:text-on-surface-variant transition-colors text-lg">→</span>
                     </div>
                   </Link>
                 ))}
@@ -265,19 +265,19 @@ export function TeacherDashboard() {
             {/* Assignments overview */}
             <GlassCard>
               <SectionHeader title="Assignment Overview" action={
-                <Link to="/assignments" className="text-xs text-purple-400 hover:text-purple-300">View all</Link>
+                <Link to="/assignments" className="text-xs text-[#0D9488] hover:text-[#0D9488]">View all</Link>
               } />
               <div className="space-y-3">
                 {ASSIGNMENTS_DATA.map((a, i) => (
-                  <div key={i} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <div key={i} className="p-3 rounded-xl bg-on-surface/5">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium text-white" style={{ fontFamily: 'Inter, sans-serif' }}>{a.title}</p>
+                      <p className="text-sm font-medium text-on-surface" style={{ fontFamily: 'Inter, sans-serif' }}>{a.title}</p>
                       <Badge variant={a.status === 'Open' ? 'emerald' : 'slate'}>{a.status}</Badge>
                     </div>
-                    <p className="text-xs text-slate-500 mb-2">Due {a.due} · {a.course}</p>
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <p className="text-xs text-on-surface-variant mb-2">Due {a.due} · {a.course}</p>
+                    <div className="flex items-center justify-between text-xs text-on-surface-variant mb-1">
                       <span>Submitted</span>
-                      <span className="font-medium text-white">{a.submitted}/{a.total}</span>
+                      <span className="font-medium text-on-surface">{a.submitted}/{a.total}</span>
                     </div>
                     <ProgressBar value={a.submitted} max={a.total} color="emerald" />
                   </div>

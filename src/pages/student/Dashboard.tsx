@@ -77,17 +77,17 @@ export function StudentDashboard() {
         {/* Welcome */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
+            <h1 className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
               Good evening, {user?.name?.split(' ')[0]} 👋
             </h1>
-            <p className="text-sm text-slate-400 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-              You have <span className="text-purple-400 font-semibold">{assignments.length} pending</span> assignments. Keep going!
+            <p className="text-sm text-on-surface-variant mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+              You have <span className="text-[#6366F1] font-semibold">{assignments.length} pending</span> assignments. Keep going!
             </p>
           </div>
           <Link to="/calendar">
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 hover:border-purple-500/30 transition-all" style={{ background: 'rgba(255,255,255,0.04)' }}>
-              <Calendar size={16} className="text-purple-400" />
-              <span className="text-sm text-slate-300">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 hover:border-[#6366F1]/30 transition-all" style={{ background: 'rgba(255,255,255,0.04)' }}>
+              <Calendar size={16} className="text-[#6366F1]" />
+              <span className="text-sm text-on-surface-variant">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
             </div>
           </Link>
         </motion.div>
@@ -113,7 +113,7 @@ export function StudentDashboard() {
             {/* Enrolled Courses */}
             <GlassCard>
               <SectionHeader title="My Courses" subtitle={`${enrolled.length || 3} enrolled`} action={
-                <Link to="/courses" className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-colors">
+                <Link to="/courses" className="text-xs text-[#6366F1] hover:text-[#6366F1] flex items-center gap-1 transition-colors">
                   Browse more <ChevronRight size={14} />
                 </Link>
               } />
@@ -135,22 +135,22 @@ export function StudentDashboard() {
                       <Link to={`/learn/${item.course.id}/l1`}>
                         <div className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/8">
                           <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl font-bold"
-                            style={{ background: `linear-gradient(135deg, ${i === 0 ? '#8B5CF6,#3B82F6' : i === 1 ? '#3B82F6,#4edea3' : '#4edea3,#8B5CF6'})` }}>
+                            style={{ background: `linear-gradient(135deg, ${i === 0 ? '#6366F1,#3B82F6' : i === 1 ? '#3B82F6,#4edea3' : '#4edea3,#6366F1'})` }}>
                             {item.course.title[0]}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="text-sm font-semibold text-white truncate group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              <p className="text-sm font-semibold text-on-surface truncate group-hover:text-[#6366F1] transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
                                 {item.course.title}
                               </p>
-                              <span className="text-xs font-bold text-purple-400 ml-2 flex-shrink-0">{item.enrollment.progress}%</span>
+                              <span className="text-xs font-bold text-[#6366F1] ml-2 flex-shrink-0">{item.enrollment.progress}%</span>
                             </div>
-                            <p className="text-xs text-slate-500 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <p className="text-xs text-on-surface-variant mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
                               {item.course.instructor} · {item.course.lessons} lessons
                             </p>
                             <ProgressBar value={item.enrollment.progress} color={i === 2 ? 'emerald' : i === 1 ? 'blue' : 'purple'} />
                           </div>
-                          <Play size={16} className="text-slate-600 group-hover:text-purple-400 transition-colors flex-shrink-0" />
+                          <Play size={16} className="text-slate-600 group-hover:text-[#6366F1] transition-colors flex-shrink-0" />
                         </div>
                       </Link>
                     </motion.div>
@@ -162,7 +162,7 @@ export function StudentDashboard() {
             {/* Assignments */}
             <GlassCard>
               <SectionHeader title="Due Assignments" subtitle="Pending deadlines" action={
-                <Link to="/assignments" className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1">View all <ChevronRight size={14} /></Link>
+                <Link to="/assignments" className="text-xs text-[#6366F1] hover:text-[#6366F1] flex items-center gap-1">View all <ChevronRight size={14} /></Link>
               } />
               <div className="space-y-2.5">
                 {(assignments.length ? assignments : [
@@ -177,8 +177,8 @@ export function StudentDashboard() {
                         <div className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all hover:bg-white/5 ${a.status === 'overdue' ? 'border-red-500/20 bg-red-500/5' : 'border-white/5'}`}>
                           <div className={`w-2 h-2 rounded-full flex-shrink-0 ${a.priority === 'high' ? 'bg-red-400' : a.priority === 'medium' ? 'bg-amber-400' : 'bg-slate-400'}`} />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate" style={{ fontFamily: 'Inter, sans-serif' }}>{a.title}</p>
-                            <p className="text-xs text-slate-500">{a.courseName}</p>
+                            <p className="text-sm font-medium text-on-surface truncate" style={{ fontFamily: 'Inter, sans-serif' }}>{a.title}</p>
+                            <p className="text-xs text-on-surface-variant">{a.courseName}</p>
                           </div>
                           <div className="text-right flex-shrink-0">
                             <Badge variant={a.status === 'overdue' ? 'red' : daysLeft <= 3 ? 'amber' : 'slate'}>
@@ -212,7 +212,7 @@ export function StudentDashboard() {
                     <Bar dataKey="hoursSpent" fill="url(#barGrad)" radius={[6, 6, 0, 0]} isAnimationActive />
                     <defs>
                       <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#8B5CF6" />
+                        <stop offset="0%" stopColor="#6366F1" />
                         <stop offset="100%" stopColor="#3B82F6" />
                       </linearGradient>
                     </defs>
@@ -222,7 +222,7 @@ export function StudentDashboard() {
 
               {/* Heatmap */}
               <div className="mt-4">
-                <p className="text-xs text-slate-500 mb-2" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Activity heatmap — last 63 days</p>
+                <p className="text-xs text-on-surface-variant mb-2" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Activity heatmap — last 63 days</p>
                 <div className="flex flex-wrap gap-1">
                   {heatmap.map((cell, i) => <HeatmapCell key={i} count={cell.count} />)}
                 </div>
@@ -250,8 +250,8 @@ export function StudentDashboard() {
                     </Pie>
                   </PieChart>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>84%</span>
-                    <span className="text-xs text-slate-400">Present</span>
+                    <span className="text-3xl font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>84%</span>
+                    <span className="text-xs text-on-surface-variant">Present</span>
                   </div>
                 </div>
               </div>
@@ -259,7 +259,7 @@ export function StudentDashboard() {
                 {[{ l: 'Present', v: '38', c: 'text-emerald-400' }, { l: 'Absent', v: '4', c: 'text-red-400' }, { l: 'Late', v: '3', c: 'text-amber-400' }].map(s => (
                   <div key={s.l} className="text-center">
                     <p className={`text-lg font-bold ${s.c}`}>{s.v}</p>
-                    <p className="text-xs text-slate-500">{s.l}</p>
+                    <p className="text-xs text-on-surface-variant">{s.l}</p>
                   </div>
                 ))}
               </div>
@@ -278,8 +278,8 @@ export function StudentDashboard() {
                         </div>
                         <div className="w-px h-8 bg-white/10 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate group-hover:text-blue-300 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>{cls.title}</p>
-                          <p className="text-xs text-slate-500">{cls.course}</p>
+                          <p className="text-sm font-medium text-on-surface truncate group-hover:text-blue-300 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>{cls.title}</p>
+                          <p className="text-xs text-on-surface-variant">{cls.course}</p>
                         </div>
                         <Badge variant={cls.type === 'Live' ? 'blue' : 'slate'}>{cls.type}</Badge>
                       </div>
@@ -294,7 +294,7 @@ export function StudentDashboard() {
               <SectionHeader
                 title="AI Recommendations"
                 subtitle="Personalized for you"
-                action={<Sparkles size={16} className="text-purple-400" />}
+                action={<Sparkles size={16} className="text-[#6366F1]" />}
               />
               <div className="space-y-3">
                 {(recommendations.length ? recommendations : [
@@ -303,15 +303,15 @@ export function StudentDashboard() {
                 ]).map((rec, i) => (
                   <motion.div key={rec.courseId} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                     <Link to={`/courses/${rec.courseId}`}>
-                      <div className="p-3 rounded-xl border border-purple-500/15 hover:border-purple-500/30 hover:bg-purple-500/5 transition-all group">
+                      <div className="p-3 rounded-xl border border-[#6366F1]/15 hover:border-[#6366F1]/30 hover:bg-[#6366F1]/5 transition-all group">
                         <div className="flex items-start justify-between mb-1.5">
-                          <p className="text-sm font-semibold text-white group-hover:text-purple-300 transition-colors leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>{rec.title}</p>
-                          <span className="text-xs font-bold text-purple-400 ml-2 flex-shrink-0">{rec.matchScore}%</span>
+                          <p className="text-sm font-semibold text-on-surface group-hover:text-[#6366F1] transition-colors leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>{rec.title}</p>
+                          <span className="text-xs font-bold text-[#6366F1] ml-2 flex-shrink-0">{rec.matchScore}%</span>
                         </div>
-                        <p className="text-xs text-slate-500 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>{rec.reason}</p>
+                        <p className="text-xs text-on-surface-variant mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>{rec.reason}</p>
                         <div className="flex items-center gap-1">
-                          {[1,2,3,4,5].map(s => <Star key={s} size={10} fill={s <= 4 ? '#8B5CF6' : 'none'} className="text-purple-500" />)}
-                          <span className="text-xs text-slate-500 ml-1">AI matched</span>
+                          {[1,2,3,4,5].map(s => <Star key={s} size={10} fill={s <= 4 ? '#6366F1' : 'none'} className="text-[#6366F1]" />)}
+                          <span className="text-xs text-on-surface-variant ml-1">AI matched</span>
                         </div>
                       </div>
                     </Link>

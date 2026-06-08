@@ -70,8 +70,8 @@ export function AdminDashboard() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>Admin Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Platform overview and management center</p>
+          <h1 className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>Admin Dashboard</h1>
+          <p className="text-sm text-on-surface-variant mt-0.5">Platform overview and management center</p>
         </motion.div>
 
         {/* Stats */}
@@ -101,15 +101,15 @@ export function AdminDashboard() {
                 ]}>
                   <defs>
                     <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />
-                  <Area type="monotone" dataKey="revenue" stroke="#8B5CF6" fill="url(#revGrad)" strokeWidth={2.5} isAnimationActive animationDuration={1200} />
+                  <Area type="monotone" dataKey="revenue" stroke="#F59E0B" fill="url(#revGrad)" strokeWidth={2.5} isAnimationActive animationDuration={1200} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -128,7 +128,7 @@ export function AdminDashboard() {
                   <XAxis dataKey="day" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="active" fill="#3B82F6" opacity={0.8} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="active" fill="#F59E0B" opacity={0.8} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="new" fill="#4edea3" opacity={0.8} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -138,18 +138,18 @@ export function AdminDashboard() {
 
         {/* User Management */}
         <GlassCard padding="p-0">
-          <div className="flex flex-wrap items-center justify-between gap-3 p-5 border-b border-white/5">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-5 border-b border-outline-variant/10">
             <div>
-              <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>User Management</h2>
-              <p className="text-sm text-slate-400">{filtered.length} users</p>
+              <h2 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>User Management</h2>
+              <p className="text-sm text-on-surface-variant">{filtered.length} users</p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex rounded-xl overflow-hidden border border-white/10">
+              <div className="flex rounded-xl overflow-hidden border border-outline-variant/20">
                 {(['all', 'student', 'teacher'] as const).map(r => (
                   <button
                     key={r}
                     onClick={() => setRoleFilter(r)}
-                    className={`px-3.5 py-1.5 text-xs font-medium capitalize transition-all ${roleFilter === r ? 'bg-purple-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                    className={`px-3.5 py-1.5 text-xs font-medium capitalize transition-all ${roleFilter === r ? 'bg-[#F59E0B] text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}
                     style={{ fontFamily: 'Inter, sans-serif' }}
                   >
                     {r}
@@ -162,24 +162,24 @@ export function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5">
+                <tr className="border-b border-outline-variant/10">
                   {['User', 'Role', 'Joined', 'Courses', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
+                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-on-surface-variant uppercase bg-on-surface/5" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((u, i) => (
                   <motion.tr key={u.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                    className="border-b border-white/5 hover:bg-white/3 transition-colors">
+                    className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-on-surface text-xs font-bold flex-shrink-0">
                           {u.name[0]}
                         </div>
                         <div>
-                          <p className="font-medium text-white">{u.name}</p>
-                          <p className="text-xs text-slate-500">{u.email}</p>
+                          <p className="font-medium text-on-surface">{u.name}</p>
+                          <p className="text-xs text-on-surface-variant">{u.email}</p>
                         </div>
                       </div>
                     </td>
@@ -188,17 +188,17 @@ export function AdminDashboard() {
                         {u.role}
                       </Badge>
                     </td>
-                    <td className="px-5 py-3.5 text-slate-400 text-xs">{u.joined}</td>
-                    <td className="px-5 py-3.5 text-slate-300">{u.courses}</td>
+                    <td className="px-5 py-3.5 text-on-surface-variant text-xs">{u.joined}</td>
+                    <td className="px-5 py-3.5 text-on-surface-variant">{u.courses}</td>
                     <td className="px-5 py-3.5">
                       <Badge variant={u.status === 'Active' ? 'emerald' : 'red'}>{u.status}</Badge>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handleRoleChange(u.id, 'teacher')} className="p-1.5 rounded-lg hover:bg-blue-500/15 text-slate-400 hover:text-blue-400 transition-all" title="Change role">
+                        <button onClick={() => handleRoleChange(u.id, 'teacher')} className="p-1.5 rounded-lg hover:bg-blue-500/15 text-on-surface-variant hover:text-blue-400 transition-all" title="Change role">
                           <UserCog size={14} />
                         </button>
-                        <button onClick={() => handleSuspend(u.id)} className="p-1.5 rounded-lg hover:bg-red-500/15 text-slate-400 hover:text-red-400 transition-all" title="Suspend">
+                        <button onClick={() => handleSuspend(u.id)} className="p-1.5 rounded-lg hover:bg-red-500/15 text-on-surface-variant hover:text-red-400 transition-all" title="Suspend">
                           <Shield size={14} />
                         </button>
                       </div>
@@ -217,14 +217,14 @@ export function AdminDashboard() {
             {HEALTH_INDICATORS.map((h, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                 className="flex items-center gap-3 p-3.5 rounded-xl border"
-                style={{ background: 'rgba(255,255,255,0.03)', borderColor: h.status === 'warning' ? 'rgba(251,191,36,0.2)' : 'rgba(255,255,255,0.05)' }}
+                style={{ background: 'color-mix(in srgb, var(--color-on-surface) 3%, transparent)', borderColor: h.status === 'warning' ? 'rgba(251,191,36,0.2)' : 'color-mix(in srgb, var(--color-on-surface) 5%, transparent)' }}
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${h.status === 'healthy' ? 'bg-emerald-500/15' : 'bg-amber-500/15'}`}>
                   {h.status === 'healthy' ? <CheckCircle size={16} className="text-emerald-400" /> : <AlertCircle size={16} className="text-amber-400" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white" style={{ fontFamily: 'Inter, sans-serif' }}>{h.name}</p>
-                  <p className="text-xs text-slate-500">{h.uptime} uptime · {h.latency}</p>
+                  <p className="text-sm font-medium text-on-surface" style={{ fontFamily: 'Inter, sans-serif' }}>{h.name}</p>
+                  <p className="text-xs text-on-surface-variant">{h.uptime} uptime · {h.latency}</p>
                 </div>
                 <div className={`w-2 h-2 rounded-full ${h.status === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
               </motion.div>

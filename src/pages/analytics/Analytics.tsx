@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { analyticsService } from '../../services/analytics.service';
 import { GlassCard, StatCard, Badge, ProgressBar, PageHeader, Button, SectionHeader } from '../../components/ui/index';
 
-const TOOLTIP = { background: 'rgba(13,20,45,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#e2e8f0', fontSize: 12 };
+const TOOLTIP = { background: 'var(--color-surface)', border: '1px solid color-mix(in srgb, var(--color-on-surface) 10%, transparent)', borderRadius: 12, color: 'var(--color-on-surface)', fontSize: 12 };
 
 const SUBJECT_DATA = [
   { subject: 'Web Dev', grade: 88, avg: 72, fullMark: 100 },
@@ -80,24 +80,24 @@ export function Analytics() {
               <SectionHeader title="Performance Trend" subtitle="Your score vs. class average" />
               <div className="flex gap-1">
                 {(['week', 'month', 'semester'] as const).map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-all ${period === p ? 'bg-purple-500 text-white' : 'text-slate-400 hover:text-white'}`}>{p}</button>
+                  <button key={p} onClick={() => setPeriod(p)} className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-all ${period === p ? 'bg-[#06B6D4] text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}>{p}</button>
                 ))}
               </div>
             </div>
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={PERFORMANCE_TREND}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in srgb, var(--color-on-surface) 5%, transparent)" />
                   <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis domain={[60, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
                   <Tooltip contentStyle={TOOLTIP} formatter={(v: number, name: string) => [`${v}%`, name === 'score' ? 'Your Score' : 'Class Avg']} />
-                  <Line type="monotone" dataKey="score" stroke="#8B5CF6" strokeWidth={2.5} dot={{ fill: '#8B5CF6', r: 4 }} activeDot={{ r: 6 }} isAnimationActive animationDuration={1200} />
+                  <Line type="monotone" dataKey="score" stroke="#06B6D4" strokeWidth={2.5} dot={{ fill: '#06B6D4', r: 4 }} activeDot={{ r: 6 }} isAnimationActive animationDuration={1200} />
                   <Line type="monotone" dataKey="avg" stroke="#3B82F6" strokeWidth={2} strokeDasharray="4 4" dot={false} isAnimationActive />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-purple-500 rounded" />Your score</span>
+            <div className="flex items-center gap-4 mt-2 text-xs text-on-surface-variant">
+              <span className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-[#06B6D4] rounded" />Your score</span>
               <span className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-b border-dashed border-blue-500" />Class average</span>
             </div>
           </GlassCard>
@@ -108,10 +108,10 @@ export function Analytics() {
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={SUBJECT_DATA}>
-                  <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                  <PolarGrid stroke="color-mix(in srgb, var(--color-on-surface) 8%, transparent)" />
                   <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 11 }} />
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                  <Radar name="Your Grade" dataKey="grade" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.25} isAnimationActive animationDuration={1200} />
+                  <Radar name="Your Grade" dataKey="grade" stroke="#06B6D4" fill="#06B6D4" fillOpacity={0.25} isAnimationActive animationDuration={1200} />
                   <Radar name="Class Avg" dataKey="avg" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} />
                   <Tooltip contentStyle={TOOLTIP} formatter={(v: number) => [`${v}%`]} />
                 </RadarChart>
@@ -123,7 +123,7 @@ export function Analytics() {
         {/* Weekly study time */}
         <GlassCard>
           <SectionHeader title="Weekly Study Time" subtitle="Hours per day this week" action={
-            <span className="text-sm font-bold text-purple-400">22.5h total</span>
+            <span className="text-sm font-bold text-[#06B6D4]">22.5h total</span>
           } />
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
@@ -135,7 +135,7 @@ export function Analytics() {
                 <defs>
                   <linearGradient id="timeGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#3B82F6" />
-                    <stop offset="100%" stopColor="#8B5CF6" />
+                    <stop offset="100%" stopColor="#06B6D4" />
                   </linearGradient>
                 </defs>
               </BarChart>
@@ -145,15 +145,15 @@ export function Analytics() {
 
         {/* Grade table */}
         <GlassCard padding="p-0">
-          <div className="p-5 border-b border-white/5">
-            <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>Grade Details</h2>
-            <p className="text-sm text-slate-400">Current semester grades per course</p>
+          <div className="p-5 border-b border-outline-variant/10">
+            <h2 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>Grade Details</h2>
+            <p className="text-sm text-on-surface-variant">Current semester grades per course</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-white/5">
+              <thead><tr className="border-b border-outline-variant/10">
                 {['Course', 'Assignments', 'Quizzes', 'Attendance', 'Final Grade', 'Status'].map(h => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
+                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-on-surface-variant uppercase" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
                 ))}
               </tr></thead>
               <tbody>
@@ -165,11 +165,11 @@ export function Analytics() {
                   { course: 'Cloud Computing', assignments: '82%', quizzes: '78%', attendance: '89%', grade: 80, letter: 'B' },
                 ].map((r, i) => (
                   <motion.tr key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
-                    className="border-b border-white/5 hover:bg-white/3 transition-colors">
-                    <td className="px-5 py-3.5 font-medium text-white">{r.course}</td>
-                    <td className="px-5 py-3.5 text-slate-300">{r.assignments}</td>
-                    <td className="px-5 py-3.5 text-slate-300">{r.quizzes}</td>
-                    <td className="px-5 py-3.5 text-slate-300">{r.attendance}</td>
+                    className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors">
+                    <td className="px-5 py-3.5 font-medium text-on-surface">{r.course}</td>
+                    <td className="px-5 py-3.5 text-on-surface-variant">{r.assignments}</td>
+                    <td className="px-5 py-3.5 text-on-surface-variant">{r.quizzes}</td>
+                    <td className="px-5 py-3.5 text-on-surface-variant">{r.attendance}</td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <ProgressBar value={r.grade} color={r.grade >= 80 ? 'emerald' : r.grade >= 70 ? 'blue' : 'amber'} />

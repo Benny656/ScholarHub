@@ -36,8 +36,9 @@ export function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-12">
         <motion.div className="col-span-2 space-y-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
           <motion.div variants={itemVariants} className="flex items-center gap-2 cursor-pointer" onClick={go}>
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-on-primary">
-              <Brain className="w-6 h-6" />
+            <div className="w-12 h-12 flex items-center justify-center">
+              <img src="/logo-dark.png" alt="ScholarHub Logo" className="w-full h-full object-contain hidden dark:block" />
+              <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain block dark:hidden" />
             </div>
             <span className="font-headline-md font-bold tracking-tight text-on-surface">ScholarHub</span>
           </motion.div>
@@ -80,7 +81,7 @@ export function Footer() {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <motion.p variants={itemVariants}>© 2024 ScholarHub Technologies Inc. All rights reserved.</motion.p>
+        <motion.p variants={itemVariants}>© 2026 ScholarHub Technologies Inc. All rights reserved.</motion.p>
         <motion.div variants={itemVariants} className="flex gap-8">
           <button onClick={go} className="hover:text-on-surface transition-colors">
             System Status

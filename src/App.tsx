@@ -1,22 +1,16 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 
-// Landing page components (untouched)
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { MarqueeTicker } from './components/MarqueeTicker';
-import { ProblemSection, SolutionSection } from './components/ProblemSolution';
-import { DashboardPreview, FeaturesSection } from './components/Dashboard';
-import { StatsSection } from './components/Stats';
-import { TestimonialsSection } from './components/Testimonials';
-import { PricingSection } from './components/Pricing';
-import { HowItWorks, CTASection } from './components/OnboardingCTA';
-import { Footer } from './components/Footer';
+// Landing page
+import { LandingPage } from './pages/landing/LandingPage';
+
+// Other shared components (still used on other pages)
 import { NotFound } from './components/NotFound';
 import { CustomCursor } from './components/CustomCursor';
-import { useScrollReveal } from './hooks/useAnimations';
+import { FloatingElements3D } from './components/FloatingElements3D';
+import { VirtualClassroomLoader } from './components/Loader/VirtualClassroomLoader';
 
 // Auth context
 import { AuthProvider } from './context/AuthContext';
@@ -52,49 +46,34 @@ import { Certificates, CertificateVerify } from './pages/certificates/Certificat
 import { Profile } from './pages/profile/Profile';
 
 function HomePage() {
-  useScrollReveal();
-
-  useEffect(() => {
-    const createRipple = (event: MouseEvent) => {
-      const button = event.currentTarget as HTMLElement;
-      const circle = document.createElement('span');
-      const diameter = Math.max(button.clientWidth, button.clientHeight);
-      const radius = diameter / 2;
-      circle.style.width = circle.style.height = `${diameter}px`;
-      circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
-      circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
-      circle.classList.add('ripple');
-      const ripple = button.querySelector('.ripple');
-      if (ripple) ripple.remove();
-      button.appendChild(circle);
-    };
-    const buttons = document.querySelectorAll('.ripple-btn');
-    buttons.forEach((button) => button.addEventListener('click', createRipple as EventListener));
-    return () => buttons.forEach((button) => button.removeEventListener('click', createRipple as EventListener));
-  }, []);
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background text-on-surface transition-colors duration-500"
-    >
-      <Navbar />
-      <Hero />
-      <MarqueeTicker />
-      <ProblemSection />
-      <SolutionSection />
-      <DashboardPreview />
-      <FeaturesSection />
-      <StatsSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <HowItWorks />
-      <CTASection />
-      <Footer />
-    </motion.div>
+    <>
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            key="loader"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
+            className="fixed inset-0 z-[9999]"
+          >
+            <VirtualClassroomLoader onComplete={() => setIsLoading(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!isLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <LandingPage />
+        </motion.div>
+      )}
+    </>
   );
 }
 
@@ -157,6 +136,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CustomCursor />
+        <FloatingElements3D />
         <AppRoutes />
         <Toaster
           position="bottom-right"
