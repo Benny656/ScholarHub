@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import { usePlaceholder } from '../hooks/usePlaceholder';
+import { useNavigate } from 'react-router-dom';
 import { useMagnetic } from '../hooks/useMagnetic';
 
 const steps = [
@@ -64,7 +64,7 @@ export function HowItWorks() {
 }
 
 export function CTASection() {
-  const go = usePlaceholder();
+  const navigate = useNavigate();
   const { ref, magnetStyle, handleMouseMove, handleMouseLeave } = useMagnetic(0.3);
   const variants = {
     hidden: { opacity: 0, scale: 0.95 },
@@ -91,7 +91,7 @@ export function CTASection() {
             Join thousands of forward-thinking institutions building the future of learning on ScholarHub.
           </p>
           <div ref={ref} style={magnetStyle} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} className="inline-block">
-            <button onClick={go} className="bg-primary text-on-primary px-12 py-5 rounded-full font-body-md font-bold hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/40 flex items-center gap-3 mx-auto ripple-btn shimmer-btn">
+            <button onClick={() => navigate('/register')} className="bg-primary text-on-primary px-12 py-5 rounded-full font-body-md font-bold hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/40 flex items-center gap-3 mx-auto ripple-btn shimmer-btn">
               Get Started Today
               <Sparkles className="w-6 h-6 icon-bounce" />
             </button>

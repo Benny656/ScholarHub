@@ -11,13 +11,17 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@supabase/supabase-js": "^2.57.4",
+    "@types/recharts": "^1.8.29",
     "framer-motion": "^12.40.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
     "react-lottie-player": "^2.1.0",
     "react-router-dom": "^6.30.4",
+    "recharts": "^3.8.1",
     "three": "^0.184.0"
   },
   "devDependencies": {

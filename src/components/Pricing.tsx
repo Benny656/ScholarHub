@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Zap, Building2, GraduationCap } from 'lucide-react';
-import { usePlaceholder } from '../hooks/usePlaceholder';
+import { useNavigate } from 'react-router-dom';
 import { useMagnetic } from '../hooks/useMagnetic';
 
 const plans = [
@@ -145,7 +145,7 @@ function PricingCard({
         onMouseLeave={handleMouseLeave}
       >
         <button
-          onClick={go}
+          onClick={() => navigate('/register')}
           className={`w-full py-3.5 rounded-full font-body-md font-semibold transition-all hover:scale-105 active:scale-95 ripple-btn shimmer-btn ${
             plan.popular
               ? 'bg-primary text-on-primary shadow-xl shadow-primary/30'
@@ -161,7 +161,7 @@ function PricingCard({
 
 /* ── Pricing section ── */
 export function PricingSection() {
-  const go = usePlaceholder();
+  const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing>('monthly');
 
   const containerVariants = {

@@ -1,12 +1,12 @@
 import { useThreeScene } from '../hooks/useThreeScene';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { usePlaceholder } from '../hooks/usePlaceholder';
+import { useNavigate } from 'react-router-dom';
 import { useMagnetic } from '../hooks/useMagnetic';
 
 export function Hero() {
   useThreeScene('three-container');
-  const go = usePlaceholder();
+  const navigate = useNavigate();
 
   /* ── Parallax via Framer Motion scroll transforms ── */
   const { scrollY } = useScroll();
@@ -110,7 +110,7 @@ export function Hero() {
               className="w-full sm:w-auto"
             >
               <button
-                onClick={go}
+                onClick={() => navigate('/register')}
                 className="w-full bg-primary text-on-primary px-10 py-4 rounded-full font-body-md font-semibold flex items-center justify-center gap-2 hover:scale-105 transition-all shadow-2xl shadow-primary/30 ripple-btn shimmer-btn group"
               >
                 Start Free Trial
@@ -127,7 +127,7 @@ export function Hero() {
               className="w-full sm:w-auto"
             >
               <button
-                onClick={go}
+                onClick={() => navigate('/courses')}
                 className="w-full glass px-10 py-4 rounded-full font-body-md font-semibold flex items-center justify-center gap-2 hover:bg-surface-variant/50 transition-all border-outline/20 text-on-surface ripple-btn group"
               >
                 <PlayCircle className="w-5 h-5 icon-rotate" />

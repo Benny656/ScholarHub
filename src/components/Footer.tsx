@@ -1,6 +1,6 @@
 import { Brain, Twitter, Linkedin, Github } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { usePlaceholder } from '../hooks/usePlaceholder';
+import { useNavigate } from 'react-router-dom';
 
 const footerLinks = {
   Product: ['Features', 'AI Core', 'Integrations', 'Enterprise'],
@@ -9,7 +9,7 @@ const footerLinks = {
 };
 
 export function Footer() {
-  const go = usePlaceholder();
+  const navigate = useNavigate();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -62,7 +62,7 @@ export function Footer() {
             <ul className="space-y-4 font-body-md text-on-surface-variant">
               {links.map((link) => (
                 <li key={link}>
-                  <button onClick={go} className="hover:text-primary transition-colors text-left">
+                    <button onClick={() => navigate('/login')} className="text-on-surface-variant hover:text-primary transition-colors hover:translate-x-1 inline-block">
                     {link}
                   </button>
                 </li>

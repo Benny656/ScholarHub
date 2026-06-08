@@ -2,20 +2,30 @@ import { useState, useEffect } from 'react';
 import { Moon, Sun, Brain, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../hooks/useTheme';
-import { usePlaceholder } from '../hooks/usePlaceholder';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const navLinks = [
+const publicLinks = [
   { label: 'Platform', id: 'platform' },
-  { label: 'Resources', id: 'resources' },
-  { label: 'Solutions', id: 'solutions' },
+  { label: 'Courses', path: '/courses' },
   { label: 'Pricing', id: 'pricing' },
+];
+
+const privateLinks = [
+  { label: 'Dashboard', path: '/student/dashboard' },
+  { label: 'Courses', path: '/courses' },
+  { label: 'Assignments', path: '/assignments' },
+  { label: 'Calendar', path: '/calendar' },
 ];
 
 export function Navbar() {
   const { toggle } = useTheme();
-  const go = usePlaceholder();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = isAuthenticated ? privateLinks : publicLinks;
 
   /* ── Scroll detection ── */
   useEffect(() => {
@@ -69,7 +79,7 @@ export function Navbar() {
           {/* Logo */}
           <div
             className="flex items-center gap-2 group cursor-pointer"
-            onClick={go}
+            onClick={() => navigate('/')}
           >
             <div
               className={`bg-primary rounded-xl flex items-center justify-center text-on-primary shadow-lg group-hover:rotate-12 transition-all duration-300 ${
@@ -94,7 +104,11 @@ export function Navbar() {
                 key={link.label}
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToSection(link.id);
+                  if (link.path) {
+                    navigate(link.path);
+                  } else if (link.id) {
+                    scrollToSection(link.id);
+                  }
                 }}
                 className="font-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer relative group"
               >
@@ -116,21 +130,30 @@ export function Navbar() {
               <Sun className="w-5 h-5 hidden dark:block" />
             </button>
 
-            {/* Desktop: Sign In */}
-            <button
-              onClick={go}
-              className="hidden md:block font-body-md text-on-surface-variant hover:text-primary transition-colors px-4 py-2 ripple-btn"
-            >
-              Sign In
-            </button>
-
-            {/* Desktop: Get Started */}
-            <button
-              onClick={go}
-              className="hidden md:block bg-primary text-on-primary px-6 py-2.5 rounded-full font-body-md font-semibold hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 ripple-btn shimmer-btn"
-            >
-              Get Started
-            </button>
+            {/* Desktop: Auth Actions */}
+            {isAuthenticated ? (
+              <button
+                onClick={() => navigate(`/${user?.role || 'student'}/dashboard`)}
+                className="hidden md:block bg-primary text-on-primary px-6 py-2.5 rounded-full font-body-md font-semibold hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 ripple-btn shimmer-btn"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="hidden md:block font-body-md text-on-surface-variant hover:text-primary transition-colors px-4 py-2 ripple-btn"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="hidden md:block bg-primary text-on-primary px-6 py-2.5 rounded-full font-body-md font-semibold hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 ripple-btn shimmer-btn"
+                >
+                  Get Started
+                </button>
+              </>
+            )}
 
             {/* Mobile: Hamburger toggle */}
             <button
@@ -185,7 +208,11 @@ export function Navbar() {
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.055, duration: 0.2 }}
-                    onClick={() => { setMobileOpen(false); scrollToSection(link.id); }}
+                    onClick={() => { 
+                      setMobileOpen(false); 
+                      if (link.path) navigate(link.path);
+                      else if (link.id) scrollToSection(link.id);
+                    }}
                     className="text-left font-body-md text-on-surface-variant hover:text-primary transition-colors py-3.5 border-b border-outline-variant/10 last:border-0"
                   >
                     {link.label}
@@ -199,18 +226,29 @@ export function Navbar() {
                   transition={{ delay: navLinks.length * 0.055 + 0.05 }}
                   className="flex flex-col gap-3 pt-4"
                 >
-                  <button
-                    onClick={() => { setMobileOpen(false); go(); }}
-                    className="font-body-md text-on-surface-variant border border-outline-variant/40 rounded-full py-3 hover:text-primary hover:border-primary/50 transition-all"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => { setMobileOpen(false); go(); }}
-                    className="bg-primary text-on-primary py-3 rounded-full font-body-md font-semibold hover:opacity-90 transition-opacity shimmer-btn"
-                  >
-                    Get Started
-                  </button>
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => { setMobileOpen(false); navigate(`/${user?.role || 'student'}/dashboard`); }}
+                      className="bg-primary text-on-primary py-3 rounded-full font-body-md font-semibold hover:opacity-90 transition-opacity shimmer-btn"
+                    >
+                      Dashboard
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => { setMobileOpen(false); navigate('/login'); }}
+                        className="font-body-md text-on-surface-variant border border-outline-variant/40 rounded-full py-3 hover:text-primary hover:border-primary/50 transition-all"
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={() => { setMobileOpen(false); navigate('/register'); }}
+                        className="bg-primary text-on-primary py-3 rounded-full font-body-md font-semibold hover:opacity-90 transition-opacity shimmer-btn"
+                      >
+                        Get Started
+                      </button>
+                    </>
+                  )}
                 </motion.div>
               </div>
             </motion.div>
