@@ -117,7 +117,7 @@ export function CreateCourse() {
                       options={[{ value: 'Beginner', label: 'Beginner' }, { value: 'Intermediate', label: 'Intermediate' }, { value: 'Advanced', label: 'Advanced' }]} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <Input label="Price ($)" type="number" value={form.price} onChange={e => update('price', e.target.value)} placeholder="0 for free" />
+                    <Input label="Price (₹)" type="number" value={form.price} onChange={e => update('price', e.target.value)} placeholder="0 for free" />
                     <Input label="Duration (e.g. 24h 30m)" value={form.duration} onChange={e => update('duration', e.target.value)} placeholder="e.g. 24h 30m" />
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export function CreateCourse() {
                     {[
                       { label: 'Category', val: form.category },
                       { label: 'Level', val: form.level },
-                      { label: 'Price', val: form.price ? `$${form.price}` : 'Free' },
+                      { label: 'Price', val: form.price ? `₹${form.price}` : 'Free' },
                       { label: 'Sections', val: form.sections.length },
                     ].map(item => (
                       <div key={item.label} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }}>

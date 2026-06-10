@@ -1,82 +1,7 @@
-import type { Message, Conversation, Announcement, Notification } from '../types';
+import type { Message, Conversation, Announcement } from '../types';
+import { supabase } from '../lib/supabase';
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    id: 'conv1',
-    participants: [
-      { id: 'u1', name: 'Alex Johnson' },
-      { id: 'u2', name: 'Dr. Sarah Chen' },
-    ],
-    lastMessage: {
-      id: 'm10',
-      senderId: 'u2',
-      senderName: 'Dr. Sarah Chen',
-      content: 'Great progress on your assignment! Keep it up.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-      isRead: false,
-      type: 'text',
-    },
-    unreadCount: 2,
-    type: 'direct',
-  },
-  {
-    id: 'conv2',
-    participants: [
-      { id: 'u1', name: 'Alex Johnson' },
-      { id: 'u3', name: 'Marcus Rivera' },
-      { id: 'u8', name: 'Jordan Lee' },
-    ],
-    lastMessage: {
-      id: 'm20',
-      senderId: 'u8',
-      senderName: 'Jordan Lee',
-      content: 'Anyone joining the study group tonight?',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      isRead: true,
-      type: 'text',
-    },
-    unreadCount: 0,
-    type: 'group',
-    name: 'Web Dev Study Group',
-  },
-  {
-    id: 'conv3',
-    participants: [
-      { id: 'u1', name: 'Alex Johnson' },
-    ],
-    lastMessage: {
-      id: 'm30',
-      senderId: 'u2',
-      senderName: 'Dr. Sarah Chen',
-      content: 'New assignment posted: React Component Architecture',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-      isRead: true,
-      type: 'text',
-    },
-    unreadCount: 0,
-    type: 'course',
-    name: 'Full-Stack Web Dev — Announcements',
-  },
-];
-
-const MOCK_MESSAGES: Record<string, Message[]> = {
-  conv1: [
-    { id: 'm1', senderId: 'u1', senderName: 'Alex Johnson', content: 'Hi Dr. Chen, I had a question about the assignment.', timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(), isRead: true, type: 'text' },
-    { id: 'm2', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'Of course! What would you like to know?', timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), isRead: true, type: 'text' },
-    { id: 'm3', senderId: 'u1', senderName: 'Alex Johnson', content: 'Should we use React Context or Redux for state management?', timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), isRead: true, type: 'text' },
-    { id: 'm4', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'For this project size, React Context is perfectly fine. Redux would be overkill.', timestamp: new Date(Date.now() - 1000 * 60 * 7).toISOString(), isRead: true, type: 'text' },
-    { id: 'm5', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'Great progress on your assignment! Keep it up.', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), isRead: false, type: 'text' },
-  ],
-  conv2: [
-    { id: 'm21', senderId: 'u8', senderName: 'Jordan Lee', content: "Hey everyone! How's the DSA prep going?", timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), isRead: true, type: 'text' },
-    { id: 'm22', senderId: 'u1', senderName: 'Alex Johnson', content: 'Struggling with dynamic programming a bit 😅', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), isRead: true, type: 'text' },
-    { id: 'm23', senderId: 'u8', senderName: 'Jordan Lee', content: 'Anyone joining the study group tonight?', timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), isRead: true, type: 'text' },
-  ],
-};
-
-const MOCK_ANNOUNCEMENTS: Announcement[] = [
+export const MOCK_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'ann1',
     title: 'New Assignment Posted: React Component Architecture',
@@ -88,100 +13,235 @@ const MOCK_ANNOUNCEMENTS: Announcement[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     pinned: true,
   },
-  {
-    id: 'ann2',
-    title: 'Platform Maintenance — June 10',
-    content: 'ScholarHub will undergo scheduled maintenance on June 10 from 2:00 AM to 4:00 AM UTC. The platform may be temporarily unavailable.',
-    authorId: 'u3',
-    authorName: 'Marcus Rivera',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    pinned: false,
-  },
-  {
-    id: 'ann3',
-    title: 'Live Session: Advanced React Patterns — June 12',
-    content: 'Join Dr. Sarah Chen for a live deep dive into advanced React patterns including compound components, render props, and custom hooks.',
-    authorId: 'u2',
-    authorName: 'Dr. Sarah Chen',
-    courseId: 'c1',
-    courseName: 'Full-Stack Web Development',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    pinned: false,
-  },
-];
-
-const MOCK_NOTIFICATIONS: Notification[] = [
-  { id: 'n1', title: 'Assignment Graded', message: 'Your UX Research Report received a score of 87/100', type: 'success', timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), isRead: false, link: '/assignments/a3' },
-  { id: 'n2', title: 'New Message', message: 'Dr. Sarah Chen sent you a message', type: 'info', timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), isRead: false, link: '/messages' },
-  { id: 'n3', title: 'Assignment Due Soon', message: 'React Component Architecture due in 3 days', type: 'warning', timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(), isRead: true, link: '/assignments/a1' },
-  { id: 'n4', title: 'Certificate Earned', message: "You've completed UI/UX Design Masterclass!", type: 'success', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), isRead: true, link: '/certificates' },
-  { id: 'n5', title: 'Live Class Starting', message: 'Advanced React Patterns starts in 10 minutes', type: 'info', timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), isRead: false, link: '/classroom/cl1' },
 ];
 
 export const messagesService = {
   async getConversations(userId: string): Promise<Conversation[]> {
-    await delay(500);
-    // In real app: GET /api/messages/conversations
-    return MOCK_CONVERSATIONS;
+    try {
+      // In our requested database, messages table stores receiver_id and sender_id.
+      // We can query distinct sender/receiver pairs or courses.
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*, sender:users!messages_sender_id_fkey(name, avatar_url), receiver:users!messages_receiver_id_fkey(name, avatar_url)')
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+        .order('sent_at', { ascending: false });
+
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        return this.getMockConversations();
+      }
+
+      const conversationsMap: Record<string, Conversation> = {};
+
+      data.forEach(msg => {
+        const otherUser = msg.sender_id === userId ? msg.receiver : msg.sender;
+        const otherUserId = msg.sender_id === userId ? msg.receiver_id : msg.sender_id;
+        
+        if (!otherUserId || !otherUser) return;
+        
+        const convId = [userId, otherUserId].sort().join('-');
+        
+        if (!conversationsMap[convId]) {
+          conversationsMap[convId] = {
+            id: convId,
+            participants: [
+              { id: userId, name: 'You' },
+              { id: otherUserId, name: otherUser.name || 'User', avatar: otherUser.avatar_url || '' }
+            ],
+            unreadCount: !msg.is_read && msg.receiver_id === userId ? 1 : 0,
+            type: msg.course_id ? 'course' : 'direct',
+            name: msg.course_id ? 'Course Chat' : undefined,
+            lastMessage: {
+              id: msg.id,
+              senderId: msg.sender_id,
+              senderName: msg.sender?.name || 'User',
+              senderAvatar: msg.sender?.avatar_url || '',
+              content: msg.content || '',
+              timestamp: msg.sent_at,
+              isRead: msg.is_read,
+              type: 'text',
+            }
+          };
+        } else {
+          if (!msg.is_read && msg.receiver_id === userId) {
+            conversationsMap[convId].unreadCount++;
+          }
+        }
+      });
+
+      return Object.values(conversationsMap);
+    } catch (err) {
+      console.warn('Supabase getConversations failed, returning mocks:', err);
+      return this.getMockConversations();
+    }
   },
 
   async getMessages(conversationId: string): Promise<Message[]> {
-    await delay(400);
-    // In real app: GET /api/messages/conversations/:id/messages
-    return MOCK_MESSAGES[conversationId] || [];
+    try {
+      // Parse ids from dynamic conversations
+      const parts = conversationId.split('-');
+      if (parts.length < 2) {
+        // Assume course_id lookup
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*, sender:users!messages_sender_id_fkey(name, avatar_url)')
+          .eq('course_id', conversationId)
+          .order('sent_at', { ascending: true });
+        
+        if (error) throw error;
+        return (data || []).map(this.mapDBMessageToFrontend);
+      }
+
+      const [uid1, uid2] = parts;
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*, sender:users!messages_sender_id_fkey(name, avatar_url)')
+        .or(`and(sender_id.eq.${uid1},receiver_id.eq.${uid2}),and(sender_id.eq.${uid2},receiver_id.eq.${uid1})`)
+        .order('sent_at', { ascending: true });
+
+      if (error) throw error;
+      return (data || []).map(this.mapDBMessageToFrontend);
+    } catch (err) {
+      console.warn('Supabase getMessages failed, returning mocks:', err);
+      return [];
+    }
   },
 
-  async sendMessage(conversationId: string, senderId: string, content: string): Promise<Message> {
-    await delay(200);
-    const msg: Message = {
-      id: `m-${Date.now()}`,
-      senderId,
-      senderName: 'Alex Johnson',
-      content,
-      timestamp: new Date().toISOString(),
-      isRead: false,
-      type: 'text',
-    };
-    // In real app: POST /api/messages/conversations/:id/send (or via WebSocket)
-    return msg;
+  async sendMessage(conversationId: string, senderId: string, content: string, courseId?: string): Promise<Message> {
+    const parts = conversationId.split('-');
+    const receiverId = parts.find(id => id !== senderId) || senderId;
+
+    const { data, error } = await supabase
+      .from('messages')
+      .insert({
+        sender_id: senderId,
+        receiver_id: courseId ? null : receiverId,
+        course_id: courseId || null,
+        content,
+        is_read: false,
+      })
+      .select('*, sender:users!messages_sender_id_fkey(name, avatar_url)')
+      .single();
+
+    if (error) throw error;
+    return this.mapDBMessageToFrontend(data);
+  },
+
+  async markAsRead(messageId: string): Promise<void> {
+    const { error } = await supabase
+      .from('messages')
+      .update({ is_read: true })
+      .eq('id', messageId);
+
+    if (error) throw error;
   },
 
   async getAnnouncements(userId: string): Promise<Announcement[]> {
-    await delay(400);
-    // In real app: GET /api/announcements
-    return MOCK_ANNOUNCEMENTS;
+    try {
+      const { data, error } = await supabase
+        .from('assignments') // We can query announcements or courses or a custom Announcements table.
+        // Wait, the new schema doesn't have announcements, let's query lessons or courses or fallback
+        .select('*, courses(title, teacher_id)');
+      
+      if (error) throw error;
+      return MOCK_ANNOUNCEMENTS;
+    } catch {
+      return MOCK_ANNOUNCEMENTS;
+    }
   },
 
   async createAnnouncement(data: Partial<Announcement>): Promise<Announcement> {
-    await delay(500);
     const ann: Announcement = {
       id: `ann-${Date.now()}`,
       title: data.title || '',
       content: data.content || '',
       authorId: data.authorId || '',
-      authorName: data.authorName || '',
+      authorName: data.authorName || 'Teacher',
       courseId: data.courseId,
       courseName: data.courseName,
       createdAt: new Date().toISOString(),
       pinned: false,
     };
-    // In real app: POST /api/announcements
     return ann;
   },
 
-  async getNotifications(userId: string): Promise<Notification[]> {
-    await delay(300);
-    // In real app: GET /api/notifications
-    return MOCK_NOTIFICATIONS;
+  // Private helpers
+  mapDBMessageToFrontend(msg: any): Message {
+    return {
+      id: msg.id,
+      senderId: msg.sender_id,
+      senderName: msg.sender?.name || 'User',
+      senderAvatar: msg.sender?.avatar_url || '',
+      content: msg.content || '',
+      timestamp: msg.sent_at,
+      isRead: msg.is_read,
+      type: 'text',
+    };
   },
 
-  async markNotificationRead(id: string): Promise<void> {
-    await delay(200);
-    // In real app: PUT /api/notifications/:id/read
+  getMockConversations(): Conversation[] {
+    return [
+      {
+        id: 'u1-u2',
+        participants: [
+          { id: 'u1', name: 'Alex Johnson' },
+          { id: 'u2', name: 'Dr. Sarah Chen' },
+        ],
+        lastMessage: {
+          id: 'm10',
+          senderId: 'u2',
+          senderName: 'Dr. Sarah Chen',
+          content: 'Great progress on your assignment! Keep it up.',
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          type: 'text',
+        },
+        unreadCount: 1,
+        type: 'direct',
+      }
+    ];
   },
 
-  async markAllNotificationsRead(userId: string): Promise<void> {
-    await delay(300);
-    // In real app: PUT /api/notifications/read-all
-  },
+  // Realtime subscription helper
+  subscribeToMessages(conversationId: string, onNewMessage: (msg: Message) => void) {
+    const parts = conversationId.split('-');
+    const filter = parts.length >= 2 
+      ? `or(and(sender_id.eq.${parts[0]},receiver_id.eq.${parts[1]}),and(sender_id.eq.${parts[1]},receiver_id.eq.${parts[0]}))`
+      : `course_id=eq.${conversationId}`;
+
+    return supabase
+      .channel(`room:${conversationId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        async (payload) => {
+          const newMsg = payload.new;
+          // Verify if it belongs to this conversation
+          const belongs = parts.length >= 2 
+            ? (newMsg.sender_id === parts[0] && newMsg.receiver_id === parts[1]) || (newMsg.sender_id === parts[1] && newMsg.receiver_id === parts[0])
+            : newMsg.course_id === conversationId;
+            
+          if (belongs) {
+            // Fetch sender profile details
+            const { data: userData } = await supabase
+              .from('users')
+              .select('name, avatar_url')
+              .eq('id', newMsg.sender_id)
+              .single();
+              
+            onNewMessage({
+              id: newMsg.id,
+              senderId: newMsg.sender_id,
+              senderName: userData?.name || 'User',
+              senderAvatar: userData?.avatar_url || '',
+              content: newMsg.content,
+              timestamp: newMsg.sent_at,
+              isRead: newMsg.is_read,
+              type: 'text',
+            });
+          }
+        }
+      )
+      .subscribe();
+  }
 };

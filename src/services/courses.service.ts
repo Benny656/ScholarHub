@@ -1,6 +1,5 @@
 import type { Course, Enrollment } from '../types';
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { supabase } from '../lib/supabase';
 
 export const MOCK_COURSES: Course[] = [
   {
@@ -12,7 +11,7 @@ export const MOCK_COURSES: Course[] = [
     category: 'Web Development',
     level: 'Intermediate',
     duration: '48h 30m',
-    lessons: 124,
+    lessons: 12,
     enrolled: 2847,
     rating: 4.8,
     reviews: 934,
@@ -27,15 +26,6 @@ export const MOCK_COURSES: Course[] = [
           { id: 'l1', title: 'Course Overview', type: 'video', duration: '5:30', isCompleted: true },
           { id: 'l2', title: 'Setting Up Environment', type: 'video', duration: '12:00', isCompleted: true },
           { id: 'l3', title: 'HTML & CSS Fundamentals', type: 'video', duration: '25:00', isCompleted: false },
-        ],
-      },
-      {
-        id: 's2',
-        title: 'React Fundamentals',
-        lessons: [
-          { id: 'l4', title: 'React Basics', type: 'video', duration: '20:00', isCompleted: false, isLocked: false },
-          { id: 'l5', title: 'Hooks Deep Dive', type: 'video', duration: '35:00', isCompleted: false, isLocked: true },
-          { id: 'l6', title: 'React Quiz', type: 'quiz', isCompleted: false, isLocked: true },
         ],
       },
     ],
@@ -61,16 +51,7 @@ export const MOCK_COURSES: Course[] = [
     thumbnail: '',
     price: 99,
     tags: ['Python', 'TensorFlow', 'scikit-learn', 'Data Science'],
-    curriculum: [
-      {
-        id: 's3',
-        title: 'ML Basics',
-        lessons: [
-          { id: 'l7', title: 'What is ML?', type: 'video', duration: '8:00', isCompleted: true },
-          { id: 'l8', title: 'Python for ML', type: 'video', duration: '30:00', isCompleted: false },
-        ],
-      },
-    ],
+    curriculum: [],
     outcomes: ['Implement ML algorithms', 'Build neural networks', 'Deploy ML models'],
     requirements: ['Python basics', 'Linear algebra fundamentals'],
     isPublished: true,
@@ -93,105 +74,248 @@ export const MOCK_COURSES: Course[] = [
     thumbnail: '',
     price: 69,
     tags: ['Figma', 'Design Systems', 'UX Research', 'Prototyping'],
-    curriculum: [
-      {
-        id: 's4',
-        title: 'Design Foundations',
-        lessons: [
-          { id: 'l9', title: 'Color Theory', type: 'video', duration: '15:00', isCompleted: true },
-          { id: 'l10', title: 'Typography', type: 'video', duration: '12:00', isCompleted: true },
-          { id: 'l11', title: 'Figma Basics', type: 'pdf', isCompleted: false },
-        ],
-      },
-    ],
+    curriculum: [],
     outcomes: ['Design pixel-perfect UIs', 'Conduct user research', 'Build design systems'],
     requirements: ['No prior experience needed'],
     isPublished: true,
     createdAt: '2024-03-05T00:00:00Z',
     updatedAt: '2024-06-10T00:00:00Z',
   },
-  {
-    id: 'c4',
-    title: 'Data Structures & Algorithms',
-    description: 'Ace technical interviews. Arrays, trees, graphs, dynamic programming, and 200+ problems.',
-    instructor: 'Dr. Sarah Chen',
-    instructorId: 'u2',
-    category: 'Computer Science',
-    level: 'Advanced',
-    duration: '52h 00m',
-    lessons: 148,
-    enrolled: 4521,
-    rating: 4.6,
-    reviews: 2134,
-    thumbnail: '',
-    price: 79,
-    tags: ['Algorithms', 'LeetCode', 'Python', 'JavaScript'],
-    curriculum: [],
-    outcomes: ['Solve complex algorithmic problems', 'Pass FAANG interviews'],
-    requirements: ['Programming basics in any language'],
-    isPublished: true,
-    createdAt: '2024-01-20T00:00:00Z',
-    updatedAt: '2024-06-05T00:00:00Z',
-  },
-  {
-    id: 'c5',
-    title: 'Cloud Computing with AWS',
-    description: 'AWS Solutions Architect prep. EC2, S3, Lambda, RDS, and DevOps pipelines.',
-    instructor: 'James Park',
-    instructorId: 'u6',
-    category: 'Cloud & DevOps',
-    level: 'Intermediate',
-    duration: '40h 00m',
-    lessons: 102,
-    enrolled: 1678,
-    rating: 4.5,
-    reviews: 445,
-    thumbnail: '',
-    price: 119,
-    tags: ['AWS', 'DevOps', 'Docker', 'Kubernetes'],
-    curriculum: [],
-    outcomes: ['Architect cloud solutions', 'Pass AWS certifications'],
-    requirements: ['Basic networking knowledge'],
-    isPublished: true,
-    createdAt: '2024-04-01T00:00:00Z',
-    updatedAt: '2024-06-08T00:00:00Z',
-  },
-  {
-    id: 'c6',
-    title: 'Cybersecurity Fundamentals',
-    description: 'Ethical hacking, penetration testing, network security, and OWASP Top 10.',
-    instructor: 'Lisa Morgan',
-    instructorId: 'u7',
-    category: 'Security',
-    level: 'Beginner',
-    duration: '32h 00m',
-    lessons: 85,
-    enrolled: 2290,
-    rating: 4.7,
-    reviews: 876,
-    thumbnail: '',
-    price: 89,
-    tags: ['Security', 'Ethical Hacking', 'Networking', 'OWASP'],
-    curriculum: [],
-    outcomes: ['Identify security vulnerabilities', 'Perform penetration testing'],
-    requirements: ['Basic computer knowledge'],
-    isPublished: true,
-    createdAt: '2024-05-01T00:00:00Z',
-    updatedAt: '2024-06-12T00:00:00Z',
-  },
 ];
 
 export const MOCK_ENROLLMENTS: Record<string, Enrollment[]> = {
   u1: [
-    { courseId: 'c1', userId: 'u1', progress: 68, completedLessons: ['l1', 'l2', 'l7', 'l9', 'l10'], enrolledAt: '2024-01-20T00:00:00Z', lastAccessed: '2024-06-07T10:00:00Z' },
-    { courseId: 'c2', userId: 'u1', progress: 34, completedLessons: ['l7'], enrolledAt: '2024-02-15T00:00:00Z', lastAccessed: '2024-06-05T10:00:00Z' },
-    { courseId: 'c3', userId: 'u1', progress: 91, completedLessons: ['l9', 'l10'], enrolledAt: '2024-03-10T00:00:00Z', lastAccessed: '2024-06-06T10:00:00Z' },
+    { courseId: 'c1', userId: 'u1', progress: 68, completedLessons: ['l1', 'l2'], enrolledAt: '2024-01-20T00:00:00Z', lastAccessed: '2024-06-07T10:00:00Z' },
   ],
 };
 
+function mapDBCourseToFrontend(dbCourse: any): Course {
+  return {
+    id: dbCourse.id,
+    title: dbCourse.title || 'Untitled Course',
+    description: dbCourse.description || '',
+    instructor: dbCourse.users?.name || 'Unknown Instructor',
+    instructorId: dbCourse.teacher_id || '',
+    instructorAvatar: dbCourse.users?.avatar_url || '',
+    category: dbCourse.category || 'General',
+    level: dbCourse.level || 'Beginner',
+    duration: dbCourse.duration_hours ? `${dbCourse.duration_hours}h` : '0h',
+    lessons: dbCourse.total_lessons || 0,
+    enrolled: dbCourse.total_students || 0,
+    rating: Number(dbCourse.rating) || 0,
+    reviews: 0,
+    thumbnail: dbCourse.thumbnail_url || '',
+    price: Number(dbCourse.price) || 0,
+    tags: dbCourse.tags || [],
+    curriculum: [], // populate on demand or via lessons fetch
+    outcomes: [],
+    requirements: [],
+    isPublished: dbCourse.is_published ?? false,
+    createdAt: dbCourse.created_at,
+    updatedAt: dbCourse.created_at,
+  };
+}
+
 export const coursesService = {
+  async getCourses(filters?: { category?: string; level?: string; search?: string }): Promise<Course[]> {
+    try {
+      let query = supabase
+        .from('courses')
+        .select('*, users(name, avatar_url)');
+
+      if (filters?.category && filters.category !== 'All') {
+        query = query.eq('category', filters.category);
+      }
+      if (filters?.level && filters.level !== 'All') {
+        query = query.eq('level', filters.level);
+      }
+      if (filters?.search) {
+        query = query.ilike('title', `%${filters.search}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        // Fallback to mock catalog
+        return this.getMockCatalog(filters);
+      }
+
+      return data.map(mapDBCourseToFrontend);
+    } catch (err) {
+      console.warn('Supabase fetch failed, falling back to mock courses:', err);
+      return this.getMockCatalog(filters);
+    }
+  },
+
+  // Keep compatibility with CourseCatalog.tsx
   async getCatalog(filters?: { category?: string; level?: string; search?: string }): Promise<Course[]> {
-    await delay(600);
+    return this.getCourses(filters);
+  },
+
+  async getCourseById(id: string): Promise<Course> {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*, users(name, avatar_url)')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      
+      // Fetch lessons for curriculum
+      const { data: lessonsData } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('course_id', id)
+        .order('order_index');
+
+      const course = mapDBCourseToFrontend(data);
+      if (lessonsData) {
+        course.lessons = lessonsData.length;
+        course.curriculum = [
+          {
+            id: 's1',
+            title: 'Course Content',
+            lessons: lessonsData.map(l => ({
+              id: l.id,
+              title: l.title,
+              type: l.type as any,
+              isCompleted: false,
+              isLocked: false,
+            })),
+          }
+        ];
+      }
+      return course;
+    } catch (err) {
+      console.warn('Supabase getCourseById failed, falling back to mock:', err);
+      const mock = MOCK_COURSES.find(c => c.id === id);
+      if (!mock) throw new Error('Course not found');
+      return mock;
+    }
+  },
+
+  async getEnrolledCourses(userId: string): Promise<{ course: Course; enrollment: Enrollment }[]> {
+    try {
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select('*, courses(*, users(name, avatar_url))')
+        .eq('student_id', userId);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        return this.getMockEnrolled(userId);
+      }
+
+      return data.map(item => ({
+        course: mapDBCourseToFrontend(item.courses),
+        enrollment: {
+          courseId: item.course_id,
+          userId: item.student_id,
+          progress: Number(item.progress) || 0,
+          completedLessons: [],
+          enrolledAt: item.enrolled_at,
+        },
+      }));
+    } catch (err) {
+      console.warn('Supabase getEnrolledCourses failed, falling back to mock:', err);
+      return this.getMockEnrolled(userId);
+    }
+  },
+
+  async createCourse(data: Partial<Course>): Promise<Course> {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: inserted, error } = await supabase
+      .from('courses')
+      .insert({
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        level: data.level,
+        price: data.price,
+        teacher_id: user?.id || data.instructorId,
+        tags: data.tags,
+        is_published: data.isPublished || false,
+        duration_hours: 10, // default
+        thumbnail_url: data.thumbnail || '',
+      })
+      .select('*, users(name, avatar_url)')
+      .single();
+
+    if (error) throw error;
+    return mapDBCourseToFrontend(inserted);
+  },
+
+  async updateCourse(id: string, data: Partial<Course>): Promise<Course> {
+    const { data: updated, error } = await supabase
+      .from('courses')
+      .update({
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        level: data.level,
+        price: data.price,
+        tags: data.tags,
+        is_published: data.isPublished,
+      })
+      .eq('id', id)
+      .select('*, users(name, avatar_url)')
+      .single();
+
+    if (error) throw error;
+    return mapDBCourseToFrontend(updated);
+  },
+
+  async deleteCourse(id: string): Promise<void> {
+    const { error } = await supabase.from('courses').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  async enrollCourse(courseId: string, studentId: string): Promise<Enrollment> {
+    const { data, error } = await supabase
+      .from('enrollments')
+      .insert({
+        course_id: courseId,
+        student_id: studentId,
+        progress: 0,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      courseId: data.course_id,
+      userId: data.student_id,
+      progress: Number(data.progress) || 0,
+      completedLessons: [],
+      enrolledAt: data.enrolled_at,
+    };
+  },
+
+  // Alias for legacy enrollStudent method
+  async enrollStudent(courseId: string, userId: string): Promise<Enrollment> {
+    return this.enrollCourse(courseId, userId);
+  },
+
+  async updateProgress(courseId: string, studentId: string, progress: number): Promise<void> {
+    const { error } = await supabase
+      .from('enrollments')
+      .update({ progress })
+      .eq('course_id', courseId)
+      .eq('student_id', studentId);
+
+    if (error) throw error;
+  },
+
+  getCategories(): string[] {
+    return ['All', 'Web Development', 'AI & ML', 'Design', 'Computer Science', 'Cloud & DevOps', 'Security', 'Mobile', 'Data Science'];
+  },
+
+  // Private helpers for mock fallbacks
+  getMockCatalog(filters?: { category?: string; level?: string; search?: string }): Course[] {
     let courses = [...MOCK_COURSES];
     if (filters?.category && filters.category !== 'All') {
       courses = courses.filter(c => c.category === filters.category);
@@ -203,85 +327,17 @@ export const coursesService = {
       const q = filters.search.toLowerCase();
       courses = courses.filter(c =>
         c.title.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        c.tags.some(t => t.toLowerCase().includes(q))
+        c.description.toLowerCase().includes(q)
       );
     }
-    // In real app: GET /api/courses?category=...&level=...&search=...
     return courses;
   },
 
-  async getCourseById(id: string): Promise<Course> {
-    await delay(400);
-    const course = MOCK_COURSES.find(c => c.id === id);
-    if (!course) throw new Error('Course not found');
-    return course;
-  },
-
-  async getEnrolledCourses(userId: string): Promise<{ course: Course; enrollment: Enrollment }[]> {
-    await delay(500);
+  getMockEnrolled(userId: string): { course: Course; enrollment: Enrollment }[] {
     const enrollments = MOCK_ENROLLMENTS[userId] || [];
     return enrollments.map(e => ({
       course: MOCK_COURSES.find(c => c.id === e.courseId)!,
       enrollment: e,
     })).filter(item => item.course);
-  },
-
-  async createCourse(data: Partial<Course>): Promise<Course> {
-    await delay(800);
-    const newCourse: Course = {
-      id: `c-${Date.now()}`,
-      title: data.title || 'Untitled Course',
-      description: data.description || '',
-      instructor: data.instructor || '',
-      instructorId: data.instructorId || '',
-      category: data.category || 'General',
-      level: data.level || 'Beginner',
-      duration: data.duration || '0h',
-      lessons: 0,
-      enrolled: 0,
-      rating: 0,
-      reviews: 0,
-      price: data.price || 0,
-      tags: data.tags || [],
-      curriculum: data.curriculum || [],
-      outcomes: data.outcomes || [],
-      requirements: data.requirements || [],
-      isPublished: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    // In real app: POST /api/courses
-    return newCourse;
-  },
-
-  async updateCourse(id: string, data: Partial<Course>): Promise<Course> {
-    await delay(600);
-    const course = MOCK_COURSES.find(c => c.id === id);
-    if (!course) throw new Error('Course not found');
-    // In real app: PUT /api/courses/:id
-    return { ...course, ...data, updatedAt: new Date().toISOString() };
-  },
-
-  async deleteCourse(id: string): Promise<void> {
-    await delay(500);
-    // In real app: DELETE /api/courses/:id
-  },
-
-  async enrollStudent(courseId: string, userId: string): Promise<Enrollment> {
-    await delay(500);
-    const enrollment: Enrollment = {
-      courseId,
-      userId,
-      progress: 0,
-      completedLessons: [],
-      enrolledAt: new Date().toISOString(),
-    };
-    // In real app: POST /api/courses/:id/enroll
-    return enrollment;
-  },
-
-  getCategories(): string[] {
-    return ['All', 'Web Development', 'AI & ML', 'Design', 'Computer Science', 'Cloud & DevOps', 'Security', 'Mobile', 'Data Science'];
-  },
+  }
 };

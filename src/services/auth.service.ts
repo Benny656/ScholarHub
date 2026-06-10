@@ -12,12 +12,7 @@ export interface RegisterPayload {
   email: string;
   password: string;
   role: UserRole;
-  // student
-  studentId?: string;
-  institution?: string;
-  // teacher
-  department?: string;
-  expertise?: string;
+  avatarUrl?: string;
 }
 
 export interface AuthResponse {
@@ -33,16 +28,24 @@ export const authService = {
     });
     if (error) throw error;
     
-    // Attempt to fetch profile
-    const { data: profileData } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+    // Fetch profile from public.users
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+      
+    if (userError && userError.code !== 'PGRST116') {
+      console.error('Error fetching user profile:', userError);
+    }
     
     const user: User = {
       id: data.user.id,
-      name: profileData?.name || payload.email.split('@')[0],
+      name: userData?.name || payload.email.split('@')[0],
       email: data.user.email!,
-      role: profileData?.role || payload.role, // Fallback if no profile
+      role: (userData?.role as UserRole) || payload.role,
+      avatar: userData?.avatar_url || '',
       createdAt: data.user.created_at,
-      ...profileData
     };
 
     return {
@@ -59,6 +62,7 @@ export const authService = {
         data: {
           name: payload.name,
           role: payload.role,
+          avatar_url: payload.avatarUrl || '',
         }
       }
     });
@@ -68,27 +72,29 @@ export const authService = {
       throw new Error('Registration failed, no user returned.');
     }
     
-    // Save to profiles table if it exists
-    await supabase.from('profiles').insert({
+    // Save to users table
+    const { error: insertError } = await supabase.from('users').insert({
       id: data.user.id,
       name: payload.name,
       email: payload.email,
       role: payload.role,
-      institution: payload.institution,
-      studentId: payload.studentId,
-      department: payload.department,
-      expertise: payload.expertise ? [payload.expertise] : [],
+      avatar_url: payload.avatarUrl || '',
+      xp: 0,
+      level: 1,
+      streak: 0,
+      last_login: new Date().toISOString().split('T')[0],
     });
+
+    if (insertError) {
+      console.error('Error inserting into public.users:', insertError);
+    }
 
     const newUser: User = {
       id: data.user.id,
       name: payload.name,
       email: payload.email,
       role: payload.role,
-      institution: payload.institution,
-      studentId: payload.studentId,
-      department: payload.department,
-      expertise: payload.expertise ? [payload.expertise] : [],
+      avatar: payload.avatarUrl || '',
       createdAt: data.user.created_at,
     };
 
@@ -110,29 +116,47 @@ export const authService = {
     return { message: 'Password reset successfully' };
   },
 
-  async getMe(token?: string): Promise<User> {
+  async getMe(): Promise<User> {
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error || !user) throw new Error('Unauthorized');
 
-    const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    const { data: userData } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single();
 
     return {
       id: user.id,
-      name: profileData?.name || user.email?.split('@')[0] || 'Unknown',
+      name: userData?.name || user.email?.split('@')[0] || 'Unknown',
       email: user.email!,
-      role: profileData?.role || 'student',
+      role: (userData?.role as UserRole) || 'student',
+      avatar: userData?.avatar_url || '',
       createdAt: user.created_at,
-      ...profileData
-    };
+      xp: userData?.xp ?? 0,
+      level: userData?.level ?? 1,
+      streak: userData?.streak ?? 0,
+    } as any;
+  },
+
+  // Alias for getCurrentUser requested by Part 2
+  async getCurrentUser(): Promise<User> {
+    return this.getMe();
   },
 
   async updateProfile(data: Partial<User>): Promise<User> {
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error || !user) throw new Error('Unauthorized');
     
+    // Map model fields to database columns
+    const dbData: Record<string, any> = {};
+    if (data.name !== undefined) dbData.name = data.name;
+    if (data.avatar !== undefined) dbData.avatar_url = data.avatar;
+    if (data.role !== undefined) dbData.role = data.role;
+    
     const { data: updated, error: updateError } = await supabase
-      .from('profiles')
-      .update(data)
+      .from('users')
+      .update(dbData)
       .eq('id', user.id)
       .select()
       .single();
@@ -144,9 +168,12 @@ export const authService = {
       name: updated.name,
       email: user.email!,
       role: updated.role,
+      avatar: updated.avatar_url,
       createdAt: user.created_at,
-      ...updated
-    } as User;
+      xp: updated.xp,
+      level: updated.level,
+      streak: updated.streak,
+    } as any;
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
@@ -154,4 +181,9 @@ export const authService = {
     if (error) throw error;
     return { message: 'Password changed successfully' };
   },
+
+  async logout(): Promise<void> {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  }
 };

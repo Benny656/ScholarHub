@@ -3,13 +3,16 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { AIChatbot } from '../components/ai/AIChatbot';
+import { notificationsService } from '../services/notifications.service';
+import toast from 'react-hot-toast';
 import {
   LayoutDashboard, BookOpen, Users, BarChart3, Calendar,
   MessageSquare, ClipboardList, GraduationCap, Award,
   User, Settings, LogOut, Bell, Menu, X, ChevronDown,
-  Mic, Video, Shield, BookMarked, Moon, Sun, Home,
+  Mic, Video, Shield, BookMarked, Moon, Sun, Home, Flame, Sparkles
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { ProgressBar } from '../components/ui/index';
 
 interface NavItem {
   label: string;
@@ -44,18 +47,35 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const role = user?.role ?? 'student';
   const filteredNav = NAV_ITEMS.filter(n => n.roles.includes(role));
 
   const handleLogout = () => {
     logout();
+    toast.success('Successfully logged out 👋');
     navigate('/login');
   };
 
   const currentAccent = location.pathname.includes('/student') ? '#6366F1' :
                         location.pathname.includes('/teacher') ? '#0D9488' :
                         location.pathname.includes('/admin') ? '#F59E0B' : 'var(--color-primary)';
+
+  // Load and listen to notifications
+  useEffect(() => {
+    if (!user) return;
+    notificationsService.getNotifications(user.id).then(setNotifications);
+
+    const sub = notificationsService.subscribeToNotifications(user.id, (newNotif) => {
+      setNotifications(prev => [newNotif, ...prev]);
+      toast(`🔔 ${newNotif.title}: ${newNotif.message}`);
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [user]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -64,7 +84,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return () => document.removeEventListener('click', handler);
   }, []);
 
+  const handleMarkAllRead = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) return;
+    notificationsService.markAllAsRead(user.id).then(() => {
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      toast.success('All notifications marked as read!');
+    });
+  };
+
   const sidebarWidth = sidebarOpen ? 240 : 72;
+
+  // Breadcrumbs calculation
+  const pathnames = location.pathname.split('/').filter((x) => x);
+
+  const xpPercent = Math.min(100, Math.round((((user as any)?.xp || 0) % 100)));
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-on-surface transition-colors duration-500" style={{ '--sidebar-accent': currentAccent, background: 'var(--color-background)' } as React.CSSProperties}>
@@ -99,17 +133,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-2 scrollbar-hide">
           {filteredNav.map((item) => {
-            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path + '/'));
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all duration-200 group relative ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all duration-300 group relative ${
                   isActive
-                    ? ''
-                    : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'
+                    ? 'text-white'
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 hover:translate-x-1'
                 }`}
-                style={isActive ? { background: 'color-mix(in srgb, var(--sidebar-accent) 20%, transparent)', color: 'var(--sidebar-accent)' } : {}}
+                style={isActive ? {
+                  background: `linear-gradient(135deg, var(--sidebar-accent), color-mix(in srgb, var(--sidebar-accent) 70%, #000))`,
+                  boxShadow: `0 4px 15px -3px var(--sidebar-accent)`,
+                  color: '#ffffff'
+                } : {}}
               >
                 <span className={`flex-shrink-0 transition-colors`}>
                   {item.icon}
@@ -130,8 +168,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 {isActive && (
                   <motion.div
                     layoutId="activeIndicator"
-                    className="absolute left-0 top-0 bottom-0 w-0.5 rounded-r"
-                    style={{ background: 'var(--sidebar-accent)' }}
+                    className="absolute left-0 top-0 bottom-0 w-1 rounded-r bg-white"
                   />
                 )}
               </Link>
@@ -139,23 +176,37 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        {/* User section */}
+        {/* User section with Level, Badge & XP */}
         <div className="p-3 border-t border-outline-variant/10">
           <Link
             to="/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"
+            className="flex flex-col gap-2 p-2 rounded-xl text-on-surface-variant hover:bg-on-surface/5 transition-all"
           >
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
-              {user?.name?.[0] || 'U'}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold shadow-lg">
+                {user?.name?.[0] || 'U'}
+              </div>
+              <AnimatePresence>
+                {sidebarOpen && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-on-surface truncate">{user?.name}</p>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-purple-500/20 text-[#d8bcea] border border-purple-500/30">
+                      {user?.role}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <AnimatePresence>
-              {sidebarOpen && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-on-surface truncate">{user?.name}</p>
-                  <p className="text-xs text-on-surface-variant capitalize">{user?.role}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            
+            {sidebarOpen && user && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 space-y-1">
+                <div className="flex justify-between text-[10px] text-on-surface-variant font-medium">
+                  <span>Level { (user as any).level || 1 }</span>
+                  <span>{ (user as any).xp || 0 } XP</span>
+                </div>
+                <ProgressBar value={xpPercent} color="purple" size="sm" />
+              </motion.div>
+            )}
           </Link>
         </div>
 
@@ -239,17 +290,41 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             >
               <Menu size={20} />
             </button>
-            <div>
-              <h2 className="text-sm font-semibold text-on-surface capitalize" style={{ fontFamily: 'Geist, sans-serif' }}>
-                {location.pathname.split('/').filter(Boolean).pop()?.replace(/-/g, ' ') || 'Dashboard'}
-              </h2>
-              <p className="text-xs text-on-surface-variant" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-              </p>
+            
+            {/* Dynamic Breadcrumbs */}
+            <div className="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium">
+              <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1">
+                <Home size={12} />
+                <span className="hidden sm:inline">Home</span>
+              </Link>
+              {pathnames.map((name, index) => {
+                const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
+                const isLast = index === pathnames.length - 1;
+                return (
+                  <span key={name} className="flex items-center gap-1.5">
+                    <span className="text-[10px] opacity-40">/</span>
+                    {isLast ? (
+                      <span className="text-on-surface font-semibold capitalize max-w-[120px] truncate">{name.replace(/-/g, ' ')}</span>
+                    ) : (
+                      <Link to={routeTo} className="hover:text-primary transition-colors capitalize hidden sm:inline">
+                        {name.replace(/-/g, ' ')}
+                      </Link>
+                    )}
+                  </span>
+                );
+              })}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Streak Counter */}
+            {user && (
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-amber-500 bg-amber-500/10 border border-amber-500/20 shadow-sm shadow-amber-500/5" title="Daily Login Streak">
+                <Flame className="w-4 h-4 fill-current animate-pulse text-amber-500" />
+                <span className="text-xs font-bold font-mono">{(user as any).streak || 0}</span>
+              </div>
+            )}
+
             {/* Theme toggle */}
             <button
               onClick={toggle}
@@ -259,14 +334,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Moon className="w-5 h-5 dark:hidden" />
               <Sun className="w-5 h-5 hidden dark:block" />
             </button>
-            {/* Notifications */}
+            
+            {/* Notifications Dropdown (Live) */}
             <div className="relative">
               <button
-                onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
+                onClick={(e) => { e.stopPropagation(); setNotifOpen(!notifOpen); setProfileOpen(false); }}
                 className="relative p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"
               >
                 <Bell size={20} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-surface" />
+                {notifications.some(n => !n.isRead) && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border border-surface animate-bounce" />
+                )}
               </button>
               <AnimatePresence>
                 {notifOpen && (
@@ -280,15 +358,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   >
                     <div className="p-4 border-b border-outline-variant/10 flex items-center justify-between">
                       <h3 className="font-bold text-on-surface">Notifications</h3>
-                      <button className="text-xs text-[#6366F1] hover:underline">Mark all read</button>
+                      <button onClick={handleMarkAllRead} className="text-xs text-[#6366F1] hover:underline">Mark all read</button>
                     </div>
                     <div className="max-h-80 overflow-y-auto">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="p-4 border-b border-outline-variant/10 hover:bg-on-surface/5 transition-colors cursor-pointer">
-                          <p className="text-sm text-on-surface mb-1">New assignment posted in Web Dev</p>
-                          <p className="text-xs text-on-surface-variant">2 hours ago</p>
-                        </div>
-                      ))}
+                      {notifications.length === 0 ? (
+                        <div className="p-6 text-center text-xs text-on-surface-variant">No new notifications</div>
+                      ) : (
+                        notifications.map(n => (
+                          <div key={n.id} className={`p-4 border-b border-outline-variant/10 hover:bg-on-surface/5 transition-colors cursor-pointer ${!n.isRead ? 'bg-[#6366F1]/5' : ''}`}>
+                            <p className="text-sm text-on-surface mb-1">{n.title}</p>
+                            <p className="text-xs text-on-surface-variant mb-1">{n.message}</p>
+                            <p className="text-[10px] text-slate-500">{new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -347,6 +430,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             key={location.pathname}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25 }}
             className="h-full"
           >
@@ -355,7 +439,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      {/* AI Chatbot floating widget */}
+      {/* AI Chatbot floating widget with custom pulsing class */}
       <AIChatbot />
     </div>
   );

@@ -1,110 +1,237 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Star, Users, Clock, BookOpen, ChevronRight, Plus, SlidersHorizontal } from 'lucide-react';
+import { Search, Star, Users, Clock, BookOpen, Plus, Sparkles } from 'lucide-react';
 import { AppLayout } from '../../layouts/AppLayout';
-import { coursesService, MOCK_COURSES } from '../../services/courses.service';
+import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
-import { GlassCard, Badge, ProgressBar, SkeletonCard, PageHeader, Button, SearchInput, Select } from '../../components/ui/index';
+import { Badge, ProgressBar, SkeletonCard, PageHeader, Button, Select } from '../../components/ui/index';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
 
 const LEVEL_COLORS = { Beginner: 'emerald', Intermediate: 'blue', Advanced: 'red' } as const;
-const GRADIENT_PAIRS = [
-  ['#8B5CF6', '#3B82F6'], ['#3B82F6', '#4edea3'], ['#4edea3', '#8B5CF6'],
-  ['#F59E0B', '#EF4444'], ['#EF4444', '#8B5CF6'], ['#6366F1', '#3B82F6'],
-];
 
-function CourseCard({ course, index, enrolled, onEnroll }: {
-  course: Course; index: number; enrolled?: boolean; onEnroll?: (id: string) => void;
+// Geometric SVGs with beautiful animated gradients
+function GeometricThumbnail({ category }: { category: string }) {
+  const norm = category.toLowerCase();
+  
+  if (norm.includes('web')) {
+    return (
+      <svg className="w-full h-full object-cover" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="url(#webBg)" />
+        <g opacity="0.3" stroke="#ffffff" strokeWidth="0.5">
+          <circle cx="50" cy="50" r="40" strokeDasharray="3 3" />
+          <circle cx="50" cy="50" r="30" />
+          <path d="M10 50 H90 M50 10 V90" />
+        </g>
+        <path d="M25 40 L40 50 L25 60" stroke="#d8bcea" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M75 40 L60 50 L75 60" stroke="#d8bcea" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M55 35 L45 65" stroke="#f3b6cd" strokeWidth="4" strokeLinecap="round" />
+        <defs>
+          <linearGradient id="webBg" x1="0" y1="0" x2="100" y2="100">
+            <stop offset="0%" stopColor="#151315" />
+            <stop offset="50%" stopColor="#3c284c" />
+            <stop offset="100%" stopColor="#1e152a" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  } else if (norm.includes('ai') || norm.includes('machine') || norm.includes('ml')) {
+    return (
+      <svg className="w-full h-full object-cover" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="url(#aiBg)" />
+        <g opacity="0.25" stroke="#ffffff" strokeWidth="0.5">
+          <line x1="20" y1="20" x2="80" y2="80" />
+          <line x1="80" y1="20" x2="20" y2="80" />
+          <line x1="50" y1="10" x2="50" y2="90" />
+        </g>
+        <circle cx="50" cy="50" r="8" fill="#d8bcea" className="animate-pulse" />
+        <circle cx="25" cy="30" r="4" fill="#3B82F6" />
+        <circle cx="75" cy="30" r="4" fill="#3B82F6" />
+        <circle cx="25" cy="70" r="4" fill="#4edea3" />
+        <circle cx="75" cy="70" r="4" fill="#4edea3" />
+        <line x1="25" y1="30" x2="50" y2="50" stroke="#3B82F6" strokeWidth="2" />
+        <line x1="75" y1="30" x2="50" y2="50" stroke="#3B82F6" strokeWidth="2" />
+        <line x1="25" y1="70" x2="50" y2="50" stroke="#4edea3" strokeWidth="2" />
+        <line x1="75" y1="70" x2="50" y2="50" stroke="#4edea3" strokeWidth="2" />
+        <defs>
+          <linearGradient id="aiBg" x1="0" y1="0" x2="100" y2="100">
+            <stop offset="0%" stopColor="#151315" />
+            <stop offset="60%" stopColor="#1c233d" />
+            <stop offset="100%" stopColor="#0d1425" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  } else if (norm.includes('design') || norm.includes('ui') || norm.includes('ux')) {
+    return (
+      <svg className="w-full h-full object-cover" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="url(#designBg)" />
+        <circle cx="45" cy="45" r="20" stroke="#d8bcea" strokeWidth="3" opacity="0.7" />
+        <circle cx="58" cy="55" r="20" stroke="#f3b6cd" strokeWidth="3" opacity="0.7" />
+        <rect x="25" y="25" width="50" height="50" stroke="#ffffff" strokeWidth="0.5" opacity="0.2" />
+        <defs>
+          <linearGradient id="designBg" x1="0" y1="0" x2="100" y2="100">
+            <stop offset="0%" stopColor="#151315" />
+            <stop offset="50%" stopColor="#4c2335" />
+            <stop offset="100%" stopColor="#221118" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  } else {
+    return (
+      <svg className="w-full h-full object-cover" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="url(#defaultBg)" />
+        <g opacity="0.2" stroke="#ffffff" strokeWidth="0.5">
+          <circle cx="50" cy="50" r="35" />
+          <rect x="20" y="20" width="60" height="60" rx="8" />
+        </g>
+        <polygon points="50,25 75,65 25,65" stroke="#d8bcea" strokeWidth="3" fill="none" strokeLinejoin="round" />
+        <defs>
+          <linearGradient id="defaultBg" x1="0" y1="0" x2="100" y2="100">
+            <stop offset="0%" stopColor="#151315" />
+            <stop offset="50%" stopColor="#252129" />
+            <stop offset="100%" stopColor="#151315" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  }
+}
+
+// Immersive Glassmorphism Card with 3D Mouse Tilt & Border cursor glow tracking
+function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
+  course: Course; index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
 }) {
-  const grad = GRADIENT_PAIRS[index % GRADIENT_PAIRS.length];
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const normalizedX = (x / rect.width) - 0.5;
+    const normalizedY = (y / rect.height) - 0.5;
+    
+    setCoords({ x: normalizedX, y: normalizedY });
+    cardRef.current.style.setProperty('--mouse-x', `${x}px`);
+    cardRef.current.style.setProperty('--mouse-y', `${y}px`);
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false);
+        setCoords({ x: 0, y: 0 });
+      }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.4 }}
-      whileHover={{ y: -4 }}
-      className="group"
+      transition={{ delay: index * 0.08, duration: 0.5, ease: 'easeOut' }}
+      className="relative rounded-2xl border overflow-hidden transition-all duration-300 flex flex-col h-full cursor-pointer"
+      style={{
+        background: 'rgba(21, 19, 21, 0.45)',
+        backdropFilter: 'blur(20px)',
+        borderColor: hovered ? 'rgba(216, 188, 234, 0.3)' : 'rgba(255, 255, 255, 0.07)',
+        boxShadow: hovered ? '0 12px 35px -10px rgba(216, 188, 234, 0.18)' : 'none',
+        transform: hovered 
+          ? `perspective(1000px) rotateY(${coords.x * 12}deg) rotateX(${coords.y * -12}deg) scale3d(1.02, 1.02, 1.02)` 
+          : 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)',
+        transition: hovered ? 'none' : 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
+      }}
     >
-      <div className="rounded-2xl border border-white/8 overflow-hidden hover:border-purple-500/30 transition-all duration-300 flex flex-col h-full"
-        style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)' }}>
-        {/* Thumbnail */}
-        <div className="h-40 relative flex-shrink-0 flex items-center justify-center"
-          style={{ background: `linear-gradient(135deg, ${grad[0]}22, ${grad[1]}33)` }}>
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-black text-white"
-            style={{ background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})`, boxShadow: `0 8px 24px ${grad[0]}44` }}>
-            {course.title[0]}
+      {/* Dynamic Cursor Glowing Overlay */}
+      {hovered && (
+        <div
+          className="pointer-events-none absolute -inset-px rounded-2xl opacity-100 transition duration-300"
+          style={{
+            background: `radial-gradient(180px circle at var(--mouse-x) var(--mouse-y), rgba(216, 188, 234, 0.18), transparent 85%)`,
+            border: '1px solid rgba(216, 188, 234, 0.35)',
+          }}
+        />
+      )}
+
+      {/* Thumbnail with Geometric SVGs and category gradient */}
+      <div className="h-40 relative flex-shrink-0 overflow-hidden">
+        <GeometricThumbnail category={course.category} />
+        <div className="absolute top-3 left-3">
+          <Badge variant={LEVEL_COLORS[course.level]}>{course.level}</Badge>
+        </div>
+        {enrolled && (
+          <div className="absolute top-3 right-3">
+            <Badge variant="emerald">Enrolled</Badge>
           </div>
-          <div className="absolute top-3 left-3">
-            <Badge variant={LEVEL_COLORS[course.level]}>{course.level}</Badge>
-          </div>
-          {enrolled && (
-            <div className="absolute top-3 right-3">
-              <Badge variant="emerald">Enrolled</Badge>
-            </div>
-          )}
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col flex-1 relative z-10">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1.5">{course.category}</span>
+        <h3 className="text-base font-bold text-white leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+          {course.title}
+        </h3>
+        <p className="text-xs text-slate-400 mb-4 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          {course.description}
+        </p>
+
+        {/* Rating */}
+        <div className="flex items-center gap-1 mb-4">
+          {[1,2,3,4,5].map(s => (
+            <Star key={s} size={11} fill={s <= Math.floor(course.rating) ? '#F59E0B' : 'none'} className="text-amber-400" />
+          ))}
+          <span className="text-xs text-amber-400 ml-1 font-semibold">{course.rating.toFixed(1)}</span>
         </div>
 
-        {/* Content */}
-        <div className="p-4 flex flex-col flex-1">
-          <div className="flex items-start gap-2 mb-2">
-            <h3 className="text-sm font-bold text-white leading-tight flex-1 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
-              {course.title}
-            </h3>
-          </div>
-          <p className="text-xs text-slate-400 mb-3 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-            {course.description}
-          </p>
+        {/* Metas */}
+        <div className="flex items-center gap-3 text-xs text-slate-500 mb-4 border-t border-white/5 pt-3">
+          <span className="flex items-center gap-1"><Users size={11} /> {course.enrolled.toLocaleString()}</span>
+          <span className="flex items-center gap-1"><BookOpen size={11} /> {course.lessons} lessons</span>
+          <span className="flex items-center gap-1"><Clock size={11} /> {course.duration}</span>
+        </div>
 
-          <div className="flex items-center gap-1 mb-3">
-            {[1,2,3,4,5].map(s => (
-              <Star key={s} size={11} fill={s <= Math.floor(course.rating) ? '#F59E0B' : 'none'} className="text-amber-400" />
-            ))}
-            <span className="text-xs text-amber-400 ml-1 font-medium">{course.rating}</span>
-            <span className="text-xs text-slate-600 ml-1">({course.reviews.toLocaleString()})</span>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs text-slate-500 mb-3">
-            <span className="flex items-center gap-1"><Users size={11} /> {course.enrolled.toLocaleString()}</span>
-            <span className="flex items-center gap-1"><BookOpen size={11} /> {course.lessons} lessons</span>
-            <span className="flex items-center gap-1"><Clock size={11} /> {course.duration}</span>
-          </div>
-
-          <div className="flex items-center flex-wrap gap-1.5 mb-4">
-            {course.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(139,92,246,0.12)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.2)' }}>
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between mt-auto">
-            <div>
-              <p className="text-lg font-bold text-white">${course.price}</p>
-              <p className="text-xs text-slate-500">{course.instructor}</p>
+        {/* Progress Bar for Enrolled Students */}
+        {enrolled && (
+          <div className="mb-4">
+            <div className="flex justify-between text-[10px] text-slate-400 mb-1">
+              <span>Enrollment Progress</span>
+              <span>{progress}%</span>
             </div>
-            {enrolled ? (
-              <Link to={`/learn/${course.id}/l1`}>
-                <button className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white transition-all" style={{ background: 'linear-gradient(135deg, #4edea3, #3B82F6)' }}>
-                  Continue →
+            <ProgressBar value={progress} color="purple" size="sm" />
+          </div>
+        )}
+
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
+          <div>
+            <p className="text-lg font-bold text-white">₹{course.price}</p>
+            <p className="text-[10px] text-slate-500">{course.instructor}</p>
+          </div>
+          
+          {enrolled ? (
+            <Link to={`/learn/${course.id}/l1`}>
+              <button className="px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-lg hover:scale-105 active:scale-95 duration-200" style={{ background: 'linear-gradient(135deg, #d8bcea, #8B5CF6)' }}>
+                Continue Learning
+              </button>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link to={`/courses/${course.id}`}>
+                <button className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 border border-white/10 hover:bg-white/8 hover:text-white transition-all">
+                  Details
                 </button>
               </Link>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to={`/courses/${course.id}`}>
-                  <button className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 border border-white/15 hover:bg-white/8 transition-all">
-                    Details
-                  </button>
-                </Link>
-                {onEnroll && (
-                  <button onClick={() => onEnroll(course.id)} className="px-3 py-1.5 rounded-xl text-xs font-semibold text-white transition-all" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
-                    Enroll
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+              {onEnroll && (
+                <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
+                  Enroll
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
@@ -115,19 +242,44 @@ export function CourseCatalog() {
   const { user } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  
+  // Search parameters and debounce state
+  const [searchVal, setSearchVal] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
   const [sortBy, setSortBy] = useState('popular');
-  const [enrolledIds] = useState<string[]>(user?.enrolledCourses || ['c1', 'c2', 'c3']);
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
 
   const categories = coursesService.getCategories();
 
+  // Search Debouncer logic
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchVal);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchVal]);
+
+  // Load courses and enrollments on filters/search update
   useEffect(() => {
     setLoading(true);
-    coursesService.getCatalog({ category: category !== 'All' ? category : undefined, level: level !== 'All' ? level : undefined, search })
-      .then(data => { setCourses(data); setLoading(false); });
-  }, [search, category, level]);
+    const filters = {
+      category: category !== 'All' ? category : undefined,
+      level: level !== 'All' ? level : undefined,
+      search: debouncedSearch || undefined,
+    };
+    
+    Promise.all([
+      coursesService.getCourses(filters),
+      user ? coursesService.getEnrolledCourses(user.id) : Promise.resolve([]),
+    ]).then(([data, enrolled]) => {
+      setCourses(data);
+      setEnrolledCourses(enrolled);
+      setLoading(false);
+    });
+  }, [debouncedSearch, category, level, user]);
 
   const sorted = [...courses].sort((a, b) => {
     if (sortBy === 'popular') return b.enrolled - a.enrolled;
@@ -138,7 +290,27 @@ export function CourseCatalog() {
   });
 
   const handleEnroll = (courseId: string) => {
-    toast.success('Enrolled successfully! 🎉', { icon: '🎓' });
+    if (!user) {
+      toast.error('Please login to enroll in courses!');
+      return;
+    }
+    coursesService.enrollCourse(courseId, user.id).then(() => {
+      toast.success('Successfully enrolled in course! 🎉', { icon: '🎓' });
+      // Reload enrolled courses list
+      coursesService.getEnrolledCourses(user.id).then(setEnrolledCourses);
+    }).catch(err => {
+      toast.error('Enrollment failed, please try again.');
+      console.error(err);
+    });
+  };
+
+  const getProgress = (courseId: string) => {
+    const found = enrolledCourses.find(e => e.course.id === courseId);
+    return found ? found.enrollment.progress : 0;
+  };
+
+  const isEnrolled = (courseId: string) => {
+    return enrolledCourses.some(e => e.course.id === courseId);
   };
 
   return (
@@ -155,26 +327,46 @@ export function CourseCatalog() {
       />
 
       <div className="p-6">
-        {/* Filters bar */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="flex-1 min-w-[200px] max-w-md">
-            <SearchInput value={search} onChange={setSearch} placeholder="Search courses, topics, instructors..." />
+        {/* Filters and debounced live search */}
+        <div className="flex flex-wrap items-center gap-4 mb-8">
+          <div className="flex-1 min-w-[280px] max-w-md relative">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              value={searchVal}
+              onChange={e => setSearchVal(e.target.value)}
+              placeholder="Search courses, titles, categories..."
+              className="pl-10 pr-4 py-2.5 rounded-xl border border-white/10 text-white text-sm outline-none focus:border-purple-500/60 placeholder-slate-500 w-full transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', fontFamily: 'Montserrat, sans-serif' }}
+            />
           </div>
+          
           <div className="flex flex-wrap gap-2">
-            {/* Category pills */}
-            <div className="flex flex-wrap gap-1.5">
-              {categories.slice(0, 6).map(cat => (
+            {/* Sliding Framer Motion Category Indicator */}
+            <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl border border-white/5 bg-white/3">
+              {categories.slice(0, 5).map(cat => (
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${category === cat ? 'text-white' : 'text-slate-400 border border-white/10 hover:text-white hover:border-white/20'}`}
-                  style={category === cat ? { background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)', fontFamily: 'Inter, sans-serif' } : { fontFamily: 'Inter, sans-serif' }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative ${
+                    category === cat ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
-                  {cat}
+                  <span className="relative z-10">{cat}</span>
+                  {category === cat && (
+                    <motion.div
+                      layoutId="activeCatalogTab"
+                      className="absolute inset-0 rounded-xl"
+                      style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
+                      transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+                    />
+                  )}
                 </button>
               ))}
             </div>
           </div>
+          
           <div className="flex items-center gap-2 ml-auto">
             <Select
               options={[
@@ -199,24 +391,26 @@ export function CourseCatalog() {
           </div>
         </div>
 
+        {/* Catalog Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {[1,2,3,4,5,6].map(i => <SkeletonCard key={i} />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1,2,3,4,5,6,7,8].map(i => <SkeletonCard key={i} />)}
           </div>
         ) : sorted.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-white mb-2">No courses found</h3>
-            <p className="text-sm text-slate-400">Try adjusting your filters or search term</p>
+          <div className="text-center py-24 glass rounded-3xl border border-white/5 max-w-lg mx-auto">
+            <div className="text-5xl mb-4">🔍</div>
+            <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No courses found</h3>
+            <p className="text-sm text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {sorted.map((course, i) => (
               <CourseCard
                 key={course.id}
                 course={course}
                 index={i}
-                enrolled={enrolledIds.includes(course.id)}
+                enrolled={isEnrolled(course.id)}
+                progress={getProgress(course.id)}
                 onEnroll={user?.role === 'student' ? handleEnroll : undefined}
               />
             ))}
