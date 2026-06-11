@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 
@@ -44,6 +44,10 @@ import { Analytics } from './pages/analytics/Analytics';
 import { CalendarPage } from './pages/calendar/Calendar';
 import { Certificates, CertificateVerify } from './pages/certificates/Certificates';
 import { Profile } from './pages/profile/Profile';
+import { PricingPage } from './pages/pricing/PricingPage';
+import { AdminLogin } from './pages/admin-panel/AdminLogin';
+import { AdminDashboard } from './pages/admin-panel/AdminDashboard';
+import { AdminGuard } from './components/admin/AdminGuard';
 
 function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -77,6 +81,20 @@ function HomePage() {
   );
 }
 
+function PageWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="h-full w-full"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function AppRoutes() {
   const location = useLocation();
 
@@ -87,45 +105,51 @@ function AppRoutes() {
         <Route path="/" element={<HomePage />} />
 
         {/* ─── Auth ─── */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
+        <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
 
         {/* ─── Dashboards ─── */}
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
-        <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/student/dashboard" element={<PageWrapper><StudentDashboard /></PageWrapper>} />
+        <Route path="/teacher/dashboard" element={<PageWrapper><TeacherDashboard /></PageWrapper>} />
+        <Route path="/admin/dashboard" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
 
         {/* ─── Courses ─── */}
-        <Route path="/courses" element={<CourseCatalog />} />
-        <Route path="/courses/create" element={<CreateCourse />} />
-        <Route path="/courses/:id" element={<CourseDetail />} />
-        <Route path="/courses/:id/edit" element={<EditCourse />} />
+        <Route path="/courses" element={<PageWrapper><CourseCatalog /></PageWrapper>} />
+        <Route path="/courses/create" element={<PageWrapper><CreateCourse /></PageWrapper>} />
+        <Route path="/courses/:id" element={<PageWrapper><CourseDetail /></PageWrapper>} />
+        <Route path="/courses/:id/edit" element={<PageWrapper><EditCourse /></PageWrapper>} />
 
         {/* ─── Live Classroom ─── */}
-        <Route path="/classroom/:id" element={<LiveClassroom />} />
+        <Route path="/classroom/:id" element={<PageWrapper><LiveClassroom /></PageWrapper>} />
 
         {/* ─── LMS Course Player ─── */}
-        <Route path="/learn/:courseId/:lessonId" element={<CoursePlayer />} />
+        <Route path="/learn/:courseId/:lessonId" element={<PageWrapper><CoursePlayer /></PageWrapper>} />
 
         {/* ─── Assignments ─── */}
-        <Route path="/assignments" element={<Assignments />} />
-        <Route path="/assignments/:id" element={<AssignmentDetail />} />
-        <Route path="/assignments/:id/quiz" element={<Quiz />} />
+        <Route path="/assignments" element={<PageWrapper><Assignments /></PageWrapper>} />
+        <Route path="/assignments/:id" element={<PageWrapper><AssignmentDetail /></PageWrapper>} />
+        <Route path="/assignments/:id/quiz" element={<PageWrapper><Quiz /></PageWrapper>} />
 
         {/* ─── Other screens ─── */}
-        <Route path="/attendance" element={<Attendance />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/certificates" element={<Certificates />} />
-        <Route path="/verify/:certId" element={<CertificateVerify />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/attendance" element={<PageWrapper><Attendance /></PageWrapper>} />
+        <Route path="/messages" element={<PageWrapper><Messages /></PageWrapper>} />
+        <Route path="/analytics" element={<PageWrapper><Analytics /></PageWrapper>} />
+        <Route path="/calendar" element={<PageWrapper><CalendarPage /></PageWrapper>} />
+        <Route path="/certificates" element={<PageWrapper><Certificates /></PageWrapper>} />
+        <Route path="/verify/:certId" element={<PageWrapper><CertificateVerify /></PageWrapper>} />
+        <Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
+        <Route path="/pricing" element={<PageWrapper><PricingPage /></PageWrapper>} />
+
+        {/* ─── Secure Admin Panel ─── */}
+        <Route path="/scholar-hub-admin-panel" element={<Navigate to="/scholar-hub-admin-panel/login" replace />} />
+        <Route path="/scholar-hub-admin-panel/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+        <Route path="/scholar-hub-admin-panel/dashboard" element={<PageWrapper><AdminGuard><AdminDashboard /></AdminGuard></PageWrapper>} />
 
         {/* ─── Fallbacks ─── */}
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/404" element={<PageWrapper><NotFound /></PageWrapper>} />
+        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );

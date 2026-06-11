@@ -1,71 +1,61 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Zap, Building2, GraduationCap } from 'lucide-react';
+import { Check, Building2, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMagnetic } from '../hooks/useMagnetic';
+import toast from 'react-hot-toast';
 
 const plans = [
   {
-    name: 'Student',
+    name: 'Free',
     icon: GraduationCap,
     price: { monthly: 0, annual: 0 },
-    description: 'Perfect for individual learners getting started with AI-powered education.',
+    description: 'Default plan for individual learners and school students.',
     color: 'secondary',
     textColor: 'text-secondary',
     glowColor: 'rgba(208,194,214,0.15)',
     features: [
-      'Access to 50+ free courses',
-      'AI Tutor (10 sessions / month)',
-      'Progress tracking dashboard',
-      'Community forum access',
-      'Mobile app access',
-    ],
-    cta: 'Get Started Free',
-    popular: false,
-  },
-  {
-    name: 'Pro',
-    icon: Zap,
-    price: { monthly: 299, annual: 239 },
-    description: 'For serious learners who want the full AI-powered experience, unlocked.',
-    color: 'primary',
-    textColor: 'text-primary',
-    glowColor: 'rgba(216,188,234,0.2)',
-    features: [
-      'Unlimited course access',
-      'AI Tutor (unlimited)',
-      'Live classroom sessions',
+      'Live classrooms',
+      'AI Tutor (standard)',
       'Smart assignment grading',
-      'Blockchain certificates',
-      'Priority support',
+      'Certificates',
+      'Attendance tracking',
+      'Progress analytics',
+      '50+ courses',
+      'Mobile access',
     ],
-    cta: 'Start Free Trial',
-    popular: true,
+    cta: 'Your Current Plan',
+    popular: false,
+    disabled: true,
   },
   {
     name: 'Institution',
     icon: Building2,
     price: { monthly: 999, annual: 799 },
     description: 'Built for schools, universities, and forward-thinking enterprises.',
-    color: 'tertiary',
-    textColor: 'text-tertiary',
-    glowColor: 'rgba(243,182,205,0.15)',
+    color: 'primary',
+    textColor: 'text-primary',
+    glowColor: 'rgba(216,188,234,0.2)',
     features: [
-      'Everything in Pro',
-      'Admin console & analytics',
-      'SSO integration',
-      'Attendance biometrics',
+      'Everything in Free',
       'Custom branding',
+      'Institution admin console',
+      'SSO integration',
       'Dedicated account manager',
+      'Priority support',
+      'Advanced analytics',
+      'Bulk student management',
+      'API access',
     ],
     cta: 'Contact Sales',
-    popular: false,
+    popular: true,
+    disabled: false,
   },
 ] as const;
 
 type Billing = 'monthly' | 'annual';
 
-/* ── Individual card — owns its magnetic hook ── */
+/* ── Individual card ── */
 function PricingCard({
   plan,
   billing,
@@ -93,7 +83,7 @@ function PricingCard({
       {/* Popular badge */}
       {plan.popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-primary text-on-primary rounded-full text-sm font-semibold shadow-lg shadow-primary/30 whitespace-nowrap">
-          ✦ Most Popular
+          ✦ Recommended
         </div>
       )}
 
@@ -139,17 +129,20 @@ function PricingCard({
 
       {/* Magnetic CTA button */}
       <div
-        ref={ref}
-        style={magnetStyle}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        ref={plan.disabled ? undefined : ref}
+        style={plan.disabled ? undefined : magnetStyle}
+        onMouseMove={plan.disabled ? undefined : handleMouseMove}
+        onMouseLeave={plan.disabled ? undefined : handleMouseLeave}
       >
         <button
-          onClick={() => navigate('/register')}
-          className={`w-full py-3.5 rounded-full font-body-md font-semibold transition-all hover:scale-105 active:scale-95 ripple-btn shimmer-btn ${
-            plan.popular
-              ? 'bg-primary text-on-primary shadow-xl shadow-primary/30'
-              : 'glass border border-outline-variant/30 text-on-surface hover:border-primary/40 hover:text-primary'
+          disabled={plan.disabled}
+          onClick={plan.disabled ? undefined : go}
+          className={`w-full py-3.5 rounded-full font-body-md font-semibold transition-all ripple-btn shimmer-btn ${
+            plan.disabled
+              ? 'bg-surface-variant/10 text-on-surface-variant/40 border border-outline-variant/10 cursor-not-allowed opacity-60'
+              : plan.popular
+                ? 'bg-primary text-on-primary shadow-xl shadow-primary/30 hover:scale-[1.03] active:scale-[0.98]'
+                : 'glass border border-outline-variant/30 text-on-surface hover:border-primary/40 hover:text-primary hover:scale-[1.03] active:scale-[0.98]'
           }`}
         >
           {plan.cta}
@@ -161,9 +154,13 @@ function PricingCard({
 
 /* ── Pricing section ── */
 export function PricingSection() {
-  const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing>('monthly');
-  const go = () => navigate('/register');
+
+  const handleAction = (planName: string) => {
+    if (planName === 'Institution') {
+      toast.success('Thank you for your interest! Our sales team will contact you shortly.');
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -183,7 +180,7 @@ export function PricingSection() {
   };
 
   return (
-    <section id="pricing" className="py-32 px-6 relative overflow-hidden">
+    <section id="pricing" className="py-20 px-6 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
 
@@ -194,7 +191,7 @@ export function PricingSection() {
             Simple, <span className="text-gradient">Transparent</span> Pricing
           </h2>
           <p className="font-body-md text-on-surface-variant max-w-xl mx-auto mb-10">
-            No hidden fees. No lock-ins. Choose the plan that grows with you.
+            Choose the plan that suits your needs. Transition or upgrade anytime.
           </p>
 
           {/* Billing toggle */}
@@ -231,7 +228,7 @@ export function PricingSection() {
 
         {/* Pricing cards grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch max-w-4xl mx-auto"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -242,7 +239,7 @@ export function PricingSection() {
               key={plan.name}
               plan={plan}
               billing={billing}
-              go={go}
+              go={() => handleAction(plan.name)}
               variants={itemVariants}
             />
           ))}
@@ -250,7 +247,7 @@ export function PricingSection() {
 
         {/* Footer note */}
         <p className="text-center font-body-md text-on-surface-variant text-sm mt-12 opacity-60">
-          All plans include a 14-day free trial. No credit card required.
+          No credit card required. Free tier is default for all learners.
         </p>
       </div>
     </section>

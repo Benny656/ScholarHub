@@ -4,7 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, LineChart, Line, CartesianGrid,
 } from 'recharts';
-import { Users, BookOpen, TrendingUp, DollarSign, Shield, AlertCircle, CheckCircle, Activity, Edit2, Trash2, UserCog } from 'lucide-react';
+import { Users, BookOpen, TrendingUp, IndianRupee, Shield, AlertCircle, CheckCircle, Activity, Edit2, Trash2, UserCog } from 'lucide-react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { analyticsService } from '../../services/analytics.service';
 import { StatCard, GlassCard, Badge, ProgressBar, SectionHeader, SearchInput, Button } from '../../components/ui/index';
@@ -80,7 +80,7 @@ export function AdminDashboard() {
             { label: 'Total Users', value: stats?.totalUsers.toLocaleString() ?? '12,847', icon: <Users size={18} />, color: 'blue' as const, trend: '8.3%', trendUp: true },
             { label: 'Active Users', value: stats?.activeUsers.toLocaleString() ?? '4,231', icon: <Activity size={18} />, color: 'purple' as const, trend: '12%', trendUp: true },
             { label: 'Total Courses', value: stats?.totalCourses ?? 248, icon: <BookOpen size={18} />, color: 'emerald' as const, trend: '5 new', trendUp: true },
-            { label: 'Monthly Revenue', value: `$${((stats?.revenue ?? 284750) / 1000).toFixed(0)}K`, icon: <DollarSign size={18} />, color: 'amber' as const, trend: '18%', trendUp: true },
+            { label: 'Monthly Revenue', value: `₹${((stats?.revenue ?? 284750) / 1000).toFixed(0)}K`, icon: <IndianRupee size={18} />, color: 'amber' as const, trend: '18%', trendUp: true },
           ].map((s, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
               <StatCard {...s} />
@@ -107,8 +107,8 @@ export function AdminDashboard() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />
+                  <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
+                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`₹${v.toLocaleString()}`, 'Revenue']} />
                   <Area type="monotone" dataKey="revenue" stroke="#F59E0B" fill="url(#revGrad)" strokeWidth={2.5} isAnimationActive animationDuration={1200} />
                 </AreaChart>
               </ResponsiveContainer>

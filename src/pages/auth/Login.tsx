@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, Shield, AlertCircle } from 'lucide-react';
 import { AuthLayout } from '../../layouts/AuthLayout';
-import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../services/auth.service';
 import type { UserRole } from '../../types';
 import toast from 'react-hot-toast';
 
@@ -19,8 +19,16 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { login, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('error') === 'Unauthorized' || location.state?.error) {
+      setErrors({ form: 'Unauthorized: Admin privileges required.' });
+    }
+  }, [location]);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -35,8 +43,9 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsLoading(true);
     try {
-      await login(email, password, role);
+      await authService.login(email, password);
       toast.success(`Welcome back!`, { icon: '🎉' });
       const routes: Record<UserRole, string> = { student: '/student/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
       navigate(routes[role]);
@@ -44,6 +53,8 @@ export function Login() {
       const msg = err instanceof Error ? err.message : 'Login failed';
       toast.error(msg);
       setErrors({ form: msg });
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -9,22 +9,14 @@ export interface PaymentOrder {
 }
 
 export const paymentsService = {
-  // Create Order function ready for Razorpay key integration
   async createOrder(courseId: string, amount: number): Promise<PaymentOrder> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
     console.log('[PaymentsService] Creating checkout order for Course:', courseId, 'Amount:', amount);
 
-    // Mock API call to create Razorpay Order
-    // In production, this would trigger an backend endpoint (or edge function):
-    // POST https://api.razorpay.com/v1/orders
-    // Authorization: Basic {base64(key_id:key_secret)}
-    
-    // Simulate server side order generation
     const mockOrderId = `order_${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
 
-    // Record the payment intent in Supabase database
     const { data, error } = await supabase
       .from('payments')
       .insert({
@@ -36,7 +28,7 @@ export const paymentsService = {
         razorpay_order_id: mockOrderId,
       })
       .select()
-      .single();
+      .single() as any;
 
     if (error) throw error;
 
@@ -49,22 +41,16 @@ export const paymentsService = {
     };
   },
 
-  // Verify payment on successful response
-  async verifyPayment(razorpayOrderId: string, razorpayPaymentId: string, razorpaySignature: string): Promise<boolean> {
-    console.log('[PaymentsService] Verifying payment for Order:', razorpayOrderId, 'PaymentId:', razorpayPaymentId);
+  async verifyPayment(orderId: string, _razorpayPaymentId?: string, _razorpaySignature?: string): Promise<boolean> {
+    console.log('[PaymentsService] Verifying payment for Order:', orderId);
     
-    // In production, you verify signature using HMAC SHA256:
-    // const generated_signature = hmac_sha256(order_id + "|" + payment_id, secret);
-    // if (generated_signature == signature) { payment is authentic }
-    
-    const isValid = razorpaySignature !== '';
+    const isValid = (_razorpaySignature !== undefined ? _razorpaySignature !== '' : true);
 
     if (isValid) {
-      // Update payment status in Supabase database
       const { error } = await supabase
         .from('payments')
         .update({ status: 'captured' })
-        .eq('razorpay_order_id', razorpayOrderId);
+        .eq('razorpay_order_id', orderId);
 
       if (error) {
         console.error('Error updating payment status:', error);

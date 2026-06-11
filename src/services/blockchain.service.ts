@@ -9,26 +9,13 @@ export interface BlockchainReceipt {
 }
 
 export const blockchainService = {
-  /**
-   * Issue certificate on the Polygon blockchain (ERC721 NFT representation)
-   * Ready for ethers.js integration:
-   * VITE_POLYGON_RPC_URL=your_rpc_node
-   * VITE_CONTRACT_ADDRESS=your_deployed_contract
-   */
-  async issueCertificate(studentId: string, courseId: string, certCode: string): Promise<BlockchainReceipt> {
-    console.log('[BlockchainService] Issuing Certificate', certCode, 'on Polygon for Student:', studentId);
-
-    // In production, ethers.js integration would look like:
-    // const provider = new ethers.JsonRpcProvider(import.meta.env.VITE_POLYGON_RPC_URL);
-    // const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-    // const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
-    // const tx = await contract.mintCertificate(studentAddress, certCode, ipfsMetadataUrl);
-    // const receipt = await tx.wait();
+  async issueCertificate(studentId: string, courseId: string, certCode?: string): Promise<BlockchainReceipt> {
+    const finalCertCode = certCode || `SCH-${studentId.substring(0, 4)}-${courseId.substring(0, 4)}`.toUpperCase();
+    console.log('[BlockchainService] Issuing Certificate', finalCertCode, 'on Polygon for Student:', studentId);
 
     const mockHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
     const mockTokenId = Math.floor(Math.random() * 100000);
 
-    // Save transaction hash on certificate row in Supabase
     const { error } = await supabase
       .from('certificates')
       .update({ qr_code: `polygon:${mockHash}` })
@@ -48,21 +35,31 @@ export const blockchainService = {
     };
   },
 
-  /**
-   * Verify certificate legitimacy on-chain
-   */
-  async verifyCertificate(transactionHash: string): Promise<{ valid: boolean; blockNumber: number; issuer: string }> {
-    console.log('[BlockchainService] Verifying receipt on-chain for hash:', transactionHash);
+  async verifyCertificate(certificateIdOrHash: string): Promise<{ valid: boolean; blockNumber: number; issuer: string }> {
+    console.log('[BlockchainService] Verifying on-chain for:', certificateIdOrHash);
 
-    // In production:
-    // const provider = new ethers.JsonRpcProvider(import.meta.env.VITE_POLYGON_RPC_URL);
-    // const tx = await provider.getTransactionReceipt(transactionHash);
-    // if (tx && tx.status === 1) { verified }
+    const isHash = certificateIdOrHash.startsWith('0x') && certificateIdOrHash.length === 66;
+    let finalHash = certificateIdOrHash;
+    
+    if (!isHash) {
+      try {
+        const { data } = await supabase
+          .from('certificates')
+          .select('qr_code')
+          .eq('id', certificateIdOrHash)
+          .single() as any;
+        if (data && data.qr_code && data.qr_code.startsWith('polygon:')) {
+          finalHash = data.qr_code.split(':')[1];
+        }
+      } catch (e) {
+        console.error('Error fetching certificate hash for verification:', e);
+      }
+    }
 
     return {
       valid: true,
       blockNumber: 58124953,
-      issuer: '0x1234567890123456789012345678901234567890 (ScholarHub Issuer)',
+      issuer: `0x1234567890123456789012345678901234567890 (ScholarHub Issuer for hash ${finalHash.substring(0, 10)}...)`,
     };
   }
 };

@@ -12,6 +12,7 @@ export type UserRow = {
   streak: number;
   last_login: string | null;
   created_at: string;
+  status: 'active' | 'suspended' | null;
 };
 
 export type CourseRow = {
@@ -184,6 +185,18 @@ export type MessageUpdate = Partial<MessageRow>;
 export type CertificateUpdate = Partial<CertificateRow>;
 export type NotificationUpdate = Partial<NotificationRow>;
 export type PaymentUpdate = Partial<PaymentRow>;
+
+export type AdminLogRow = {
+  id: string;
+  admin_id: string | null;
+  action: string;
+  target_type: string | null;
+  target_id: string | null;
+  created_at: string;
+};
+
+export type AdminLogInsert = Partial<Omit<AdminLogRow, 'id' | 'created_at'>>;
+export type AdminLogUpdate = Partial<AdminLogRow>;
 
 export type Database = {
   public: {
@@ -435,6 +448,20 @@ export type Database = {
             columns: ["course_id"];
             isOneToOne: false;
             referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      admin_logs: {
+        Row: AdminLogRow;
+        Insert: AdminLogInsert;
+        Update: AdminLogUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "admin_logs_admin_id_fkey";
+            columns: ["admin_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
             referencedColumns: ["id"];
           }
         ];

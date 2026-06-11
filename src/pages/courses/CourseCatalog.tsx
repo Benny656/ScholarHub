@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Search, Star, Users, Clock, BookOpen, Plus, Sparkles } from 'lucide-react';
+import { Search, Star, Users, Clock, BookOpen, Plus } from 'lucide-react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
-import { Badge, ProgressBar, SkeletonCard, PageHeader, Button, Select } from '../../components/ui/index';
+import { Badge, ProgressBar, PageHeader, Button, Select } from '../../components/ui/index';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
 
 const LEVEL_COLORS = { Beginner: 'emerald', Intermediate: 'blue', Advanced: 'red' } as const;
 
-// Geometric SVGs with beautiful animated gradients
+// Animated Gradient SVGs per category using SVG stop-color animations
 function GeometricThumbnail({ category }: { category: string }) {
   const norm = category.toLowerCase();
   
@@ -28,10 +28,16 @@ function GeometricThumbnail({ category }: { category: string }) {
         <path d="M75 40 L60 50 L75 60" stroke="#d8bcea" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M55 35 L45 65" stroke="#f3b6cd" strokeWidth="4" strokeLinecap="round" />
         <defs>
-          <linearGradient id="webBg" x1="0" y1="0" x2="100" y2="100">
-            <stop offset="0%" stopColor="#151315" />
-            <stop offset="50%" stopColor="#3c284c" />
-            <stop offset="100%" stopColor="#1e152a" />
+          <linearGradient id="webBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#151315">
+              <animate attributeName="stop-color" values="#151315;#3c284c;#1e152a;#151315" dur="10s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="50%" stopColor="#3c284c">
+              <animate attributeName="stop-color" values="#3c284c;#1e152a;#3c284c;#3c284c" dur="10s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stopColor="#1e152a">
+              <animate attributeName="stop-color" values="#1e152a;#151315;#3c284c;#1e152a" dur="10s" repeatCount="indefinite" />
+            </stop>
           </linearGradient>
         </defs>
       </svg>
@@ -55,10 +61,16 @@ function GeometricThumbnail({ category }: { category: string }) {
         <line x1="25" y1="70" x2="50" y2="50" stroke="#4edea3" strokeWidth="2" />
         <line x1="75" y1="70" x2="50" y2="50" stroke="#4edea3" strokeWidth="2" />
         <defs>
-          <linearGradient id="aiBg" x1="0" y1="0" x2="100" y2="100">
-            <stop offset="0%" stopColor="#151315" />
-            <stop offset="60%" stopColor="#1c233d" />
-            <stop offset="100%" stopColor="#0d1425" />
+          <linearGradient id="aiBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#151315">
+              <animate attributeName="stop-color" values="#151315;#1c233d;#0d1425;#151315" dur="12s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="60%" stopColor="#1c233d">
+              <animate attributeName="stop-color" values="#1c233d;#0d1425;#1c233d;#1c233d" dur="12s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stopColor="#0d1425">
+              <animate attributeName="stop-color" values="#0d1425;#151315;#1c233d;#0d1425" dur="12s" repeatCount="indefinite" />
+            </stop>
           </linearGradient>
         </defs>
       </svg>
@@ -71,10 +83,16 @@ function GeometricThumbnail({ category }: { category: string }) {
         <circle cx="58" cy="55" r="20" stroke="#f3b6cd" strokeWidth="3" opacity="0.7" />
         <rect x="25" y="25" width="50" height="50" stroke="#ffffff" strokeWidth="0.5" opacity="0.2" />
         <defs>
-          <linearGradient id="designBg" x1="0" y1="0" x2="100" y2="100">
-            <stop offset="0%" stopColor="#151315" />
-            <stop offset="50%" stopColor="#4c2335" />
-            <stop offset="100%" stopColor="#221118" />
+          <linearGradient id="designBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#151315">
+              <animate attributeName="stop-color" values="#151315;#4c2335;#221118;#151315" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="50%" stopColor="#4c2335">
+              <animate attributeName="stop-color" values="#4c2335;#221118;#4c2335;#4c2335" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stopColor="#221118">
+              <animate attributeName="stop-color" values="#221118;#151315;#4c2335;#221118" dur="8s" repeatCount="indefinite" />
+            </stop>
           </linearGradient>
         </defs>
       </svg>
@@ -89,10 +107,16 @@ function GeometricThumbnail({ category }: { category: string }) {
         </g>
         <polygon points="50,25 75,65 25,65" stroke="#d8bcea" strokeWidth="3" fill="none" strokeLinejoin="round" />
         <defs>
-          <linearGradient id="defaultBg" x1="0" y1="0" x2="100" y2="100">
-            <stop offset="0%" stopColor="#151315" />
-            <stop offset="50%" stopColor="#252129" />
-            <stop offset="100%" stopColor="#151315" />
+          <linearGradient id="defaultBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#151315">
+              <animate attributeName="stop-color" values="#151315;#252129;#151315" dur="15s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="50%" stopColor="#252129">
+              <animate attributeName="stop-color" values="#252129;#151315;#252129" dur="15s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stopColor="#151315">
+              <animate attributeName="stop-color" values="#151315;#252129;#151315" dur="15s" repeatCount="indefinite" />
+            </stop>
           </linearGradient>
         </defs>
       </svg>
@@ -100,10 +124,17 @@ function GeometricThumbnail({ category }: { category: string }) {
   }
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 25 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 22 } }
+};
+
 // Immersive Glassmorphism Card with 3D Mouse Tilt & Border cursor glow tracking
 function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
   course: Course; index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
 }) {
+  const { user } = useAuth();
+  const userType = user?.user_type;
   const cardRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
@@ -131,15 +162,13 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
         setHovered(false);
         setCoords({ x: 0, y: 0 });
       }}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08, duration: 0.5, ease: 'easeOut' }}
-      className="relative rounded-2xl border overflow-hidden transition-all duration-300 flex flex-col h-full cursor-pointer"
+      variants={cardVariants}
+      className="relative rounded-2xl border overflow-hidden flex flex-col h-full cursor-pointer"
       style={{
-        background: 'rgba(21, 19, 21, 0.45)',
-        backdropFilter: 'blur(20px)',
-        borderColor: hovered ? 'rgba(216, 188, 234, 0.3)' : 'rgba(255, 255, 255, 0.07)',
-        boxShadow: hovered ? '0 12px 35px -10px rgba(216, 188, 234, 0.18)' : 'none',
+        background: 'rgba(21, 19, 21, 0.55)',
+        backdropFilter: 'blur(12px)',
+        borderColor: hovered ? 'rgba(216, 188, 234, 0.35)' : 'rgba(255, 255, 255, 0.08)',
+        boxShadow: hovered ? '0 12px 35px -10px rgba(216, 188, 234, 0.22)' : '0 8px 32px 0 rgba(0, 0, 0, 0.25)',
         transform: hovered 
           ? `perspective(1000px) rotateY(${coords.x * 12}deg) rotateX(${coords.y * -12}deg) scale3d(1.02, 1.02, 1.02)` 
           : 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)',
@@ -208,7 +237,7 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
 
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
           <div>
-            <p className="text-lg font-bold text-white">₹{course.price}</p>
+            <p className="text-lg font-bold text-white">{userType === 'school' ? 'Free Forever' : `₹${course.price}`}</p>
             <p className="text-[10px] text-slate-500">{course.instructor}</p>
           </div>
           
@@ -235,6 +264,29 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+// Premium Course Card Skeleton matching revamped design
+function CourseSkeleton() {
+  return (
+    <div className="rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full bg-white/3 animate-pulse">
+      <div className="h-40 bg-white/5 w-full" />
+      <div className="p-5 flex-1 space-y-4">
+        <div className="h-3 w-1/4 bg-white/5 rounded-full" />
+        <div className="h-5 w-3/4 bg-white/5 rounded-lg" />
+        <div className="h-3 w-full bg-white/5 rounded-full" />
+        <div className="h-3 w-5/6 bg-white/5 rounded-full" />
+        <div className="h-1.5 w-full bg-white/5 rounded-full mt-4" />
+        <div className="flex justify-between items-center mt-6 pt-3 border-t border-white/5">
+          <div className="space-y-1.5 flex-1">
+            <div className="h-4 w-1/3 bg-white/5 rounded-full" />
+            <div className="h-3 w-1/4 bg-white/5 rounded-full" />
+          </div>
+          <div className="h-8 w-24 bg-white/5 rounded-xl" />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -358,7 +410,7 @@ export function CourseCatalog() {
                     <motion.div
                       layoutId="activeCatalogTab"
                       className="absolute inset-0 rounded-xl"
-                      style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
+                      style={{ background: 'linear-gradient(135deg, var(--color-primary), #8B5CF6)' }}
                       transition={{ type: 'spring', stiffness: 350, damping: 28 }}
                     />
                   )}
@@ -394,7 +446,7 @@ export function CourseCatalog() {
         {/* Catalog Grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[1,2,3,4,5,6,7,8].map(i => <SkeletonCard key={i} />)}
+            {[1,2,3,4,5,6,7,8].map(i => <CourseSkeleton key={i} />)}
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-24 glass rounded-3xl border border-white/5 max-w-lg mx-auto">
@@ -403,7 +455,18 @@ export function CourseCatalog() {
             <p className="text-sm text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <motion.div 
+            variants={{
+              show: {
+                transition: {
+                  staggerChildren: 0.05
+                }
+              }
+            }}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
             {sorted.map((course, i) => (
               <CourseCard
                 key={course.id}
@@ -414,7 +477,7 @@ export function CourseCatalog() {
                 onEnroll={user?.role === 'student' ? handleEnroll : undefined}
               />
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </AppLayout>

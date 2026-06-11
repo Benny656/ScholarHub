@@ -9,7 +9,8 @@ import {
   LayoutDashboard, BookOpen, Users, BarChart3, Calendar,
   MessageSquare, ClipboardList, GraduationCap, Award,
   User, Settings, LogOut, Bell, Menu, X, ChevronDown,
-  Mic, Video, Shield, BookMarked, Moon, Sun, Home, Flame, Sparkles
+  Mic, Video, Shield, BookMarked, Moon, Sun, Home, Flame, Sparkles,
+  CreditCard
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { ProgressBar } from '../components/ui/index';
@@ -34,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Analytics', icon: <BarChart3 size={18} />, path: '/analytics', roles: ['student', 'teacher', 'admin'] },
   { label: 'Calendar', icon: <Calendar size={18} />, path: '/calendar', roles: ['student', 'teacher'] },
   { label: 'Certificates', icon: <Award size={18} />, path: '/certificates', roles: ['student'] },
+  { label: 'Pricing', icon: <CreditCard size={18} />, path: '/pricing', roles: ['student', 'teacher', 'admin'] },
   { label: 'Users', icon: <Users size={18} />, path: '/admin/users', roles: ['admin'] },
   { label: 'System', icon: <Shield size={18} />, path: '/admin/system', roles: ['admin'] },
 ];
@@ -50,7 +52,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<any[]>([]);
 
   const role = user?.role ?? 'student';
-  const filteredNav = NAV_ITEMS.filter(n => n.roles.includes(role));
+  const filteredNav = NAV_ITEMS.filter(n => {
+    if (n.path === '/pricing' && user?.user_type === 'school') return false;
+    return n.roles.includes(role);
+  });
 
   const handleLogout = () => {
     logout();
@@ -140,12 +145,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 to={item.path}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 transition-all duration-300 group relative ${
                   isActive
-                    ? 'text-white'
+                    ? 'text-white font-semibold'
                     : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 hover:translate-x-1'
                 }`}
                 style={isActive ? {
-                  background: `linear-gradient(135deg, var(--sidebar-accent), color-mix(in srgb, var(--sidebar-accent) 70%, #000))`,
-                  boxShadow: `0 4px 15px -3px var(--sidebar-accent)`,
+                  background: `linear-gradient(135deg, var(--sidebar-accent), color-mix(in srgb, var(--sidebar-accent) 70%, var(--color-primary)))`,
+                  boxShadow: `0 0 16px 2px var(--sidebar-accent)`,
                   color: '#ffffff'
                 } : {}}
               >
@@ -180,26 +185,52 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="p-3 border-t border-outline-variant/10">
           <Link
             to="/profile"
-            className="flex flex-col gap-2 p-2 rounded-xl text-on-surface-variant hover:bg-on-surface/5 transition-all"
+            className="flex flex-col items-center gap-2 p-2 rounded-xl text-on-surface-variant hover:bg-on-surface/5 transition-all"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold shadow-lg">
+            <div className="flex flex-col items-center gap-2 w-full">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 text-white text-base font-bold shadow-lg border border-white/10 hover:shadow-purple-500/20 transition-all duration-300">
                 {user?.name?.[0] || 'U'}
               </div>
-              <AnimatePresence>
-                {sidebarOpen && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-on-surface truncate">{user?.name}</p>
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-purple-500/20 text-[#d8bcea] border border-purple-500/30">
+              <AnimatePresence mode="wait">
+                {sidebarOpen ? (
+                  <motion.div 
+                    key="sidebar-open-profile"
+                    initial={{ opacity: 0, y: -5 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -5 }} 
+                    className="flex flex-col items-center min-w-0 w-full"
+                  >
+                    <p className="text-sm font-bold text-on-surface truncate text-center w-full">{user?.name}</p>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/20 text-[#d8bcea] border border-purple-500/30 mt-1">
                       {user?.role}
                     </span>
+                    {user?.user_type === 'school' && (
+                      <span className="text-[9px] font-semibold tracking-wide px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mt-1.5 shadow-sm">
+                        🏫 School Account
+                      </span>
+                    )}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="sidebar-closed-profile"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex flex-col items-center"
+                  >
+                    <span className="text-[9px] uppercase font-bold tracking-wider px-1 py-0.2 rounded bg-purple-500/20 text-[#d8bcea] border border-purple-500/30">
+                      {user?.role?.slice(0, 3)}
+                    </span>
+                    {user?.user_type === 'school' && (
+                      <span className="text-[10px] mt-1" title="School Account">🏫</span>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
             
             {sidebarOpen && user && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 space-y-1">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-1 space-y-1 w-full">
                 <div className="flex justify-between text-[10px] text-on-surface-variant font-medium">
                   <span>Level { (user as any).level || 1 }</span>
                   <span>{ (user as any).xp || 0 } XP</span>
@@ -365,8 +396,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <div className="p-6 text-center text-xs text-on-surface-variant">No new notifications</div>
                       ) : (
                         notifications.map(n => (
-                          <div key={n.id} className={`p-4 border-b border-outline-variant/10 hover:bg-on-surface/5 transition-colors cursor-pointer ${!n.isRead ? 'bg-[#6366F1]/5' : ''}`}>
-                            <p className="text-sm text-on-surface mb-1">{n.title}</p>
+                          <div 
+                            key={n.id} 
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (n.isRead) return;
+                              try {
+                                await notificationsService.markNotificationRead(n.id);
+                                setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, isRead: true } : item));
+                                toast.success('Notification marked as read');
+                              } catch (err) {
+                                console.error('Failed to mark read', err);
+                              }
+                            }}
+                            className={`p-4 border-b border-outline-variant/10 hover:bg-on-surface/5 transition-colors cursor-pointer ${!n.isRead ? 'bg-[#6366F1]/5 border-l-2 border-[#6366F1]' : ''}`}
+                          >
+                            <div className="flex justify-between items-start gap-1">
+                              <p className="text-sm text-on-surface mb-1 font-medium">{n.title}</p>
+                              {!n.isRead && <span className="w-1.5 h-1.5 rounded-full bg-[#6366F1] flex-shrink-0 mt-1.5" />}
+                            </div>
                             <p className="text-xs text-on-surface-variant mb-1">{n.message}</p>
                             <p className="text-[10px] text-slate-500">{new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                           </div>

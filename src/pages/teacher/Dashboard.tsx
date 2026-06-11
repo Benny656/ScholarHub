@@ -13,10 +13,10 @@ import { StatCard, GlassCard, Badge, ProgressBar, SectionHeader, SearchInput, Bu
 import toast from 'react-hot-toast';
 
 const COURSES = [
-  { id: 'c1', title: 'Full-Stack Web Development', students: 247, lessons: 124, rating: 4.8, status: 'Active', revenue: '$12,400', updated: '2 days ago' },
-  { id: 'c4', title: 'Data Structures & Algorithms', students: 189, lessons: 148, rating: 4.6, status: 'Active', revenue: '$9,800', updated: '1 week ago' },
-  { id: 'c2', title: 'Machine Learning Fundamentals', students: 134, lessons: 89, rating: 4.7, status: 'Draft', revenue: '$6,700', updated: '3 days ago' },
-  { id: 'c7', title: 'Advanced TypeScript Patterns', students: 0, lessons: 28, rating: 0, status: 'Draft', revenue: '$0', updated: 'Today' },
+  { id: 'c1', title: 'Full-Stack Web Development', students: 247, lessons: 124, rating: 4.8, status: 'Active', revenue: '₹12,400', updated: '2 days ago' },
+  { id: 'c4', title: 'Data Structures & Algorithms', students: 189, lessons: 148, rating: 4.6, status: 'Active', revenue: '₹9,800', updated: '1 week ago' },
+  { id: 'c2', title: 'Machine Learning Fundamentals', students: 134, lessons: 89, rating: 4.7, status: 'Draft', revenue: '₹6,700', updated: '3 days ago' },
+  { id: 'c7', title: 'Advanced TypeScript Patterns', students: 0, lessons: 28, rating: 0, status: 'Draft', revenue: '₹0', updated: 'Today' },
 ];
 
 const STUDENTS = [

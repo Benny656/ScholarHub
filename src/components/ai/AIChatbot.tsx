@@ -64,12 +64,12 @@ export function AIChatbot() {
       {/* Floating button */}
       <motion.button
         onClick={() => { setOpen(true); setMinimized(false); }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
         className={`fixed bottom-6 right-6 w-14 h-14 rounded-2xl shadow-2xl z-50 flex items-center justify-center transition-all ai-tutor-btn-pulse ${open && !minimized ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
+        style={{ background: 'linear-gradient(135deg, var(--color-primary), #8B5CF6)' }}
       >
-        <MessageSquare size={22} className="text-white" />
+        <Sparkles size={22} className="text-[#3c284c] animate-pulse" />
         <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-slate-900 animate-pulse" />
       </motion.button>
 

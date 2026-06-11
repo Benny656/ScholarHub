@@ -77,7 +77,9 @@ export function CourseDetail() {
               <div className="w-full lg:w-80 flex-shrink-0">
                 <GlassCard className="sticky top-4">
                   <div className="text-center mb-5">
-                    <p className="text-3xl font-bold text-white mb-1">₹{course.price}</p>
+                    <p className="text-3xl font-bold text-white mb-1">
+                      {user?.user_type === 'school' ? 'Free Forever' : `₹${course.price}`}
+                    </p>
                     {enrolled && <p className="text-sm text-emerald-400">✓ Already enrolled</p>}
                   </div>
                   {enrolled ? (
@@ -88,7 +90,7 @@ export function CourseDetail() {
                     </Link>
                   ) : (
                     <Button variant="primary" className="w-full justify-center" onClick={handleEnroll} loading={enrolling}>
-                      Enroll Now — ₹{course.price}
+                      {user?.user_type === 'school' ? 'Enroll Now' : `Enroll Now — ₹${course.price}`}
                     </Button>
                   )}
                   <div className="mt-4 space-y-2">

@@ -8,22 +8,21 @@ export interface RoomDetails {
 }
 
 export const videoService = {
-  /**
-   * Room creation function ready for 100ms API key injection:
-   * HMS_ACCESS_KEY=your_access_key
-   * HMS_SECRET=your_secret_key
-   */
-  async createRoom(courseId: string, title: string): Promise<RoomDetails> {
-    console.log('[100ms Video Service] Creating video room for course:', courseId);
-    
-    // In production, this would make a server-side request to 100ms Management API:
-    // POST https://api.100ms.live/v2/rooms
-    // Header: Authorization: Bearer <management_token_generated_using_HMS_ACCESS_KEY_and_HMS_SECRET>
-    // Body: { name: title, description: "Live classroom session" }
+  async createRoom(titleOrCourseId: string, maybeTitle?: string): Promise<RoomDetails> {
+    let title = '';
+    let courseId = 'c1'; // default course fallback
+
+    if (maybeTitle !== undefined) {
+      courseId = titleOrCourseId;
+      title = maybeTitle;
+    } else {
+      title = titleOrCourseId;
+    }
+
+    console.log('[100ms Video Service] Creating video room:', title);
     
     const mockRoomId = `hms_room_${Math.random().toString(36).substring(2, 10)}`;
 
-    // Create live class entry in Supabase database
     const { data, error } = await supabase
       .from('live_classes')
       .insert({
@@ -31,10 +30,10 @@ export const videoService = {
         title,
         room_id: mockRoomId,
         status: 'scheduled',
-        scheduled_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // starts in 10 mins
+        scheduled_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
       })
       .select()
-      .single();
+      .single() as any;
 
     if (error) throw error;
 
@@ -45,23 +44,12 @@ export const videoService = {
     };
   },
 
-  /**
-   * Fetch app token to join 100ms room
-   */
   async joinRoom(roomId: string, role: 'host' | 'guest' = 'guest'): Promise<string> {
     console.log('[100ms Video Service] Requesting access token for room:', roomId, 'role:', role);
-    
-    // In production, you generate client tokens using JWT signing or fetch from backend token endpoint:
-    // https://prod-in2.100ms.live/hmsapi/<tenant>.app.100ms.live/api/token
-    // Body: { room_id: roomId, user_id: client_user_id, role: role }
-    
     const mockToken = `hms_token_${Math.random().toString(36).substring(2, 20)}`;
     return mockToken;
   },
 
-  /**
-   * Realtime live class changes subscription
-   */
   subscribeToLiveClasses(courseId: string, onUpdate: (payload: any) => void) {
     return supabase
       .channel('public:live_classes')

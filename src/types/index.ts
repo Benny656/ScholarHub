@@ -20,6 +20,13 @@ export interface User {
   expertise?: string[];
   // Admin-specific
   permissions?: string[];
+  
+  // School student additions
+  user_type?: 'school' | 'college';
+  school_name?: string;
+  grade_class?: string;
+  roll_number?: string;
+  status?: 'active' | 'suspended';
 }
 
 export interface AuthState {

@@ -1,19 +1,32 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, Building, Tag, AlertCircle } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, Building, Tag, School } from 'lucide-react';
 import { AuthLayout } from '../../layouts/AuthLayout';
-import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../services/auth.service';
 import type { UserRole } from '../../types';
 import toast from 'react-hot-toast';
 
 export function Register() {
   const [role, setRole] = useState<'student' | 'teacher'>('student');
+  const [userType, setUserType] = useState<'school' | 'college'>('college');
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', studentId: '', institution: '', department: '', expertise: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirm: '',
+    studentId: '',
+    institution: '',
+    department: '',
+    expertise: '',
+    schoolName: '',
+    gradeClass: '',
+    rollNumber: '',
+  });
   const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { register, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const update = (field: string, value: string) => {
@@ -33,27 +46,62 @@ export function Register() {
     return Object.keys(e).length === 0;
   };
 
-  const validateStep2 = () => {
+  const validateFinalStep = () => {
     const e: Record<string, string> = {};
-    if (role === 'student' && !form.institution) e.institution = 'Institution is required';
-    if (role === 'teacher' && !form.department) e.department = 'Department is required';
+    if (role === 'student') {
+      if (userType === 'school') {
+        if (!form.schoolName.trim()) e.schoolName = 'School name is required';
+        if (!form.gradeClass.trim()) e.gradeClass = 'Grade / Class is required';
+        if (!form.rollNumber.trim()) e.rollNumber = 'Roll number is required';
+      } else {
+        if (!form.institution.trim()) e.institution = 'Institution is required';
+      }
+    } else if (role === 'teacher') {
+      if (!form.department.trim()) e.department = 'Department is required';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const handleNext = () => {
-    if (validateStep1()) setStep(2);
+    if (step === 1 && validateStep1()) {
+      setStep(2);
+    } else if (step === 2 && role === 'student') {
+      setStep(3);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateStep2()) return;
+    if (!validateFinalStep()) return;
+    setIsLoading(true);
     try {
-      await register({ ...form, role: role as UserRole });
+      await authService.register({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        role: role as UserRole,
+        user_type: role === 'student' ? userType : 'college',
+        school_name: role === 'student' && userType === 'school' ? form.schoolName : undefined,
+        grade_class: role === 'student' && userType === 'school' ? form.gradeClass : undefined,
+        roll_number: role === 'student' && userType === 'school' ? form.rollNumber : undefined,
+        institution: role === 'student' && userType === 'college' ? form.institution : undefined,
+        studentId: role === 'student' && userType === 'college' ? form.studentId : undefined,
+        department: role === 'teacher' ? form.department : undefined,
+        expertise: role === 'teacher' ? form.expertise : undefined,
+      });
       toast.success('Welcome to ScholarHub! 🎉');
       navigate(role === 'student' ? '/student/dashboard' : '/teacher/dashboard');
     } catch (err) {
       toast.error('Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,33 +109,40 @@ export function Register() {
     `w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors[field] ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#3B82F6]'}`;
   const inputStyle = { fontFamily: 'Inter, sans-serif' };
 
+  const totalSteps = role === 'student' ? 3 : 2;
+
   return (
     <AuthLayout title="Create your account" subtitle="Join 12,000+ learners on ScholarHub">
-      {/* Role */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        {(['student', 'teacher'] as const).map(r => (
-          <button
-            key={r}
-            type="button"
-            onClick={() => setRole(r)}
-            className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#3B82F6]/50 bg-[#3B82F6]/15 text-[#3B82F6]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#3B82F6]/30'}`}
-          >
-            {r === 'student' ? <GraduationCap size={18} /> : <BookOpen size={18} />}
-            <span className="text-sm font-semibold capitalize">{r}</span>
-          </button>
-        ))}
-      </div>
+      {/* Role selection only on step 1 */}
+      {step === 1 && (
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {(['student', 'teacher'] as const).map(r => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRole(r)}
+              className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#3B82F6]/50 bg-[#3B82F6]/15 text-[#3B82F6]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#3B82F6]/30'}`}
+            >
+              {r === 'student' ? <GraduationCap size={18} /> : <BookOpen size={18} />}
+              <span className="text-sm font-semibold capitalize">{r}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Progress */}
       <div className="flex items-center gap-2 mb-6">
-        {[1, 2].map(s => (
-          <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-[#3B82F6]' : 'bg-on-surface/10'}`} />
-        ))}
-        <span className="text-xs text-on-surface-variant ml-1" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Step {step}/2</span>
+        {Array.from({ length: totalSteps }).map((_, i) => {
+          const s = i + 1;
+          return (
+            <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-[#3B82F6]' : 'bg-on-surface/10'}`} />
+          );
+        })}
+        <span className="text-xs text-on-surface-variant ml-1" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Step {step}/{totalSteps}</span>
       </div>
 
       <AnimatePresence mode="wait">
-        {step === 1 ? (
+        {step === 1 && (
           <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-on-surface mb-1.5">Full Name</label>
@@ -128,26 +183,118 @@ export function Register() {
               Continue →
             </button>
           </motion.div>
-        ) : (
-          <motion.form key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} onSubmit={handleSubmit} className="space-y-4">
+        )}
+
+        {step === 2 && role === 'student' && (
+          <motion.div key="step2-student" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+            <h3 className="text-sm font-medium text-on-surface mb-1">Select your learning path</h3>
+            <div className="grid grid-cols-1 gap-3.5">
+              {/* School Student */}
+              <button
+                type="button"
+                onClick={() => setUserType('school')}
+                className={`flex flex-col items-start p-4 rounded-xl border text-left transition-all w-full relative overflow-hidden ${
+                  userType === 'school'
+                    ? 'border-[#3B82F6]/50 bg-[#3B82F6]/10 ring-1 ring-[#3B82F6]/30'
+                    : 'border-outline-variant/30 bg-surface text-on-surface hover:border-[#3B82F6]/30'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2.5 rounded-lg flex-shrink-0 ${userType === 'school' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' : 'bg-on-surface/5 text-on-surface-variant'}`}>
+                    <School size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">I am a School Student</p>
+                    <p className="text-xs text-on-surface-variant">Primary / Secondary Education</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mt-3">
+                  100% Free Forever
+                </span>
+              </button>
+
+              {/* College Student / Professional */}
+              <button
+                type="button"
+                onClick={() => setUserType('college')}
+                className={`flex flex-col items-start p-4 rounded-xl border text-left transition-all w-full relative overflow-hidden ${
+                  userType === 'college'
+                    ? 'border-[#3B82F6]/50 bg-[#3B82F6]/10 ring-1 ring-[#3B82F6]/30'
+                    : 'border-outline-variant/30 bg-surface text-on-surface hover:border-[#3B82F6]/30'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2.5 rounded-lg flex-shrink-0 ${userType === 'college' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' : 'bg-on-surface/5 text-on-surface-variant'}`}>
+                    <GraduationCap size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">I am a College Student / Professional</p>
+                    <p className="text-xs text-on-surface-variant">Higher Education / Career Growth</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
+                ← Back
+              </button>
+              <button type="button" onClick={handleNext} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm bg-[#3B82F6]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Continue →
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {((step === 3 && role === 'student') || (step === 2 && role === 'teacher')) && (
+          <motion.form key="step-final" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} onSubmit={handleSubmit} className="space-y-4">
             {role === 'student' ? (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-on-surface mb-1.5">Student ID <span className="text-on-surface-variant">(optional)</span></label>
-                  <div className="relative">
-                    <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                    <input type="text" value={form.studentId} onChange={e => update('studentId', e.target.value)} placeholder="STU-2024-XXX" className={inputClass('studentId')} style={inputStyle} />
+              userType === 'school' ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-on-surface mb-1.5">School Name *</label>
+                    <div className="relative">
+                      <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                      <input type="text" value={form.schoolName} onChange={e => update('schoolName', e.target.value)} placeholder="Enter your school name" className={inputClass('schoolName')} style={inputStyle} />
+                    </div>
+                    {errors.schoolName && <p className="text-xs text-error mt-1">{errors.schoolName}</p>}
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-on-surface mb-1.5">Institution *</label>
-                  <div className="relative">
-                    <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                    <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="University / College name" className={inputClass('institution')} style={inputStyle} />
+                  <div>
+                    <label className="block text-sm font-medium text-on-surface mb-1.5">Grade / Class *</label>
+                    <div className="relative">
+                      <BookOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                      <input type="text" value={form.gradeClass} onChange={e => update('gradeClass', e.target.value)} placeholder="e.g. Class 10, Grade 12" className={inputClass('gradeClass')} style={inputStyle} />
+                    </div>
+                    {errors.gradeClass && <p className="text-xs text-error mt-1">{errors.gradeClass}</p>}
                   </div>
-                  {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
-                </div>
-              </>
+                  <div>
+                    <label className="block text-sm font-medium text-on-surface mb-1.5">Roll Number *</label>
+                    <div className="relative">
+                      <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                      <input type="text" value={form.rollNumber} onChange={e => update('rollNumber', e.target.value)} placeholder="e.g. 25" className={inputClass('rollNumber')} style={inputStyle} />
+                    </div>
+                    {errors.rollNumber && <p className="text-xs text-error mt-1">{errors.rollNumber}</p>}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-on-surface mb-1.5">Student ID <span className="text-on-surface-variant">(optional)</span></label>
+                    <div className="relative">
+                      <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                      <input type="text" value={form.studentId} onChange={e => update('studentId', e.target.value)} placeholder="STU-2024-XXX" className={inputClass('studentId')} style={inputStyle} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-on-surface mb-1.5">Institution *</label>
+                    <div className="relative">
+                      <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                      <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="University / College name" className={inputClass('institution')} style={inputStyle} />
+                    </div>
+                    {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
+                  </div>
+                </>
+              )
             ) : (
               <>
                 <div>
@@ -169,7 +316,7 @@ export function Register() {
             )}
 
             <div className="flex gap-3 pt-2">
-              <button type="button" onClick={() => setStep(1)} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 ← Back
               </button>
               <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-[#3B82F6]" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px color-mix(in srgb, #3B82F6 30%, transparent)' }}>
