@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClipboardList, Upload, X, Sparkles, AlertCircle, CheckCircle, Clock, FileText, ChevronRight, Download, Bot } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { assignmentsService } from '../../services/assignments.service';
 import { aiService } from '../../services/ai.service';
 import { uploadService } from '../../services/upload.service';
@@ -49,7 +48,7 @@ export function Assignments() {
   const counts = { all: assignments.length, pending: assignments.filter(a => a.status === 'pending').length, submitted: assignments.filter(a => a.status === 'submitted').length, graded: assignments.filter(a => a.status === 'graded').length, overdue: assignments.filter(a => a.status === 'overdue').length };
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader title="Assignments" subtitle="Track and submit your work" breadcrumb={[{ label: 'Assignments' }]} />
       <div className="p-6 space-y-5">
         {/* Status tabs */}
@@ -118,7 +117,7 @@ export function Assignments() {
           </div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }
 
@@ -167,13 +166,13 @@ export function AssignmentDetail() {
     toast.success('AI check complete! 🤖');
   };
 
-  if (loading) return <AppLayout><div className="p-6"><SkeletonCard /></div></AppLayout>;
-  if (!assignment) return <AppLayout><div className="p-6 text-on-surface-variant">Assignment not found</div></AppLayout>;
+  if (loading) return <div className="space-y-6"><div className="p-6"><SkeletonCard /></div></div>;
+  if (!assignment) return <div className="space-y-6"><div className="p-6 text-on-surface-variant">Assignment not found</div></div>;
 
   const daysLeft = Math.ceil((new Date(assignment.dueDate).getTime() - Date.now()) / 86400000);
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader
         title={assignment.title}
         subtitle={assignment.courseName}
@@ -309,7 +308,7 @@ export function AssignmentDetail() {
           </GlassCard>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }
 
@@ -350,8 +349,8 @@ export function Quiz() {
     setSubmitted(true);
   };
 
-  if (loading) return <AppLayout><div className="p-6"><SkeletonCard /></div></AppLayout>;
-  if (!quiz) return <AppLayout><div className="p-6 text-on-surface-variant">Quiz not found</div></AppLayout>;
+  if (loading) return <div className="space-y-6"><div className="p-6"><SkeletonCard /></div></div>;
+  if (!quiz) return <div className="space-y-6"><div className="p-6 text-on-surface-variant">Quiz not found</div></div>;
 
   const q = quiz.questions[currentQ];
   const minutes = Math.floor(timeLeft / 60);
@@ -359,7 +358,7 @@ export function Quiz() {
   const timePercent = (timeLeft / (quiz.timeLimit * 60)) * 100;
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       {submitted && results ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 max-w-2xl mx-auto">
           <GlassCard tint="emerald">
@@ -461,6 +460,6 @@ export function Quiz() {
           </AnimatePresence>
         </div>
       )}
-    </AppLayout>
+    </div>
   );
 }

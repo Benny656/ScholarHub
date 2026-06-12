@@ -5,7 +5,6 @@ import {
   BarChart, Bar, LineChart, Line, CartesianGrid,
 } from 'recharts';
 import { Users, BookOpen, TrendingUp, IndianRupee, Shield, AlertCircle, CheckCircle, Activity, Edit2, Trash2, UserCog } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { analyticsService } from '../../services/analytics.service';
 import { StatCard, GlassCard, Badge, ProgressBar, SectionHeader, SearchInput, Button } from '../../components/ui/index';
 import toast from 'react-hot-toast';
@@ -63,15 +62,14 @@ export function AdminDashboard() {
     toast.success('User suspended', { icon: '⚠️' });
   };
 
-  const TOOLTIP_STYLE = { background: 'rgba(13,20,45,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#e2e8f0', fontSize: 12 };
+  const TOOLTIP_STYLE = { background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, color: '#0f172a', fontSize: 12, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' };
 
   return (
-    <AppLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>Admin Dashboard</h1>
-          <p className="text-sm text-on-surface-variant mt-0.5">Platform overview and management center</p>
+          <h1 className="text-3xl font-serif font-black text-neutral-900 dark:text-neutral-50 tracking-tight">Admin Dashboard</h1>
+          <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mt-1">Platform overview and management center</p>
         </motion.div>
 
         {/* Stats */}
@@ -92,7 +90,7 @@ export function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <GlassCard tint="purple">
             <SectionHeader title="Revenue" subtitle="Monthly revenue & enrollments" />
-            <div className="h-52">
+            <div className="h-52 mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueData.length ? revenueData : [
                   { month: 'Jan', revenue: 18200 }, { month: 'Feb', revenue: 21500 },
@@ -105,7 +103,7 @@ export function AdminDashboard() {
                       <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-neutral-800" />
                   <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`₹${v.toLocaleString()}`, 'Revenue']} />
@@ -117,14 +115,14 @@ export function AdminDashboard() {
 
           <GlassCard tint="blue">
             <SectionHeader title="Daily Active Users" subtitle="New vs returning" />
-            <div className="h-52">
+            <div className="h-52 mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={engagementData.length ? engagementData : [
                   { day: 'Mon', active: 3420, new: 124 }, { day: 'Tue', active: 3810, new: 156 },
                   { day: 'Wed', active: 4230, new: 189 }, { day: 'Thu', active: 3920, new: 143 },
                   { day: 'Fri', active: 3650, new: 131 }, { day: 'Sat', active: 2840, new: 98 }, { day: 'Sun', active: 2190, new: 76 },
                 ]} barSize={20} barGap={4}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-neutral-800" />
                   <XAxis dataKey="day" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
@@ -137,20 +135,19 @@ export function AdminDashboard() {
         </div>
 
         {/* User Management */}
-        <GlassCard padding="p-0">
-          <div className="flex flex-wrap items-center justify-between gap-3 p-5 border-b border-outline-variant/10">
+        <GlassCard padding="p-0 overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-6 border-b border-neutral-100 dark:border-neutral-800">
             <div>
-              <h2 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>User Management</h2>
-              <p className="text-sm text-on-surface-variant">{filtered.length} users</p>
+              <h2 className="text-lg font-serif font-black text-neutral-900 dark:text-neutral-50">User Management</h2>
+              <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mt-1 uppercase tracking-wider">{filtered.length} users</p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex rounded-xl overflow-hidden border border-outline-variant/20">
+              <div className="flex rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-800/50 p-1">
                 {(['all', 'student', 'teacher'] as const).map(r => (
                   <button
                     key={r}
                     onClick={() => setRoleFilter(r)}
-                    className={`px-3.5 py-1.5 text-xs font-medium capitalize transition-all ${roleFilter === r ? 'bg-[#F59E0B] text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}
-                    style={{ fontFamily: 'Inter, sans-serif' }}
+                    className={`px-3.5 py-1.5 text-xs font-bold capitalize transition-all rounded-lg ${roleFilter === r ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-white' : 'text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200'}`}
                   >
                     {r}
                   </button>
@@ -162,44 +159,44 @@ export function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-outline-variant/10">
+                <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/20">
                   {['User', 'Role', 'Joined', 'Courses', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-on-surface-variant uppercase bg-on-surface/5" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{h}</th>
+                    <th key={h} className="px-6 py-4 text-left text-[10px] font-extrabold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((u, i) => (
                   <motion.tr key={u.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                    className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors">
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-on-surface text-xs font-bold flex-shrink-0">
+                    className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm">
                           {u.name[0]}
                         </div>
                         <div>
-                          <p className="font-medium text-on-surface">{u.name}</p>
-                          <p className="text-xs text-on-surface-variant">{u.email}</p>
+                          <p className="font-bold text-neutral-900 dark:text-neutral-100">{u.name}</p>
+                          <p className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 mt-0.5">{u.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-6 py-4">
                       <Badge variant={u.role === 'teacher' ? 'blue' : u.role === 'admin' ? 'purple' : 'slate'} size="md">
                         {u.role}
                       </Badge>
                     </td>
-                    <td className="px-5 py-3.5 text-on-surface-variant text-xs">{u.joined}</td>
-                    <td className="px-5 py-3.5 text-on-surface-variant">{u.courses}</td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-6 py-4 text-neutral-500 dark:text-neutral-400 text-xs font-medium">{u.joined}</td>
+                    <td className="px-6 py-4 font-semibold text-neutral-700 dark:text-neutral-300">{u.courses}</td>
+                    <td className="px-6 py-4">
                       <Badge variant={u.status === 'Active' ? 'emerald' : 'red'}>{u.status}</Badge>
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handleRoleChange(u.id, 'teacher')} className="p-1.5 rounded-lg hover:bg-blue-500/15 text-on-surface-variant hover:text-blue-400 transition-all" title="Change role">
-                          <UserCog size={14} />
+                        <button onClick={() => handleRoleChange(u.id, 'teacher')} className="p-2 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-neutral-400 hover:text-blue-500 transition-all" title="Change role">
+                          <UserCog size={16} />
                         </button>
-                        <button onClick={() => handleSuspend(u.id)} className="p-1.5 rounded-lg hover:bg-red-500/15 text-on-surface-variant hover:text-red-400 transition-all" title="Suspend">
-                          <Shield size={14} />
+                        <button onClick={() => handleSuspend(u.id)} className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all" title="Suspend">
+                          <Shield size={16} />
                         </button>
                       </div>
                     </td>
@@ -213,25 +210,23 @@ export function AdminDashboard() {
         {/* System Health */}
         <GlassCard>
           <SectionHeader title="System Health" subtitle="Real-time infrastructure status" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             {HEALTH_INDICATORS.map((h, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                className="flex items-center gap-3 p-3.5 rounded-xl border"
-                style={{ background: 'color-mix(in srgb, var(--color-on-surface) 3%, transparent)', borderColor: h.status === 'warning' ? 'rgba(251,191,36,0.2)' : 'color-mix(in srgb, var(--color-on-surface) 5%, transparent)' }}
+                className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:bg-neutral-50 dark:hover:bg-neutral-800/50 bg-white dark:bg-neutral-900 shadow-sm ${h.status === 'warning' ? 'border-amber-200 dark:border-amber-500/20' : 'border-neutral-100 dark:border-neutral-800'}`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${h.status === 'healthy' ? 'bg-emerald-500/15' : 'bg-amber-500/15'}`}>
-                  {h.status === 'healthy' ? <CheckCircle size={16} className="text-emerald-400" /> : <AlertCircle size={16} className="text-amber-400" />}
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner ${h.status === 'healthy' ? 'bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-amber-50 text-amber-500 dark:bg-amber-500/10 dark:text-amber-400'}`}>
+                  {h.status === 'healthy' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-on-surface" style={{ fontFamily: 'Inter, sans-serif' }}>{h.name}</p>
-                  <p className="text-xs text-on-surface-variant">{h.uptime} uptime · {h.latency}</p>
+                  <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate">{h.name}</p>
+                  <p className="text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mt-0.5">{h.uptime} uptime · {h.latency}</p>
                 </div>
-                <div className={`w-2 h-2 rounded-full ${h.status === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${h.status === 'healthy' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'}`} />
               </motion.div>
             ))}
           </div>
         </GlassCard>
       </div>
-    </AppLayout>
   );
 }

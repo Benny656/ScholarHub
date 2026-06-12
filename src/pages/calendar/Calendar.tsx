@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalIcon, List, Clock, BookOpen, Video, FileText, X } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { calendarService } from '../../services/calendar.service';
 import { GlassCard, Badge, Button, PageHeader } from '../../components/ui/index';
 import type { CalendarEvent } from '../../types';
@@ -73,7 +72,7 @@ export function CalendarPage() {
   const displayEvents = events.length ? events : mockEvents;
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader
         title="Calendar"
         subtitle="Schedule, deadlines, and class timetable"
@@ -296,6 +295,6 @@ export function CalendarPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </AppLayout>
+    </div>
   );
 }

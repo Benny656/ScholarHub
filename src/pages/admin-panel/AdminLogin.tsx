@@ -150,7 +150,7 @@ export function AdminLogin() {
           <div className="w-14 h-14 rounded-2xl bg-[#EF4444]/10 flex items-center justify-center text-[#EF4444] border border-[#EF4444]/25 mb-4 shadow-lg shadow-[#EF4444]/10 animate-pulse">
             <ShieldAlert className="w-7 h-7" />
           </div>
-          <h2 className="text-3xl font-bold font-display text-white tracking-wide">ScholarHub</h2>
+          <h2 className="text-3xl font-bold font-display text-white tracking-wide">Scholar Hub</h2>
           <p className="text-xs uppercase font-semibold text-[#EF4444] tracking-widest mt-1">Admin Console</p>
         </div>
 

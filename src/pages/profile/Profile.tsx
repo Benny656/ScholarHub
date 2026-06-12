@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Building, Tag, Shield, Camera, Save, Key, Smartphone, AlertTriangle, CheckCircle } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/auth.service';
 import { uploadService } from '../../services/upload.service';
@@ -64,7 +63,7 @@ export function Profile() {
   const style = { background: 'color-mix(in srgb, var(--color-on-surface) 5%, transparent)', fontFamily: 'Inter, sans-serif' };
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader title="My Profile" subtitle="Manage your account settings" breadcrumb={[{ label: 'Profile' }]} />
       <div className="p-6 max-w-3xl mx-auto space-y-5">
         {/* Avatar + Info */}
@@ -293,6 +292,6 @@ export function Profile() {
           </motion.div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QrCode, Scan, Calendar, BarChart3, Sparkles, RefreshCw, CheckCircle, X, Clock, Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { AppLayout } from '../../layouts/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { attendanceService } from '../../services/attendance.service';
 import { aiService } from '../../services/ai.service';
@@ -76,7 +75,7 @@ export function Attendance() {
   const TOOLTIP = { background: 'rgba(13,20,45,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#e2e8f0', fontSize: 12 };
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader title="Attendance" subtitle="Track and manage class attendance" breadcrumb={[{ label: 'Attendance' }]} />
       <div className="p-6">
         {/* Tabs */}
@@ -317,6 +316,6 @@ export function Attendance() {
           )}
         </AnimatePresence>
       </div>
-    </AppLayout>
+    </div>
   );
 }

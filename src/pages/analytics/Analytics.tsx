@@ -5,7 +5,6 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, CartesianGrid,
 } from 'recharts';
 import { TrendingUp, Award, Clock, BookOpen, Download, Target, Star } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { analyticsService } from '../../services/analytics.service';
 import { GlassCard, StatCard, Badge, ProgressBar, PageHeader, Button, SectionHeader } from '../../components/ui/index';
@@ -45,7 +44,7 @@ export function Analytics() {
   const gpa = (SUBJECT_DATA.reduce((s, d) => s + d.grade, 0) / SUBJECT_DATA.length / 100 * 4).toFixed(2);
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader
         title="Analytics & Reports"
         subtitle="Track your learning performance"
@@ -188,6 +187,6 @@ export function Analytics() {
           </div>
         </GlassCard>
       </div>
-    </AppLayout>
+    </div>
   );
 }

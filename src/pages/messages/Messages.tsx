@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Search, Bell, Users, Megaphone, Pin, Paperclip, Smile, MoreVertical, CheckCheck, Circle } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { messagesService } from '../../services/messages.service';
 import { socketService } from '../../services/socket.service';
@@ -73,7 +72,7 @@ export function Messages() {
   const filteredConvs = CONVERSATIONS.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <div className="flex h-[calc(100vh-64px)] overflow-hidden">
         {/* Left sidebar */}
         <div className="w-72 flex-shrink-0 border-r border-outline-variant/10 flex flex-col" style={{ background: 'rgba(13,20,45,0.6)' }}>
@@ -233,6 +232,6 @@ export function Messages() {
           )}
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

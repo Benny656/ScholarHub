@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, Download, Share2, QrCode, CheckCircle, Sparkles, Lock, Eye } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { certificatesService } from '../../services/certificates.service';
 import { GlassCard, Badge, PageHeader, Button } from '../../components/ui/index';
@@ -155,7 +154,7 @@ export function Certificates() {
   const displayCerts = certificates.length ? certificates : MOCK_CERTS;
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader
         title="Certificates"
         subtitle={`${displayCerts.length} certificates earned`}
@@ -186,7 +185,7 @@ export function Certificates() {
       <AnimatePresence>
         {viewed && <CertificateViewer cert={viewed} onClose={() => setViewed(null)} />}
       </AnimatePresence>
-    </AppLayout>
+    </div>
   );
 }
 

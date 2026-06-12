@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Search, Star, Users, Clock, BookOpen, Plus } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
 import { Badge, ProgressBar, PageHeader, Button, Select } from '../../components/ui/index';
@@ -366,7 +365,7 @@ export function CourseCatalog() {
   };
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader
         title="Course Catalog"
         subtitle={`${courses.length} courses available`}
@@ -480,6 +479,6 @@ export function CourseCatalog() {
           </motion.div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }

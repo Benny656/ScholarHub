@@ -1,0 +1,93 @@
+import React, { useState, useEffect } from "react";
+import { Search, Bell, Sun, Moon, CalendarDays, Laptop, Home } from "lucide-react";
+import { Role } from "../../lib/mockData";
+
+interface NavbarProps {
+  activeRole: Role;
+  theme: "light" | "dark";
+  toggleTheme: () => void;
+  onOpenNotifications: () => void;
+  notificationCount: number;
+  onHomeClick?: () => void;
+}
+
+export default function Navbar({
+  activeRole,
+  theme,
+  toggleTheme,
+  onOpenNotifications,
+  notificationCount,
+  onHomeClick,
+}: NavbarProps) {
+  const [timeStr, setTimeStr] = useState<string>("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTimeStr(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <header className="h-20 border-b border-neutral-200/80 bg-white px-8 flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 transition-colors duration-200">
+      
+      {/* Search Bar - Aesthetic & Functional preview */}
+      <div className="relative w-96 hidden md:block">
+        <span className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+          <Search className="h-4.5 w-4.5 text-neutral-400" />
+        </span>
+        <input
+          type="search"
+          placeholder="Look up subjects, quiz materials, rosters..."
+          className="w-full h-11 pl-11 pr-4 rounded-xl text-sm bg-neutral-50 border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary focus:border-brand-primary dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 transition-all duration-150"
+        />
+      </div>
+
+      {/* Right Side Controls */}
+      <div className="flex items-center gap-5 ml-auto">
+        
+        {/* Dynamic Clock Indicator */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-xs font-mono text-neutral-600 dark:text-neutral-300">
+          <CalendarDays className="w-3.5 h-3.5 text-brand-secondary" />
+          <span>{timeStr || "12:00 PM"}</span>
+        </div>
+
+        {/* Theme Toggler */}
+        <button
+          onClick={toggleTheme}
+          aria-label="Toggle Dark Mode"
+          className="w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-200 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800 transition-all duration-200"
+        >
+          {theme === "light" ? (
+            <Moon className="w-5 h-5 text-neutral-600" />
+          ) : (
+            <Sun className="w-5 h-5 text-amber-500" />
+          )}
+        </button>
+
+        {/* Notification Bell Badge */}
+        <button
+          onClick={onOpenNotifications}
+          className="w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-200 hover:bg-neutral-50 relative dark:border-neutral-800 dark:hover:bg-neutral-800 transition-all duration-200"
+        >
+          <Bell className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
+          {notificationCount > 0 && (
+            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-[10px] text-white font-bold rounded-full flex items-center justify-center shadow-sm">
+              {notificationCount}
+            </span>
+          )}
+        </button>
+
+        {/* Platform Indicator */}
+        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-neutral-500 bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 px-3 py-1.5 rounded-lg border border-neutral-200/40 dark:border-neutral-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          {activeRole.badge.split("•")[0]}
+        </span>
+
+      </div>
+    </header>
+  );
+}

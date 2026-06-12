@@ -1,0 +1,161 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import Sidebar from '../components/layout/Sidebar';
+import Navbar from '../components/layout/Navbar';
+import MobileNavigation from '../components/layout/MobileNavigation';
+import { allRoles } from '../lib/mockData';
+import { BookOpen, CheckSquare, Settings } from 'lucide-react';
+
+export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("scholarhub-theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } else {
+      document.documentElement.classList.add("dark");
+      setTheme("dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    localStorage.setItem("scholarhub-theme", nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  if (!user) {
+    return <>{children}</>;
+  }
+
+  // Map real user to V2 role object for UI rendering
+  let roleId = user.role as string;
+  if (roleId === 'student') {
+    roleId = user.user_type === 'school' ? 'student_school' : 'student_college';
+  }
+  
+  // Custom user mapped to V2 Role interface
+  const activeRole = allRoles.find(r => r.id === roleId) || {
+    id: roleId,
+    name: user.name,
+    badge: user.role.toUpperCase(),
+    avatar: user.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name)
+  };
+
+  // Derive active tab from location pathname
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const activeTab = pathParts.length > 1 ? pathParts[1] : 'dashboard'; // e.g. /student/courses -> 'courses'
+
+  const handleSetActiveTab = (tabId: string) => {
+    // If it's a generic settings or help link, navigate to common route or handle it
+    if (tabId === 'settings') {
+      navigate('/profile');
+    } else if (tabId === 'help') {
+      navigate('/messages');
+    } else {
+      // Navigate based on user role base path
+      const basePath = user.role === 'admin' ? '/admin' : user.role === 'teacher' ? '/teacher' : '/student';
+      if (tabId === 'dashboard') {
+        navigate(`${basePath}/dashboard`);
+      } else {
+        navigate(`/${tabId}`);
+      }
+    }
+  };
+
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
+  // Mock notifications
+  const unreadNotificationsCount = 2;
+
+  return (
+    <div className={`flex h-screen overflow-hidden ${theme === "dark" ? "bg-neutral-950 text-neutral-100" : "bg-neutral-50 text-neutral-900"} w-full`}>
+      
+      {/* Desktop Left navigation Sidebar */}
+      <div className="hidden md:flex">
+        <Sidebar
+          activeRole={activeRole as any}
+          onChangeRole={(newRoleId) => {
+            console.log("Mock role switch:", newRoleId);
+            // In a real app with real auth, changing role might mean logging out and logging in as someone else
+          }}
+          activeTab={activeTab}
+          setActiveTab={handleSetActiveTab}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          onLogoClick={handleLogoClick}
+        />
+      </div>
+
+      {/* Right container workspace */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        {/* Mobile top stick header */}
+        <MobileNavigation
+          activeRole={activeRole as any}
+          onChangeRole={() => {}}
+          activeTab={activeTab}
+          setActiveTab={handleSetActiveTab}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          menuItems={[
+            { id: "dashboard", label: "Dashboard", icon: BookOpen },
+            { id: "courses", label: "My Courses", icon: BookOpen },
+            { id: "assignments", label: "Assignments", icon: CheckSquare },
+            ...(user.role === "admin" ? [{ id: "security", label: "Security auditing", icon: Settings }] : [])
+          ]}
+          notificationCount={unreadNotificationsCount}
+          onOpenNotifications={() => setNotificationsOpen(!notificationsOpen)}
+          onLogoClick={handleLogoClick}
+        />
+
+        {/* Desktop top navbar header */}
+        <Navbar
+          activeRole={activeRole as any}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          notificationCount={unreadNotificationsCount}
+          onOpenNotifications={() => setNotificationsOpen(!notificationsOpen)}
+        />
+
+        {/* Dynamic scroll main panel area */}
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-neutral-50/50 dark:bg-neutral-900/40 custom-scrollbar relative">
+          
+          <AnimatePresence mode="wait">
+             <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="w-full h-full"
+              >
+                {children}
+             </motion.div>
+          </AnimatePresence>
+
+        </main>
+      </div>
+    </div>
+  );
+}

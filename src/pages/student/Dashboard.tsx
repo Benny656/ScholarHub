@@ -6,7 +6,6 @@ import {
   RadialBarChart, RadialBar, PieChart, Pie, Cell,
 } from 'recharts';
 import { BookOpen, Clock, AlertTriangle, Calendar, ChevronRight, Sparkles, Star, Play, TrendingUp } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { coursesService } from '../../services/courses.service';
 import { analyticsService } from '../../services/analytics.service';
@@ -23,8 +22,8 @@ function HeatmapCell({ count }: { count: number }) {
   const opacity = count === 0 ? 0.05 : count === 1 ? 0.25 : count === 2 ? 0.5 : count === 3 ? 0.75 : 1;
   return (
     <div
-      className="w-3 h-3 rounded-sm transition-all hover:scale-125 cursor-pointer"
-      style={{ background: `rgba(139,92,246,${opacity})` }}
+      className="w-3 h-3 rounded-sm transition-all hover:scale-125 cursor-pointer bg-brand-primary"
+      style={{ opacity: opacity === 0.05 ? 0.1 : opacity }}
       title={`${count} activities`}
     />
   );
@@ -61,7 +60,7 @@ export function StudentDashboard() {
     });
   }, [user]);
 
-  const attendanceData = [{ name: 'Present', value: 84, fill: '#4edea3' }, { name: 'Absent', value: 16, fill: 'rgba(255,255,255,0.08)' }];
+  const attendanceData = [{ name: 'Present', value: 84, fill: '#4edea3' }, { name: 'Absent', value: 16, fill: 'rgba(200,200,200,0.1)' }];
 
   const UPCOMING = [
     { time: '10:00 AM', title: 'React Advanced Patterns', course: 'Web Dev', type: 'Live', id: 'cl1' },
@@ -72,22 +71,21 @@ export function StudentDashboard() {
   const cardVariants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
   return (
-    <AppLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         {/* Welcome */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
+            <h1 className="text-3xl font-serif font-black text-neutral-900 dark:text-neutral-50 tracking-tight">
               Good evening, {user?.name?.split(' ')[0]} 👋
             </h1>
-            <p className="text-sm text-on-surface-variant mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-              You have <span className="text-[#6366F1] font-semibold">{assignments.length} pending</span> assignments. Keep going!
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium mt-1">
+              You have <span className="text-brand-primary font-bold">{assignments.length} pending</span> assignments. Keep going!
             </p>
           </div>
           <Link to="/calendar">
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 hover:border-[#6366F1]/30 transition-all" style={{ background: 'rgba(255,255,255,0.04)' }}>
-              <Calendar size={16} className="text-[#6366F1]" />
-              <span className="text-sm text-on-surface-variant">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-brand-primary/30 transition-all shadow-sm">
+              <Calendar size={16} className="text-brand-primary" />
+              <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-300">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
             </div>
           </Link>
         </motion.div>
@@ -113,7 +111,7 @@ export function StudentDashboard() {
             {/* Enrolled Courses */}
             <GlassCard>
               <SectionHeader title="My Courses" subtitle={`${enrolled.length || 3} enrolled`} action={
-                <Link to="/courses" className="text-xs text-[#6366F1] hover:text-[#6366F1] flex items-center gap-1 transition-colors">
+                <Link to="/courses" className="text-xs font-bold text-brand-primary hover:underline flex items-center gap-1 transition-colors">
                   Browse more <ChevronRight size={14} />
                 </Link>
               } />
@@ -133,24 +131,24 @@ export function StudentDashboard() {
                       transition={{ delay: i * 0.07 }}
                     >
                       <Link to={`/learn/${item.course.id}/l1`}>
-                        <div className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/8">
-                          <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl font-bold"
+                        <div className="flex items-center gap-4 p-4 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all group border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700">
+                          <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl font-black text-white"
                             style={{ background: `linear-gradient(135deg, ${i === 0 ? '#6366F1,#3B82F6' : i === 1 ? '#3B82F6,#4edea3' : '#4edea3,#6366F1'})` }}>
                             {item.course.title[0]}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="text-sm font-semibold text-on-surface truncate group-hover:text-[#6366F1] transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate group-hover:text-brand-primary transition-colors">
                                 {item.course.title}
                               </p>
-                              <span className="text-xs font-bold text-[#6366F1] ml-2 flex-shrink-0">{item.enrollment.progress}%</span>
+                              <span className="text-xs font-black text-brand-primary ml-2 flex-shrink-0">{item.enrollment.progress}%</span>
                             </div>
-                            <p className="text-xs text-on-surface-variant mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-2">
                               {item.course.instructor} · {item.course.lessons} lessons
                             </p>
                             <ProgressBar value={item.enrollment.progress} color={i === 2 ? 'emerald' : i === 1 ? 'blue' : 'purple'} />
                           </div>
-                          <Play size={16} className="text-slate-600 group-hover:text-[#6366F1] transition-colors flex-shrink-0" />
+                          <Play size={16} className="text-neutral-400 group-hover:text-brand-primary transition-colors flex-shrink-0" />
                         </div>
                       </Link>
                     </motion.div>
@@ -162,7 +160,7 @@ export function StudentDashboard() {
             {/* Assignments */}
             <GlassCard>
               <SectionHeader title="Due Assignments" subtitle="Pending deadlines" action={
-                <Link to="/assignments" className="text-xs text-[#6366F1] hover:text-[#6366F1] flex items-center gap-1">View all <ChevronRight size={14} /></Link>
+                <Link to="/assignments" className="text-xs font-bold text-brand-primary hover:underline flex items-center gap-1">View all <ChevronRight size={14} /></Link>
               } />
               <div className="space-y-2.5">
                 {(assignments.length ? assignments : [
@@ -174,11 +172,11 @@ export function StudentDashboard() {
                   return (
                     <motion.div key={a.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
                       <Link to={`/assignments/${a.id}`}>
-                        <div className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all hover:bg-white/5 ${a.status === 'overdue' ? 'border-red-500/20 bg-red-500/5' : 'border-white/5'}`}>
-                          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${a.priority === 'high' ? 'bg-red-400' : a.priority === 'medium' ? 'bg-amber-400' : 'bg-slate-400'}`} />
+                        <div className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:bg-neutral-50 dark:hover:bg-neutral-800/50 ${a.status === 'overdue' ? 'border-red-200 bg-red-50 dark:border-red-500/20 dark:bg-red-500/10' : 'border-neutral-100 dark:border-neutral-800'}`}>
+                          <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm ${a.priority === 'high' ? 'bg-red-500' : a.priority === 'medium' ? 'bg-amber-500' : 'bg-neutral-400'}`} />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-on-surface truncate" style={{ fontFamily: 'Inter, sans-serif' }}>{a.title}</p>
-                            <p className="text-xs text-on-surface-variant">{a.courseName}</p>
+                            <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate">{a.title}</p>
+                            <p className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{a.courseName}</p>
                           </div>
                           <div className="text-right flex-shrink-0">
                             <Badge variant={a.status === 'overdue' ? 'red' : daysLeft <= 3 ? 'amber' : 'slate'}>
@@ -206,14 +204,14 @@ export function StudentDashboard() {
                     <XAxis dataKey="week" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ background: 'rgba(13,20,45,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#e2e8f0', fontSize: 12 }}
-                      cursor={{ fill: 'rgba(139,92,246,0.1)' }}
+                      contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, color: '#0f172a', fontSize: 12, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      cursor={{ fill: 'rgba(139,92,246,0.05)' }}
                     />
                     <Bar dataKey="hoursSpent" fill="url(#barGrad)" radius={[6, 6, 0, 0]} isAnimationActive />
                     <defs>
                       <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#6366F1" />
-                        <stop offset="100%" stopColor="#3B82F6" />
+                        <stop offset="100%" stopColor="#8b5cf6" />
                       </linearGradient>
                     </defs>
                   </BarChart>
@@ -222,16 +220,16 @@ export function StudentDashboard() {
 
               {/* Heatmap */}
               <div className="mt-4">
-                <p className="text-xs text-on-surface-variant mb-2" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Activity heatmap — last 63 days</p>
-                <div className="flex flex-wrap gap-1">
+                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Activity heatmap — last 63 days</p>
+                <div className="flex flex-wrap gap-1.5">
                   {heatmap.map((cell, i) => <HeatmapCell key={i} count={cell.count} />)}
                 </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-slate-600">Less</span>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-[10px] font-bold text-neutral-500 uppercase">Less</span>
                   {[0.05, 0.25, 0.5, 0.75, 1].map((o, i) => (
-                    <div key={i} className="w-3 h-3 rounded-sm" style={{ background: `rgba(139,92,246,${o})` }} />
+                    <div key={i} className="w-3 h-3 rounded-sm bg-brand-primary" style={{ opacity: o === 0.05 ? 0.1 : o }} />
                   ))}
-                  <span className="text-xs text-slate-600">More</span>
+                  <span className="text-[10px] font-bold text-neutral-500 uppercase">More</span>
                 </div>
               </div>
             </GlassCard>
@@ -250,16 +248,16 @@ export function StudentDashboard() {
                     </Pie>
                   </PieChart>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>84%</span>
-                    <span className="text-xs text-on-surface-variant">Present</span>
+                    <span className="text-3xl font-serif font-black text-neutral-900 dark:text-neutral-50">84%</span>
+                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Present</span>
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 mt-3">
-                {[{ l: 'Present', v: '38', c: 'text-emerald-400' }, { l: 'Absent', v: '4', c: 'text-red-400' }, { l: 'Late', v: '3', c: 'text-amber-400' }].map(s => (
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {[{ l: 'Present', v: '38', c: 'text-emerald-500' }, { l: 'Absent', v: '4', c: 'text-red-500' }, { l: 'Late', v: '3', c: 'text-amber-500' }].map(s => (
                   <div key={s.l} className="text-center">
-                    <p className={`text-lg font-bold ${s.c}`}>{s.v}</p>
-                    <p className="text-xs text-on-surface-variant">{s.l}</p>
+                    <p className={`text-xl font-black ${s.c}`}>{s.v}</p>
+                    <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{s.l}</p>
                   </div>
                 ))}
               </div>
@@ -272,14 +270,14 @@ export function StudentDashboard() {
                 {UPCOMING.map((cls, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}>
                     <Link to={`/classroom/${cls.id}`}>
-                      <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/8 transition-all group">
-                        <div className="flex-shrink-0 text-center">
-                          <p className="text-xs font-bold text-blue-300">{cls.time}</p>
+                      <div className="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 transition-all group shadow-sm bg-white dark:bg-neutral-900">
+                        <div className="flex-shrink-0 text-center w-12">
+                          <p className="text-xs font-black text-blue-600 dark:text-blue-400">{cls.time}</p>
                         </div>
-                        <div className="w-px h-8 bg-white/10 flex-shrink-0" />
+                        <div className="w-px h-8 bg-neutral-200 dark:bg-neutral-700 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-on-surface truncate group-hover:text-blue-300 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>{cls.title}</p>
-                          <p className="text-xs text-on-surface-variant">{cls.course}</p>
+                          <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate group-hover:text-blue-600 transition-colors">{cls.title}</p>
+                          <p className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mt-0.5">{cls.course}</p>
                         </div>
                         <Badge variant={cls.type === 'Live' ? 'blue' : 'slate'}>{cls.type}</Badge>
                       </div>
@@ -294,7 +292,7 @@ export function StudentDashboard() {
               <SectionHeader
                 title="AI Recommendations"
                 subtitle="Personalized for you"
-                action={<Sparkles size={16} className="text-[#6366F1]" />}
+                action={<Sparkles size={16} className="text-brand-primary" />}
               />
               <div className="space-y-3">
                 {(recommendations.length ? recommendations : [
@@ -303,15 +301,15 @@ export function StudentDashboard() {
                 ]).map((rec, i) => (
                   <motion.div key={rec.courseId} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                     <Link to={`/courses/${rec.courseId}`}>
-                      <div className="p-3 rounded-xl border border-[#6366F1]/15 hover:border-[#6366F1]/30 hover:bg-[#6366F1]/5 transition-all group">
+                      <div className="p-4 rounded-2xl border border-brand-primary/20 hover:border-brand-primary/40 hover:bg-brand-primary/5 transition-all group bg-white dark:bg-neutral-900 shadow-sm">
                         <div className="flex items-start justify-between mb-1.5">
-                          <p className="text-sm font-semibold text-on-surface group-hover:text-[#6366F1] transition-colors leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>{rec.title}</p>
-                          <span className="text-xs font-bold text-[#6366F1] ml-2 flex-shrink-0">{rec.matchScore}%</span>
+                          <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-brand-primary transition-colors leading-tight">{rec.title}</p>
+                          <span className="text-xs font-black text-brand-primary ml-2 flex-shrink-0 bg-brand-primary/10 px-2 py-0.5 rounded-full">{rec.matchScore}%</span>
                         </div>
-                        <p className="text-xs text-on-surface-variant mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>{rec.reason}</p>
+                        <p className="text-xs font-medium text-neutral-500 mb-3">{rec.reason}</p>
                         <div className="flex items-center gap-1">
-                          {[1,2,3,4,5].map(s => <Star key={s} size={10} fill={s <= 4 ? '#6366F1' : 'none'} className="text-[#6366F1]" />)}
-                          <span className="text-xs text-on-surface-variant ml-1">AI matched</span>
+                          {[1,2,3,4,5].map(s => <Star key={s} size={10} fill={s <= 4 ? '#6366F1' : 'none'} className="text-brand-primary" />)}
+                          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">AI matched</span>
                         </div>
                       </div>
                     </Link>
@@ -322,6 +320,5 @@ export function StudentDashboard() {
           </div>
         </div>
       </div>
-    </AppLayout>
   );
 }

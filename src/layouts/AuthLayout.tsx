@@ -49,7 +49,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain drop-shadow-xl block dark:hidden" />
             </div>
             <span className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
-              Scholar<span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, var(--screen-accent), var(--color-primary))' }}>Hub</span>
+              Scholar <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, var(--screen-accent), var(--color-primary))' }}>Hub</span>
             </span>
           </Link>
         </div>

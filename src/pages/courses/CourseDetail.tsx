@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, Users, Clock, BookOpen, Play, ChevronDown, ChevronRight, CheckCircle, Lock, Award, Download } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
 import { GlassCard, Badge, ProgressBar, PageHeader, Button, SkeletonCard } from '../../components/ui/index';
@@ -33,11 +32,11 @@ export function CourseDetail() {
     toast.success("You're enrolled! Let's start learning 🎉");
   };
 
-  if (loading) return <AppLayout><div className="p-6 grid grid-cols-3 gap-6">{[1,2,3].map(i => <SkeletonCard key={i} />)}</div></AppLayout>;
-  if (!course) return <AppLayout><div className="p-6 text-center text-slate-400">Course not found</div></AppLayout>;
+  if (loading) return <div className="space-y-6"><div className="p-6 grid grid-cols-3 gap-6">{[1,2,3].map(i => <SkeletonCard key={i} />)}</div></div>;
+  if (!course) return <div className="space-y-6"><div className="p-6 text-center text-slate-400">Course not found</div></div>;
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <div className="relative">
         {/* Hero banner */}
         <div className="px-6 py-8 border-b border-white/5" style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(59,130,246,0.08))' }}>
@@ -221,7 +220,7 @@ export function CourseDetail() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }
 
@@ -232,9 +231,9 @@ export function EditCourse() {
   useEffect(() => {
     if (id) coursesService.getCourseById(id).then(setCourse);
   }, [id]);
-  if (!course) return <AppLayout><div className="p-6"><SkeletonCard /></div></AppLayout>;
+  if (!course) return <div className="space-y-6"><div className="p-6"><SkeletonCard /></div></div>;
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader title={`Edit: ${course.title}`} subtitle="Update course details" breadcrumb={[{ label: 'Courses' }, { label: 'Edit' }]} />
       <div className="p-6 text-center text-slate-400 py-20">
         <p className="text-4xl mb-4">✏️</p>
@@ -244,6 +243,6 @@ export function EditCourse() {
           <Button variant="primary">Open Full Editor →</Button>
         </Link>
       </div>
-    </AppLayout>
+    </div>
   );
 }

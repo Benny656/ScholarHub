@@ -5,92 +5,69 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #d8bcea;
-  --color-on-primary: #3c284c;
-  --color-secondary: #d0c2d6;
-  --color-on-secondary: #362d3c;
-  --color-tertiary: #f3b6cd;
-  --color-on-tertiary: #4c2335;
-  --color-error: #ffb4ab;
-  --color-on-error: #690005;
-  --color-background: #151315;
-  --color-on-background: #e7e1e4;
-  --color-surface: #151315;
-  --color-on-surface: #e7e1e4;
-  --color-surface-variant: #373437;
-  --color-on-surface-variant: #cdc4cd;
-  --color-outline: #968e97;
-  --color-outline-variant: #4b454d;
-  --color-surface-container-lowest: #0f0e10;
-  --color-surface-container-low: #1d1b1d;
-  --color-surface-container: #211f21;
-  --color-surface-container-high: #2c292c;
-  --color-surface-container-highest: #373437;
-  --color-surface-dim: #151315;
-  --color-surface-bright: #3b383b;
-  --color-inverse-surface: #e7e1e4;
-  --color-inverse-on-surface: #323032;
-  --color-inverse-primary: #6c557d;
-  --color-surface-tint: #d8bcea;
+  --background: #f9f9ff;
+  --surface: #f9f9ff;
+  --on-surface: #181c22;
+  --on-surface-variant: #414753;
+  --primary: #005ab4;
+  --on-primary: #ffffff;
+  --primary-container: #0a73e0;
+  --secondary: #465f88;
+  --outline: #717785;
+  --outline-variant: #c1c6d5;
+  --surface-container-low: #f1f3fc;
+  --surface-container-high: #e6e8f1;
+  --surface-container-lowest: #ffffff;
   
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.15);
   --glass-blur: blur(12px);
-  --glass-text: #e7e1e4;
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --background: var(--color-background);
-  --surface: var(--color-surface);
-  --primary: var(--color-primary);
-  --secondary: var(--color-secondary);
-  --tertiary: var(--color-tertiary);
+  --glass-text: #181c22;
 }
 
-html.light, [data-theme="light"] {
-  --color-primary: #1978e5;
-  --color-on-primary: #ffffff;
-  --color-secondary: #555f71;
-  --color-on-secondary: #ffffff;
-  --color-tertiary: #6e5676;
-  --color-on-tertiary: #ffffff;
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-background: #f9f9ff;
-  --color-on-background: #191c20;
-  --color-surface: #f9f9ff;
-  --color-on-surface: #191c20;
-  --color-surface-variant: #e0e2ec;
-  --color-on-surface-variant: #44474e;
-  --color-outline: #74777f;
-  --color-outline-variant: #c4c6d0;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f1f3fc;
-  --color-surface-container: #ebedf6;
-  --color-surface-container-high: #e5e8f1;
-  --color-surface-container-highest: #e0e2ec;
-  --color-surface-dim: #d7dae3;
-  --color-surface-bright: #f9f9ff;
-  --color-inverse-surface: #2e3035;
-  --color-inverse-on-surface: #f0f0f7;
-  --color-inverse-primary: #aac7ff;
+html.dark, .dark {
+  --background: #151315;
+  --surface: #151315;
+  --on-surface: #e7e1e4;
+  --on-surface-variant: #cdc4cd;
+  --primary: #d8bcea;
+  --on-primary: #3c284c;
+  --primary-container: #a187b2;
+  --secondary: #d0c2d6;
+  --outline: #968e97;
+  --outline-variant: #4b454d;
+  --surface-container-low: #1d1b1d;
+  --surface-container-high: #2c292c;
+  --surface-container-lowest: #0f0e10;
 
-  --glass-bg: rgba(25, 120, 229, 0.06);
-  --glass-border: rgba(25, 120, 229, 0.2);
-  --glass-blur: blur(6px);
-  --glass-text: #191c20;
-  --card-bg: rgba(25, 120, 229, 0.06);
-  --background: var(--color-background);
-  --surface: var(--color-surface);
-  --primary: var(--color-primary);
-  --secondary: var(--color-secondary);
-  --tertiary: var(--color-tertiary);
+  --glass-bg: rgba(21, 19, 21, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(12px);
+  --glass-text: #e7e1e4;
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-on-surface);
+  background-color: var(--background);
+  color: var(--on-surface);
   transition: background-color 0.5s ease, color 0.5s ease;
   scroll-behavior: smooth;
   @apply font-sans antialiased overflow-x-hidden;
+}
+
+/* Custom scrollbars for dashboard widgets */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(140, 140, 140, 0.2);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 140, 140, 0.4);
 }
 
 @layer base {
@@ -102,10 +79,10 @@ body {
   }
 }
 
-/* Hide OS cursor when custom cursor is active (pointer devices only) */
+/* Hide OS cursor when custom JS cursor is active */
 @media (pointer: fine) {
-  body.custom-cursor,
-  body.custom-cursor * {
+  body.hide-native-cursor,
+  body.hide-native-cursor * {
     cursor: none !important;
   }
 }

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { AppLayout } from '../../layouts/AppLayout';
 import { PricingSection } from '../../components/Pricing';
 
 export function PricingPage() {
@@ -19,10 +18,10 @@ export function PricingPage() {
   }
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center py-6">
         <PricingSection />
       </div>
-    </AppLayout>
+    </div>
   );
 }

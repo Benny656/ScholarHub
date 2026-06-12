@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, BookOpen, FileText, Target, Rocket, Plus, X, Upload, Sparkles } from 'lucide-react';
-import { AppLayout } from '../../layouts/AppLayout';
 import { coursesService } from '../../services/courses.service';
 import { aiService } from '../../services/ai.service';
 import { GlassCard, Button, Input, Select, PageHeader } from '../../components/ui/index';
@@ -64,7 +63,7 @@ export function CreateCourse() {
   const inputStyle = { background: 'rgba(255,255,255,0.05)', fontFamily: 'Inter, sans-serif' };
 
   return (
-    <AppLayout>
+    <div className="space-y-6">
       <PageHeader
         title="Create New Course"
         subtitle="Build and publish your course"
@@ -302,6 +301,6 @@ export function CreateCourse() {
           )}
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }
