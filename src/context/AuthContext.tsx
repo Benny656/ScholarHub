@@ -7,6 +7,7 @@ interface AuthContextValue extends AuthState {
   login: (email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
   register: (data: Parameters<typeof authService.register>[0]) => Promise<void>;
+  loginBypass: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -51,6 +52,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function initializeAuth() {
       try {
+        const bypassUserStr = localStorage.getItem('scholarhub_bypass_user');
+        if (bypassUserStr) {
+          try {
+            const bypassUser = JSON.parse(bypassUserStr);
+            if (mounted) {
+              dispatch({ type: 'LOGIN_SUCCESS', payload: { user: bypassUser, token: 'mock-bypass-token' } });
+              return;
+            }
+          } catch (e) {
+            localStorage.removeItem('scholarhub_bypass_user');
+          }
+        }
+
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
@@ -116,11 +130,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
+    localStorage.removeItem('scholarhub_bypass_user');
     await supabase.auth.signOut();
   }, []);
 
+  const loginBypass = useCallback((role: UserRole) => {
+    const mockUsers: Record<UserRole, User> = {
+      admin: {
+        id: 'mock-admin-id',
+        name: 'Benny Manuel (Demo Admin)',
+        email: 'admin@nexlearn.com',
+        role: 'admin',
+        avatar: 'https://ui-avatars.com/api/?name=Benny+Manuel&background=6D5DFC&color=fff',
+        createdAt: new Date().toISOString(),
+        user_type: 'college',
+      },
+      teacher: {
+        id: 'mock-teacher-id',
+        name: 'Professor Smith (Demo Teacher)',
+        email: 'teacher@nexlearn.com',
+        role: 'teacher',
+        avatar: 'https://ui-avatars.com/api/?name=Professor+Smith&background=10B981&color=fff',
+        createdAt: new Date().toISOString(),
+        user_type: 'college',
+      },
+      student: {
+        id: 'mock-student-id',
+        name: 'Ben (Demo Student)',
+        email: 'student@nexlearn.com',
+        role: 'student',
+        avatar: 'https://ui-avatars.com/api/?name=Ben&background=3B82F6&color=fff',
+        createdAt: new Date().toISOString(),
+        user_type: 'college',
+      }
+    };
+    const user = mockUsers[role];
+    localStorage.setItem('scholarhub_bypass_user', JSON.stringify(user));
+    dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: 'mock-bypass-token' } });
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, register }}>
+    <AuthContext.Provider value={{ ...state, login, logout, register, loginBypass }}>
       {children}
     </AuthContext.Provider>
   );

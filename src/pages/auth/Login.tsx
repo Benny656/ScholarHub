@@ -6,9 +6,11 @@ import { authService } from '../../services/auth.service';
 import type { UserRole } from '../../types';
 import toast from 'react-hot-toast';
 import { useTheme } from '../../hooks/useTheme';
+import { useAuth } from '../../context/AuthContext';
 
 export function Login() {
   const { toggle, isDark } = useTheme();
+  const { loginBypass } = useAuth();
   const [role, setRole] = useState<UserRole>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -250,6 +252,48 @@ export function Login() {
             >
               Dean Admin cockpit
             </button>
+          </div>
+
+          {/* Direct Dashboard Bypass (Developer Mode) */}
+          <div className="mt-4 pt-3 border-t border-outline-variant/20 flex flex-col gap-1.5">
+            <div className="text-[9px] text-amber-500/80 font-bold uppercase tracking-wider text-center">
+              Developer Direct Bypass (No Login Required)
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  loginBypass('student');
+                  toast.success('Bypassed as Student', { icon: '⚡' });
+                  navigate('/student/dashboard');
+                }}
+                className="py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-[10px] font-bold transition-all cursor-pointer text-center"
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  loginBypass('teacher');
+                  toast.success('Bypassed as Teacher', { icon: '⚡' });
+                  navigate('/teacher/dashboard');
+                }}
+                className="py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-[10px] font-bold transition-all cursor-pointer text-center"
+              >
+                Teacher
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  loginBypass('admin');
+                  toast.success('Bypassed as Admin', { icon: '⚡' });
+                  navigate('/admin/dashboard');
+                }}
+                className="py-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 border border-amber-500/40 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer text-center shadow-sm"
+              >
+                Admin ⚡
+              </button>
+            </div>
           </div>
 
           <p className="text-center text-[11px] text-on-surface-variant mt-6">
