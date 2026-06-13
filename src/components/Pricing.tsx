@@ -10,7 +10,11 @@ const plans = [
     name: 'Student',
     icon: GraduationCap,
     price: { monthly: 0, annual: 0 },
+<<<<<<< HEAD
     description: 'Perfect for individual students and lifelong learners.',
+=======
+    description: 'Perfect for individual students getting started.',
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     color: 'secondary',
     textColor: 'text-secondary',
     glowColor: 'rgba(208,194,214,0.15)',
@@ -19,10 +23,14 @@ const plans = [
       'Submit Assignments',
       'Track Attendance',
       'Learning Progress Dashboard',
+<<<<<<< HEAD
       'Live Classes',
       'Certificates',
       'AI Tutor (Limited)',
       'AI Quiz Practice (Limited)',
+=======
+      'Limited AI Tutor Access',
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     ],
     cta: 'Get Started Free',
     popular: false,
@@ -31,12 +39,18 @@ const plans = [
   {
     name: 'Professional',
     icon: Zap,
+<<<<<<< HEAD
     price: { monthly: 299, annual: 239 },
     description: 'For learners and educators who want advanced AI-powered tools.',
+=======
+    price: { monthly: 299, annual: 2388 },
+    description: 'For serious learners and educators who want the full AI-powered experience.',
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     color: 'primary',
     textColor: 'text-primary',
     glowColor: 'rgba(216,188,234,0.2)',
     features: [
+<<<<<<< HEAD
       'Everything in Free',
       'Unlimited AI Tutor',
       'Unlimited AI Quiz Generation',
@@ -70,7 +84,39 @@ const plans = [
     ],
     cta: 'Contact Sales',
     popular: false,
+=======
+      'Unlimited Courses',
+      'Unlimited AI Tutor',
+      'AI Quiz Generator',
+      'AI Assignment Assistance',
+      'Live Class Access',
+      'Certificates',
+    ],
+    cta: 'Start Free Trial',
+    popular: true,
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     disabled: false,
+  },
+  {
+    name: 'Institution',
+    icon: Building2,
+    price: { monthly: 0, annual: 0 },
+    description: 'Built for schools, colleges, academies, and training organizations.',
+    color: 'tertiary',
+    textColor: 'text-tertiary',
+    glowColor: 'rgba(200,180,240,0.15)',
+    features: [
+      'Teacher & Student Management',
+      'Admin Analytics Dashboard',
+      'Institution Branding',
+      'Attendance Insights',
+      'Bulk User Management',
+      'Dedicated Support',
+    ],
+    cta: 'Contact Sales',
+    popular: false,
+    disabled: false,
+    customPrice: 'Custom',
   },
 ] as const;
 
@@ -91,20 +137,21 @@ function PricingCard({
   const { ref, magnetStyle, handleMouseMove, handleMouseLeave } = useMagnetic(0.28);
   const Icon = plan.icon;
   const price = plan.price[billing];
+  const displayPrice = 'customPrice' in plan ? plan.customPrice : (price === 0 ? 'Free' : `₹${price}`);
 
   return (
     <motion.div
       variants={variants}
       className={`relative flex flex-col glass rounded-[2rem] p-8 transition-all duration-300 reveal stagger-1 ${
         plan.popular
-          ? 'ring-2 ring-primary/40 shadow-2xl shadow-primary/20 md:scale-[1.04] border-primary/30 bg-surface-container-high/60'
+          ? 'ring-2 ring-primary/40 shadow-2xl shadow-primary/20 md:scale-[1.06] border-primary/30 bg-surface-container-high/60'
           : 'border-outline-variant/20 bg-surface-container-low/50 hover:scale-[1.02]'
       }`}
     >
       {/* Popular badge */}
       {plan.popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-primary text-on-primary rounded-full text-sm font-semibold shadow-lg shadow-primary/30 whitespace-nowrap">
-          ✦ Recommended
+          ✦ Featured / Most Popular
         </div>
       )}
 
@@ -127,7 +174,11 @@ function PricingCard({
             className="flex items-end gap-1"
           >
             <span className={`text-5xl font-bold ${plan.textColor}`}>
+<<<<<<< HEAD
               {price === 0 ? 'Free' : typeof price === 'number' ? `₹${price}` : price}
+=======
+              {displayPrice}
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
             </span>
             {typeof price === 'number' && price > 0 && (
               <span className="text-on-surface-variant font-body-md mb-1.5">/mo</span>
@@ -135,6 +186,13 @@ function PricingCard({
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Annual discount note for Professional plan */}
+      {plan.name === 'Professional' && billing === 'annual' && (
+        <div className="text-xs text-primary font-semibold mb-6 px-3 py-2 bg-primary/10 rounded-lg">
+          Save 20% with annual billing (₹2,388/year)
+        </div>
+      )}
 
       {/* Feature list */}
       <ul className="space-y-3 mb-8 flex-1">
@@ -150,20 +208,17 @@ function PricingCard({
 
       {/* Magnetic CTA button */}
       <div
-        ref={plan.disabled ? undefined : ref}
-        style={plan.disabled ? undefined : magnetStyle}
-        onMouseMove={plan.disabled ? undefined : handleMouseMove}
-        onMouseLeave={plan.disabled ? undefined : handleMouseLeave}
+        ref={ref}
+        style={magnetStyle}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       >
         <button
-          disabled={plan.disabled}
-          onClick={plan.disabled ? undefined : go}
+          onClick={go}
           className={`w-full py-3.5 rounded-full font-body-md font-semibold transition-all ripple-btn shimmer-btn ${
-            plan.disabled
-              ? 'bg-surface-variant/10 text-on-surface-variant/40 border border-outline-variant/10 cursor-not-allowed opacity-60'
-              : plan.popular
-                ? 'bg-primary text-on-primary shadow-xl shadow-primary/30 hover:scale-[1.03] active:scale-[0.98]'
-                : 'glass border border-outline-variant/30 text-on-surface hover:border-primary/40 hover:text-primary hover:scale-[1.03] active:scale-[0.98]'
+            plan.popular
+              ? 'bg-primary text-on-primary shadow-xl shadow-primary/30 hover:scale-[1.03] active:scale-[0.98]'
+              : 'glass border border-outline-variant/30 text-on-surface hover:border-primary/40 hover:text-primary hover:scale-[1.03] active:scale-[0.98]'
           }`}
         >
           {plan.cta}
@@ -175,12 +230,18 @@ function PricingCard({
 
 /* ── Pricing section ── */
 export function PricingSection() {
+  const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing>('monthly');
 
   const navigate = useNavigate();
 
   const handleAction = (planName: string) => {
-    if (planName === 'Institution') {
+    if (planName === 'Student') {
+      navigate('/signup');
+    } else if (planName === 'Professional') {
+      toast.success('Redirecting to free trial...');
+      navigate('/signup');
+    } else if (planName === 'Institution') {
       toast.success('Thank you for your interest! Our sales team will contact you shortly.');
     } else {
       navigate('/register');
@@ -251,9 +312,13 @@ export function PricingSection() {
           </div>
         </div>
 
-        {/* Pricing cards grid */}
+        {/* Pricing cards grid - 3 columns */}
         <motion.div
+<<<<<<< HEAD
           className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch max-w-6xl mx-auto"
+=======
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch max-w-6xl mx-auto mb-16"
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -271,9 +336,23 @@ export function PricingSection() {
         </motion.div>
 
         {/* Trust message */}
+<<<<<<< HEAD
         <p className="text-center font-body-md text-on-surface-variant text-sm mt-12 max-w-2xl mx-auto">
           Trusted by students, educators, and institutions building the future of learning.
         </p>
+=======
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <p className="font-body-md text-on-surface-variant text-sm opacity-70">
+            Trusted by students, educators, and institutions building the future of learning.
+          </p>
+        </motion.div>
+>>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
       </div>
     </section>
   );
