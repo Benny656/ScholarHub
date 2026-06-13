@@ -3,7 +3,6 @@ import {
   GraduationCap, 
   Moon, 
   Sun, 
-  CheckCircle, 
   ArrowRight,
   BookOpen,
   Check,
@@ -11,13 +10,9 @@ import {
   Sparkles,
   BarChart2,
   ChevronDown,
-  Users,
   Layout,
   Shield,
-  Activity,
-  AlertCircle,
-  Zap,
-  Globe
+  Activity
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, animate, useInView } from "framer-motion";
 import ParticleLearningSphere from "../../components/landing/ParticleLearningSphere";
@@ -159,17 +154,13 @@ const MegaMenuDropdown = ({ title, children }: { title: string, children: React.
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[600px] z-50 cursor-default"
           >
-            <div className="bg-surface/95 backdrop-blur-xl border border-outline-variant/40 rounded-3xl shadow-2xl shadow-black/10 p-6 grid grid-cols-2 gap-4 relative overflow-hidden">
-               {/* Decorative background glow */}
-               <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-               <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
-               
+            <div className="bg-white dark:bg-surface border border-outline-variant/20 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/35 p-5 grid grid-cols-2 gap-2 relative">
                {children}
             </div>
           </motion.div>
@@ -185,12 +176,77 @@ interface LandingPageProps {
   onGetStarted: () => void;
 }
 
+// --- Role Showcase Data ---
+const roleSlides = [
+  {
+    id: "students",
+    label: "Students",
+    image: "/Student.jpg",
+    headline: "Learning made personal.",
+    description: "ScholarHub gives every student a focused, distraction-free learning environment with AI-powered guidance at every step.",
+    points: ["Join live classes", "Submit assignments", "Track attendance", "Learn with AI Tutor"]
+  },
+  {
+    id: "teachers",
+    label: "Teachers",
+    image: "/Teacher.jpg",
+    headline: "Teach without the overhead.",
+    description: "Automate the routine so educators can spend more time on what truly matters — inspiring and mentoring students.",
+    points: ["Manage courses", "Grade assignments", "Generate AI quizzes", "Track student progress"]
+  },
+  {
+    id: "professionals",
+    label: "Professionals",
+    image: "/Professional.jpg",
+    headline: "Grow beyond the classroom.",
+    description: "ScholarHub helps professionals upskill continuously with expert-led sessions, certifications, and curated career pathways.",
+    points: ["Upskill continuously", "Access certifications", "Join expert-led sessions", "Build career pathways"]
+  },
+  {
+    id: "institutions",
+    label: "Institutions",
+    image: "/Institution.jpg",
+    headline: "Govern with complete clarity.",
+    description: "Give administrators total ecosystem visibility — from attendance and performance data to reports and system-wide insights.",
+    points: ["Manage users", "Track analytics", "Monitor attendance", "Generate reports"]
+  }
+];
+
+const SLIDE_DURATION = 5000;
+
 export default function LandingPage({ theme, toggleTheme, onGetStarted }: LandingPageProps) {
   // Showcase tab state
   const [activeTab, setActiveTab] = useState<"tab1" | "tab2" | "tab3">("tab1");
 
   // Interactive Pricing State
   const [selectedPlanId, setSelectedPlanId] = useState<"student" | "professional" | "institution">("professional");
+
+  // Role Showcase State
+  const [activeRoleIndex, setActiveRoleIndex] = useState(0);
+  const [isRoleHovered, setIsRoleHovered] = useState(false);
+  const [progressKey, setProgressKey] = useState(0);
+  const roleResumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const roleAutoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+
+  // Role autoplay
+  useEffect(() => {
+    if (isRoleHovered) return;
+    roleAutoplayRef.current = setInterval(() => {
+      setActiveRoleIndex(prev => (prev + 1) % roleSlides.length);
+      setProgressKey(k => k + 1);
+    }, SLIDE_DURATION);
+    return () => { if (roleAutoplayRef.current) clearInterval(roleAutoplayRef.current); };
+  }, [isRoleHovered, activeRoleIndex]);
+
+  const handleRoleSelect = (index: number) => {
+    if (roleAutoplayRef.current) clearInterval(roleAutoplayRef.current);
+    if (roleResumeTimeout.current) clearTimeout(roleResumeTimeout.current);
+    setActiveRoleIndex(index);
+    setProgressKey(k => k + 1);
+    setIsRoleHovered(true);
+    roleResumeTimeout.current = setTimeout(() => setIsRoleHovered(false), SLIDE_DURATION);
+  };
 
   // Final CTA States & Logic
   const ctaSectionRef = useRef<HTMLDivElement>(null);
@@ -259,26 +315,26 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
           
           <div className="hidden md:flex items-center gap-8 text-sm">
             <MegaMenuDropdown title="Platform">
-              <a href="#platform" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2 md:col-span-1">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Layout className="w-5 h-5" />
+              <a href="#platform" className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 md:col-span-1 cursor-pointer">
+                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Layout className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-on-surface mb-1">Core Experience</h4>
+                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-primary transition-colors duration-200">Core Experience</h4>
                   <p className="text-xs text-on-surface-variant leading-relaxed">High-fidelity virtual learning environments.</p>
                 </div>
               </a>
-              <a href="#platform" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2 md:col-span-1">
-                <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Activity className="w-5 h-5" />
+              <a href="#platform" className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 md:col-span-1 cursor-pointer">
+                <div className="w-9 h-9 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Activity className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-on-surface mb-1">Analytics</h4>
+                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-secondary transition-colors duration-200">Analytics</h4>
                   <p className="text-xs text-on-surface-variant leading-relaxed">Unified telemetry and performance tracking.</p>
                 </div>
               </a>
-              <div className="col-span-2 h-px bg-outline-variant/30 my-1" />
-              <div className="col-span-2 flex justify-between items-center px-2">
+              <div className="col-span-2 h-px bg-outline-variant/20 my-1" />
+              <div className="col-span-2 flex justify-between items-center px-2 pt-1">
                 <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Learn More</span>
                 <a href="#pricing" className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
                   View full feature list <ArrowRight className="w-3 h-3" />
@@ -287,30 +343,42 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             </MegaMenuDropdown>
 
             <MegaMenuDropdown title="Roles">
-              <a href="#story" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <BookOpen className="w-5 h-5" />
+              <a 
+                href="#platform" 
+                onClick={() => setActiveTab("tab1")}
+                className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <BookOpen className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-on-surface mb-1">For Students</h4>
+                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-blue-500 transition-colors duration-200">For Students</h4>
                   <p className="text-xs text-on-surface-variant leading-relaxed">Personalized learning paths, 24/7 AI Tutor, and interactive materials.</p>
                 </div>
               </a>
-              <a href="#story" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <GraduationCap className="w-5 h-5" />
+              <a 
+                href="#platform" 
+                onClick={() => setActiveTab("tab2")}
+                className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <GraduationCap className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-on-surface mb-1">For Instructors</h4>
+                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-emerald-500 transition-colors duration-200">For Instructors</h4>
                   <p className="text-xs text-on-surface-variant leading-relaxed">Automated grading, instant quiz generation, and administrative ease.</p>
                 </div>
               </a>
-              <a href="#story" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Shield className="w-5 h-5" />
+              <a 
+                href="#platform" 
+                onClick={() => setActiveTab("tab3")}
+                className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Shield className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-on-surface mb-1">For Administrators</h4>
+                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-purple-500 transition-colors duration-200">For Administrators</h4>
                   <p className="text-xs text-on-surface-variant leading-relaxed">Total ecosystem oversight and security governance.</p>
                 </div>
               </a>
@@ -484,180 +552,212 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         </div>
       </section>
 
-      {/* STORYTELLING: PROBLEM -> SOLUTION */}
-      <section className="py-24 relative overflow-hidden bg-surface-container-lowest" id="storytelling">
-        <div className="max-w-7xl mx-auto px-6">
-          
-          {/* The Problem */}
-          <div className="mb-32">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="max-w-3xl mx-auto text-center space-y-6"
-            >
-              <span className="text-[10px] font-mono tracking-wider text-red-500 font-bold uppercase py-1 px-3.5 bg-red-500/10 rounded-full">The Problem</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-on-surface">
-                Education is fragmented.
-              </h2>
-              <p className="text-lg text-on-surface-variant leading-relaxed">
-                Institutions struggle with disconnected tools. Students juggle multiple platforms for lectures, assignments, and communication. Teachers drown in administrative overhead instead of teaching.
-              </p>
-            </motion.div>
+      {/* ROLE SHOWCASE: BUILT FOR EVERYONE IN EDUCATION */}
+      <section
+        className="py-24 md:py-32 relative overflow-hidden bg-bg-surface"
+        onMouseEnter={() => setIsRoleHovered(true)}
+        onMouseLeave={() => setIsRoleHovered(false)}
+      >
+        {/* Subtle ambient blobs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { icon: AlertCircle, title: "Tool Fatigue", desc: "Switching between video apps, LMS, and messaging platforms causes cognitive overload and lost productivity." },
-                { icon: Zap, title: "Administrative Burden", desc: "Educators spend up to 40% of their time on repetitive tasks like grading, scheduling, and attendance tracking." },
-                { icon: Activity, title: "Lack of Insights", desc: "Data is siloed. Deans and administrators have no unified view of student engagement or system health." }
-              ].map((item, i) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="p-8 rounded-3xl bg-surface-container-low border border-outline-variant/30 text-center space-y-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-16 space-y-4"
+          >
+            <span className="text-[10px] font-mono tracking-widest text-primary uppercase font-bold py-1 px-3.5 bg-primary/8 rounded-full inline-block">
+              Who It&apos;s For
+            </span>
+            <h2 className="font-serif text-4xl md:text-5xl font-black text-on-surface leading-tight">
+              Built For Everyone In Education
+            </h2>
+            <p className="text-on-surface-variant text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+              From school students to university administrators, ScholarHub adapts to every stage of learning.
+            </p>
+          </motion.div>
+
+          {/* Main Showcase Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-16 items-center">
+
+            {/* LEFT: Image Panel (60%) */}
+            <div className="lg:col-span-7 relative rounded-3xl overflow-hidden aspect-[4/3] md:aspect-[16/10] bg-surface-container-lowest shadow-2xl shadow-black/10">
+              <AnimatePresence mode="sync">
+                <motion.div
+                  key={roleSlides[activeRoleIndex].id}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7, ease: "easeInOut" }}
                 >
-                  <div className="w-12 h-12 mx-auto bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center">
-                    <item.icon className="w-6 h-6" />
+                  <motion.img
+                    src={roleSlides[activeRoleIndex].image}
+                    alt={roleSlides[activeRoleIndex].label}
+                    className="w-full h-full object-cover"
+                    initial={{ scale: 1.05 }}
+                    animate={{ scale: 1.0 }}
+                    transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+                  />
+                  {/* Subtle overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                  {/* Role label badge on image */}
+                  <div className="absolute bottom-5 left-5">
+                    <span className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      {roleSlides[activeRoleIndex].label}
+                    </span>
                   </div>
-                  <h3 className="font-serif font-bold text-xl">{item.title}</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">{item.desc}</p>
                 </motion.div>
-              ))}
+              </AnimatePresence>
+            </div>
+
+            {/* RIGHT: Navigation + Content (40%) */}
+            <div className="lg:col-span-5 flex flex-col gap-0 pt-10 lg:pt-0">
+
+              {/* Role Navigation — Vertical (desktop) / Horizontal (mobile) */}
+              <nav
+                className="flex flex-row lg:flex-col gap-1 mb-8 lg:mb-0 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0"
+                aria-label="Role selector"
+              >
+                {roleSlides.map((slide, index) => {
+                  const isActive = index === activeRoleIndex;
+                  return (
+                    <button
+                      key={slide.id}
+                      onClick={() => handleRoleSelect(index)}
+                      aria-selected={isActive}
+                      className={`group relative flex items-center gap-4 px-4 py-4 lg:py-5 rounded-2xl text-left transition-all duration-300 shrink-0 lg:shrink cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                        isActive
+                          ? "text-on-surface"
+                          : "text-on-surface-variant hover:text-on-surface"
+                      }`}
+                    >
+                      {/* Progress bar / Active indicator — vertical line on desktop */}
+                      <div className="hidden lg:flex flex-col items-center self-stretch shrink-0 w-[3px]">
+                        <div className="relative flex-1 w-full bg-outline-variant/30 rounded-full overflow-hidden">
+                          {isActive && (
+                            <motion.div
+                              key={progressKey}
+                              className="absolute inset-x-0 top-0 bg-primary rounded-full"
+                              initial={{ height: "0%" }}
+                              animate={{ height: isRoleHovered ? "0%" : "100%" }}
+                              transition={{
+                                duration: isRoleHovered ? 0 : SLIDE_DURATION / 1000,
+                                ease: "linear"
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Horizontal progress bar (mobile only) */}
+                      <div className="lg:hidden absolute bottom-1 left-4 right-4 h-[2px] bg-outline-variant/30 rounded-full overflow-hidden">
+                        {isActive && (
+                          <motion.div
+                            key={`h-${progressKey}`}
+                            className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                            initial={{ width: "0%" }}
+                            animate={{ width: isRoleHovered ? "0%" : "100%" }}
+                            transition={{
+                              duration: isRoleHovered ? 0 : SLIDE_DURATION / 1000,
+                              ease: "linear"
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col">
+                        <span className={`font-bold text-sm md:text-base tracking-tight transition-colors duration-200 ${
+                          isActive ? "text-on-surface" : "text-on-surface-variant group-hover:text-on-surface"
+                        }`}>
+                          {slide.label}
+                        </span>
+                        {isActive && (
+                          <motion.span
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="text-[10px] text-on-surface-variant/70 mt-0.5 hidden lg:block"
+                          >
+                            {slide.points[0]} · {slide.points[1]}
+                          </motion.span>
+                        )}
+                      </div>
+
+                      {/* Hover glow pill */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="roleActivePill"
+                          className="absolute inset-0 rounded-2xl bg-primary/5 border border-primary/10"
+                          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+
+              {/* Content Panel — slides in/out */}
+              <div className="relative min-h-[260px] lg:ml-7 mt-4 lg:mt-6">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={roleSlides[activeRoleIndex].id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.45, ease: "easeOut" }}
+                    className="space-y-6"
+                  >
+                    <h3 className="font-serif text-3xl md:text-4xl font-black text-on-surface leading-snug">
+                      {roleSlides[activeRoleIndex].headline}
+                    </h3>
+                    <p className="text-on-surface-variant leading-relaxed text-sm md:text-base">
+                      {roleSlides[activeRoleIndex].description}
+                    </p>
+
+                    <motion.ul
+                      className="space-y-3"
+                      variants={{
+                        show: { transition: { staggerChildren: 0.07 } }
+                      }}
+                      initial="hidden"
+                      animate="show"
+                    >
+                      {roleSlides[activeRoleIndex].points.map((point, pi) => (
+                        <motion.li
+                          key={pi}
+                          variants={{
+                            hidden: { opacity: 0, x: -10 },
+                            show: { opacity: 1, x: 0 }
+                          }}
+                          className="flex items-center gap-3 text-sm font-semibold text-on-surface"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-primary/12 border border-primary/20 flex items-center justify-center shrink-0">
+                            <Check className="w-3 h-3 text-primary" />
+                          </div>
+                          {point}
+                        </motion.li>
+                      ))}
+                    </motion.ul>
+
+                    <button
+                      onClick={onGetStarted}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all duration-200 group"
+                    >
+                      Get started as {roleSlides[activeRoleIndex].label}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                    </button>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
-
-          {/* The Solution */}
-          <div className="relative">
-             {/* Connection line */}
-             <div className="absolute left-1/2 -top-32 bottom-0 w-px bg-gradient-to-b from-red-500/20 via-primary/50 to-primary/20 -translate-x-1/2 hidden md:block" />
-             
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="max-w-3xl mx-auto text-center space-y-6 relative z-10 py-8"
-            >
-              <span className="text-[10px] font-mono tracking-wider text-primary font-bold uppercase py-1 px-3.5 bg-primary/10 rounded-full inline-block backdrop-blur-sm shadow-sm">The Solution</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-on-surface">
-                A unified ecosystem.
-              </h2>
-              <p className="text-lg text-on-surface-variant leading-relaxed">
-                ScholarHub consolidates the entire educational lifecycle into one intelligent, high-performance platform. Empowering students, liberating educators, and providing unprecedented clarity for institutions.
-              </p>
-            </motion.div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ROLE-BASED NARRATIVE */}
-      <section className="py-24" id="story">
-        <div className="max-w-7xl mx-auto px-6">
-          
-          {/* Student Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center mb-36">
-            <div className="space-y-6">
-              <span className="text-[10px] font-mono tracking-wider text-primary font-bold uppercase py-1 px-3.5 bg-primary/5 rounded-full">For Students</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-on-surface">
-                Personalized learning paths that never stop.
-              </h2>
-              <p className="text-lg text-on-surface-variant leading-relaxed">
-                ScholarHub provides students with a high-fidelity experience, bringing assignments, grades, and an always-on assistant to their fingertips.
-              </p>
-              <ul className="space-y-4 pt-2">
-                <li className="flex items-center gap-3 font-semibold text-sm">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0" />
-                  <span>Instant help with 24/7 AI Tutor</span>
-                </li>
-                <li className="flex items-center gap-3 font-semibold text-sm">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0" />
-                  <span>Interactive study materials and custom tests</span>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Student App Mock */}
-            <div className="bg-surface-container-high border border-outline-variant/30 rounded-3xl p-6 shadow-lg min-h-[300px] flex flex-col justify-between">
-              <div className="flex items-center justify-between pointer-events-none">
-                <strong className="text-sm font-serif">ScholarHub Chat Assistant</strong>
-                <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">24/7 Online Tutor</span>
-              </div>
-              <div className="space-y-3 my-6 flex-1 flex flex-col justify-end">
-                <div className="max-w-[80%] self-end bg-primary text-on-primary rounded-2xl rounded-tr-none p-3 text-xs leading-normal">
-                  Hi AI, and can you assist me with explaining Euler&apos;s formula in mathematical terms?
-                </div>
-                <div className="max-w-[85%] self-start bg-surface-container-lowest border border-outline-variant/10 rounded-2xl rounded-tl-none p-3.5 text-xs text-on-surface-variant space-y-2 shadow-sm">
-                  <div className="flex items-center gap-1.5 text-primary font-bold text-[10px] uppercase">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Gemini Core</span>
-                  </div>
-                  <p className="leading-relaxed">
-                    Yes! Euler&apos;s formula asserts that for any real number <code className="font-mono bg-surface p-0.5 rounded">x</code>:
-                  </p>
-                  <p className="font-mono bg-surface p-2 rounded text-center text-[10px] text-on-surface">
-                    e^(ix) = cos(x) + i * sin(x)
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <input type="text" disabled placeholder="Ask anything..." className="flex-1 bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-3 py-2 text-xs" />
-                <button disabled className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold">Ask</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Teacher Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="lg:order-2 space-y-6">
-              <span className="text-[10px] font-mono tracking-wider text-primary font-bold uppercase py-1 px-3.5 bg-primary/5 rounded-full">For Instructors</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-on-surface">
-                Reclaiming time for what matters.
-              </h2>
-              <p className="text-lg text-on-surface-variant leading-relaxed">
-                Automate the administrative drudgery. Generate quizzes from documents in seconds and track real-time attendance.
-              </p>
-              
-              <div className="bg-surface-container-low p-6 rounded-2xl border-l-4 border-primary space-y-3 shadow-sm">
-                <p className="italic text-on-surface-variant leading-relaxed">
-                  &ldquo;ScholarHub reduced my weekly grading time by 60%, allowing me to focus on real direct mentoring events.&rdquo;
-                </p>
-                <div className="font-bold text-sm text-on-surface">— Prof. Sarah Chen</div>
-              </div>
-            </div>
-            
-            {/* Teacher Dashboard Mock */}
-            <div className="lg:order-1 bg-surface-container-high border border-outline-variant/30 rounded-3xl p-6 shadow-lg min-h-[300px] flex flex-col justify-between">
-              <div className="space-y-2">
-                <h4 className="font-serif font-bold text-sm">Automated Quizzes Builder</h4>
-                <p className="text-[11px] text-on-surface-variant">Extract quiz parameters instantly</p>
-              </div>
-              
-              <div className="bg-surface-container-lowest rounded-2xl p-4.5 border border-outline-variant/20 space-y-3.5 my-4 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-on-surface-variant">Source syllabus doc</span>
-                  <span className="text-[10px] text-emerald-600 font-bold">✓ Attached: electromagnetism.pdf</span>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-[11px] font-bold">Draft Question generated by Gemini:</p>
-                  <p className="text-xs text-on-surface-variant italic bg-surface-container-low p-2.5 rounded border border-outline-variant/10">
-                    &ldquo;Evaluate the magnetic flux density inside a solenoid composed of 300 turns...&rdquo;
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button disabled className="flex-1 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold">Regenerate</button>
-                <button disabled className="flex-1 py-2 bg-primary text-white rounded-xl text-xs font-bold">Deploy to Students</button>
-              </div>
-            </div>
-
-          </div>
-
         </div>
       </section>
 
