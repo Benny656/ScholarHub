@@ -456,6 +456,7 @@ export function CourseCatalog() {
         ) : (
           <motion.div 
             variants={{
+              hidden: {},
               show: {
                 transition: {
                   staggerChildren: 0.05

@@ -436,8 +436,6 @@ export function TeacherDashboard() {
             </Panel>
           </motion.div>
 
-          </motion.div>
-
           {/* ─── NEW: PROCTORING & BLOCKCHAIN ─── */}
           <motion.div variants={itemVariants}>
             <ProctoringDashboard role="teacher" />

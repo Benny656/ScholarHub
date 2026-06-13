@@ -39,7 +39,7 @@ export function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    socketService.connect(user?.token || 'demo');
+    socketService.connect(user?.id || 'demo');
     return () => socketService.disconnect();
   }, [user]);
 
@@ -56,12 +56,12 @@ export function Messages() {
     if (!newMsg.trim() || !user || !activeConv) return;
     const msg: Message = {
       id: `m${Date.now()}`,
-      conversationId: activeConv,
       senderId: user.id,
       senderName: user.name,
       content: newMsg,
       timestamp: new Date().toISOString(),
       isRead: false,
+      type: 'text',
     };
     setMessages(p => [...p, msg]);
     setNewMsg('');
@@ -163,10 +163,10 @@ export function Messages() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--outline-variant) transparent' }}>
                 {(messages.length ? messages : [
-                  { id: 'm1', conversationId: 'dm1', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'Hi! How are you doing with the React assignment?', timestamp: new Date(Date.now() - 3600000).toISOString(), isRead: true },
-                  { id: 'm2', conversationId: 'dm1', senderId: user?.id || 'u1', senderName: user?.name || 'Alex', content: 'Working on it! Having trouble with useContext though.', timestamp: new Date(Date.now() - 3500000).toISOString(), isRead: true },
-                  { id: 'm3', conversationId: 'dm1', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'useContext is tricky at first. Let me share a resource that helped my students a lot.', timestamp: new Date(Date.now() - 3400000).toISOString(), isRead: true },
-                  { id: 'm4', conversationId: 'dm1', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'Great submission! I left some feedback on your last pull request.', timestamp: new Date(Date.now() - 120000).toISOString(), isRead: false },
+                  { id: 'm1', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'Hi! How are you doing with the React assignment?', timestamp: new Date(Date.now() - 3600000).toISOString(), isRead: true, type: 'text' },
+                  { id: 'm2', senderId: user?.id || 'u1', senderName: user?.name || 'Alex', content: 'Working on it! Having trouble with useContext though.', timestamp: new Date(Date.now() - 3500000).toISOString(), isRead: true, type: 'text' },
+                  { id: 'm3', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'useContext is tricky at first. Let me share a resource that helped my students a lot.', timestamp: new Date(Date.now() - 3400000).toISOString(), isRead: true, type: 'text' },
+                  { id: 'm4', senderId: 'u2', senderName: 'Dr. Sarah Chen', content: 'Great submission! I left some feedback on your last pull request.', timestamp: new Date(Date.now() - 120000).toISOString(), isRead: false, type: 'text' },
                 ] as Message[]).map((msg, i) => {
                   const isMe = msg.senderId === user?.id || msg.senderId === 'u1';
                   const showAvatar = !isMe && (i === 0 || messages[i - 1]?.senderId !== msg.senderId);
