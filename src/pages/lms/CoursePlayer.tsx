@@ -50,7 +50,7 @@ export function CoursePlayer() {
   const completedCount = ALL_LESSONS.filter(l => l.isCompleted).length;
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#070d1f' }}>
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -58,18 +58,17 @@ export function CoursePlayer() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="flex flex-col border-r border-white/5 flex-shrink-0 overflow-hidden"
-            style={{ background: 'rgba(13,20,45,0.98)' }}
+            className="flex flex-col border-r border-outline-variant/10 flex-shrink-0 overflow-hidden bg-white/95 dark:bg-neutral-950/98 backdrop-blur-md"
           >
             {/* Course info */}
-            <div className="px-4 py-4 border-b border-white/5">
+            <div className="px-4 py-4 border-b border-outline-variant/10">
               <Link to="/courses" className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 mb-3">
                 <ChevronLeft size={13} /> Back to courses
               </Link>
-              <h2 className="text-sm font-bold text-white leading-tight mb-2" style={{ fontFamily: 'Geist, sans-serif' }}>
+              <h2 className="text-sm font-bold text-on-surface leading-tight mb-2" style={{ fontFamily: 'Geist, sans-serif' }}>
                 {course?.title || 'Full-Stack Web Development'}
               </h2>
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="flex items-center justify-between text-xs text-on-surface-variant mb-2">
                 <span>{completedCount}/{ALL_LESSONS.length} lessons</span>
                 <span className="font-medium text-purple-400">{Math.round((completedCount / ALL_LESSONS.length) * 100)}%</span>
               </div>
@@ -85,7 +84,7 @@ export function CoursePlayer() {
                 <div key={section.id}>
                   <button
                     onClick={() => setActiveSection(s => s === section.id ? null : section.id)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide hover:text-white transition-colors"
+                    className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wide hover:text-on-surface transition-colors"
                     style={{ fontFamily: 'JetBrains Mono, monospace' }}
                   >
                     {section.title}
@@ -95,7 +94,7 @@ export function CoursePlayer() {
                     <button
                       key={lesson.id}
                       onClick={() => !lesson.isLocked && setCurrentLesson({ id: lesson.id, title: lesson.title, type: lesson.type })}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all ${lesson.id === currentLesson.id ? 'bg-purple-500/15 border-r-2 border-purple-500' : 'hover:bg-white/5'} ${lesson.isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all ${lesson.id === currentLesson.id ? 'bg-purple-500/15 border-r-2 border-purple-500' : 'hover:bg-on-surface/5'} ${lesson.isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <div className="flex-shrink-0">
                         {lesson.isCompleted ? <CheckCircle size={14} className="text-emerald-400" /> :
@@ -104,7 +103,7 @@ export function CoursePlayer() {
                          lesson.type === 'quiz' ? <span className="text-amber-400 text-xs font-bold">Q</span> :
                          <FileText size={13} className="text-blue-400" />}
                       </div>
-                      <span className={`text-sm flex-1 min-w-0 truncate ${lesson.id === currentLesson.id ? 'text-purple-300 font-medium' : 'text-slate-400'}`}>
+                      <span className={`text-sm flex-1 min-w-0 truncate ${lesson.id === currentLesson.id ? 'text-brand-primary dark:text-purple-300 font-medium' : 'text-on-surface-variant'}`}>
                         {lesson.title}
                       </span>
                       {lesson.duration && <span className="text-xs text-slate-600 flex-shrink-0">{lesson.duration}</span>}
@@ -120,17 +119,17 @@ export function CoursePlayer() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5" style={{ background: 'rgba(11,19,38,0.95)' }}>
-          <button onClick={() => setSidebarOpen(o => !o)} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-outline-variant/10 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md">
+          <button onClick={() => setSidebarOpen(o => !o)} className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all">
             {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-semibold text-white truncate" style={{ fontFamily: 'Geist, sans-serif' }}>{currentLesson.title}</h1>
+            <h1 className="text-sm font-semibold text-on-surface truncate" style={{ fontFamily: 'Geist, sans-serif' }}>{currentLesson.title}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setViewMode(v => v === 'video' ? 'pdf' : 'video')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${viewMode === 'pdf' ? 'border-blue-500/40 bg-blue-500/10 text-blue-300' : 'border-white/10 text-slate-400 hover:text-white hover:bg-white/5'}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${viewMode === 'pdf' ? 'border-blue-500/40 bg-blue-500/10 text-blue-300' : 'border-outline-variant/30 text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'}`}
             >
               <FileText size={13} /> PDF View
             </button>
@@ -183,10 +182,10 @@ export function CoursePlayer() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)', minHeight: 480 }}>
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-                  <span className="text-sm font-semibold text-white">React Hooks Cheatsheet.pdf</span>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
+              <div className="rounded-2xl border border-outline-variant/20 overflow-hidden bg-neutral-100/30 dark:bg-neutral-900/40" style={{ minHeight: 480 }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/10">
+                  <span className="text-sm font-semibold text-on-surface">React Hooks Cheatsheet.pdf</span>
+                  <div className="flex items-center gap-2 text-xs text-on-surface-variant">
                     <span>Page 1 / 12</span>
                     <Settings2 size={14} />
                   </div>
@@ -201,18 +200,18 @@ export function CoursePlayer() {
               </div>
             )}
 
-            {/* Navigation buttons */}
+             {/* Navigation buttons */}
             <div className="flex items-center justify-between">
               <button
                 onClick={() => {
                   if (currentIdx > 0) setCurrentLesson({ id: ALL_LESSONS[currentIdx - 1].id, title: ALL_LESSONS[currentIdx - 1].title, type: ALL_LESSONS[currentIdx - 1].type });
                 }}
                 disabled={currentIdx === 0}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-slate-300 border border-white/10 hover:bg-white/5 disabled:opacity-40 transition-all"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-on-surface-variant border border-outline-variant/30 hover:bg-on-surface/5 disabled:opacity-40 transition-all"
               >
                 <ChevronLeft size={15} /> Previous
               </button>
-              <span className="text-xs text-slate-500" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+              <span className="text-xs text-on-surface-variant" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                 Lesson {currentIdx + 1} / {ALL_LESSONS.length}
               </span>
               <button
@@ -220,7 +219,7 @@ export function CoursePlayer() {
                   if (currentIdx < ALL_LESSONS.length - 1) setCurrentLesson({ id: ALL_LESSONS[currentIdx + 1].id, title: ALL_LESSONS[currentIdx + 1].title, type: ALL_LESSONS[currentIdx + 1].type });
                 }}
                 disabled={currentIdx === ALL_LESSONS.length - 1}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white border border-white/10 hover:bg-purple-500/15 disabled:opacity-40 transition-all"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-on-surface border border-outline-variant/30 hover:bg-purple-500/15 disabled:opacity-40 transition-all"
                 style={{ borderColor: 'rgba(139,92,246,0.3)' }}
               >
                 Next <ChevronRight size={15} />
@@ -229,16 +228,16 @@ export function CoursePlayer() {
 
             {/* Downloads */}
             <GlassCard>
-              <h3 className="text-sm font-bold text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Lesson Resources</h3>
+              <h3 className="text-sm font-bold text-on-surface mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Lesson Resources</h3>
               <div className="space-y-2">
                 {RESOURCES.map((r, i) => (
-                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all cursor-pointer group">
+                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-on-surface/5 transition-all cursor-pointer group">
                     <div className="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0">
                       <FileText size={14} className="text-blue-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white truncate" style={{ fontFamily: 'Inter, sans-serif' }}>{r.name}</p>
-                      <p className="text-xs text-slate-500">{r.size}</p>
+                      <p className="text-sm text-on-surface truncate" style={{ fontFamily: 'Inter, sans-serif' }}>{r.name}</p>
+                      <p className="text-xs text-on-surface-variant">{r.size}</p>
                     </div>
                     <Download size={14} className="text-slate-600 group-hover:text-purple-400 transition-colors" />
                   </div>

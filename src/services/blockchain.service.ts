@@ -61,5 +61,22 @@ export const blockchainService = {
       blockNumber: 58124953,
       issuer: `0x1234567890123456789012345678901234567890 (ScholarHub Issuer for hash ${finalHash.substring(0, 10)}...)`,
     };
+  },
+
+  async uploadCertificate(file: File): Promise<string> {
+    console.log('[BlockchainService] Uploading custom certificate PDF...', file.name);
+    return 'mock-upload-url';
+  },
+
+  async submitToBlockchain(certificateId: string): Promise<string> {
+    console.log('[BlockchainService] Submitting to blockchain network...', certificateId);
+    return `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+  },
+
+  async getBlockchainStatus(certificateId: string): Promise<'pending' | 'processing' | 'verified' | 'failed'> {
+    console.log('[BlockchainService] Fetching on-chain status...', certificateId);
+    // Mock random status for demo purposes
+    const statuses = ['pending', 'processing', 'verified', 'failed'] as const;
+    return statuses[Math.floor(Math.random() * statuses.length)];
   }
 };

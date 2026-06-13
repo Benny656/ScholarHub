@@ -33,8 +33,7 @@ function ParticipantTile({ p, index }: { p: typeof PARTICIPANTS[0]; index: numbe
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.08, type: 'spring', damping: 15 }}
-      className="relative aspect-video rounded-2xl overflow-hidden border border-outline-variant/20 group"
-      style={{ background: 'rgba(255,255,255,0.04)' }}
+      className="relative aspect-video rounded-2xl overflow-hidden border border-outline-variant/20 group bg-neutral-100/30 dark:bg-neutral-900/40"
     >
       {p.isCameraOff ? (
         <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${colors[index % colors.length]} opacity-30`}>
@@ -148,8 +147,7 @@ function Whiteboard() {
       </div>
       <canvas
         ref={canvasRef}
-        className="flex-1 cursor-crosshair"
-        style={{ background: 'rgba(255,255,255,0.03)' }}
+        className="flex-1 cursor-crosshair bg-neutral-100/10 dark:bg-neutral-900/30"
         onMouseDown={e => { setIsDrawing(true); lastPos.current = getPos(e); }}
         onMouseMove={draw}
         onMouseUp={() => { setIsDrawing(false); lastPos.current = null; }}
@@ -179,11 +177,11 @@ export function LiveClassroom() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-bg">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Top bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/10" style={{ background: 'rgba(11,19,38,0.95)' }}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/10 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
             {recording && <span className="text-xs font-bold text-red-400 uppercase tracking-wider" style={{ fontFamily: 'JetBrains Mono, monospace' }}>● REC</span>}
@@ -205,7 +203,7 @@ export function LiveClassroom() {
             >
               {view === 'grid' ? <><PenLine size={14} /> Whiteboard</> : <><Grid size={14} /> Grid View</>}
             </button>
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-outline-variant/20" style={{ background: 'rgba(255,255,255,0.04)' }}>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-outline-variant/20 bg-neutral-100/30 dark:bg-white/5">
               <Users size={13} className="text-on-surface-variant" />
               <span className="text-xs text-on-surface-variant">{PARTICIPANTS.length}</span>
             </div>
@@ -227,8 +225,7 @@ export function LiveClassroom() {
               </motion.div>
             ) : (
               <motion.div key="wb" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="h-full rounded-2xl overflow-hidden border border-outline-variant/20"
-                style={{ background: 'rgba(255,255,255,0.03)' }}>
+                className="h-full rounded-2xl overflow-hidden border border-outline-variant/20 bg-neutral-100/10 dark:bg-neutral-900/30">
                 <Whiteboard />
               </motion.div>
             )}
@@ -236,7 +233,7 @@ export function LiveClassroom() {
         </div>
 
         {/* Controls bar */}
-        <div className="flex items-center justify-center gap-3 py-4 px-4 border-t border-outline-variant/10" style={{ background: 'rgba(11,19,38,0.95)' }}>
+        <div className="flex items-center justify-center gap-3 py-4 px-4 border-t border-outline-variant/10 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md">
           <button
             onClick={() => setMuted(m => !m)}
             className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${muted ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/8 text-on-surface hover:bg-white/12 border border-outline-variant/20'}`}
@@ -286,8 +283,7 @@ export function LiveClassroom() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 300, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="flex flex-col border-l border-outline-variant/10 flex-shrink-0 overflow-hidden"
-            style={{ background: 'rgba(13,20,45,0.98)' }}
+            className="flex flex-col border-l border-outline-variant/10 flex-shrink-0 overflow-hidden bg-white/95 dark:bg-neutral-950/98 backdrop-blur-md"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/10">
               <h3 className="text-sm font-semibold text-on-surface">Class Chat</h3>
@@ -312,13 +308,13 @@ export function LiveClassroom() {
             )}
 
             <div className="p-3 border-t border-outline-variant/10">
-              <div className="flex items-center gap-2 rounded-xl px-3 py-2 border border-outline-variant/20" style={{ background: 'rgba(255,255,255,0.05)' }}>
+              <div className="flex items-center gap-2 rounded-xl px-3 py-2 border border-outline-variant/20 bg-neutral-100/50 dark:bg-white/5">
                 <input
                   value={chatMsg}
                   onChange={e => setChatMsg(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && sendMsg()}
                   placeholder="Type a message..."
-                  className="flex-1 bg-transparent text-sm text-on-surface placeholder-slate-500 outline-none"
+                  className="flex-1 bg-transparent text-sm text-on-surface placeholder-neutral-500 outline-none"
                 />
                 <button onClick={sendMsg} className="text-[#2563EB] hover:text-purple-300 transition-colors">
                   <Send size={14} />
@@ -336,8 +332,7 @@ export function LiveClassroom() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="absolute top-16 right-4 w-64 rounded-2xl border border-outline-variant/20 shadow-2xl z-50 overflow-hidden"
-            style={{ background: 'rgba(13,20,45,0.98)', backdropFilter: 'blur(20px)' }}
+            className="absolute top-16 right-4 w-64 rounded-2xl border border-outline-variant/20 shadow-2xl z-50 overflow-hidden bg-white/95 dark:bg-neutral-950/98 backdrop-blur-md"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/10">
               <h3 className="text-sm font-semibold text-on-surface">Breakout Rooms</h3>

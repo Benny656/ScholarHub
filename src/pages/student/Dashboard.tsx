@@ -1,324 +1,693 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  RadialBarChart, RadialBar, PieChart, Pie, Cell,
+  LineChart, Line
 } from 'recharts';
-import { BookOpen, Clock, AlertTriangle, Calendar, ChevronRight, Sparkles, Star, Play, TrendingUp } from 'lucide-react';
+import { 
+  BookOpen, Clock, AlertTriangle, Calendar, ChevronRight, 
+  MessageSquare, Sparkles, TrendingUp, PlayCircle, FileText, 
+  CheckCircle2, Award, ArrowRight, Video, FileImage, 
+  Download, Map, Monitor, Share2, Edit3, Hand,
+  Circle, GraduationCap, Bell, ExternalLink
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { coursesService } from '../../services/courses.service';
-import { analyticsService } from '../../services/analytics.service';
-import { aiService, type CourseRecommendation } from '../../services/ai.service';
-import { assignmentsService } from '../../services/assignments.service';
-import { StatCard, GlassCard, Badge, ProgressBar, SkeletonCard, SectionHeader, Avatar } from '../../components/ui/index';
-import type { Assignment } from '../../types';
-import toast from 'react-hot-toast';
+import { PeerReviewCenter } from '../../components/features/PeerReviewCenter';
+import { AIStudyPlanner } from '../../components/features/AIStudyPlanner';
+import { OfflineSync } from '../../components/features/OfflineSync';
+import { VoiceAssistantModal } from '../../components/features/VoiceAssistantModal';
+import { Mic } from 'lucide-react';
 
-const PRIORITY_COLORS = { high: 'red', medium: 'amber', low: 'slate' } as const;
-const PRIORITY_LABELS = { high: 'High Priority', medium: 'Medium', low: 'Low' };
+// --- Mock Data ---
+const ACADEMIC_DATA = {
+  cgpa: '3.82',
+  maxCgpa: '4.0',
+  attendance: 92,
+  activeCourses: 4,
+  pendingAssignments: 3,
+  semester: 'Fall 2026',
+  creditsCompleted: 45,
+  creditsRemaining: 75,
+  academicStanding: 'Excellent',
+};
 
-function HeatmapCell({ count }: { count: number }) {
-  const opacity = count === 0 ? 0.05 : count === 1 ? 0.25 : count === 2 ? 0.5 : count === 3 ? 0.75 : 1;
-  return (
-    <div
-      className="w-3 h-3 rounded-sm transition-all hover:scale-125 cursor-pointer bg-brand-primary"
-      style={{ opacity: opacity === 0.05 ? 0.1 : opacity }}
-      title={`${count} activities`}
-    />
-  );
-}
+const COURSES = [
+  { id: 'c1', title: 'Advanced Data Structures', faculty: 'Dr. Alan Turing', progress: 68, nextSession: 'Tomorrow, 10:00 AM', color: 'bg-indigo-500' },
+  { id: 'c2', title: 'Machine Learning Fundamentals', faculty: 'Prof. Ada Lovelace', progress: 34, nextSession: 'Wed, 2:00 PM', color: 'bg-emerald-500' },
+  { id: 'c3', title: 'Cloud Computing Architecture', faculty: 'Dr. Vint Cerf', progress: 85, nextSession: 'Thu, 1:00 PM', color: 'bg-blue-500' },
+  { id: 'c4', title: 'Quantum Computing Intro', faculty: 'Prof. Richard Feynman', progress: 12, nextSession: 'Fri, 9:00 AM', color: 'bg-purple-500' },
+];
+
+const ASSIGNMENTS = {
+  dueToday: [
+    { id: 'a1', title: 'Graph Traversal Implementation', course: 'Adv. Data Structures', time: '11:59 PM', priority: 'high' }
+  ],
+  upcoming: [
+    { id: 'a2', title: 'Neural Network Project', course: 'Machine Learning', date: 'Oct 15', priority: 'medium' },
+    { id: 'a3', title: 'AWS Infrastructure Diagram', course: 'Cloud Computing', date: 'Oct 18', priority: 'low' }
+  ],
+  submitted: [
+    { id: 'a4', title: 'Binary Trees Essay', course: 'Adv. Data Structures', grade: 'Pending' }
+  ]
+};
+
+const PERFORMANCE_DATA = [
+  { subject: 'CS101', grade: 95 },
+  { subject: 'CS102', grade: 88 },
+  { subject: 'MTH201', grade: 92 },
+  { subject: 'PHY101', grade: 78 },
+  { subject: 'ENG101', grade: 85 },
+];
+
+const ATTENDANCE_TREND = [
+  { week: 'W1', present: 100 },
+  { week: 'W2', present: 95 },
+  { week: 'W3', present: 90 },
+  { week: 'W4', present: 92 },
+  { week: 'W5', present: 88 },
+  { week: 'W6', present: 95 },
+];
+
+const CALENDAR_EVENTS = [
+  { id: 'e1', title: 'Midterm Physics', type: 'exam', time: 'Oct 14, 9:00 AM' },
+  { id: 'e2', title: 'Guest Lecture: AI Ethics', type: 'event', time: 'Oct 16, 3:00 PM' },
+];
+
+const CERTIFICATES = [
+  { id: 'cert1', title: 'AWS Cloud Practitioner', date: 'Sep 2026' },
+  { id: 'cert2', title: 'Python Data Analysis', date: 'Aug 2026' },
+];
+
+// --- NEW: Learning Resources Data ---
+const RESOURCES = {
+  Videos: [
+    { id: 'v1', title: 'Intro to Neural Networks', course: 'Machine Learning', duration: '32 min' },
+    { id: 'v2', title: 'Binary Search Trees Deep Dive', course: 'Data Structures', duration: '45 min' },
+    { id: 'v3', title: 'AWS EC2 Setup Guide', course: 'Cloud Computing', duration: '18 min' },
+  ],
+  PDFs: [
+    { id: 'p1', title: 'Graph Algorithms Cheatsheet', course: 'Data Structures', size: '1.2 MB' },
+    { id: 'p2', title: 'ML Model Evaluation Notes', course: 'Machine Learning', size: '845 KB' },
+    { id: 'p3', title: 'Quantum Gates Reference', course: 'Quantum Computing', size: '2.1 MB' },
+  ],
+  PPTs: [
+    { id: 's1', title: 'Week 8: Recurrent Networks', course: 'Machine Learning', slides: '28 slides' },
+    { id: 's2', title: 'Distributed Systems Overview', course: 'Cloud Computing', slides: '42 slides' },
+  ],
+  Paths: [
+    { id: 'lp1', title: 'ML Engineer Learning Path', progress: 38, modules: 12 },
+    { id: 'lp2', title: 'Cloud Architecture Roadmap', progress: 65, modules: 8 },
+  ],
+};
+
+// --- NEW: Grades Data ---
+const GRADES = [
+  { subject: 'Advanced Data Structures', code: 'CS301', grade: 'A', gpa: 4.0, credits: 4, status: 'In Progress' },
+  { subject: 'Machine Learning Fund.', code: 'CS402', grade: 'A-', gpa: 3.7, credits: 3, status: 'In Progress' },
+  { subject: 'Cloud Computing Arch.', code: 'CS415', grade: 'B+', gpa: 3.3, credits: 3, status: 'In Progress' },
+  { subject: 'Quantum Computing Intro', code: 'CS490', grade: 'A', gpa: 4.0, credits: 3, status: 'In Progress' },
+  { subject: 'Technical Writing', code: 'ENG201', grade: 'B+', gpa: 3.3, credits: 2, status: 'Complete' },
+];
+
+// --- Components ---
+
+const Panel = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+  <div className={`bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden ${className}`}>
+    {children}
+  </div>
+);
+
+const PanelHeader = ({ title, action }: { title: string, action?: React.ReactNode }) => (
+  <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
+    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{title}</h3>
+    {action && <div className="text-xs">{action}</div>}
+  </div>
+);
 
 export function StudentDashboard() {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [enrolled, setEnrolled] = useState<Awaited<ReturnType<typeof coursesService.getEnrolledCourses>>>([]);
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [recommendations, setRecommendations] = useState<CourseRecommendation[]>([]);
-  const [progressData, setProgressData] = useState<{ week: string; hoursSpent: number }[]>([]);
-  const [heatmap, setHeatmap] = useState<{ date: string; count: number }[]>([]);
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Ben';
+  const [resourceTab, setResourceTab] = useState<'Videos' | 'PDFs' | 'PPTs' | 'Paths'>('Videos');
+  const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+  };
 
-  useEffect(() => {
-    if (!user) return;
-    Promise.all([
-      coursesService.getEnrolledCourses(user.id),
-      assignmentsService.getAssignments(user.id),
-      aiService.getCourseRecommendations(user.id, user.enrolledCourses || []),
-      analyticsService.getProgressData(user.id),
-    ]).then(([e, a, r, p]) => {
-      setEnrolled(e);
-      setAssignments(a.filter(x => x.status === 'pending' || x.status === 'overdue').slice(0, 4));
-      setRecommendations(r);
-      setProgressData(p.slice(-8));
-      // Mock heatmap
-      const cells: { date: string; count: number }[] = [];
-      for (let i = 0; i < 63; i++) {
-        cells.push({ date: String(i), count: Math.random() > 0.35 ? Math.floor(Math.random() * 4) + 1 : 0 });
-      }
-      setHeatmap(cells);
-      setLoading(false);
-    });
-  }, [user]);
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
 
-  const attendanceData = [{ name: 'Present', value: 84, fill: '#4edea3' }, { name: 'Absent', value: 16, fill: 'rgba(200,200,200,0.1)' }];
-
-  const UPCOMING = [
-    { time: '10:00 AM', title: 'React Advanced Patterns', course: 'Web Dev', type: 'Live', id: 'cl1' },
-    { time: '2:00 PM', title: 'ML Algorithms Review', course: 'Machine Learning', type: 'Recorded', id: 'cl2' },
-    { time: 'Tomorrow', title: 'UX Research Critique', course: 'UI/UX Design', type: 'Live', id: 'cl3' },
-  ];
-
-  const cardVariants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
+  const resourceTabs = ['Videos', 'PDFs', 'PPTs', 'Paths'] as const;
 
   return (
-      <div className="space-y-6">
-        {/* Welcome */}
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-serif font-black text-neutral-900 dark:text-neutral-50 tracking-tight">
-              Good evening, {user?.name?.split(' ')[0]} 👋
-            </h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium mt-1">
-              You have <span className="text-brand-primary font-bold">{assignments.length} pending</span> assignments. Keep going!
-            </p>
-          </div>
-          <Link to="/calendar">
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-brand-primary/30 transition-all shadow-sm">
-              <Calendar size={16} className="text-brand-primary" />
-              <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-300">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
-            </div>
-          </Link>
-        </motion.div>
-
-        {/* Stats row */}
-        <motion.div variants={{ show: { transition: { staggerChildren: 0.08 } } }} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: 'Enrolled Courses', value: enrolled.length || 3, icon: <BookOpen size={18} />, color: 'purple' as const, trend: '1 new', trendUp: true },
-            { label: 'Hours Learned', value: '124h', icon: <Clock size={18} />, color: 'blue' as const, trend: '12h this week', trendUp: true },
-            { label: 'Assignments Due', value: assignments.length || 4, icon: <AlertTriangle size={18} />, color: 'amber' as const },
-            { label: 'Attendance', value: '84%', icon: <TrendingUp size={18} />, color: 'emerald' as const, trend: '+2%', trendUp: true },
-          ].map((s, i) => (
-            <motion.div key={i} variants={cardVariants}>
-              <StatCard {...s} />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Main grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Left: Courses + Assignments */}
-          <div className="xl:col-span-2 space-y-6">
-            {/* Enrolled Courses */}
-            <GlassCard>
-              <SectionHeader title="My Courses" subtitle={`${enrolled.length || 3} enrolled`} action={
-                <Link to="/courses" className="text-xs font-bold text-brand-primary hover:underline flex items-center gap-1 transition-colors">
-                  Browse more <ChevronRight size={14} />
-                </Link>
-              } />
-              {loading ? (
-                <div className="space-y-3">{[1,2,3].map(i => <SkeletonCard key={i} />)}</div>
-              ) : (
-                <div className="space-y-3">
-                  {(enrolled.length ? enrolled : [
-                    { course: { id: 'c1', title: 'Full-Stack Web Development', category: 'Web Dev', instructor: 'Dr. Sarah Chen', lessons: 124 }, enrollment: { progress: 68 } },
-                    { course: { id: 'c2', title: 'Machine Learning Fundamentals', category: 'AI & ML', instructor: 'Prof. Raj Patel', lessons: 89 }, enrollment: { progress: 34 } },
-                    { course: { id: 'c3', title: 'UI/UX Design Masterclass', category: 'Design', instructor: 'Emma Lawson', lessons: 72 }, enrollment: { progress: 91 } },
-                  ] as any[]).map((item, i) => (
-                    <motion.div
-                      key={item.course.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.07 }}
-                    >
-                      <Link to={`/learn/${item.course.id}/l1`}>
-                        <div className="flex items-center gap-4 p-4 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all group border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700">
-                          <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl font-black text-white"
-                            style={{ background: `linear-gradient(135deg, ${i === 0 ? '#6366F1,#3B82F6' : i === 1 ? '#3B82F6,#4edea3' : '#4edea3,#6366F1'})` }}>
-                            {item.course.title[0]}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate group-hover:text-brand-primary transition-colors">
-                                {item.course.title}
-                              </p>
-                              <span className="text-xs font-black text-brand-primary ml-2 flex-shrink-0">{item.enrollment.progress}%</span>
-                            </div>
-                            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-2">
-                              {item.course.instructor} · {item.course.lessons} lessons
-                            </p>
-                            <ProgressBar value={item.enrollment.progress} color={i === 2 ? 'emerald' : i === 1 ? 'blue' : 'purple'} />
-                          </div>
-                          <Play size={16} className="text-neutral-400 group-hover:text-brand-primary transition-colors flex-shrink-0" />
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </GlassCard>
-
-            {/* Assignments */}
-            <GlassCard>
-              <SectionHeader title="Due Assignments" subtitle="Pending deadlines" action={
-                <Link to="/assignments" className="text-xs font-bold text-brand-primary hover:underline flex items-center gap-1">View all <ChevronRight size={14} /></Link>
-              } />
-              <div className="space-y-2.5">
-                {(assignments.length ? assignments : [
-                  { id: 'a1', title: 'React Component Architecture', courseName: 'Web Dev', dueDate: '2024-06-15T23:59:00Z', priority: 'high', status: 'pending' },
-                  { id: 'a4', title: 'Algorithm Challenge Set', courseName: 'DSA', dueDate: '2024-06-05T23:59:00Z', priority: 'high', status: 'overdue' },
-                  { id: 'a5', title: 'AWS Architecture Design', courseName: 'Cloud', dueDate: '2024-06-25T23:59:00Z', priority: 'medium', status: 'pending' },
-                ] as any[]).map((a, i) => {
-                  const daysLeft = Math.ceil((new Date(a.dueDate).getTime() - Date.now()) / 86400000);
-                  return (
-                    <motion.div key={a.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
-                      <Link to={`/assignments/${a.id}`}>
-                        <div className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:bg-neutral-50 dark:hover:bg-neutral-800/50 ${a.status === 'overdue' ? 'border-red-200 bg-red-50 dark:border-red-500/20 dark:bg-red-500/10' : 'border-neutral-100 dark:border-neutral-800'}`}>
-                          <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm ${a.priority === 'high' ? 'bg-red-500' : a.priority === 'medium' ? 'bg-amber-500' : 'bg-neutral-400'}`} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate">{a.title}</p>
-                            <p className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{a.courseName}</p>
-                          </div>
-                          <div className="text-right flex-shrink-0">
-                            <Badge variant={a.status === 'overdue' ? 'red' : daysLeft <= 3 ? 'amber' : 'slate'}>
-                              {a.status === 'overdue' ? 'Overdue' : daysLeft <= 0 ? 'Due today' : `${daysLeft}d left`}
-                            </Badge>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </GlassCard>
-
-            {/* Progress chart */}
-            <GlassCard tint="purple">
-              <SectionHeader title="Learning Activity" subtitle="Hours studied per week" />
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={progressData.length ? progressData : [
-                    { week: 'W1', hoursSpent: 8 }, { week: 'W2', hoursSpent: 12 }, { week: 'W3', hoursSpent: 10 },
-                    { week: 'W4', hoursSpent: 15 }, { week: 'W5', hoursSpent: 9 }, { week: 'W6', hoursSpent: 18 },
-                    { week: 'W7', hoursSpent: 14 }, { week: 'W8', hoursSpent: 20 },
-                  ]} barSize={24}>
-                    <XAxis dataKey="week" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, color: '#0f172a', fontSize: 12, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                      cursor={{ fill: 'rgba(139,92,246,0.05)' }}
-                    />
-                    <Bar dataKey="hoursSpent" fill="url(#barGrad)" radius={[6, 6, 0, 0]} isAnimationActive />
-                    <defs>
-                      <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#6366F1" />
-                        <stop offset="100%" stopColor="#8b5cf6" />
-                      </linearGradient>
-                    </defs>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Heatmap */}
-              <div className="mt-4">
-                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2">Activity heatmap — last 63 days</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {heatmap.map((cell, i) => <HeatmapCell key={i} count={cell.count} />)}
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-[10px] font-bold text-neutral-500 uppercase">Less</span>
-                  {[0.05, 0.25, 0.5, 0.75, 1].map((o, i) => (
-                    <div key={i} className="w-3 h-3 rounded-sm bg-brand-primary" style={{ opacity: o === 0.05 ? 0.1 : o }} />
-                  ))}
-                  <span className="text-[10px] font-bold text-neutral-500 uppercase">More</span>
-                </div>
-              </div>
-            </GlassCard>
-          </div>
-
-          {/* Right column */}
-          <div className="space-y-6">
-            {/* Attendance ring */}
-            <GlassCard tint="emerald">
-              <SectionHeader title="Attendance" />
-              <div className="flex items-center justify-center">
-                <div className="relative">
-                  <PieChart width={160} height={160}>
-                    <Pie data={attendanceData} innerRadius={55} outerRadius={75} startAngle={90} endAngle={-270} dataKey="value" isAnimationActive animationDuration={1200}>
-                      {attendanceData.map((e, i) => <Cell key={i} fill={e.fill} />)}
-                    </Pie>
-                  </PieChart>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-serif font-black text-neutral-900 dark:text-neutral-50">84%</span>
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Present</span>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                {[{ l: 'Present', v: '38', c: 'text-emerald-500' }, { l: 'Absent', v: '4', c: 'text-red-500' }, { l: 'Late', v: '3', c: 'text-amber-500' }].map(s => (
-                  <div key={s.l} className="text-center">
-                    <p className={`text-xl font-black ${s.c}`}>{s.v}</p>
-                    <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{s.l}</p>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
-
-            {/* Upcoming classes */}
-            <GlassCard tint="blue">
-              <SectionHeader title="Upcoming Classes" />
-              <div className="space-y-3">
-                {UPCOMING.map((cls, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}>
-                    <Link to={`/classroom/${cls.id}`}>
-                      <div className="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 transition-all group shadow-sm bg-white dark:bg-neutral-900">
-                        <div className="flex-shrink-0 text-center w-12">
-                          <p className="text-xs font-black text-blue-600 dark:text-blue-400">{cls.time}</p>
-                        </div>
-                        <div className="w-px h-8 bg-neutral-200 dark:bg-neutral-700 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate group-hover:text-blue-600 transition-colors">{cls.title}</p>
-                          <p className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mt-0.5">{cls.course}</p>
-                        </div>
-                        <Badge variant={cls.type === 'Live' ? 'blue' : 'slate'}>{cls.type}</Badge>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </GlassCard>
-
-            {/* AI Recommendations */}
-            <GlassCard tint="purple">
-              <SectionHeader
-                title="AI Recommendations"
-                subtitle="Personalized for you"
-                action={<Sparkles size={16} className="text-brand-primary" />}
-              />
-              <div className="space-y-3">
-                {(recommendations.length ? recommendations : [
-                  { courseId: 'c4', title: 'Data Structures & Algorithms', reason: 'Complements your Web Dev skills', matchScore: 96, category: 'CS' },
-                  { courseId: 'c5', title: 'Cloud Computing with AWS', reason: 'Next step for full-stack devs', matchScore: 91, category: 'Cloud' },
-                ]).map((rec, i) => (
-                  <motion.div key={rec.courseId} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-                    <Link to={`/courses/${rec.courseId}`}>
-                      <div className="p-4 rounded-2xl border border-brand-primary/20 hover:border-brand-primary/40 hover:bg-brand-primary/5 transition-all group bg-white dark:bg-neutral-900 shadow-sm">
-                        <div className="flex items-start justify-between mb-1.5">
-                          <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-brand-primary transition-colors leading-tight">{rec.title}</p>
-                          <span className="text-xs font-black text-brand-primary ml-2 flex-shrink-0 bg-brand-primary/10 px-2 py-0.5 rounded-full">{rec.matchScore}%</span>
-                        </div>
-                        <p className="text-xs font-medium text-neutral-500 mb-3">{rec.reason}</p>
-                        <div className="flex items-center gap-1">
-                          {[1,2,3,4,5].map(s => <Star key={s} size={10} fill={s <= 4 ? '#6366F1' : 'none'} className="text-brand-primary" />)}
-                          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest ml-1">AI matched</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </GlassCard>
-          </div>
+    <div className="max-w-[1200px] mx-auto pb-12 font-sans space-y-8">
+      <VoiceAssistantModal isOpen={isVoiceOpen} onClose={() => setIsVoiceOpen(false)} />
+      
+      {/* ─── HERO SECTION ─── */}
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+      >
+        <div>
+          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
+            Welcome back, {firstName}
+          </h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            You have <span className="font-medium text-neutral-900 dark:text-neutral-200">3 upcoming deadlines</span> and <span className="font-medium text-neutral-900 dark:text-neutral-200">2 live sessions</span> this week.
+          </p>
         </div>
-      </div>
+        
+        <div className="flex items-center gap-3">
+          <Link to="/messages" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-lg text-sm transition-colors border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">
+            <MessageSquare size={14} />
+            <span>Messages</span>
+          </Link>
+          <Link to="/notifications" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-lg text-sm transition-colors border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">
+            <Bell size={14} />
+          </Link>
+          <button className="flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-transparent dark:border-neutral-700">
+            <PlayCircle size={16} />
+            Join Next Class
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
+            <Sparkles size={16} />
+            AI Assistant
+          </button>
+          <button onClick={() => setIsVoiceOpen(true)} className="flex items-center justify-center w-9 h-9 bg-brand-primary/10 text-brand-primary rounded-lg hover:bg-brand-primary/20 transition-colors shadow-sm">
+            <Mic size={16} />
+          </button>
+        </div>
+      </motion.div>
+
+      {/* ─── QUICK STATISTICS ─── */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
+        {[
+          { label: 'Current CGPA', value: `${ACADEMIC_DATA.cgpa} / ${ACADEMIC_DATA.maxCgpa}`, icon: TrendingUp },
+          { label: 'Attendance', value: `${ACADEMIC_DATA.attendance}%`, icon: Clock },
+          { label: 'Active Courses', value: ACADEMIC_DATA.activeCourses, icon: BookOpen },
+          { label: 'Pending Assignments', value: ACADEMIC_DATA.pendingAssignments, icon: AlertTriangle },
+        ].map((stat, idx) => (
+          <motion.div key={idx} variants={itemVariants} className="p-5 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
+              <stat.icon size={16} />
+              <span className="text-xs font-medium uppercase tracking-wider">{stat.label}</span>
+            </div>
+            <div className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
+              {stat.value}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* ─── QUICK ACCESS CARDS ─── */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
+        {[
+          { label: 'Live Classroom', icon: Video, to: '/live', color: 'text-brand-primary bg-brand-primary/10 hover:bg-brand-primary hover:text-white' },
+          { label: 'Resources', icon: BookOpen, to: '/resources', color: 'text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white dark:bg-blue-500/10 dark:text-blue-400' },
+          { label: 'Assignments', icon: FileText, to: '/assignments', color: 'text-amber-600 bg-amber-50 hover:bg-amber-600 hover:text-white dark:bg-amber-500/10 dark:text-amber-400' },
+          { label: 'Certificates', icon: Award, to: '/certificates', color: 'text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white dark:bg-emerald-500/10 dark:text-emerald-400' },
+        ].map((card, idx) => (
+          <motion.div key={idx} variants={itemVariants}>
+            <Link to={card.to} className={`flex items-center gap-3 p-4 rounded-xl border border-neutral-200/60 dark:border-neutral-800 transition-all group ${card.color}`}>
+              <card.icon size={18} />
+              <span className="text-sm font-medium">{card.label}</span>
+              <ArrowRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+            </Link>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* ─── MAIN GRID ─── */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
+      >
+        
+        {/* LEFT COLUMN (Main Content) */}
+        <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+          
+          {/* Academic Overview & Performance */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div variants={itemVariants}>
+              <Panel className="h-full">
+                <PanelHeader title="Academic Overview" />
+                <div className="p-5 space-y-4">
+                  <div className="flex justify-between items-center pb-3 border-b border-neutral-100 dark:border-neutral-800/50">
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Current Semester</span>
+                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-200">{ACADEMIC_DATA.semester}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-3 border-b border-neutral-100 dark:border-neutral-800/50">
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Credits Completed</span>
+                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-200">{ACADEMIC_DATA.creditsCompleted}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-3 border-b border-neutral-100 dark:border-neutral-800/50">
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Credits Remaining</span>
+                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-200">{ACADEMIC_DATA.creditsRemaining}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Academic Standing</span>
+                    <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{ACADEMIC_DATA.academicStanding}</span>
+                  </div>
+                </div>
+              </Panel>
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <Panel className="h-full">
+                <PanelHeader title="Performance Analytics" />
+                <div className="p-5 h-[180px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={PERFORMANCE_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }} barSize={16}>
+                      <XAxis dataKey="subject" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={[0, 100]} />
+                      <Tooltip 
+                        cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}
+                      />
+                      <Bar dataKey="grade" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </Panel>
+            </motion.div>
+          </div>
+
+          {/* Course Dashboard */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Course Dashboard" 
+                action={<Link to="/courses" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">View All <ArrowRight size={14} /></Link>} 
+              />
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                {COURSES.map(course => (
+                  <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{course.faculty}</p>
+                    </div>
+                    
+                    <div className="w-full sm:w-48 shrink-0">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Progress</span>
+                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{course.progress}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                        <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.progress}%` }} />
+                      </div>
+                    </div>
+                    
+                    <div className="sm:text-right shrink-0">
+                      <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Next Session</p>
+                      <p className="text-xs font-medium text-neutral-900 dark:text-neutral-200">{course.nextSession}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* Assignment Center */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Assignment Center" 
+                action={<Link to="/assignments" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">See all</Link>}
+              />
+              <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* Due Today */}
+                <div>
+                  <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                    Due Today
+                  </h4>
+                  <div className="space-y-3">
+                    {ASSIGNMENTS.dueToday.map(task => (
+                      <div key={task.id} className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-lg">
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">{task.title}</p>
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-neutral-600 dark:text-neutral-400">{task.course}</span>
+                          <span className="font-semibold text-red-600 dark:text-red-400">{task.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Upcoming */}
+                <div>
+                  <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                    Upcoming
+                  </h4>
+                  <div className="space-y-3">
+                    {ASSIGNMENTS.upcoming.map(task => (
+                      <div key={task.id} className="p-3 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 rounded-lg">
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1 leading-tight">{task.title}</p>
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-neutral-500 dark:text-neutral-400 truncate mr-2">{task.course}</span>
+                          <span className="font-medium text-neutral-700 dark:text-neutral-300 shrink-0">{task.date}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Submitted */}
+                <div>
+                  <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Submitted
+                  </h4>
+                  <div className="space-y-3">
+                    {ASSIGNMENTS.submitted.map(task => (
+                      <div key={task.id} className="p-3 border border-neutral-200/50 dark:border-neutral-800 rounded-lg flex items-start gap-2 opacity-70">
+                        <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 line-through decoration-neutral-300 dark:decoration-neutral-600 mb-1 leading-tight">{task.title}</p>
+                          <p className="text-[10px] text-neutral-500">{task.course}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* ─── NEW: LEARNING RESOURCES ─── */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Learning Resources" 
+                action={<Link to="/resources" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">Browse All <ArrowRight size={14} /></Link>}
+              />
+              {/* Tabs */}
+              <div className="flex gap-1 px-5 pt-4 border-b border-neutral-100 dark:border-neutral-800">
+                {resourceTabs.map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setResourceTab(tab)}
+                    className={`pb-3 px-3 text-xs font-semibold transition-colors border-b-2 -mb-px ${
+                      resourceTab === tab
+                        ? 'border-brand-primary text-brand-primary'
+                        : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                {resourceTab === 'Videos' && RESOURCES.Videos.map(r => (
+                  <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+                        <Video size={14} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.course} • {r.duration}</p>
+                      </div>
+                    </div>
+                    <button className="text-xs font-medium text-brand-primary hover:underline shrink-0">Watch</button>
+                  </div>
+                ))}
+                {resourceTab === 'PDFs' && RESOURCES.PDFs.map(r => (
+                  <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                        <FileText size={14} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.course} • {r.size}</p>
+                      </div>
+                    </div>
+                    <button className="text-xs font-medium text-brand-primary hover:underline shrink-0 flex items-center gap-1"><Download size={12} /> Download</button>
+                  </div>
+                ))}
+                {resourceTab === 'PPTs' && RESOURCES.PPTs.map(r => (
+                  <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                        <FileImage size={14} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.course} • {r.slides}</p>
+                      </div>
+                    </div>
+                    <button className="text-xs font-medium text-brand-primary hover:underline shrink-0">View</button>
+                  </div>
+                ))}
+                {resourceTab === 'Paths' && RESOURCES.Paths.map(r => (
+                  <div key={r.id} className="p-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
+                          <Map size={14} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.modules} modules</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-semibold text-brand-primary">{r.progress}%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full ml-11">
+                      <div className="h-full bg-brand-primary rounded-full" style={{ width: `${r.progress}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* ─── NEW: GRADES DASHBOARD ─── */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Grades Dashboard" 
+                action={
+                  <span className="flex items-center gap-2">
+                    <span className="text-xs text-neutral-500">CGPA:</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{ACADEMIC_DATA.cgpa} / {ACADEMIC_DATA.maxCgpa}</span>
+                  </span>
+                }
+              />
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50">
+                      {['Subject', 'Code', 'Grade', 'GPA', 'Credits', 'Status'].map(h => (
+                        <th key={h} className="px-5 py-3 text-left text-[10px] font-extrabold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                    {GRADES.map((g, i) => (
+                      <tr key={i} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                        <td className="px-5 py-3 text-sm font-medium text-neutral-900 dark:text-neutral-100">{g.subject}</td>
+                        <td className="px-5 py-3 text-xs text-neutral-500 dark:text-neutral-400 font-mono">{g.code}</td>
+                        <td className="px-5 py-3">
+                          <span className={`text-sm font-bold ${g.grade.startsWith('A') ? 'text-emerald-600 dark:text-emerald-400' : g.grade.startsWith('B') ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600 dark:text-amber-400'}`}>{g.grade}</span>
+                        </td>
+                        <td className="px-5 py-3 text-sm text-neutral-700 dark:text-neutral-300 font-medium">{g.gpa.toFixed(1)}</td>
+                        <td className="px-5 py-3 text-sm text-neutral-500 dark:text-neutral-400">{g.credits} cr.</td>
+                        <td className="px-5 py-3">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${g.status === 'Complete' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'}`}>{g.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-5 py-3 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30 flex items-center justify-between">
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">Semester GPA · Fall 2026</span>
+                <Link to="/grades" className="text-xs text-brand-primary hover:underline font-medium">Full Transcript →</Link>
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* ─── NEW: ADVANCED LEARNING ─── */}
+          <motion.div variants={itemVariants}>
+            <PeerReviewCenter role="student" />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <AIStudyPlanner />
+          </motion.div>
+
+        </div>
+
+        {/* RIGHT COLUMN (Side Content) */}
+        <div className="space-y-6 lg:space-y-8">
+          
+          {/* AI Academic Assistant */}
+          <motion.div variants={itemVariants}>
+            <Panel className="bg-gradient-to-b from-brand-primary/5 to-transparent border-brand-primary/20">
+              <PanelHeader 
+                title="AI Assistant" 
+                action={<Sparkles size={14} className="text-brand-primary" />}
+              />
+              <div className="p-5">
+                <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                  Your academic copilot. Generate practice questions, summarize notes, or plan your study schedule.
+                </p>
+                <div className="space-y-2 mb-4">
+                  <button className="w-full text-left text-xs p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-brand-primary/50 hover:bg-white dark:hover:bg-neutral-800 transition-colors text-neutral-700 dark:text-neutral-300 truncate">
+                    Summarize recent ML lecture
+                  </button>
+                  <button className="w-full text-left text-xs p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-brand-primary/50 hover:bg-white dark:hover:bg-neutral-800 transition-colors text-neutral-700 dark:text-neutral-300 truncate">
+                    Generate Quiz: Quantum Computing
+                  </button>
+                </div>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    placeholder="Ask a question..." 
+                    className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg py-2 pl-3 pr-10 text-sm focus:outline-none focus:border-brand-primary transition-colors"
+                  />
+                  <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-brand-primary text-white rounded-md hover:bg-brand-accent transition-colors">
+                    <MessageSquare size={12} />
+                  </button>
+                </div>
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* Attendance Analytics */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader title="Attendance Trend" />
+              <div className="p-5">
+                <div className="h-[120px] mb-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={ATTENDANCE_TREND} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                      <XAxis dataKey="week" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 100]} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e5e5', fontSize: '12px' }}
+                      />
+                      <Line type="monotone" dataKey="present" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {ACADEMIC_DATA.attendance < 85 && (
+                  <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg text-xs mt-4">
+                    <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                    <p>Attendance dropping in Physics 101. Risk of penalty.</p>
+                  </div>
+                )}
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* Calendar & Schedule */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Schedule" 
+                action={<Link to="/calendar" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Calendar size={14} /></Link>}
+              />
+              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                {CALENDAR_EVENTS.map(event => (
+                  <div key={event.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                      <FileText size={16} className="text-neutral-600 dark:text-neutral-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{event.title}</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{event.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* Certificates */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Recent Credentials" 
+                action={<Link to="/certificates" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Award size={14} /></Link>} 
+              />
+              <div className="p-4 space-y-3">
+                {CERTIFICATES.map(cert => (
+                  <div key={cert.id} className="flex justify-between items-center p-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors">
+                    <div className="flex items-center gap-2">
+                      <GraduationCap size={14} className="text-brand-primary shrink-0" />
+                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{cert.title}</span>
+                    </div>
+                    <span className="text-xs text-neutral-500">{cert.date}</span>
+                  </div>
+                ))}
+                <Link to="/certificates" className="flex items-center justify-center gap-1 text-xs text-brand-primary hover:underline font-medium pt-1">
+                  View all certificates <ChevronRight size={12} />
+                </Link>
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* ─── NEW: LIVE CLASSROOM PREVIEW ─── */}
+          <motion.div variants={itemVariants}>
+            <Panel>
+              <PanelHeader 
+                title="Live Classroom" 
+                action={<span className="flex h-2 w-2 relative"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>}
+              />
+              <div className="p-4">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">Supports all live interaction features for your sessions.</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'Video Conferencing', icon: Video, active: true },
+                    { label: 'Screen Sharing', icon: Share2, active: true },
+                    { label: 'Whiteboard', icon: Edit3, active: true },
+                    { label: 'Real-Time Chat', icon: MessageSquare, active: true },
+                    { label: 'Raise Hand', icon: Hand, active: true },
+                    { label: 'Session Recording', icon: Circle, active: true },
+                  ].map((feat, idx) => (
+                    <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
+                      <feat.icon size={12} className="text-emerald-500 shrink-0" />
+                      <span className="text-[10px] font-medium text-neutral-700 dark:text-neutral-300 leading-tight">{feat.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link to="/live" className="mt-4 flex items-center justify-center gap-2 w-full py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:bg-brand-accent transition-colors">
+                  <Monitor size={12} /> Enter Live Classroom
+                </Link>
+              </div>
+            </Panel>
+          </motion.div>
+
+          {/* ─── NEW: OFFLINE SYNC ─── */}
+          <motion.div variants={itemVariants}>
+            <OfflineSync />
+          </motion.div>
+
+        </div>
+      </motion.div>
+    </div>
   );
 }

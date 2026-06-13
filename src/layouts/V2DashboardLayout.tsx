@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme } from '../hooks/useTheme';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/layout/Sidebar';
@@ -13,34 +14,8 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { theme, toggleTheme } = useTheme();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("scholarhub-theme") as "light" | "dark" | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      if (savedTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    } else {
-      document.documentElement.classList.add("dark");
-      setTheme("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    localStorage.setItem("scholarhub-theme", nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   if (!user) {
     return <>{children}</>;
@@ -72,7 +47,13 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
       navigate('/messages');
     } else {
       // Navigate based on user role base path
-      const basePath = user.role === 'admin' ? '/admin' : user.role === 'teacher' ? '/teacher' : '/student';
+      let basePath = '';
+      if (user.role === 'admin') basePath = '/admin';
+      else if (user.role === 'teacher') basePath = '/teacher';
+      else if (user.role === 'student') {
+        basePath = user.user_type === 'school' ? '/school-student' : '/student';
+      }
+      
       if (tabId === 'dashboard') {
         navigate(`${basePath}/dashboard`);
       } else {

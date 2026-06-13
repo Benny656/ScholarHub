@@ -164,10 +164,10 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
       variants={cardVariants}
       className="relative rounded-2xl border overflow-hidden flex flex-col h-full cursor-pointer"
       style={{
-        background: 'rgba(21, 19, 21, 0.55)',
+        background: 'var(--glass-bg)',
         backdropFilter: 'blur(12px)',
-        borderColor: hovered ? 'rgba(216, 188, 234, 0.35)' : 'rgba(255, 255, 255, 0.08)',
-        boxShadow: hovered ? '0 12px 35px -10px rgba(216, 188, 234, 0.22)' : '0 8px 32px 0 rgba(0, 0, 0, 0.25)',
+        borderColor: hovered ? 'rgba(216, 188, 234, 0.35)' : 'var(--glass-border)',
+        boxShadow: hovered ? '0 12px 35px -10px rgba(216, 188, 234, 0.22)' : '0 8px 32px 0 rgba(0, 0, 0, 0.15)',
         transform: hovered 
           ? `perspective(1000px) rotateY(${coords.x * 12}deg) rotateX(${coords.y * -12}deg) scale3d(1.02, 1.02, 1.02)` 
           : 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)',
@@ -201,10 +201,10 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
       {/* Content */}
       <div className="p-5 flex flex-col flex-1 relative z-10">
         <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1.5">{course.category}</span>
-        <h3 className="text-base font-bold text-white leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
           {course.title}
         </h3>
-        <p className="text-xs text-slate-400 mb-4 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="text-xs text-on-surface-variant mb-4 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           {course.description}
         </p>
 
@@ -217,7 +217,7 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
         </div>
 
         {/* Metas */}
-        <div className="flex items-center gap-3 text-xs text-slate-500 mb-4 border-t border-white/5 pt-3">
+        <div className="flex items-center gap-3 text-xs text-on-surface-variant mb-4 border-t border-outline-variant/15 pt-3">
           <span className="flex items-center gap-1"><Users size={11} /> {course.enrolled.toLocaleString()}</span>
           <span className="flex items-center gap-1"><BookOpen size={11} /> {course.lessons} lessons</span>
           <span className="flex items-center gap-1"><Clock size={11} /> {course.duration}</span>
@@ -234,10 +234,10 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/15">
           <div>
-            <p className="text-lg font-bold text-white">{userType === 'school' ? 'Free Forever' : `₹${course.price}`}</p>
-            <p className="text-[10px] text-slate-500">{course.instructor}</p>
+            <p className="text-lg font-bold text-on-surface">{userType === 'school' ? 'Free Forever' : `₹${course.price}`}</p>
+            <p className="text-[10px] text-on-surface-variant">{course.instructor}</p>
           </div>
           
           {enrolled ? (
@@ -249,7 +249,7 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
           ) : (
             <div className="flex items-center gap-2">
               <Link to={`/courses/${course.id}`}>
-                <button className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 border border-white/10 hover:bg-white/8 hover:text-white transition-all">
+                <button className="px-3.5 py-2 rounded-xl text-xs font-semibold text-on-surface-variant border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface transition-all">
                   Details
                 </button>
               </Link>
@@ -269,20 +269,20 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
 // Premium Course Card Skeleton matching revamped design
 function CourseSkeleton() {
   return (
-    <div className="rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full bg-white/3 animate-pulse">
-      <div className="h-40 bg-white/5 w-full" />
+    <div className="rounded-2xl border border-outline-variant/15 overflow-hidden flex flex-col h-full bg-on-surface/5 animate-pulse">
+      <div className="h-40 bg-on-surface/10 w-full" />
       <div className="p-5 flex-1 space-y-4">
-        <div className="h-3 w-1/4 bg-white/5 rounded-full" />
-        <div className="h-5 w-3/4 bg-white/5 rounded-lg" />
-        <div className="h-3 w-full bg-white/5 rounded-full" />
-        <div className="h-3 w-5/6 bg-white/5 rounded-full" />
-        <div className="h-1.5 w-full bg-white/5 rounded-full mt-4" />
-        <div className="flex justify-between items-center mt-6 pt-3 border-t border-white/5">
+        <div className="h-3 w-1/4 bg-on-surface/10 rounded-full" />
+        <div className="h-5 w-3/4 bg-on-surface/10 rounded-lg" />
+        <div className="h-3 w-full bg-on-surface/10 rounded-full" />
+        <div className="h-3 w-5/6 bg-on-surface/10 rounded-full" />
+        <div className="h-1.5 w-full bg-on-surface/10 rounded-full mt-4" />
+        <div className="flex justify-between items-center mt-6 pt-3 border-t border-outline-variant/15">
           <div className="space-y-1.5 flex-1">
-            <div className="h-4 w-1/3 bg-white/5 rounded-full" />
-            <div className="h-3 w-1/4 bg-white/5 rounded-full" />
+            <div className="h-4 w-1/3 bg-on-surface/10 rounded-full" />
+            <div className="h-3 w-1/4 bg-on-surface/10 rounded-full" />
           </div>
-          <div className="h-8 w-24 bg-white/5 rounded-xl" />
+          <div className="h-8 w-24 bg-on-surface/10 rounded-xl" />
         </div>
       </div>
     </div>
@@ -381,20 +381,20 @@ export function CourseCatalog() {
         {/* Filters and debounced live search */}
         <div className="flex flex-wrap items-center gap-4 mb-8">
           <div className="flex-1 min-w-[280px] max-w-md relative">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant" />
             <input
               type="text"
               value={searchVal}
               onChange={e => setSearchVal(e.target.value)}
               placeholder="Search courses, titles, categories..."
-              className="pl-10 pr-4 py-2.5 rounded-xl border border-white/10 text-white text-sm outline-none focus:border-purple-500/60 placeholder-slate-500 w-full transition-all"
-              style={{ background: 'rgba(255,255,255,0.05)', fontFamily: 'Montserrat, sans-serif' }}
+              className="pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/30 text-on-surface text-sm outline-none focus:border-purple-500/60 placeholder-on-surface-variant/50 w-full transition-all bg-neutral-100/50 dark:bg-white/5"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
             />
           </div>
           
           <div className="flex flex-wrap gap-2">
             {/* Sliding Framer Motion Category Indicator */}
-            <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl border border-white/5 bg-white/3">
+            <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl border border-outline-variant/15 bg-neutral-150/40 dark:bg-white/3">
               {categories.slice(0, 5).map(cat => (
                 <button
                   key={cat}

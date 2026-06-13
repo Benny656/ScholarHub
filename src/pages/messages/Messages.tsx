@@ -75,7 +75,7 @@ export function Messages() {
     <div className="space-y-6">
       <div className="flex h-[calc(100vh-64px)] overflow-hidden">
         {/* Left sidebar */}
-        <div className="w-72 flex-shrink-0 border-r border-outline-variant/10 flex flex-col" style={{ background: 'rgba(13,20,45,0.6)' }}>
+        <div className="w-72 flex-shrink-0 border-r border-outline-variant/10 flex flex-col bg-neutral-100/30 dark:bg-neutral-950/40">
           {/* Tabs */}
           <div className="grid grid-cols-4 p-2 border-b border-outline-variant/10">
             {[
@@ -195,7 +195,7 @@ export function Messages() {
 
               {/* Input */}
               <div className="px-5 py-4 border-t border-outline-variant/10">
-                <div className="flex items-end gap-3 px-4 py-3 rounded-2xl border border-outline-variant/20" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <div className="flex items-end gap-3 px-4 py-3 rounded-2xl border border-outline-variant/20 bg-neutral-100/50 dark:bg-neutral-850/30">
                   <button className="text-on-surface-variant hover:text-on-surface-variant transition-colors flex-shrink-0 pb-0.5"><Paperclip size={18} /></button>
                   <textarea
                     value={newMsg}

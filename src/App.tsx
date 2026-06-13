@@ -17,6 +17,7 @@ import { LoadingScreen } from './components/ui/LoadingScreen';
 
 // Auth context
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Auth pages
 import { Login } from './pages/auth/Login';
@@ -25,6 +26,7 @@ import { ForgotPassword, ResetPassword } from './pages/auth/ForgotPassword';
 
 // Dashboards
 import { StudentDashboard } from './pages/student/Dashboard';
+import { SchoolStudentDashboard } from './pages/school-student/SchoolStudentDashboard';
 import { TeacherDashboard } from './pages/teacher/Dashboard';
 import { AdminDashboard } from './pages/admin/Dashboard';
 
@@ -96,6 +98,7 @@ function AppRoutes() {
 
         {/* ─── Dashboards ─── */}
         <Route path="/student/dashboard" element={<DashboardWrapper><StudentDashboard /></DashboardWrapper>} />
+        <Route path="/school-student/dashboard" element={<DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper>} />
         <Route path="/teacher/dashboard" element={<DashboardWrapper><TeacherDashboard /></DashboardWrapper>} />
         <Route path="/admin/dashboard" element={<DashboardWrapper><AdminDashboard /></DashboardWrapper>} />
 
@@ -144,40 +147,42 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AnimatePresence mode="wait">
-          {isLoading ? (
-            <LoadingScreen key="global-loader" onComplete={() => setIsLoading(false)} />
-          ) : (
-            <motion.div
-              key="app-content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="h-full w-full"
-            >
-              <CustomCursor />
-              <FloatingElements3D />
-              <AppRoutes />
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  duration: 3500,
-                  style: {
-                    background: 'rgba(13,20,45,0.95)',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#e2e8f0',
-                    borderRadius: '12px',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '14px',
-                  },
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AnimatePresence mode="wait">
+            {isLoading ? (
+              <LoadingScreen key="global-loader" onComplete={() => setIsLoading(false)} />
+            ) : (
+              <motion.div
+                key="app-content"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="h-full w-full"
+              >
+                <CustomCursor />
+                <FloatingElements3D />
+                <AppRoutes />
+                <Toaster
+                  position="bottom-right"
+                  toastOptions={{
+                    duration: 3500,
+                    style: {
+                      background: 'rgba(13,20,45,0.95)',
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: '#e2e8f0',
+                      borderRadius: '12px',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '14px',
+                    },
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
