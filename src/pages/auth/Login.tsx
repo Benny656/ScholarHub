@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, GraduationCap, ArrowRight } from 'lucide-react';
+import { Mail, Lock, GraduationCap, ArrowRight, Moon, Sun } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import type { UserRole } from '../../types';
 import toast from 'react-hot-toast';
+import { useTheme } from '../../hooks/useTheme';
 
 export function Login() {
+  const { toggle } = useTheme();
   const [role, setRole] = useState<UserRole>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,7 +46,18 @@ export function Login() {
   };
 
   return (
-    <div className="flex min-h-screen relative font-sans bg-neutral-50 dark:bg-neutral-950">
+    <div className="flex min-h-screen relative font-sans bg-bg-surface text-on-surface transition-colors duration-300">
+      <div className="absolute top-6 right-6 z-50">
+        <button
+          onClick={toggle}
+          className="p-2.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-on-surface/10 transition-colors"
+          aria-label="Toggle light/dark theme"
+        >
+          <Moon className="w-5 h-5 dark:hidden" />
+          <Sun className="w-5 h-5 hidden dark:block" />
+        </button>
+      </div>
+
       {/* Brand Logo Link to Landing */}
       <Link
         to="/"
@@ -54,7 +67,7 @@ export function Login() {
           <img src="/logo-dark.png" alt="Scholar Hub Logo" className="w-full h-full object-contain hidden dark:block" />
           <img src="/logo-light.png" alt="Scholar Hub Logo" className="w-full h-full object-contain block dark:hidden" />
         </div>
-        <span className="font-serif font-black text-xl text-neutral-900 dark:text-neutral-50 group-hover:text-primary transition-colors">
+        <span className="font-serif font-black text-xl text-on-surface group-hover:text-primary transition-colors">
           Scholar Hub
         </span>
       </Link>
@@ -89,12 +102,12 @@ export function Login() {
       </div>
 
       {/* Login control side */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-8 bg-bg-surface transition-colors duration-300">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-md p-8 bg-white border border-neutral-200/80 rounded-2xl shadow-xl dark:bg-neutral-900 dark:border-neutral-800"
+          className="w-full max-w-md p-8 glass rounded-3xl shadow-2xl border border-outline-variant/15 relative overflow-hidden backdrop-blur-xl bg-surface-container-lowest/60"
         >
           
           {/* Branding mobile title */}
@@ -103,10 +116,10 @@ export function Login() {
               <img src="/logo-dark.png" alt="Scholar Hub Logo" className="w-full h-full object-contain hidden dark:block" />
               <img src="/logo-light.png" alt="Scholar Hub Logo" className="w-full h-full object-contain block dark:hidden" />
             </div>
-            <h3 className="font-serif font-bold text-2xl tracking-tight text-neutral-950 dark:text-neutral-50">
+            <h3 className="font-serif font-bold text-2xl tracking-tight text-on-surface">
               Access Scholar Hub Gateway
             </h3>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="text-xs text-on-surface-variant font-medium">
               Unified academic credentials checkpoint
             </p>
           </div>
@@ -115,17 +128,17 @@ export function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-neutral-600 dark:text-neutral-300">
+              <label className="text-xs font-bold text-on-surface-variant">
                 User Email Identifier
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <Mail className="w-4 h-4 text-neutral-400" />
+                  <Mail className="w-4 h-4 text-on-surface-variant/80" />
                 </span>
                 <input
                   type="email"
                   required
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 dark:bg-neutral-800 dark:border-neutral-700 text-xs focus:outline-none focus:ring-1 focus:ring-brand-primary dark:text-white"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all placeholder-on-surface-variant/50 bg-transparent border-outline-variant/30 focus:border-[#6D5DFC]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -133,17 +146,17 @@ export function Login() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-neutral-600 dark:text-neutral-300">
+              <label className="text-xs font-bold text-on-surface-variant">
                 Security Passcode Key
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <Lock className="w-4 h-4 text-neutral-400" />
+                  <Lock className="w-4 h-4 text-on-surface-variant/80" />
                 </span>
                 <input
                   type="password"
                   required
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 dark:bg-neutral-800 dark:border-neutral-700 text-xs focus:outline-none focus:ring-1 focus:ring-brand-primary dark:text-white"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all placeholder-on-surface-variant/50 bg-transparent border-outline-variant/30 focus:border-[#6D5DFC]"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -152,24 +165,24 @@ export function Login() {
 
             {/* Role picker selection context */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-neutral-600 dark:text-neutral-300">
+              <label className="text-xs font-bold text-on-surface-variant">
                 Target Access Role level
               </label>
               <select
-                className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50/50 dark:bg-neutral-800 dark:border-neutral-700 text-xs focus:outline-none dark:text-white"
+                className="w-full px-3.5 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all bg-transparent border-outline-variant/30 focus:border-[#6D5DFC]"
                 value={role}
                 onChange={(e) => setRole(e.target.value as UserRole)}
               >
-                <option value="student">Student (School/College)</option>
-                <option value="teacher">Teacher (Faculty Lecturer)</option>
-                <option value="admin">Institutional Administrator</option>
+                <option value="student" className="bg-surface text-on-surface">Student (School/College)</option>
+                <option value="teacher" className="bg-surface text-on-surface">Teacher (Faculty Lecturer)</option>
+                <option value="admin" className="bg-surface text-on-surface">Institutional Administrator</option>
               </select>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 bg-brand-primary text-white rounded-xl text-xs font-bold hover:bg-brand-primary-dark transition flex items-center justify-center gap-1.5 shadow cursor-pointer"
+              className="w-full h-11 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
             >
               {isLoading ? (
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -184,10 +197,10 @@ export function Login() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-neutral-200 dark:border-neutral-800" />
+              <span className="w-full border-t border-outline-variant/30" />
             </div>
-            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider text-neutral-400">
-              <span className="bg-white dark:bg-neutral-900 px-3">Bypass checkpoints demo access</span>
+            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider text-on-surface-variant">
+              <span className="bg-surface-container-lowest/90 dark:bg-surface-container-lowest/60 px-3 transition-colors">Bypass checkpoints demo access</span>
             </div>
           </div>
 
@@ -196,29 +209,29 @@ export function Login() {
             <button
               type="button"
               onClick={() => autofill('student')}
-              className="p-2 border border-neutral-200 hover:bg-neutral-50 rounded-xl leading-snug dark:border-neutral-800 dark:hover:bg-neutral-850 cursor-pointer text-left text-neutral-700 dark:text-neutral-300"
+              className="p-2 border border-outline-variant/30 hover:bg-on-surface/5 rounded-xl leading-snug transition-all cursor-pointer text-left text-on-surface-variant"
             >
               Student dashboard
             </button>
             <button
               type="button"
               onClick={() => autofill('teacher')}
-              className="p-2 border border-neutral-200 hover:bg-neutral-50 rounded-xl leading-snug dark:border-neutral-800 dark:hover:bg-neutral-850 cursor-pointer text-left text-neutral-700 dark:text-neutral-300"
+              className="p-2 border border-outline-variant/30 hover:bg-on-surface/5 rounded-xl leading-snug transition-all cursor-pointer text-left text-on-surface-variant"
             >
               Teacher console
             </button>
             <button
               type="button"
               onClick={() => autofill('admin')}
-              className="p-2 border border-neutral-200 hover:bg-neutral-50 rounded-xl leading-snug dark:border-neutral-800 dark:hover:bg-neutral-850 cursor-pointer text-left text-neutral-700 dark:text-neutral-300 col-span-2"
+              className="p-2 border border-outline-variant/30 hover:bg-on-surface/5 rounded-xl leading-snug transition-all cursor-pointer text-left text-on-surface-variant col-span-2"
             >
               Dean Admin cockpit
             </button>
           </div>
 
-          <p className="text-center text-[11px] text-neutral-500 mt-6">
+          <p className="text-center text-[11px] text-on-surface-variant mt-6">
             Don't have an account?{' '}
-            <Link to="/register" className="text-brand-primary hover:underline font-bold transition-opacity">Create one free</Link>
+            <Link to="/register" className="text-[#6D5DFC] hover:opacity-80 font-bold transition-opacity">Create one free</Link>
           </p>
         </motion.div>
       </div>

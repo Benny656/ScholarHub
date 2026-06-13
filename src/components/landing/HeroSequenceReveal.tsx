@@ -118,10 +118,10 @@ export default function HeroSequenceReveal() {
   }, [isLoaded, images, smoothProgress]);
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[#0B1020]" style={{ height: "400vh" }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#0B1020] flex items-center justify-center">
+    <div ref={containerRef} className="relative w-full bg-bg-surface" style={{ height: "400vh" }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-bg-surface flex items-center justify-center">
         {!isLoaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-[#0B1020]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-bg-surface">
             <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
             <div className="text-primary font-mono text-sm">
               Loading {Math.round(loadingProgress * 100)}%

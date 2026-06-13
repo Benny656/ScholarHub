@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   GraduationCap, 
   Moon, 
@@ -9,11 +9,175 @@ import {
   Check,
   Video,
   Sparkles,
-  BarChart2
+  BarChart2,
+  ChevronDown,
+  Users,
+  Layout,
+  Shield,
+  Activity,
+  AlertCircle,
+  Zap,
+  Globe
 } from "lucide-react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, animate, useInView } from "framer-motion";
 import ParticleLearningSphere from "../../components/landing/ParticleLearningSphere";
 import HeroSequenceReveal from "../../components/landing/HeroSequenceReveal";
+
+// --- Count Up Animation Component ---
+interface CountUpProps {
+  to: number;
+  suffix?: string;
+  duration?: number;
+}
+
+const CountUp = ({ to, suffix = "", duration = 2 }: CountUpProps) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (inView) {
+      const controls = animate(0, to, {
+        duration,
+        ease: "easeOut",
+        onUpdate: (val) => setCount(Math.round(val)),
+      });
+      return () => controls.stop();
+    }
+  }, [inView, to, duration]);
+
+  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+};
+
+// --- List of Partner Institutions for Ticker ---
+const institutions = [
+  "Karunya Institute of Technology and Sciences",
+  "SRM Institute of Science and Technology",
+  "Sathyabama Institute of Science and Technology",
+  "VIT University",
+  "Amrita Vishwa Vidyapeetham",
+  "Manipal Academy of Higher Education",
+  "PSG College of Technology",
+  "Anna University",
+  "IIT Madras",
+  "IIT Delhi",
+  "IIT Bombay",
+  "IIT Kanpur",
+  "NIT Trichy",
+  "BITS Pilani",
+  "Delhi University",
+  "Jadavpur University",
+  "University of Hyderabad",
+  "Christ University",
+  "Jain University",
+  "Lovely Professional University"
+];
+
+// --- Pricing Types & Data ---
+interface PricingPlan {
+  id: "student" | "professional" | "institution";
+  name: string;
+  price: string;
+  priceSuffix?: string;
+  tagline: string;
+  ctaText: string;
+  features: string[];
+  popular?: boolean;
+}
+
+const pricingPlans: PricingPlan[] = [
+  {
+    id: "student",
+    name: "Students",
+    price: "Free",
+    tagline: "Perfect for individual students and lifelong learners.",
+    ctaText: "Get Started Free",
+    features: [
+      "Join Courses",
+      "Submit Assignments",
+      "Track Attendance",
+      "Learning Progress Dashboard",
+      "Live Classes",
+      "Certificates",
+      "AI Tutor (Limited)",
+      "AI Quiz Practice (Limited)"
+    ]
+  },
+  {
+    id: "professional",
+    name: "Professionals",
+    price: "₹299",
+    priceSuffix: "/mo",
+    tagline: "For learners and educators who want advanced AI-powered tools.",
+    ctaText: "Start Free Trial",
+    popular: true,
+    features: [
+      "Everything in Free",
+      "Unlimited AI Tutor",
+      "Unlimited AI Quiz Generation",
+      "AI Assignment Feedback",
+      "Personalized Learning Paths",
+      "Advanced Learning Analytics",
+      "Priority Support"
+    ]
+  },
+  {
+    id: "institution",
+    name: "Institutions",
+    price: "Custom",
+    tagline: "Built for schools, colleges, academies, and training organizations.",
+    ctaText: "Contact Sales",
+    features: [
+      "Everything in Professional",
+      "Teacher Management",
+      "Student Management",
+      "Admin Dashboard",
+      "Institution Analytics",
+      "Attendance Insights",
+      "Bulk User Management",
+      "Custom Branding",
+      "Dedicated Support"
+    ]
+  }
+];
+
+// --- Mega Menu Component ---
+const MegaMenuDropdown = ({ title, children }: { title: string, children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div 
+      className="relative group"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <button className="flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface transition-colors py-2 font-medium">
+        {title}
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? "rotate-180 text-primary" : ""}`} />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[600px] z-50 cursor-default"
+          >
+            <div className="bg-surface/95 backdrop-blur-xl border border-outline-variant/40 rounded-3xl shadow-2xl shadow-black/10 p-6 grid grid-cols-2 gap-4 relative overflow-hidden">
+               {/* Decorative background glow */}
+               <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+               <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
+               
+               {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 interface LandingPageProps {
   theme: "light" | "dark";
@@ -24,6 +188,36 @@ interface LandingPageProps {
 export default function LandingPage({ theme, toggleTheme, onGetStarted }: LandingPageProps) {
   // Showcase tab state
   const [activeTab, setActiveTab] = useState<"tab1" | "tab2" | "tab3">("tab1");
+
+  // Interactive Pricing State
+  const [selectedPlanId, setSelectedPlanId] = useState<"student" | "professional" | "institution">("professional");
+
+  // Final CTA States & Logic
+  const ctaSectionRef = useRef<HTMLDivElement>(null);
+  const [ctaMousePos, setCtaMousePos] = useState({ x: 0, y: 0 });
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  const rotatingPhrases = [
+    "Teach Smarter. Learn Faster. Grow Better.",
+    "One Platform. Every Classroom.",
+    "Built For The Future Of Education."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % rotatingPhrases.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleCtaMouseMove = (e: React.MouseEvent) => {
+    if (!ctaSectionRef.current) return;
+    const rect = ctaSectionRef.current.getBoundingClientRect();
+    setCtaMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
 
   // Smooth reveal logic
   const [windowHeight, setWindowHeight] = useState(800);
@@ -63,10 +257,66 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             <span className="group-hover:text-primary transition-colors duration-200">Scholar Hub</span>
           </button>
           
-          <div className="hidden md:flex items-center gap-10 text-sm font-medium">
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#platform">Platform</a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#story">Roles</a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#pricing">Pricing</a>
+          <div className="hidden md:flex items-center gap-8 text-sm">
+            <MegaMenuDropdown title="Platform">
+              <a href="#platform" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2 md:col-span-1">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Layout className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-on-surface mb-1">Core Experience</h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">High-fidelity virtual learning environments.</p>
+                </div>
+              </a>
+              <a href="#platform" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2 md:col-span-1">
+                <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-on-surface mb-1">Analytics</h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">Unified telemetry and performance tracking.</p>
+                </div>
+              </a>
+              <div className="col-span-2 h-px bg-outline-variant/30 my-1" />
+              <div className="col-span-2 flex justify-between items-center px-2">
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Learn More</span>
+                <a href="#pricing" className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+                  View full feature list <ArrowRight className="w-3 h-3" />
+                </a>
+              </div>
+            </MegaMenuDropdown>
+
+            <MegaMenuDropdown title="Roles">
+              <a href="#story" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-on-surface mb-1">For Students</h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">Personalized learning paths, 24/7 AI Tutor, and interactive materials.</p>
+                </div>
+              </a>
+              <a href="#story" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-on-surface mb-1">For Instructors</h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">Automated grading, instant quiz generation, and administrative ease.</p>
+                </div>
+              </a>
+              <a href="#story" className="p-4 rounded-2xl hover:bg-surface-container-low transition-colors group flex items-start gap-4 col-span-2">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-on-surface mb-1">For Administrators</h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">Total ecosystem oversight and security governance.</p>
+                </div>
+              </a>
+            </MegaMenuDropdown>
+
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-medium py-2" href="#pricing">Pricing</a>
           </div>
 
           <div className="flex items-center gap-4">
@@ -131,6 +381,177 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* SECTION 1: TRUST METRICS */}
+      <section className="py-12 md:py-20 border-b border-outline-variant/30 relative overflow-hidden bg-bg-surface">
+        {/* Subtle decorative background spots to fit ScholarHub aesthetics */}
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-72 h-72 bg-secondary/5 dark:bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
+          >
+            {[
+              { to: 10000, suffix: "+", label: "Active Students" },
+              { to: 500, suffix: "+", label: "Expert Teachers" },
+              { to: 50, suffix: "+", label: "Partner Institutions" },
+              { to: 95, suffix: "%", label: "Attendance Accuracy" }
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
+                whileHover={{ 
+                  y: -6, 
+                  scale: 1.02,
+                  boxShadow: "0 20px 40px -15px rgba(0,0,0,0.15)",
+                  borderColor: "var(--color-primary-rgba, rgba(109, 93, 252, 0.4))"
+                }}
+                className="relative overflow-hidden p-6 md:p-8 rounded-3xl bg-surface/40 dark:bg-surface-container-lowest/30 backdrop-blur-md border border-outline-variant/30 hover:border-primary/45 transition-all duration-300 flex flex-col justify-center items-center text-center group"
+              >
+                {/* Spotlight hover gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                
+                <h3 className="font-serif text-3xl md:text-5xl font-black text-on-surface mb-2 tracking-tight group-hover:text-primary transition-colors duration-300">
+                  <CountUp to={stat.to} suffix={stat.suffix} />
+                </h3>
+                <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-on-surface-variant font-sans">
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* INSTITUTIONAL CREDIBILITY TICKER */}
+      <section className="py-12 border-b border-outline-variant/20 relative overflow-hidden bg-bg-surface/50">
+        <style>{`
+          @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+          }
+          .animate-ticker {
+            animation: ticker 45s linear infinite;
+          }
+          .animate-ticker:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+        
+        <div className="max-w-7xl mx-auto px-6 mb-6 text-center">
+          <p className="text-[10px] uppercase font-black tracking-widest text-on-surface-variant/80 font-sans">
+            Empowering students & faculty at leading institutions
+          </p>
+        </div>
+
+        {/* Ticker Container */}
+        <div className="relative w-full overflow-hidden flex items-center py-3">
+          {/* Gradient Fades for Premium Look */}
+          <div className="absolute left-0 top-0 bottom-0 w-20 md:w-44 bg-gradient-to-r from-bg-surface via-bg-surface/80 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-20 md:w-44 bg-gradient-to-l from-bg-surface via-bg-surface/80 to-transparent z-10 pointer-events-none" />
+
+          {/* Scrolling Wrapper */}
+          <div className="flex animate-ticker gap-5 whitespace-nowrap select-none">
+            {/* First Set */}
+            {institutions.map((inst, index) => (
+              <div
+                key={`first-${index}`}
+                className="inline-flex items-center px-6 py-3 rounded-full text-xs font-bold tracking-wide bg-surface/50 dark:bg-surface-container-lowest/40 border border-outline-variant/40 backdrop-blur-md hover:border-primary/50 hover:shadow-[0_0_20px_rgba(109,93,252,0.22)] transition-all duration-300 text-on-surface hover:text-primary cursor-default"
+              >
+                {inst}
+              </div>
+            ))}
+            {/* Duplicate Second Set for Seamless Looping */}
+            {institutions.map((inst, index) => (
+              <div
+                key={`second-${index}`}
+                className="inline-flex items-center px-6 py-3 rounded-full text-xs font-bold tracking-wide bg-surface/50 dark:bg-surface-container-lowest/40 border border-outline-variant/40 backdrop-blur-md hover:border-primary/50 hover:shadow-[0_0_20px_rgba(109,93,252,0.22)] transition-all duration-300 text-on-surface hover:text-primary cursor-default"
+              >
+                {inst}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STORYTELLING: PROBLEM -> SOLUTION */}
+      <section className="py-24 relative overflow-hidden bg-surface-container-lowest" id="storytelling">
+        <div className="max-w-7xl mx-auto px-6">
+          
+          {/* The Problem */}
+          <div className="mb-32">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+              className="max-w-3xl mx-auto text-center space-y-6"
+            >
+              <span className="text-[10px] font-mono tracking-wider text-red-500 font-bold uppercase py-1 px-3.5 bg-red-500/10 rounded-full">The Problem</span>
+              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-on-surface">
+                Education is fragmented.
+              </h2>
+              <p className="text-lg text-on-surface-variant leading-relaxed">
+                Institutions struggle with disconnected tools. Students juggle multiple platforms for lectures, assignments, and communication. Teachers drown in administrative overhead instead of teaching.
+              </p>
+            </motion.div>
+
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { icon: AlertCircle, title: "Tool Fatigue", desc: "Switching between video apps, LMS, and messaging platforms causes cognitive overload and lost productivity." },
+                { icon: Zap, title: "Administrative Burden", desc: "Educators spend up to 40% of their time on repetitive tasks like grading, scheduling, and attendance tracking." },
+                { icon: Activity, title: "Lack of Insights", desc: "Data is siloed. Deans and administrators have no unified view of student engagement or system health." }
+              ].map((item, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="p-8 rounded-3xl bg-surface-container-low border border-outline-variant/30 text-center space-y-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="w-12 h-12 mx-auto bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center">
+                    <item.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-serif font-bold text-xl">{item.title}</h3>
+                  <p className="text-sm text-on-surface-variant leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* The Solution */}
+          <div className="relative">
+             {/* Connection line */}
+             <div className="absolute left-1/2 -top-32 bottom-0 w-px bg-gradient-to-b from-red-500/20 via-primary/50 to-primary/20 -translate-x-1/2 hidden md:block" />
+             
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+              className="max-w-3xl mx-auto text-center space-y-6 relative z-10 py-8"
+            >
+              <span className="text-[10px] font-mono tracking-wider text-primary font-bold uppercase py-1 px-3.5 bg-primary/10 rounded-full inline-block backdrop-blur-sm shadow-sm">The Solution</span>
+              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-on-surface">
+                A unified ecosystem.
+              </h2>
+              <p className="text-lg text-on-surface-variant leading-relaxed">
+                ScholarHub consolidates the entire educational lifecycle into one intelligent, high-performance platform. Empowering students, liberating educators, and providing unprecedented clarity for institutions.
+              </p>
+            </motion.div>
+          </div>
+
         </div>
       </section>
 
@@ -467,184 +888,265 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
       </section>
 
       {/* PRICING SECTION */}
-      <section className="py-24" id="pricing">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-24 bg-surface-container-lowest/30 dark:bg-bg-surface text-on-surface relative overflow-hidden border-t border-b border-outline-variant/10 transition-colors duration-300" id="pricing">
+        {/* Subtle background blur nodes */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-16 space-y-2">
-            <h2 className="font-serif text-4xl md:text-5xl font-black text-on-surface">Scale Academic Excellence</h2>
-            <p className="text-on-surface-variant text-sm">Flexible licensing plans built for prep schools to global universities.</p>
+            <h2 className="font-serif text-4xl md:text-5xl font-black text-on-surface tracking-tight">Scale Academic Excellence</h2>
+            <p className="text-on-surface-variant/80 text-sm">Flexible licensing plans built for prep schools to global universities.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
-            
-            {/* Student Card */}
-            <div className="p-10 border border-outline-variant/40 bg-surface-container-lowest rounded-3xl flex flex-col justify-between hover:shadow-md hover:scale-[1.01] transition-all duration-300">
-              <div className="space-y-6">
-                <h3 className="font-serif text-2xl font-bold">Student</h3>
-                <div className="text-4xl font-serif font-black text-on-surface">
-                  Free
-                </div>
-                <p className="text-xs text-on-surface-variant leading-relaxed">
-                  Perfect for individual students and lifelong learners.
-                </p>
-                <ul className="space-y-4 text-xs text-on-surface-variant border-t border-outline-variant/15 pt-6">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Join Courses</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Submit Assignments</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Track Attendance</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Learning Progress Dashboard</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Live Classes</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Certificates</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>AI Tutor (Limited)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>AI Quiz Practice (Limited)</span>
-                  </li>
-                </ul>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-6xl mx-auto">
+            {/* Left-Hand Interactive Hub (The Menu Stack) */}
+            <div className="lg:col-span-4 flex flex-col justify-center items-center lg:self-center w-full">
+              <div className="w-full max-w-md lg:w-64 flex flex-row lg:flex-col items-center justify-center gap-1.5 bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/20 relative z-20 overflow-x-auto lg:overflow-x-visible no-scrollbar">
+                {pricingPlans.map((plan) => {
+                  const isActive = plan.id === selectedPlanId;
+                  return (
+                    <button
+                      key={plan.id}
+                      onClick={() => setSelectedPlanId(plan.id)}
+                      className={`relative w-full text-center lg:text-left px-5 py-3 lg:py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 select-none shrink-0 flex-1 lg:flex-none ${
+                        isActive 
+                          ? "text-on-surface font-extrabold" 
+                          : "text-on-surface-variant/70 hover:text-on-surface font-medium"
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="activePricingPill"
+                          className="absolute inset-0 bg-surface border border-outline-variant/30 shadow-sm rounded-xl z-0"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10">{plan.name}</span>
+                    </button>
+                  );
+                })}
               </div>
-              <button 
-                onClick={onGetStarted}
-                className="w-full py-3.5 mt-8 rounded-xl border border-outline hover:bg-surface-container-high text-xs font-bold transition-all text-center"
-              >
-                Get Started Free
-              </button>
             </div>
 
-            {/* Professional Card (Featured / Most Popular) */}
-            <div className="p-10 border-2 border-primary bg-surface-container-high rounded-3xl flex flex-col justify-between relative shadow-xl shadow-primary/20 md:scale-[1.03] hover:scale-[1.04] transition-all duration-300 z-10">
-              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-md shadow-primary/25 whitespace-nowrap">
-                ✦ Most Popular
-              </span>
-              <div className="space-y-6">
-                <h3 className="font-serif text-2xl font-bold">Professional</h3>
-                <div className="text-4xl font-serif font-black text-primary flex items-baseline gap-1">
-                  ₹299
-                  <span className="text-sm font-sans font-normal text-on-surface-variant">/mo</span>
-                </div>
-                <p className="text-xs text-on-surface-variant leading-relaxed">
-                  For learners and educators who want advanced AI-powered tools.
-                </p>
-                <ul className="space-y-4 text-xs border-t border-outline-variant/15 pt-6 text-on-surface">
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Everything in Free</span>
-                  </li>
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Unlimited AI Tutor</span>
-                  </li>
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Unlimited AI Quiz Generation</span>
-                  </li>
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>AI Assignment Feedback</span>
-                  </li>
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Personalized Learning Paths</span>
-                  </li>
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Advanced Learning Analytics</span>
-                  </li>
-                  <li className="flex items-center gap-2 font-semibold">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Priority Support</span>
-                  </li>
-                </ul>
+            {/* Right-Hand Display Panel (The Content Window) */}
+            <motion.div 
+              layout
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="lg:col-span-8 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-outline-variant/20 pt-8 lg:pt-0 pl-0 lg:pl-12 w-full"
+            >
+              {/* Header inside Panel */}
+              <div className="flex justify-between items-center mb-6">
+                <h4 className="text-xs uppercase font-extrabold tracking-widest text-primary">
+                  {pricingPlans.find(p => p.id === selectedPlanId)?.name} Plan
+                </h4>
+                {pricingPlans.find(p => p.id === selectedPlanId)?.popular && (
+                  <span className="bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-md shadow-primary/20">
+                    ✦ Most Popular
+                  </span>
+                )}
               </div>
-              <button 
-                onClick={onGetStarted}
-                className="w-full py-3.5 mt-8 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-xs font-bold shadow-md shadow-primary/10 transition-all text-center animate-pulse"
-              >
-                Start Free Trial
-              </button>
-            </div>
+              
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedPlanId}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  className="flex-1 flex flex-col justify-between"
+                >
+                  {/* Content Top */}
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex items-baseline gap-1.5 text-5xl md:text-6xl font-serif font-black text-on-surface">
+                        {pricingPlans.find(p => p.id === selectedPlanId)?.price}
+                        {pricingPlans.find(p => p.id === selectedPlanId)?.priceSuffix && (
+                          <span className="text-sm font-sans font-normal text-on-surface-variant">
+                            {pricingPlans.find(p => p.id === selectedPlanId)?.priceSuffix}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-on-surface-variant leading-relaxed mt-2 max-w-xl">
+                        {pricingPlans.find(p => p.id === selectedPlanId)?.tagline}
+                      </p>
+                    </div>
 
-            {/* Institution Card */}
-            <div className="p-10 border border-outline-variant/40 bg-surface-container-lowest rounded-3xl flex flex-col justify-between hover:shadow-md hover:scale-[1.01] transition-all duration-300">
-              <div className="space-y-6">
-                <h3 className="font-serif text-2xl font-bold">Institution</h3>
-                <div className="text-4xl font-serif font-black text-on-surface">
-                  Custom
-                </div>
-                <p className="text-xs text-on-surface-variant leading-relaxed">
-                  Built for schools, colleges, academies, and training organizations.
-                </p>
-                <ul className="space-y-4 text-xs text-on-surface-variant border-t border-outline-variant/15 pt-6">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Everything in Professional</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Teacher Management</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Student Management</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Admin Dashboard</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Institution Analytics</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Attendance Insights</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Bulk User Management</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Custom Branding</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Dedicated Support</span>
-                  </li>
-                </ul>
-              </div>
-              <button 
-                onClick={onGetStarted}
-                className="w-full py-3.5 mt-8 rounded-xl border border-outline hover:bg-surface-container-high text-xs font-bold transition-all text-center"
-              >
-                Contact Sales
-              </button>
-            </div>
+                    {/* Animated Staggered Feature Checklist */}
+                    <motion.ul 
+                      variants={{
+                        animate: {
+                          transition: {
+                            staggerChildren: 0.04
+                          }
+                        }
+                      }}
+                      initial="initial"
+                      animate="animate"
+                      className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-xs font-semibold text-on-surface/90 border-t border-outline-variant/20 pt-6"
+                    >
+                      {pricingPlans.find(p => p.id === selectedPlanId)?.features.map((feature, idx) => (
+                        <motion.li 
+                          key={idx}
+                          variants={{
+                            initial: { opacity: 0, x: -12 },
+                            animate: { opacity: 1, x: 0, transition: { duration: 0.2, ease: "easeOut" } }
+                          }}
+                          className="flex items-center gap-3"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                            <Check className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                          <span>{feature}</span>
+                        </motion.li>
+                      ))}
+                    </motion.ul>
+                  </div>
 
+                  {/* Content Bottom CTA Button */}
+                  <div className="mt-8 pt-4 border-t border-outline-variant/20">
+                    <button 
+                      onClick={onGetStarted}
+                      className={`w-full py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${
+                        pricingPlans.find(p => p.id === selectedPlanId)?.popular 
+                          ? "bg-primary text-on-primary hover:bg-primary-container shadow-lg shadow-primary/25 hover:scale-[1.01]" 
+                          : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest border border-outline-variant/30 hover:scale-[1.01]"
+                      }`}
+                    >
+                      {pricingPlans.find(p => p.id === selectedPlanId)?.ctaText}
+                    </button>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
           </div>
 
           {/* Trust Message */}
-          <p className="text-center font-body-md text-on-surface-variant text-sm mt-16 max-w-2xl mx-auto opacity-80">
+          <p className="text-center font-body-md text-on-surface-variant/60 text-sm mt-16 max-w-2xl mx-auto">
             Trusted by students, educators, and institutions building the future of learning.
           </p>
+        </div>
+      </section>
+
+      {/* FINAL CTA SECTION */}
+      <section 
+        ref={ctaSectionRef}
+        onMouseMove={handleCtaMouseMove}
+        className="py-32 bg-surface-container-lowest/20 dark:bg-bg-surface text-on-surface relative overflow-hidden border-b border-outline-variant/10 transition-colors duration-300"
+      >
+        {/* Low-opacity Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+
+        {/* Ambient Pulsing Background Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 dark:bg-primary/10 rounded-full blur-[140px] pointer-events-none animate-pulse duration-[8000ms]" />
+
+        {/* Soft Spotlight Following Cursor */}
+        <motion.div
+          className="absolute pointer-events-none rounded-full blur-[100px] bg-primary/10 dark:bg-primary/15 w-[350px] h-[350px] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 hidden md:block"
+          style={{
+            left: ctaMousePos.x,
+            top: ctaMousePos.y
+          }}
+        />
+
+        {/* Floating Educational Elements */}
+        {[
+          { Icon: BookOpen, top: "15%", left: "12%", delay: 0 },
+          { Icon: GraduationCap, top: "68%", left: "15%", delay: 1.5 },
+          { Icon: Sparkles, top: "20%", right: "12%", delay: 0.8 },
+          { Icon: BarChart2, top: "65%", right: "12%", delay: 2.2 }
+        ].map(({ Icon, top, left, right, delay }, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-primary/10 dark:text-primary/20 hidden md:block pointer-events-none"
+            style={{ top, left, right }}
+            animate={{
+              y: [0, -12, 0],
+              rotate: [0, 5, 0]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay
+            }}
+          >
+            <Icon className="w-10 h-10" />
+          </motion.div>
+        ))}
+
+        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-10">
+          
+          {/* Rotating Headline */}
+          <div className="h-24 md:h-32 flex items-center justify-center overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={phraseIndex}
+                initial={{ y: 24, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -24, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="font-serif text-4xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight"
+              >
+                {rotatingPhrases[phraseIndex]}
+              </motion.h2>
+            </AnimatePresence>
+          </div>
+
+          {/* Description */}
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto leading-relaxed"
+          >
+            ScholarHub unifies virtual classrooms, assignments, attendance, AI learning tools, analytics, and institutional management into one seamless platform.
+          </motion.p>
+
+          {/* Staggered CTAs */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4"
+          >
+            <button
+              onClick={onGetStarted}
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:scale-[1.02] active:scale-98"
+            >
+              Get Started Free
+            </button>
+            <button
+              onClick={onGetStarted}
+              className="w-full sm:w-auto px-8 py-4 rounded-xl border border-outline-variant/60 hover:bg-surface-container-high text-base font-bold transition-all duration-300 hover:scale-[1.02] active:scale-98 text-on-surface"
+            >
+              Schedule Demo
+            </button>
+          </motion.div>
+
+          {/* Trust Indicators */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-2 pt-10 border-t border-outline-variant/20 max-w-3xl mx-auto text-xs font-bold text-on-surface-variant"
+          >
+            {[
+              "No Credit Card Required",
+              "Free Student Access",
+              "Institution Ready",
+              "AI-Powered Learning"
+            ].map((indicator, idx) => (
+              <div key={idx} className="flex items-center justify-center gap-2">
+                <Check className="w-4 h-4 text-primary shrink-0" />
+                <span>{indicator}</span>
+              </div>
+            ))}
+          </motion.div>
+
         </div>
       </section>
 

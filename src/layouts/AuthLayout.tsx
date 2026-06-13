@@ -14,7 +14,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background transition-colors duration-500" 
+      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-bg-surface text-on-surface transition-colors duration-300" 
       style={{ '--screen-accent': '#6D5DFC' } as React.CSSProperties}
     >
       <div className="absolute top-4 right-4 z-20">

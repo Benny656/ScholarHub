@@ -12,6 +12,7 @@ export default {
         'brand-tertiary-light': '#ede9fe',
         background: 'var(--background)',
         surface: 'var(--surface)',
+        'bg-surface': 'var(--surface)',
         'on-surface': 'var(--on-surface)',
         'on-surface-variant': 'var(--on-surface-variant)',
         primary: 'var(--primary)',
