@@ -1,54 +1,75 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Building2, GraduationCap } from 'lucide-react';
+import { Check, Building2, GraduationCap, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMagnetic } from '../hooks/useMagnetic';
 import toast from 'react-hot-toast';
 
 const plans = [
   {
-    name: 'Free',
+    name: 'Student',
     icon: GraduationCap,
     price: { monthly: 0, annual: 0 },
-    description: 'Default plan for individual learners and school students.',
+    description: 'Perfect for individual students and lifelong learners.',
     color: 'secondary',
     textColor: 'text-secondary',
     glowColor: 'rgba(208,194,214,0.15)',
     features: [
-      'Live classrooms',
-      'AI Tutor (standard)',
-      'Smart assignment grading',
+      'Join Courses',
+      'Submit Assignments',
+      'Track Attendance',
+      'Learning Progress Dashboard',
+      'Live Classes',
       'Certificates',
-      'Attendance tracking',
-      'Progress analytics',
-      '50+ courses',
-      'Mobile access',
+      'AI Tutor (Limited)',
+      'AI Quiz Practice (Limited)',
     ],
-    cta: 'Your Current Plan',
+    cta: 'Get Started Free',
     popular: false,
-    disabled: true,
+    disabled: false,
   },
   {
-    name: 'Institution',
-    icon: Building2,
-    price: { monthly: 999, annual: 799 },
-    description: 'Built for schools, universities, and forward-thinking enterprises.',
+    name: 'Professional',
+    icon: Zap,
+    price: { monthly: 299, annual: 239 },
+    description: 'For learners and educators who want advanced AI-powered tools.',
     color: 'primary',
     textColor: 'text-primary',
     glowColor: 'rgba(216,188,234,0.2)',
     features: [
       'Everything in Free',
-      'Custom branding',
-      'Institution admin console',
-      'SSO integration',
-      'Dedicated account manager',
-      'Priority support',
-      'Advanced analytics',
-      'Bulk student management',
-      'API access',
+      'Unlimited AI Tutor',
+      'Unlimited AI Quiz Generation',
+      'AI Assignment Feedback',
+      'Personalized Learning Paths',
+      'Advanced Learning Analytics',
+      'Priority Support',
+    ],
+    cta: 'Start Free Trial',
+    popular: true,
+    disabled: false,
+  },
+  {
+    name: 'Institution',
+    icon: Building2,
+    price: { monthly: 'Custom', annual: 'Custom' },
+    description: 'Built for schools, colleges, academies, and training organizations.',
+    color: 'secondary',
+    textColor: 'text-secondary',
+    glowColor: 'rgba(208,194,214,0.15)',
+    features: [
+      'Everything in Professional',
+      'Teacher Management',
+      'Student Management',
+      'Admin Dashboard',
+      'Institution Analytics',
+      'Attendance Insights',
+      'Bulk User Management',
+      'Custom Branding',
+      'Dedicated Support',
     ],
     cta: 'Contact Sales',
-    popular: true,
+    popular: false,
     disabled: false,
   },
 ] as const;
@@ -106,9 +127,9 @@ function PricingCard({
             className="flex items-end gap-1"
           >
             <span className={`text-5xl font-bold ${plan.textColor}`}>
-              {price === 0 ? 'Free' : `₹${price}`}
+              {price === 0 ? 'Free' : typeof price === 'number' ? `₹${price}` : price}
             </span>
-            {price > 0 && (
+            {typeof price === 'number' && price > 0 && (
               <span className="text-on-surface-variant font-body-md mb-1.5">/mo</span>
             )}
           </motion.div>
@@ -156,9 +177,13 @@ function PricingCard({
 export function PricingSection() {
   const [billing, setBilling] = useState<Billing>('monthly');
 
+  const navigate = useNavigate();
+
   const handleAction = (planName: string) => {
     if (planName === 'Institution') {
       toast.success('Thank you for your interest! Our sales team will contact you shortly.');
+    } else {
+      navigate('/register');
     }
   };
 
@@ -228,7 +253,7 @@ export function PricingSection() {
 
         {/* Pricing cards grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch max-w-4xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch max-w-6xl mx-auto"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -245,9 +270,9 @@ export function PricingSection() {
           ))}
         </motion.div>
 
-        {/* Footer note */}
-        <p className="text-center font-body-md text-on-surface-variant text-sm mt-12 opacity-60">
-          No credit card required. Free tier is default for all learners.
+        {/* Trust message */}
+        <p className="text-center font-body-md text-on-surface-variant text-sm mt-12 max-w-2xl mx-auto">
+          Trusted by students, educators, and institutions building the future of learning.
         </p>
       </div>
     </section>

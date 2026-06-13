@@ -10,8 +10,10 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!isAuthenticated || user?.role !== 'admin') {
+    if (!isAuthenticated) {
       navigate('/scholar-hub-admin-panel/login', { replace: true });
+    } else if (user?.role !== 'admin') {
+      navigate('/404', { replace: true });
     }
   }, [isAuthenticated, user, isLoading, navigate]);
 

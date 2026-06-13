@@ -60,6 +60,21 @@ export function NotFound() {
         )}
       </div>
 
+      {/* ── Platform logo (top-left) ── */}
+      <div className="absolute top-4 left-6 z-20">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 cursor-pointer"
+          aria-label="ScholarHub Logo"
+        >
+          <img
+            src={isDark ? "/logo-dark.png" : "/logo-light.png"}
+            alt="Scholar Hub Logo"
+            className="h-10 w-auto object-contain"
+          />
+        </button>
+      </div>
+
       {/* ── Floating theme toggle (top-right) ── */}
       <div className="absolute top-4 right-4 z-20">
         <button

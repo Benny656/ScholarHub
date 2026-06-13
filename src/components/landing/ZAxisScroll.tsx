@@ -158,25 +158,25 @@ const plans = [
     icon: GraduationCap,
     price: { monthly: 0, annual: 0 },
     color: '#d0c2d6',
-    features: ['50+ free courses', 'AI Tutor (10/mo)', 'Progress dashboard', 'Mobile app'],
+    features: ['Join Courses', 'Submit Assignments', 'Track Attendance', 'Learning Progress Dashboard', 'Live Classes', 'Certificates', 'AI Tutor (Limited)', 'AI Quiz Practice (Limited)'],
     cta: 'Get Started Free',
     popular: false,
   },
   {
-    name: 'Pro',
+    name: 'Professional',
     icon: Zap,
     price: { monthly: 299, annual: 239 },
     color: '#d8bcea',
-    features: ['Unlimited courses', 'AI Tutor unlimited', 'Live classrooms', 'Smart grading', 'Certificates'],
+    features: ['Everything in Free', 'Unlimited AI Tutor', 'Unlimited AI Quiz Generation', 'AI Assignment Feedback', 'Personalized Learning Paths', 'Advanced Learning Analytics', 'Priority Support'],
     cta: 'Start Free Trial',
     popular: true,
   },
   {
     name: 'Institution',
     icon: Building2,
-    price: { monthly: 999, annual: 799 },
+    price: { monthly: 'Custom', annual: 'Custom' },
     color: '#f3b6cd',
-    features: ['Everything in Pro', 'Admin console', 'SSO integration', 'Custom branding', 'Dedicated support'],
+    features: ['Everything in Professional', 'Teacher Management', 'Student Management', 'Admin Dashboard', 'Institution Analytics', 'Attendance Insights', 'Bulk User Management', 'Custom Branding', 'Dedicated Support'],
     cta: 'Contact Sales',
     popular: false,
   },
@@ -220,8 +220,8 @@ function PricingPanel() {
                   <Icon className="w-6 h-6 mb-3" style={{ color: plan.color }} />
                   <div className="zs-plan-name">{plan.name}</div>
                   <div className="zs-plan-price" style={{ color: plan.color }}>
-                    {price === 0 ? 'Free' : `₹${price}`}
-                    {price > 0 && <span className="zs-plan-period">/mo</span>}
+                    {price === 0 ? 'Free' : typeof price === 'number' ? `₹${price}` : price}
+                    {typeof price === 'number' && price > 0 && <span className="zs-plan-period">/mo</span>}
                   </div>
                   <ul className="zs-plan-features">
                     {plan.features.map((f) => (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   GraduationCap, 
   Moon, 
@@ -11,7 +11,9 @@ import {
   Sparkles,
   BarChart2
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import ParticleLearningSphere from "../../components/landing/ParticleLearningSphere";
+import HeroSequenceReveal from "../../components/landing/HeroSequenceReveal";
 
 interface LandingPageProps {
   theme: "light" | "dark";
@@ -23,11 +25,29 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
   // Showcase tab state
   const [activeTab, setActiveTab] = useState<"tab1" | "tab2" | "tab3">("tab1");
 
+  // Smooth reveal logic
+  const [windowHeight, setWindowHeight] = useState(800);
+  useEffect(() => {
+    setWindowHeight(window.innerHeight);
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const { scrollY } = useScroll();
+  const sequenceHeight = windowHeight * 3.5;
+  const contentOpacity = useTransform(scrollY, [sequenceHeight, sequenceHeight + windowHeight * 0.5], [0, 1]);
+
   return (
     <div className="bg-bg-surface text-on-surface font-sans min-h-screen transition-colors duration-300">
       
+      <HeroSequenceReveal />
+
       {/* NAVIGATION BAR */}
-      <nav id="landing-navbar" className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant">
+      <nav 
+        id="landing-navbar" 
+        className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant"
+      >
         <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
@@ -71,7 +91,8 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      <motion.div style={{ opacity: contentOpacity }}>
+        {/* HERO SECTION */}
       <section className="pt-40 pb-24 border-b border-outline-variant/30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -102,50 +123,12 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
               </div>
             </div>
             
-            {/* Interactive Hero vector mockup display */}
-            <div className="w-full relative rounded-3xl overflow-hidden border border-outline-variant/30 bg-surface-container-low p-6 shadow-xl aspect-video flex flex-col justify-between">
-              <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-red-400" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                  <span className="text-[11px] font-mono text-on-surface-variant ml-2">scholarhub-live-desktop.app</span>
-                </div>
-                <span className="text-[9px] font-bold uppercase tracking-wider bg-emerald-550/15 text-emerald-600 px-2.5 py-0.5 rounded-full">System Live</span>
-              </div>
-              <div className="flex-1 grid grid-cols-3 gap-4">
-                <div className="col-span-2 bg-surface-container-high rounded-xl p-4 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <span className="text-[9px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">MATH 101</span>
-                    <h5 className="font-serif font-bold text-sm">Linear Algebra Foundations</h5>
-                    <p className="text-[10px] text-on-surface-variant">Class discussion: Solving eigenvectors...</p>
-                  </div>
-                  <div className="flex items-center gap-3 bg-surface-container-lowest p-2 rounded-lg border border-outline-variant/20">
-                    <div className="w-6 h-6 rounded bg-indigo-500/10 flex items-center justify-center text-indigo-500 font-bold text-xs font-mono">D</div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-bold truncate">Dr. Kenneth Vance</p>
-                      <p className="text-[8px] text-on-surface-variant truncate">Live presentation stream online</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-3 bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/20">
-                  <p className="text-[10px] font-bold">Upcoming Quizzes</p>
-                  <div className="space-y-2">
-                    <div className="p-1.5 bg-surface-container-low rounded border-l-2 border-primary space-y-0.5">
-                      <p className="text-[9px] font-bold truncate">Calculus Quiz 2</p>
-                      <p className="text-[8px] text-on-surface-variant">Due tomorrow</p>
-                    </div>
-                    <div className="p-1.5 bg-surface-container-low rounded border-l-2 border-secondary space-y-0.5">
-                      <p className="text-[9px] font-bold truncate">Physics Lab Report</p>
-                      <p className="text-[8px] text-on-surface-variant">Due Friday</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-outline-variant/20 flex justify-between items-center text-[10px] text-on-surface-variant">
-                <span>Total scholars online: 2,410</span>
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> Real-time tracking</span>
-              </div>
+            {/* Interactive 3D Particle Learning Sphere */}
+            <div className="w-full flex items-center justify-center" style={{ minHeight: '480px' }}>
+              <ParticleLearningSphere
+                particleCount={1500}
+                className="h-[480px] w-full cursor-grab active:cursor-grabbing"
+              />
             </div>
           </div>
         </div>
@@ -491,28 +474,50 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             <p className="text-on-surface-variant text-sm">Flexible licensing plans built for prep schools to global universities.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
             
-            {/* Essential Card */}
-            <div className="p-10 border border-outline-variant/40 bg-surface-container-lowest rounded-3xl flex flex-col justify-between hover:shadow-md transition-all">
+            {/* Student Card */}
+            <div className="p-10 border border-outline-variant/40 bg-surface-container-lowest rounded-3xl flex flex-col justify-between hover:shadow-md hover:scale-[1.01] transition-all duration-300">
               <div className="space-y-6">
-                <h3 className="font-serif text-2xl font-bold">Essential</h3>
+                <h3 className="font-serif text-2xl font-bold">Student</h3>
                 <div className="text-4xl font-serif font-black text-on-surface">
-                  $0
-                  <span className="text-sm font-sans font-normal text-on-surface-variant">/mo</span>
+                  Free
                 </div>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Perfect for individual students and lifelong learners.
+                </p>
                 <ul className="space-y-4 text-xs text-on-surface-variant border-t border-outline-variant/15 pt-6">
                   <li className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Up to 50 active students</span>
+                    <span>Join Courses</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Standard dashboard with class streams</span>
+                    <span>Submit Assignments</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Basic automated quiz generators</span>
+                    <span>Track Attendance</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Learning Progress Dashboard</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Live Classes</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Certificates</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>AI Tutor (Limited)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>AI Quiz Practice (Limited)</span>
                   </li>
                 </ul>
               </div>
@@ -520,67 +525,109 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                 onClick={onGetStarted}
                 className="w-full py-3.5 mt-8 rounded-xl border border-outline hover:bg-surface-container-high text-xs font-bold transition-all text-center"
               >
-                Get Started
+                Get Started Free
               </button>
             </div>
 
-            {/* Professional Card (Popular) */}
-            <div className="p-10 border-2 border-primary bg-surface-container-high rounded-3xl flex flex-col justify-between relative shadow-lg shadow-primary/5 hover:scale-[1.01] transition-transform">
-              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-3.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">
-                Popular Option
+            {/* Professional Card (Featured / Most Popular) */}
+            <div className="p-10 border-2 border-primary bg-surface-container-high rounded-3xl flex flex-col justify-between relative shadow-xl shadow-primary/20 md:scale-[1.03] hover:scale-[1.04] transition-all duration-300 z-10">
+              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-md shadow-primary/25 whitespace-nowrap">
+                ✦ Most Popular
               </span>
               <div className="space-y-6">
                 <h3 className="font-serif text-2xl font-bold">Professional</h3>
-                <div className="text-4xl font-serif font-black text-primary">
-                  $19
+                <div className="text-4xl font-serif font-black text-primary flex items-baseline gap-1">
+                  ₹299
                   <span className="text-sm font-sans font-normal text-on-surface-variant">/mo</span>
                 </div>
-                <ul className="space-y-4 text-xs border-t border-outline-variant/15 pt-6">
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  For learners and educators who want advanced AI-powered tools.
+                </p>
+                <ul className="space-y-4 text-xs border-t border-outline-variant/15 pt-6 text-on-surface">
                   <li className="flex items-center gap-2 font-semibold">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Unlimited students cohort</span>
+                    <span>Everything in Free</span>
                   </li>
                   <li className="flex items-center gap-2 font-semibold">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Advanced analytics and logs</span>
+                    <span>Unlimited AI Tutor</span>
                   </li>
                   <li className="flex items-center gap-2 font-semibold">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Premium Gemini evaluation rubrics</span>
+                    <span>Unlimited AI Quiz Generation</span>
                   </li>
                   <li className="flex items-center gap-2 font-semibold">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Priority live streaming support</span>
+                    <span>AI Assignment Feedback</span>
+                  </li>
+                  <li className="flex items-center gap-2 font-semibold">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Personalized Learning Paths</span>
+                  </li>
+                  <li className="flex items-center gap-2 font-semibold">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Advanced Learning Analytics</span>
+                  </li>
+                  <li className="flex items-center gap-2 font-semibold">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Priority Support</span>
                   </li>
                 </ul>
               </div>
               <button 
                 onClick={onGetStarted}
-                className="w-full py-3.5 mt-8 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-xs font-bold shadow-md shadow-primary/10 transition-all text-center"
+                className="w-full py-3.5 mt-8 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-xs font-bold shadow-md shadow-primary/10 transition-all text-center animate-pulse"
               >
-                Get Started
+                Start Free Trial
               </button>
             </div>
 
             {/* Institution Card */}
-            <div className="p-10 border border-outline-variant/40 bg-surface-container-lowest rounded-3xl flex flex-col justify-between hover:shadow-md transition-all">
+            <div className="p-10 border border-outline-variant/40 bg-surface-container-lowest rounded-3xl flex flex-col justify-between hover:shadow-md hover:scale-[1.01] transition-all duration-300">
               <div className="space-y-6">
                 <h3 className="font-serif text-2xl font-bold">Institution</h3>
                 <div className="text-4xl font-serif font-black text-on-surface">
                   Custom
                 </div>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Built for schools, colleges, academies, and training organizations.
+                </p>
                 <ul className="space-y-4 text-xs text-on-surface-variant border-t border-outline-variant/15 pt-6">
                   <li className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Site-wide unified licensing</span>
+                    <span>Everything in Professional</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>SLA 99.9% streaming response times</span>
+                    <span>Teacher Management</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Dedicated success dean coordinator</span>
+                    <span>Student Management</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Admin Dashboard</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Institution Analytics</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Attendance Insights</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Bulk User Management</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Custom Branding</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Dedicated Support</span>
                   </li>
                 </ul>
               </div>
@@ -593,6 +640,11 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             </div>
 
           </div>
+
+          {/* Trust Message */}
+          <p className="text-center font-body-md text-on-surface-variant text-sm mt-16 max-w-2xl mx-auto opacity-80">
+            Trusted by students, educators, and institutions building the future of learning.
+          </p>
         </div>
       </section>
 
@@ -648,6 +700,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
           </p>
         </div>
       </footer>
+      </motion.div>
 
     </div>
   );

@@ -11,8 +11,12 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   const { toggle } = useTheme();
+  
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background transition-colors" style={{ '--screen-accent': '#3B82F6' } as React.CSSProperties}>
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background transition-colors duration-500" 
+      style={{ '--screen-accent': '#6D5DFC' } as React.CSSProperties}
+    >
       <div className="absolute top-4 right-4 z-20">
         <button
           onClick={toggle}
@@ -23,16 +27,62 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           <Sun className="w-5 h-5 hidden dark:block" />
         </button>
       </div>
+
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-20 blur-3xl" style={{ background: 'radial-gradient(circle, var(--screen-accent), transparent)' }} />
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full opacity-20 blur-3xl" style={{ background: 'radial-gradient(circle, var(--color-primary), transparent)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10 blur-3xl" style={{ background: 'radial-gradient(circle, var(--color-secondary), transparent)' }} />
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: 'linear-gradient(var(--color-on-surface) 1px, transparent 1px), linear-gradient(90deg, var(--color-on-surface) 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-        }} />
+        {/* Soft purple radial glow behind the registration card */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-30 blur-3xl pointer-events-none" 
+          style={{ background: 'radial-gradient(circle, #6D5DFC 0%, #4F46E5 50%, transparent 100%)' }} 
+        />
+
+        {/* Ambient glows at corners */}
+        <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-15 blur-3xl" style={{ background: 'radial-gradient(circle, #6D5DFC, transparent)' }} />
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full opacity-15 blur-3xl" style={{ background: 'radial-gradient(circle, #4F46E5, transparent)' }} />
+
+        {/* Faint floating particles (gradient mesh style) */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: i % 2 === 0 ? 120 : 80,
+              height: i % 2 === 0 ? 120 : 80,
+              background: i % 2 === 0 
+                ? 'radial-gradient(circle, rgba(109, 93, 252, 0.15) 0%, transparent 70%)' 
+                : 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%)',
+              left: `${15 + (i * 15)}%`,
+              top: `${10 + (i * 13)}%`,
+              filter: 'blur(16px)',
+            }}
+            animate={{
+              x: [0, (i % 2 === 0 ? 40 : -40), (i % 2 === 0 ? -20 : 20), 0],
+              y: [0, (i % 2 === 0 ? -30 : 35), (i % 2 === 0 ? 15 : -15), 0],
+            }}
+            transition={{
+              duration: 25 + (i * 4),
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+
+        {/* Subtle animated grid background */}
+        <motion.div 
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06]"
+          style={{
+            backgroundImage: 'linear-gradient(var(--on-surface) 1px, transparent 1px), linear-gradient(90deg, var(--on-surface) 1px, transparent 1px)',
+            backgroundSize: '45px 45px',
+          }}
+          animate={{
+            backgroundPosition: ['0px 0px', '45px 45px'],
+          }}
+          transition={{
+            repeat: Infinity,
+            ease: 'linear',
+            duration: 18,
+          }}
+        />
       </div>
 
       <motion.div
@@ -44,24 +94,24 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 group">
-            <div className="w-14 h-14 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
               <img src="/logo-dark.png" alt="ScholarHub Logo" className="w-full h-full object-contain drop-shadow-xl hidden dark:block" />
               <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain drop-shadow-xl block dark:hidden" />
             </div>
-            <span className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
-              Scholar <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, var(--screen-accent), var(--color-primary))' }}>Hub</span>
+            <span className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>
+              Scholar<span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #6D5DFC, #4F46E5)' }}>Hub</span>
             </span>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="rounded-3xl p-8 glass shadow-2xl">
+        <div className="rounded-3xl p-8 glass shadow-2xl border border-outline-variant/15 relative overflow-hidden backdrop-blur-xl bg-surface-container-lowest/60">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-on-surface mb-1" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>
+            <h1 className="text-2xl font-bold text-on-surface mb-1" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>
               {title}
             </h1>
             {subtitle && (
-              <p className="text-sm text-on-surface-variant" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-sm text-on-surface-variant font-medium">
                 {subtitle}
               </p>
             )}

@@ -106,7 +106,7 @@ export function Register() {
   };
 
   const inputClass = (field: string) =>
-    `w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors[field] ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#3B82F6]'}`;
+    `w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors[field] ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#6D5DFC]'}`;
   const inputStyle = { fontFamily: 'Inter, sans-serif' };
 
   const totalSteps = role === 'student' ? 3 : 2;
@@ -121,7 +121,7 @@ export function Register() {
               key={r}
               type="button"
               onClick={() => setRole(r)}
-              className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#3B82F6]/50 bg-[#3B82F6]/15 text-[#3B82F6]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#3B82F6]/30'}`}
+              className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 text-[#6D5DFC]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#6D5DFC]/30'}`}
             >
               {r === 'student' ? <GraduationCap size={18} /> : <BookOpen size={18} />}
               <span className="text-sm font-semibold capitalize">{r}</span>
@@ -132,12 +132,12 @@ export function Register() {
 
       {/* Progress */}
       <div className="flex items-center gap-2 mb-6">
-        {Array.from({ length: totalSteps }).map((_, i) => {
-          const s = i + 1;
-          return (
-            <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-[#3B82F6]' : 'bg-on-surface/10'}`} />
-          );
-        })}
+          {Array.from({ length: totalSteps }).map((_, i) => {
+            const s = i + 1;
+            return (
+              <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5]' : 'bg-on-surface/10'}`} />
+            );
+          })}
         <span className="text-xs text-on-surface-variant ml-1" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Step {step}/{totalSteps}</span>
       </div>
 
@@ -179,7 +179,7 @@ export function Register() {
               </div>
               {errors.confirm && <p className="text-xs text-error mt-1">{errors.confirm}</p>}
             </div>
-            <button type="button" onClick={handleNext} className="w-full py-3 rounded-xl font-semibold text-white text-sm mt-2 bg-[#3B82F6]" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px color-mix(in srgb, #3B82F6 30%, transparent)' }}>
+            <button type="button" onClick={handleNext} className="w-full py-3 rounded-xl font-semibold text-white text-sm mt-2 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
               Continue →
             </button>
           </motion.div>
@@ -195,12 +195,12 @@ export function Register() {
                 onClick={() => setUserType('school')}
                 className={`flex flex-col items-start p-4 rounded-xl border text-left transition-all w-full relative overflow-hidden ${
                   userType === 'school'
-                    ? 'border-[#3B82F6]/50 bg-[#3B82F6]/10 ring-1 ring-[#3B82F6]/30'
-                    : 'border-outline-variant/30 bg-surface text-on-surface hover:border-[#3B82F6]/30'
+                    ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 ring-1 ring-[#6D5DFC]/30'
+                    : 'border-outline-variant/30 bg-surface text-on-surface hover:border-[#6D5DFC]/30'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-lg flex-shrink-0 ${userType === 'school' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' : 'bg-on-surface/5 text-on-surface-variant'}`}>
+                  <div className={`p-2.5 rounded-lg flex-shrink-0 ${userType === 'school' ? 'bg-[#6D5DFC]/20 text-[#6D5DFC]' : 'bg-on-surface/5 text-on-surface-variant'}`}>
                     <School size={20} />
                   </div>
                   <div>
@@ -219,12 +219,12 @@ export function Register() {
                 onClick={() => setUserType('college')}
                 className={`flex flex-col items-start p-4 rounded-xl border text-left transition-all w-full relative overflow-hidden ${
                   userType === 'college'
-                    ? 'border-[#3B82F6]/50 bg-[#3B82F6]/10 ring-1 ring-[#3B82F6]/30'
-                    : 'border-outline-variant/30 bg-surface text-on-surface hover:border-[#3B82F6]/30'
+                    ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 ring-1 ring-[#6D5DFC]/30'
+                    : 'border-outline-variant/30 bg-surface text-on-surface hover:border-[#6D5DFC]/30'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-lg flex-shrink-0 ${userType === 'college' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' : 'bg-on-surface/5 text-on-surface-variant'}`}>
+                  <div className={`p-2.5 rounded-lg flex-shrink-0 ${userType === 'college' ? 'bg-[#6D5DFC]/20 text-[#6D5DFC]' : 'bg-on-surface/5 text-on-surface-variant'}`}>
                     <GraduationCap size={20} />
                   </div>
                   <div>
@@ -239,7 +239,7 @@ export function Register() {
               <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 ← Back
               </button>
-              <button type="button" onClick={handleNext} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm bg-[#3B82F6]" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <button type="button" onClick={handleNext} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Continue →
               </button>
             </div>
@@ -319,7 +319,7 @@ export function Register() {
               <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 ← Back
               </button>
-              <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-[#3B82F6]" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px color-mix(in srgb, #3B82F6 30%, transparent)' }}>
+              <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
                 {isLoading ? (<><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Creating...</>) : 'Create Account'}
               </button>
             </div>
@@ -329,7 +329,7 @@ export function Register() {
 
       <p className="text-center text-sm text-on-surface-variant mt-6" style={{ fontFamily: 'Inter, sans-serif' }}>
         Already have an account?{' '}
-        <Link to="/login" className="text-[#3B82F6] hover:opacity-80 font-medium transition-opacity">Sign in</Link>
+        <Link to="/login" className="text-[#6D5DFC] hover:opacity-80 font-medium transition-opacity">Sign in</Link>
       </p>
     </AuthLayout>
   );
