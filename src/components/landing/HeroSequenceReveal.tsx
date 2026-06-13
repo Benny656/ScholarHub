@@ -119,7 +119,7 @@ export default function HeroSequenceReveal() {
 
   return (
     <div ref={containerRef} className="relative w-full bg-[#0B1020]" style={{ height: "400vh" }}>
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#0B1020] flex items-center justify-center">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#0B1020] flex items-center justify-center">
         {!isLoaded && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-[#0B1020]">
             <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
