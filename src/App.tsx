@@ -9,15 +9,16 @@ import { V2DashboardLayout } from './layouts/V2DashboardLayout';
 // Landing page
 import { LandingPage } from './pages/landing/LandingPage';
 
-// Other shared components (still used on other pages)
+// Other shared components
 import { NotFound } from './components/NotFound';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { FloatingElements3D } from './components/FloatingElements3D';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 
-// Auth context
+// Auth & Theme context
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { useTheme } from './hooks/useTheme';
 
 // Auth pages
 import { Login } from './pages/auth/Login';
@@ -53,10 +54,7 @@ import { PricingPage } from './pages/pricing/PricingPage';
 import { AdminLogin } from './pages/admin-panel/AdminLogin';
 import { AdminGuard } from './components/admin/AdminGuard';
 
-function HomePage() {
-  return <LandingPage />;
-}
-
+// ─── Page animation wrapper ────────────────────────────────────────────────────
 function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
@@ -71,6 +69,7 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── Dashboard shell wrapper ───────────────────────────────────────────────────
 function DashboardWrapper({ children }: { children: React.ReactNode }) {
   return (
     <V2DashboardLayout>
@@ -81,14 +80,15 @@ function DashboardWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── App routes ───────────────────────────────────────────────────────────────
 function AppRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* ─── Landing page (untouched except inner component) ─── */}
-        <Route path="/" element={<HomePage />} />
+        {/* ─── Landing ─── */}
+        <Route path="/" element={<LandingPage />} />
 
         {/* ─── Auth ─── */}
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
@@ -142,45 +142,73 @@ function AppRoutes() {
   );
 }
 
-function App() {
+// ─── Theme-aware Toaster — lives inside ThemeProvider ─────────────────────────
+function ThemeAwareToaster() {
+  const { isDark } = useTheme();
+  return (
+    <Toaster
+      position="bottom-right"
+      toastOptions={{
+        duration: 3500,
+        style: isDark
+          ? {
+              background: 'rgba(13, 18, 30, 0.96)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#e2e8f0',
+              borderRadius: '12px',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            }
+          : {
+              background: 'rgba(255, 255, 255, 0.96)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(0, 0, 0, 0.08)',
+              color: '#181c22',
+              borderRadius: '12px',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            },
+      }}
+    />
+  );
+}
+
+// ─── App content — must be inside ThemeProvider ────────────────────────────────
+function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
 
+  return (
+    <AnimatePresence mode="wait">
+      {isLoading ? (
+        <LoadingScreen key="global-loader" onComplete={() => setIsLoading(false)} />
+      ) : (
+        <motion.div
+          key="app-content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="h-full w-full"
+        >
+          <CustomCursor />
+          <FloatingElements3D />
+          <AppRoutes />
+          <ThemeAwareToaster />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─── Root App ─────────────────────────────────────────────────────────────────
+function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AnimatePresence mode="wait">
-            {isLoading ? (
-              <LoadingScreen key="global-loader" onComplete={() => setIsLoading(false)} />
-            ) : (
-              <motion.div
-                key="app-content"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="h-full w-full"
-              >
-                <CustomCursor />
-                <FloatingElements3D />
-                <AppRoutes />
-                <Toaster
-                  position="bottom-right"
-                  toastOptions={{
-                    duration: 3500,
-                    style: {
-                      background: 'rgba(13,20,45,0.95)',
-                      backdropFilter: 'blur(12px)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: '#e2e8f0',
-                      borderRadius: '12px',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '14px',
-                    },
-                  }}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <AppContent />
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

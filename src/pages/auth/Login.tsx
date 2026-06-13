@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useTheme } from '../../hooks/useTheme';
 
 export function Login() {
-  const { toggle } = useTheme();
+  const { toggle, isDark } = useTheme();
   const [role, setRole] = useState<UserRole>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,11 +50,34 @@ export function Login() {
       <div className="absolute top-6 right-6 z-50">
         <button
           onClick={toggle}
-          className="p-2.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-on-surface/10 transition-colors"
+          className="p-2.5 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-on-surface/10 transition-colors overflow-hidden relative w-10 h-10 flex items-center justify-center"
           aria-label="Toggle light/dark theme"
         >
-          <Moon className="w-5 h-5 dark:hidden" />
-          <Sun className="w-5 h-5 hidden dark:block" />
+          <AnimatePresence mode="wait" initial={false}>
+            {isDark ? (
+              <motion.span
+                key="sun"
+                initial={{ rotate: 90, opacity: 0, scale: 0.7 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                exit={{ rotate: -90, opacity: 0, scale: 0.7 }}
+                transition={{ duration: 0.2 }}
+                className="absolute"
+              >
+                <Sun className="w-5 h-5 text-amber-400" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="moon"
+                initial={{ rotate: -90, opacity: 0, scale: 0.7 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                exit={{ rotate: 90, opacity: 0, scale: 0.7 }}
+                transition={{ duration: 0.2 }}
+                className="absolute"
+              >
+                <Moon className="w-5 h-5" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </button>
       </div>
 

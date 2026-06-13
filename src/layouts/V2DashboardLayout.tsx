@@ -70,7 +70,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
   const unreadNotificationsCount = 2;
 
   return (
-    <div className={`flex h-screen overflow-hidden ${theme === "dark" ? "bg-neutral-950 text-neutral-100" : "bg-neutral-50 text-neutral-900"} w-full`}>
+    <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-300 w-full">
       
       {/* Desktop Left navigation Sidebar */}
       <div className="hidden md:flex">

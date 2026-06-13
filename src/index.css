@@ -49,9 +49,29 @@ html.dark, .dark {
 body {
   background-color: var(--background);
   color: var(--on-surface);
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   scroll-behavior: smooth;
   @apply font-sans antialiased overflow-x-hidden;
+}
+
+/* Global smooth theme transitions — applies when theme class is added/removed on <html> */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-timing-function: ease;
+  transition-duration: 200ms;
+}
+
+/* Disable transition for elements that should be instant (animations, transforms) */
+.no-theme-transition,
+.no-theme-transition * {
+  transition-property: none !important;
+}
+
+/* Re-enable full transitions for interactive elements */
+button, a, input, select, textarea {
+  transition-duration: 150ms;
 }
 
 /* Custom scrollbars for dashboard widgets */

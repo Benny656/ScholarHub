@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Building, Tag, Shield, Camera, Save, Key, Smartphone, AlertTriangle, CheckCircle } from 'lucide-react';
+import { User, Mail, Building, Tag, Shield, Camera, Save, Key, Smartphone, AlertTriangle, CheckCircle, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../hooks/useTheme';
 import { authService } from '../../services/auth.service';
 import { uploadService } from '../../services/upload.service';
 import { GlassCard, Badge, Button, Input, PageHeader } from '../../components/ui/index';
@@ -9,6 +10,7 @@ import toast from 'react-hot-toast';
 
 export function Profile() {
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [tab, setTab] = useState<'profile' | 'security' | 'preferences'>('profile');
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -267,6 +269,34 @@ export function Profile() {
             <GlassCard>
               <h2 className="text-base font-bold text-on-surface mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>App Preferences</h2>
               <div className="space-y-4">
+
+                {/* Theme Toggle */}
+                <div className="flex items-center justify-between py-3 border-b border-outline-variant/10">
+                  <div>
+                    <p className="text-sm font-medium text-on-surface" style={{ fontFamily: 'Inter, sans-serif' }}>Appearance Theme</p>
+                    <p className="text-xs text-on-surface-variant">Switch between light and dark interface mode</p>
+                  </div>
+                  <button
+                    onClick={toggleTheme}
+                    className={`relative flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 ${
+                      isDark
+                        ? 'bg-neutral-800 border-neutral-700 text-amber-400 hover:bg-neutral-700'
+                        : 'bg-neutral-100 border-neutral-200 text-neutral-600 hover:bg-neutral-200'
+                    }`}
+                    aria-label="Toggle theme"
+                  >
+                    <motion.div
+                      key={isDark ? 'dark' : 'light'}
+                      initial={{ rotate: -30, opacity: 0, scale: 0.8 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                    </motion.div>
+                    <span className="text-xs font-semibold">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
+                </div>
+
                 {[
                   { label: 'Email Notifications', desc: 'Assignment deadlines, grades, announcements', enabled: true },
                   { label: 'Push Notifications', desc: 'Browser notifications for live classes', enabled: false },

@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "seed:admins": "node scripts/seed-admins.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

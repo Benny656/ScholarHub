@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Search, Bell, Sun, Moon, CalendarDays, Laptop, Home } from "lucide-react";
+import { Search, Bell, Sun, Moon, CalendarDays } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Role } from "../../lib/mockData";
 
 interface NavbarProps {
@@ -59,13 +60,33 @@ export default function Navbar({
         <button
           onClick={toggleTheme}
           aria-label="Toggle Dark Mode"
-          className="w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-200 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800 transition-all duration-200"
+          className="w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-200 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800 transition-all duration-200 overflow-hidden relative"
         >
-          {theme === "light" ? (
-            <Moon className="w-5 h-5 text-neutral-600" />
-          ) : (
-            <Sun className="w-5 h-5 text-amber-500" />
-          )}
+          <AnimatePresence mode="wait" initial={false}>
+            {theme === "light" ? (
+              <motion.span
+                key="moon"
+                initial={{ rotate: -90, opacity: 0, y: 10 }}
+                animate={{ rotate: 0, opacity: 1, y: 0 }}
+                exit={{ rotate: 90, opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute"
+              >
+                <Moon className="w-4.5 h-4.5 text-neutral-600" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="sun"
+                initial={{ rotate: 90, opacity: 0, y: 10 }}
+                animate={{ rotate: 0, opacity: 1, y: 0 }}
+                exit={{ rotate: -90, opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute"
+              >
+                <Sun className="w-4.5 h-4.5 text-amber-500" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </button>
 
         {/* Notification Bell Badge */}
