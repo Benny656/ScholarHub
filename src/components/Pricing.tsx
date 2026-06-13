@@ -10,11 +10,7 @@ const plans = [
     name: 'Student',
     icon: GraduationCap,
     price: { monthly: 0, annual: 0 },
-<<<<<<< HEAD
     description: 'Perfect for individual students and lifelong learners.',
-=======
-    description: 'Perfect for individual students getting started.',
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     color: 'secondary',
     textColor: 'text-secondary',
     glowColor: 'rgba(208,194,214,0.15)',
@@ -23,14 +19,10 @@ const plans = [
       'Submit Assignments',
       'Track Attendance',
       'Learning Progress Dashboard',
-<<<<<<< HEAD
       'Live Classes',
       'Certificates',
       'AI Tutor (Limited)',
       'AI Quiz Practice (Limited)',
-=======
-      'Limited AI Tutor Access',
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     ],
     cta: 'Get Started Free',
     popular: false,
@@ -39,18 +31,12 @@ const plans = [
   {
     name: 'Professional',
     icon: Zap,
-<<<<<<< HEAD
-    price: { monthly: 299, annual: 239 },
-    description: 'For learners and educators who want advanced AI-powered tools.',
-=======
     price: { monthly: 299, annual: 2388 },
     description: 'For serious learners and educators who want the full AI-powered experience.',
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
     color: 'primary',
     textColor: 'text-primary',
     glowColor: 'rgba(216,188,234,0.2)',
     features: [
-<<<<<<< HEAD
       'Everything in Free',
       'Unlimited AI Tutor',
       'Unlimited AI Quiz Generation',
@@ -66,11 +52,11 @@ const plans = [
   {
     name: 'Institution',
     icon: Building2,
-    price: { monthly: 'Custom', annual: 'Custom' },
+    price: { monthly: 0, annual: 0 },
     description: 'Built for schools, colleges, academies, and training organizations.',
-    color: 'secondary',
-    textColor: 'text-secondary',
-    glowColor: 'rgba(208,194,214,0.15)',
+    color: 'tertiary',
+    textColor: 'text-tertiary',
+    glowColor: 'rgba(200,180,240,0.15)',
     features: [
       'Everything in Professional',
       'Teacher Management',
@@ -80,37 +66,6 @@ const plans = [
       'Attendance Insights',
       'Bulk User Management',
       'Custom Branding',
-      'Dedicated Support',
-    ],
-    cta: 'Contact Sales',
-    popular: false,
-=======
-      'Unlimited Courses',
-      'Unlimited AI Tutor',
-      'AI Quiz Generator',
-      'AI Assignment Assistance',
-      'Live Class Access',
-      'Certificates',
-    ],
-    cta: 'Start Free Trial',
-    popular: true,
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
-    disabled: false,
-  },
-  {
-    name: 'Institution',
-    icon: Building2,
-    price: { monthly: 0, annual: 0 },
-    description: 'Built for schools, colleges, academies, and training organizations.',
-    color: 'tertiary',
-    textColor: 'text-tertiary',
-    glowColor: 'rgba(200,180,240,0.15)',
-    features: [
-      'Teacher & Student Management',
-      'Admin Analytics Dashboard',
-      'Institution Branding',
-      'Attendance Insights',
-      'Bulk User Management',
       'Dedicated Support',
     ],
     cta: 'Contact Sales',
@@ -174,11 +129,7 @@ function PricingCard({
             className="flex items-end gap-1"
           >
             <span className={`text-5xl font-bold ${plan.textColor}`}>
-<<<<<<< HEAD
-              {price === 0 ? 'Free' : typeof price === 'number' ? `₹${price}` : price}
-=======
               {displayPrice}
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
             </span>
             {typeof price === 'number' && price > 0 && (
               <span className="text-on-surface-variant font-body-md mb-1.5">/mo</span>
@@ -232,8 +183,6 @@ function PricingCard({
 export function PricingSection() {
   const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing>('monthly');
-
-  const navigate = useNavigate();
 
   const handleAction = (planName: string) => {
     if (planName === 'Student') {
@@ -314,11 +263,7 @@ export function PricingSection() {
 
         {/* Pricing cards grid - 3 columns */}
         <motion.div
-<<<<<<< HEAD
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch max-w-6xl mx-auto"
-=======
           className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch max-w-6xl mx-auto mb-16"
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -336,11 +281,6 @@ export function PricingSection() {
         </motion.div>
 
         {/* Trust message */}
-<<<<<<< HEAD
-        <p className="text-center font-body-md text-on-surface-variant text-sm mt-12 max-w-2xl mx-auto">
-          Trusted by students, educators, and institutions building the future of learning.
-        </p>
-=======
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -352,7 +292,6 @@ export function PricingSection() {
             Trusted by students, educators, and institutions building the future of learning.
           </p>
         </motion.div>
->>>>>>> 4736e4cf15d2eeb3c2c020e0be2bba6a63883d8f
       </div>
     </section>
   );
