@@ -8,17 +8,16 @@ import {
   Check,
   Sparkles,
   BarChart2,
-  ChevronDown,
-  Layout,
-  Shield,
-  Activity
+  Menu,
+  X,
+  ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform, animate, useInView } from "framer-motion";
 import ParticleLearningSphere from "../../components/landing/ParticleLearningSphere";
 import HeroSequenceReveal from "../../components/landing/HeroSequenceReveal";
 import ExperienceShowcase from "../../components/landing/ExperienceShowcase";
 
-// --- Count Up Animation Component ---
+// --- Count Up Animation Component with completion glow and bounce ---
 interface CountUpProps {
   to: number;
   suffix?: string;
@@ -27,6 +26,7 @@ interface CountUpProps {
 
 const CountUp = ({ to, suffix = "", duration = 2 }: CountUpProps) => {
   const [count, setCount] = useState(0);
+  const [isDone, setIsDone] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
@@ -36,12 +36,204 @@ const CountUp = ({ to, suffix = "", duration = 2 }: CountUpProps) => {
         duration,
         ease: "easeOut",
         onUpdate: (val) => setCount(Math.round(val)),
+        onComplete: () => setIsDone(true)
       });
       return () => controls.stop();
     }
   }, [inView, to, duration]);
 
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+  return (
+    <motion.span 
+      ref={ref}
+      animate={isDone ? { 
+        scale: [1, 1.12, 1],
+        textShadow: "0 0 15px rgba(109, 93, 252, 0.4)"
+      } : {}}
+      transition={{ type: "spring", stiffness: 260, damping: 15 }}
+      className={`inline-block ${isDone ? "text-primary" : ""}`}
+    >
+      {count.toLocaleString()}{suffix}
+    </motion.span>
+  );
+};
+
+// --- Magnetic Hover Button ---
+interface MagneticButtonProps extends React.ComponentProps<typeof motion.button> {
+  children: React.ReactNode;
+}
+
+const MagneticButton = ({ children, className = "", onClick, ...props }: MagneticButtonProps) => {
+  const ref = useRef<HTMLButtonElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const { clientX, clientY } = e;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const x = clientX - (left + width / 2);
+    const y = clientY - (top + height / 2);
+    setPosition({ x: x * 0.3, y: y * 0.3 });
+  };
+
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.button
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 180, damping: 14, mass: 0.1 }}
+      className={`relative overflow-hidden group cursor-pointer ${className}`}
+      onClick={onClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+      {...props}
+    >
+      <span className="absolute inset-0 bg-white/10 dark:bg-black/5 scale-0 group-hover:scale-150 transition-transform duration-700 rounded-full pointer-events-none" />
+      <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
+    </motion.button>
+  );
+};
+
+// --- Premium Heading Reveal Animation ---
+interface HeadingRevealProps {
+  text: string;
+  variant?: "words" | "chars" | "blur";
+  className?: string;
+}
+
+const HeadingReveal = ({ text, variant = "words", className = "" }: HeadingRevealProps) => {
+  if (variant === "words") {
+    const words = text.split(" ");
+    return (
+      <span className={className}>
+        {words.map((word, i) => (
+          <span key={i} className="inline-block overflow-hidden mr-2 md:mr-3 last:mr-0">
+            <motion.span
+              className="inline-block"
+              initial={{ y: "100%", filter: "blur(3px)" }}
+              whileInView={{ y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.7, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {word}
+            </motion.span>
+          </span>
+        ))}
+      </span>
+    );
+  }
+
+  if (variant === "chars") {
+    const chars = Array.from(text);
+    return (
+      <span className={className}>
+        {chars.map((char, i) => (
+          <motion.span
+            key={i}
+            className="inline-block"
+            initial={{ opacity: 0, filter: "blur(5px)", scale: 0.8 }}
+            whileInView={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 0.45, delay: i * 0.025, ease: "easeOut" }}
+          >
+            {char === " " ? "\u00A0" : char}
+          </motion.span>
+        ))}
+      </span>
+    );
+  }
+
+  return (
+    <motion.span
+      className={className}
+      initial={{ filter: "blur(10px)", opacity: 0, y: 12 }}
+      whileInView={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {text}
+    </motion.span>
+  );
+};
+
+// --- Typewriter Effect for Eyebrows / Section Labels ---
+interface TypewriterProps {
+  text: string;
+  className?: string;
+}
+
+const Typewriter = ({ text, className = "" }: TypewriterProps) => {
+  const [displayedText, setDisplayedText] = useState("");
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-30px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayedText(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, 40);
+    return () => clearInterval(interval);
+  }, [inView, text]);
+
+  return (
+    <span ref={ref} className={className}>
+      {displayedText}
+      <motion.span
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+        className="inline-block ml-0.5 font-normal text-primary"
+      >
+        |
+      </motion.span>
+    </span>
+  );
+};
+
+// --- Subtle Section Divider Animation ---
+const SectionDivider = () => {
+  return (
+    <div className="w-full max-w-7xl mx-auto px-6 h-px pointer-events-none relative overflow-hidden my-4">
+      <motion.div
+        className="h-full bg-gradient-to-r from-transparent via-primary/30 to-transparent w-full"
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+      />
+    </div>
+  );
+};
+
+// --- Subtle Background Floating Particles & Grid Drift ---
+const BackgroundMotion = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      {/* Subtle grid drift */}
+      <motion.div
+        className="absolute inset-0 opacity-[0.012] dark:opacity-[0.024] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:40px_40px]"
+        animate={{ y: [0, 40] }}
+        transition={{ repeat: Infinity, duration: 45, ease: "linear" }}
+      />
+      {/* Floating ambient gradients */}
+      <motion.div
+        className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-primary/4 blur-[130px]"
+        animate={{ x: [0, 60, 0], y: [0, 40, 0] }}
+        transition={{ repeat: Infinity, duration: 24, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-1/3 right-1/4 w-[600px] h-[600px] rounded-full bg-secondary/3 blur-[160px]"
+        animate={{ x: [0, -50, 0], y: [0, 60, 0] }}
+        transition={{ repeat: Infinity, duration: 28, ease: "easeInOut" }}
+      />
+    </div>
+  );
 };
 
 // --- List of Partner Institutions for Ticker ---
@@ -136,40 +328,6 @@ const pricingPlans: PricingPlan[] = [
   }
 ];
 
-// --- Mega Menu Component ---
-const MegaMenuDropdown = ({ title, children }: { title: string, children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div 
-      className="relative group"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
-      <button className="flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface transition-colors py-2 font-medium">
-        {title}
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? "rotate-180 text-primary" : ""}`} />
-      </button>
-      
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[600px] z-50 cursor-default"
-          >
-            <div className="bg-white dark:bg-surface border border-outline-variant/20 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/35 p-5 grid grid-cols-2 gap-2 relative">
-               {children}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 interface LandingPageProps {
   theme: "light" | "dark";
   toggleTheme: () => void;
@@ -214,7 +372,276 @@ const roleSlides = [
 
 const SLIDE_DURATION = 5000;
 
+// --- Mega Menu Data ---
+const PLATFORM_MENU = {
+  core: [
+    { label: "Virtual Classrooms", href: "#platform" },
+    { label: "LMS", href: "#platform" },
+    { label: "Assignments", href: "#platform" },
+    { label: "Attendance", href: "#platform" },
+    { label: "AI Tutor", href: "#platform" },
+    { label: "Analytics", href: "#platform" },
+  ],
+  learning: [
+    { label: "Courses", href: "#platform" },
+    { label: "Learning Paths", href: "#platform" },
+    { label: "Certificates", href: "#platform" },
+  ],
+  ai: [
+    { label: "AI Tutor", href: "#platform" },
+    { label: "AI Quiz Generator", href: "#platform" },
+    { label: "AI Assignment Checker", href: "#platform" },
+    { label: "AI Recommendations", href: "#platform" },
+  ]
+};
+
+const ROLES_MENU = {
+  students: [
+    { label: "School Students", href: "#roles-showcase" },
+    { label: "College Students", href: "#roles-showcase" },
+    { label: "Lifelong Learners", href: "#roles-showcase" },
+  ],
+  educators: [
+    { label: "Teachers", href: "#roles-showcase" },
+    { label: "Professors", href: "#roles-showcase" },
+    { label: "Mentors", href: "#roles-showcase" },
+  ],
+  institutions: [
+    { label: "Schools", href: "#roles-showcase" },
+    { label: "Colleges", href: "#roles-showcase" },
+    { label: "Universities", href: "#roles-showcase" },
+    { label: "Training Centers", href: "#roles-showcase" },
+  ]
+};
+
+// --- Solid Mega Menu Component ---
+interface MegaMenuProps {
+  isOpen: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  title: string;
+  isActive: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const MegaMenuDropdown = ({ isOpen, onMouseEnter, onMouseLeave, title, isActive, onClick, children }: MegaMenuProps) => {
+  return (
+    <div 
+      className="relative"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <button
+        onClick={onClick}
+        className={`relative py-2 px-3 transition-all duration-300 rounded-md focus:outline-none cursor-pointer flex items-center gap-1 ${
+          isActive || isOpen
+            ? "text-primary dark:text-white" 
+            : "text-on-surface-variant hover:text-on-surface hover:bg-outline-variant/10 dark:hover:bg-outline-variant/5"
+        }`}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="nav-active-highlight"
+            className="absolute inset-0 bg-primary/5 dark:bg-primary/10 rounded-md -z-10"
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          />
+        )}
+        {isActive && (
+          <motion.div
+            layoutId="nav-active-underline"
+            className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full"
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          />
+        )}
+        <span className="relative z-10 font-bold">{title}</span>
+        <ChevronDown className={`w-3.5 h-3.5 relative z-10 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[600px] bg-surface dark:bg-surface-container-lowest rounded-2xl shadow-xl shadow-black/10 border border-outline-variant/30 overflow-hidden z-50 p-6 flex gap-8 cursor-default"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const FLOATING_NAV_SECTIONS = [
+  { id: "hero", label: "Home" },
+  { id: "roles-showcase", label: "Built For Everyone" },
+  { id: "platform", label: "Experience The Platform" },
+  { id: "pricing-plans-stack", label: "Pricing" },
+  { id: "cta", label: "Contact" }
+];
+
+const FloatingSectionNavigator = ({ activeSection, onNavigate }: { activeSection: string, onNavigate: (id: string) => void }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <motion.div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6, delay: 1 }}
+      className="fixed right-6 top-1/2 -translate-y-1/2 z-[100] hidden md:flex flex-col gap-3 p-3 rounded-full bg-surface/60 dark:bg-surface-container-lowest/60 backdrop-blur-md border border-outline-variant/30 shadow-lg shadow-black/5"
+    >
+      {FLOATING_NAV_SECTIONS.map((section) => {
+        const isActive = activeSection === section.id || 
+                         (section.id === "pricing-plans-stack" && activeSection === "scale-heading");
+        return (
+          <button
+            key={section.id}
+            onClick={() => onNavigate(section.id)}
+            className="relative flex items-center justify-end group cursor-pointer h-6"
+            aria-label={`Navigate to ${section.label}`}
+          >
+            <AnimatePresence>
+              {isHovered && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
+                  animate={{ opacity: 1, width: "auto", marginRight: 12 }}
+                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="overflow-hidden whitespace-nowrap text-xs font-bold tracking-wide text-on-surface-variant group-hover:text-primary transition-colors text-right flex-shrink-0"
+                >
+                  {section.label}
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <motion.div
+              layout
+              className={`rounded-full transition-colors duration-300 flex-shrink-0 ${
+                isActive ? "bg-primary" : "bg-outline-variant/50 group-hover:bg-outline-variant"
+              }`}
+              animate={{
+                width: isActive ? 10 : 6,
+                height: isActive ? 10 : 6,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            />
+          </button>
+        );
+      })}
+    </motion.div>
+  );
+};
+
 export default function LandingPage({ theme, toggleTheme, onGetStarted }: LandingPageProps) {
+  // Navbar states
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [navbarVisible, setNavbarVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Parallax states for sphere and cards
+  const [sphereMouse, setSphereMouse] = useState({ x: 0, y: 0 });
+  const [cardTiltX, setCardTiltX] = useState<number[]>(new Array(4).fill(0));
+  const [cardTiltY, setCardTiltY] = useState<number[]>(new Array(4).fill(0));
+  // Scroll Spy state and mobile menu toggler
+  const [activeSection, setActiveSection] = useState("hero");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sectionIds = ["hero", "roles-showcase", "platform", "scale-heading", "pricing-plans-stack", "cta"];
+    const observers = sectionIds.map((id) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(id);
+            }
+          });
+        },
+        {
+          rootMargin: "-35% 0px -50% 0px"
+        }
+      );
+      observer.observe(el);
+      return { observer, el };
+    });
+
+    return () => {
+      observers.forEach((obs) => {
+        if (obs) obs.observer.unobserve(obs.el);
+      });
+    };
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const navbarHeight = isScrolled ? 72 : 80;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+    setOpenDropdown(null);
+  };
+
+  // Navbar scroll logic
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Shrink behavior
+      if (currentScrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+
+      // Hide / Reveal behavior
+      if (currentScrollY > lastScrollY.current && currentScrollY > 150) {
+        setNavbarVisible(false); // scrolling down, hide navbar
+      } else {
+        setNavbarVisible(true); // scrolling up, show navbar
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Card hover tilt handlers
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
+    const card = e.currentTarget;
+    const box = card.getBoundingClientRect();
+    const x = e.clientX - box.left - box.width / 2;
+    const y = e.clientY - box.top - box.height / 2;
+    const newTiltX = [...cardTiltX];
+    const newTiltY = [...cardTiltY];
+    newTiltX[index] = -y / (box.height / 3);
+    newTiltY[index] = x / (box.width / 3);
+    setCardTiltX(newTiltX);
+    setCardTiltY(newTiltY);
+  };
+
+  const handleCardMouseLeave = (index: number) => {
+    const newTiltX = [...cardTiltX];
+    const newTiltY = [...cardTiltY];
+    newTiltX[index] = 0;
+    newTiltY[index] = 0;
+    setCardTiltX(newTiltX);
+    setCardTiltY(newTiltY);
+  };
+
   // Showcase tab state
   const [activeTab, setActiveTab] = useState<"tab1" | "tab2" | "tab3">("tab1");
 
@@ -292,13 +719,21 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
     <div className="bg-bg-surface text-on-surface font-sans min-h-screen transition-colors duration-300">
       
       <HeroSequenceReveal />
+      <FloatingSectionNavigator activeSection={activeSection} onNavigate={scrollToSection} />
 
       {/* NAVIGATION BAR */}
-      <nav 
+      <motion.nav 
         id="landing-navbar" 
-        className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant"
+        animate={{ 
+          y: navbarVisible ? 0 : -80,
+          height: isScrolled ? "72px" : "80px"
+        }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed top-0 w-full z-50 backdrop-blur-md border-b border-outline-variant/60 transition-colors duration-300 ${
+          isScrolled ? "bg-surface/90 shadow-sm" : "bg-surface/70"
+        }`}
       >
-        <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center h-full px-6 max-w-7xl mx-auto">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
             className="font-serif text-2xl font-black text-on-surface flex items-center gap-2.5 active:scale-95 transition-all group"
@@ -312,82 +747,126 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             </div>
             <span className="group-hover:text-primary transition-colors duration-200">Scholar Hub</span>
           </button>
-          
-          <div className="hidden md:flex items-center gap-8 text-sm">
-            <MegaMenuDropdown title="Platform">
-              <a href="#platform" className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 md:col-span-1 cursor-pointer">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Layout className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-primary transition-colors duration-200">Core Experience</h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">High-fidelity virtual learning environments.</p>
-                </div>
-              </a>
-              <a href="#platform" className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 md:col-span-1 cursor-pointer">
-                <div className="w-9 h-9 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Activity className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-secondary transition-colors duration-200">Analytics</h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">Unified telemetry and performance tracking.</p>
-                </div>
-              </a>
-              <div className="col-span-2 h-px bg-outline-variant/20 my-1" />
-              <div className="col-span-2 flex justify-between items-center px-2 pt-1">
-                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Learn More</span>
-                <a href="#pricing" className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
-                  View full feature list <ArrowRight className="w-3 h-3" />
-                </a>
+          <div className="hidden md:flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider relative">
+            <MegaMenuDropdown
+              isOpen={openDropdown === "platform"}
+              onMouseEnter={() => setOpenDropdown("platform")}
+              onMouseLeave={() => setOpenDropdown(null)}
+              title="Platform"
+              isActive={activeSection === "platform"}
+              onClick={() => scrollToSection("platform")}
+            >
+              <div className="flex-1 space-y-3">
+                <h4 className="text-primary font-bold text-xs uppercase tracking-widest mb-4">Core Platform</h4>
+                <ul className="space-y-2">
+                  {PLATFORM_MENU.core.map((item, i) => (
+                    <li key={i}>
+                      <button onClick={() => scrollToSection("platform")} className="text-on-surface-variant hover:text-primary transition-colors duration-200 text-sm font-medium">
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex-1 space-y-3 border-l border-outline-variant/20 pl-8">
+                <h4 className="text-primary font-bold text-xs uppercase tracking-widest mb-4">Learning</h4>
+                <ul className="space-y-2">
+                  {PLATFORM_MENU.learning.map((item, i) => (
+                    <li key={i}>
+                      <button onClick={() => scrollToSection("platform")} className="text-on-surface-variant hover:text-primary transition-colors duration-200 text-sm font-medium">
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex-1 space-y-3 border-l border-outline-variant/20 pl-8">
+                <h4 className="text-primary font-bold text-xs uppercase tracking-widest mb-4">AI Features</h4>
+                <ul className="space-y-2">
+                  {PLATFORM_MENU.ai.map((item, i) => (
+                    <li key={i}>
+                      <button onClick={() => scrollToSection("platform")} className="text-on-surface-variant hover:text-primary transition-colors duration-200 text-sm font-medium">
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </MegaMenuDropdown>
 
-            <MegaMenuDropdown title="Roles">
-              <a 
-                href="#platform" 
-                onClick={() => setActiveTab("tab1")}
-                className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 cursor-pointer"
-              >
-                <div className="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <BookOpen className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-blue-500 transition-colors duration-200">For Students</h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">Personalized learning paths, 24/7 AI Tutor, and interactive materials.</p>
-                </div>
-              </a>
-              <a 
-                href="#platform" 
-                onClick={() => setActiveTab("tab2")}
-                className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 cursor-pointer"
-              >
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <GraduationCap className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-emerald-500 transition-colors duration-200">For Instructors</h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">Automated grading, instant quiz generation, and administrative ease.</p>
-                </div>
-              </a>
-              <a 
-                href="#platform" 
-                onClick={() => setActiveTab("tab3")}
-                className="p-3.5 rounded-xl hover:bg-surface-container-low transition-all duration-200 group flex items-start gap-3.5 col-span-2 cursor-pointer"
-              >
-                <div className="w-9 h-9 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Shield className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-on-surface mb-0.5 group-hover:text-purple-500 transition-colors duration-200">For Administrators</h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">Total ecosystem oversight and security governance.</p>
-                </div>
-              </a>
+            <MegaMenuDropdown
+              isOpen={openDropdown === "roles"}
+              onMouseEnter={() => setOpenDropdown("roles")}
+              onMouseLeave={() => setOpenDropdown(null)}
+              title="Roles"
+              isActive={activeSection === "roles-showcase"}
+              onClick={() => scrollToSection("roles-showcase")}
+            >
+              <div className="flex-1 space-y-3">
+                <h4 className="text-primary font-bold text-xs uppercase tracking-widest mb-4">Students</h4>
+                <ul className="space-y-2">
+                  {ROLES_MENU.students.map((item, i) => (
+                    <li key={i}>
+                      <button onClick={() => scrollToSection("roles-showcase")} className="text-on-surface-variant hover:text-primary transition-colors duration-200 text-sm font-medium">
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex-1 space-y-3 border-l border-outline-variant/20 pl-8">
+                <h4 className="text-primary font-bold text-xs uppercase tracking-widest mb-4">Educators</h4>
+                <ul className="space-y-2">
+                  {ROLES_MENU.educators.map((item, i) => (
+                    <li key={i}>
+                      <button onClick={() => scrollToSection("roles-showcase")} className="text-on-surface-variant hover:text-primary transition-colors duration-200 text-sm font-medium">
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex-1 space-y-3 border-l border-outline-variant/20 pl-8">
+                <h4 className="text-primary font-bold text-xs uppercase tracking-widest mb-4">Institutions</h4>
+                <ul className="space-y-2">
+                  {ROLES_MENU.institutions.map((item, i) => (
+                    <li key={i}>
+                      <button onClick={() => scrollToSection("roles-showcase")} className="text-on-surface-variant hover:text-primary transition-colors duration-200 text-sm font-medium">
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </MegaMenuDropdown>
 
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-medium py-2" href="#pricing">Pricing</a>
+            <button
+              onClick={() => scrollToSection("pricing-plans-stack")}
+              className={`relative py-2 px-3 transition-all duration-300 rounded-md focus:outline-none cursor-pointer flex items-center gap-1 ${
+                activeSection === "pricing-plans-stack" 
+                  ? "text-primary dark:text-white" 
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-outline-variant/10 dark:hover:bg-outline-variant/5"
+              }`}
+            >
+              {activeSection === "pricing-plans-stack" && (
+                <motion.div
+                  layoutId="nav-active-highlight"
+                  className="absolute inset-0 bg-primary/5 dark:bg-primary/10 rounded-md -z-10"
+                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                />
+              )}
+              {activeSection === "pricing-plans-stack" && (
+                <motion.div
+                  layoutId="nav-active-underline"
+                  className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full"
+                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                />
+              )}
+              <span className="relative z-10 font-bold">Pricing</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button 
               onClick={toggleTheme}
               className="p-2.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all active:scale-90" 
@@ -399,61 +878,168 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                 <Moon className="w-5 h-5 text-slate-700" />
               )}
             </button>
-            <button 
+            <MagneticButton 
               onClick={onGetStarted}
-              className="px-5 py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container text-sm font-bold shadow-md shadow-primary/10 transition hover:scale-[1.03] active:scale-95"
+              className="hidden sm:inline-flex px-5 py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container text-sm font-bold shadow-md shadow-primary/10 transition-all duration-300"
             >
               Get Started
+            </MagneticButton>
+
+            {/* Hamburger Mobile Menu Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+              className="md:hidden p-2.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all active:scale-90"
+              title="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
-      </nav>
 
-      <motion.div style={{ opacity: contentOpacity }}>
+        {/* Mobile Menu Panel */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="md:hidden bg-surface/95 dark:bg-bg-surface/95 backdrop-blur-lg border-t border-outline-variant/40 overflow-hidden"
+            >
+              <div className="flex flex-col p-6 gap-3">
+                {[
+                  { id: "platform", label: "Platform" },
+                  { id: "roles-showcase", label: "Roles" },
+                  { id: "pricing-plans-stack", label: "Pricing" }
+                ].map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => {
+                        scrollToSection(item.id);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`py-3 px-4 text-left text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-300 flex justify-between items-center ${
+                        isActive 
+                          ? "bg-primary/8 text-primary font-black" 
+                          : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                    </button>
+                  );
+                })}
+                <div className="h-px bg-outline-variant/20 my-2" />
+                <MagneticButton
+                  onClick={() => {
+                    onGetStarted();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full py-3.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-sm font-bold shadow-md shadow-primary/10 text-center"
+                >
+                  Get Started
+                </MagneticButton>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+
+      <motion.div style={{ opacity: contentOpacity }} className="relative z-10">
+        <BackgroundMotion />
+
         {/* HERO SECTION */}
-      <section className="pt-40 pb-24 border-b border-outline-variant/30">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <span className="text-[10px] uppercase font-bold text-primary tracking-widest bg-primary-container/10 dark:bg-primary/20 px-3.5 py-1.5 rounded-full">
-                Welcome to ScholarHub Virtual
-              </span>
-              <h1 className="font-serif text-5xl md:text-7xl mb-8 leading-[1.1] font-bold text-on-surface">
-                One Platform For <br/>
-                <span className="text-primary hover:opacity-90 transition-opacity">Modern Classrooms</span>
-              </h1>
-              <p className="text-xl text-on-surface-variant mb-12 max-w-xl leading-relaxed">
-                A unified virtual learning environment built for precision. Experience educational excellence at scale.
-              </p>
-              <div className="flex flex-wrap gap-5">
-                <button 
-                  onClick={onGetStarted}
-                  className="px-8 py-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-lg font-bold shadow-lg shadow-primary/15 transition hover:scale-[1.03] active:scale-97"
+        <motion.section 
+          id="hero"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: { opacity: 0, y: 40 },
+            visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.15, duration: 0.8, ease: "easeOut" } }
+          }}
+          className="pt-40 pb-24 relative overflow-hidden"
+        >
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, x: -30 },
+                  visible: { opacity: 1, x: 0 }
+                }}
+                className="space-y-8"
+              >
+                <span className="inline-block text-[10px] uppercase font-bold text-primary tracking-widest bg-primary-container/10 dark:bg-primary/20 px-3.5 py-1.5 rounded-full">
+                  <Typewriter text="Welcome to ScholarHub Virtual" />
+                </span>
+                <h1 className="font-serif text-5xl md:text-7xl mb-8 leading-[1.1] font-bold text-on-surface">
+                  <HeadingReveal text="One Platform For" variant="words" /><br/>
+                  <span className="text-primary hover:opacity-90 transition-opacity">
+                    <HeadingReveal text="Modern Classrooms" variant="blur" />
+                  </span>
+                </h1>
+                <motion.p 
+                  variants={{
+                    hidden: { opacity: 0, filter: "blur(4px)" },
+                    visible: { opacity: 1, filter: "blur(0px)" }
+                  }}
+                  transition={{ duration: 0.8 }}
+                  className="text-xl text-on-surface-variant mb-12 max-w-xl leading-relaxed"
                 >
-                  Start for Free
-                </button>
-                <button 
-                  onClick={onGetStarted}
-                  className="px-8 py-4 rounded-xl border border-outline hover:bg-surface-container-low text-lg font-bold transition-all hover:scale-[1.03] active:scale-97"
+                  A unified virtual learning environment built for precision. Experience educational excellence at scale.
+                </motion.p>
+                <div className="flex flex-wrap gap-5">
+                  <MagneticButton 
+                    onClick={onGetStarted}
+                    className="px-8 py-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-lg font-bold shadow-lg shadow-primary/15 transition-all duration-300"
+                  >
+                    Start for Free
+                  </MagneticButton>
+                  <MagneticButton 
+                    onClick={onGetStarted}
+                    className="px-8 py-4 rounded-xl border border-outline hover:bg-surface-container-low text-lg font-bold text-on-surface transition-all duration-300"
+                  >
+                    Schedule Demo
+                  </MagneticButton>
+                </div>
+              </motion.div>
+              
+              {/* Interactive 3D Particle Learning Sphere with floating and mouse tracking */}
+              <div className="w-full flex items-center justify-center relative" style={{ minHeight: '480px' }}>
+                <motion.div
+                  animate={{ y: [0, -12, 0] }}
+                  transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                  className="w-full relative group"
                 >
-                  Schedule Demo
-                </button>
+                  <motion.div
+                    onMouseMove={(e) => {
+                      const box = e.currentTarget.getBoundingClientRect();
+                      const x = (e.clientX - box.left) / box.width - 0.5;
+                      const y = (e.clientY - box.top) / box.height - 0.5;
+                      setSphereMouse({ x: x * 35, y: y * 35 });
+                    }}
+                    onMouseLeave={() => setSphereMouse({ x: 0, y: 0 })}
+                    animate={{ x: sphereMouse.x, y: sphereMouse.y }}
+                    transition={{ type: "spring", stiffness: 120, damping: 20 }}
+                    className="relative w-full rounded-full transition-shadow duration-500 group-hover:shadow-[0_0_60px_15px_rgba(109,93,252,0.14)]"
+                  >
+                    <ParticleLearningSphere
+                      particleCount={1500}
+                      className="h-[480px] w-full cursor-grab active:cursor-grabbing"
+                    />
+                  </motion.div>
+                </motion.div>
               </div>
             </div>
-            
-            {/* Interactive 3D Particle Learning Sphere */}
-            <div className="w-full flex items-center justify-center" style={{ minHeight: '480px' }}>
-              <ParticleLearningSphere
-                particleCount={1500}
-                className="h-[480px] w-full cursor-grab active:cursor-grabbing"
-              />
-            </div>
           </div>
-        </div>
-      </section>
+        </motion.section>
+
+        <SectionDivider />
 
       {/* SECTION 1: TRUST METRICS */}
-      <section className="py-12 md:py-20 border-b border-outline-variant/30 relative overflow-hidden bg-bg-surface">
+      <section className="py-12 md:py-20 relative overflow-hidden bg-bg-surface">
         {/* Subtle decorative background spots to fit ScholarHub aesthetics */}
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-72 h-72 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-72 h-72 bg-secondary/5 dark:bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
@@ -474,17 +1060,21 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             ].map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 35 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
+                transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
+                onMouseMove={(e) => handleCardMouseMove(e, i)}
+                onMouseLeave={() => handleCardMouseLeave(i)}
+                animate={{ rotateX: cardTiltX[i], rotateY: cardTiltY[i] }}
                 whileHover={{ 
-                  y: -6, 
-                  scale: 1.02,
-                  boxShadow: "0 20px 40px -15px rgba(0,0,0,0.15)",
-                  borderColor: "var(--color-primary-rgba, rgba(109, 93, 252, 0.4))"
+                  y: -8, 
+                  scale: 1.03,
+                  boxShadow: "0 30px 60px -15px rgba(109, 93, 252, 0.22)",
+                  borderColor: "var(--color-primary, #6D5DFC)"
                 }}
-                className="relative overflow-hidden p-6 md:p-8 rounded-3xl bg-surface/40 dark:bg-surface-container-lowest/30 backdrop-blur-md border border-outline-variant/30 hover:border-primary/45 transition-all duration-300 flex flex-col justify-center items-center text-center group"
+                className="relative overflow-hidden p-6 md:p-8 rounded-3xl bg-surface/40 dark:bg-surface-container-lowest/30 backdrop-blur-md border border-outline-variant/30 hover:border-primary/55 transition-all duration-300 flex flex-col justify-center items-center text-center group cursor-pointer"
+                style={{ transformStyle: "preserve-3d", perspective: 800 }}
               >
                 {/* Spotlight hover gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -501,8 +1091,10 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         </div>
       </section>
 
+      <SectionDivider />
+
       {/* INSTITUTIONAL CREDIBILITY TICKER */}
-      <section className="py-12 border-b border-outline-variant/20 relative overflow-hidden bg-bg-surface/50">
+      <section className="py-12 relative overflow-hidden bg-bg-surface/50">
         <style>{`
           @keyframes ticker {
             0% { transform: translate3d(0, 0, 0); }
@@ -532,28 +1124,35 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
           <div className="flex animate-ticker gap-5 whitespace-nowrap select-none">
             {/* First Set */}
             {institutions.map((inst, index) => (
-              <div
+              <motion.div
                 key={`first-${index}`}
+                whileHover={{ scale: 1.06, y: -2 }}
+                transition={{ type: "spring", stiffness: 350, damping: 18 }}
                 className="inline-flex items-center px-6 py-3 rounded-full text-xs font-bold tracking-wide bg-surface/50 dark:bg-surface-container-lowest/40 border border-outline-variant/40 backdrop-blur-md hover:border-primary/50 hover:shadow-[0_0_20px_rgba(109,93,252,0.22)] transition-all duration-300 text-on-surface hover:text-primary cursor-default"
               >
                 {inst}
-              </div>
+              </motion.div>
             ))}
             {/* Duplicate Second Set for Seamless Looping */}
             {institutions.map((inst, index) => (
-              <div
+              <motion.div
                 key={`second-${index}`}
+                whileHover={{ scale: 1.06, y: -2 }}
+                transition={{ type: "spring", stiffness: 350, damping: 18 }}
                 className="inline-flex items-center px-6 py-3 rounded-full text-xs font-bold tracking-wide bg-surface/50 dark:bg-surface-container-lowest/40 border border-outline-variant/40 backdrop-blur-md hover:border-primary/50 hover:shadow-[0_0_20px_rgba(109,93,252,0.22)] transition-all duration-300 text-on-surface hover:text-primary cursor-default"
               >
                 {inst}
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      <SectionDivider />
+
       {/* ROLE SHOWCASE: BUILT FOR EVERYONE IN EDUCATION */}
       <section
+        id="roles-showcase"
         className="py-24 md:py-32 relative overflow-hidden bg-bg-surface"
         onMouseEnter={() => setIsRoleHovered(true)}
         onMouseLeave={() => setIsRoleHovered(false)}
@@ -572,10 +1171,10 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             className="text-center mb-16 space-y-4"
           >
             <span className="text-[10px] font-mono tracking-widest text-primary uppercase font-bold py-1 px-3.5 bg-primary/8 rounded-full inline-block">
-              Who It&apos;s For
+              <Typewriter text="Who It's For" />
             </span>
             <h2 className="font-serif text-4xl md:text-5xl font-black text-on-surface leading-tight">
-              Built For Everyone In Education
+              <HeadingReveal text="Built For Everyone In Education" variant="words" />
             </h2>
             <p className="text-on-surface-variant text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
               From school students to university administrators, ScholarHub adapts to every stage of learning.
@@ -591,10 +1190,10 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                 <motion.div
                   key={roleSlides[activeRoleIndex].id}
                   className="absolute inset-0"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.7, ease: "easeInOut" }}
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <motion.img
                     src={roleSlides[activeRoleIndex].image}
@@ -761,8 +1360,10 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         </div>
       </section>
 
+      <SectionDivider />
       {/* PRODUCT SHOWCASE */}
       <ExperienceShowcase activeTab={activeTab} setActiveTab={setActiveTab} onGetStarted={onGetStarted} />
+      <SectionDivider />
 
       {/* PRICING SECTION */}
       <section className="py-24 bg-surface-container-lowest/30 dark:bg-bg-surface text-on-surface relative overflow-hidden border-t border-b border-outline-variant/10 transition-colors duration-300" id="pricing">
@@ -770,13 +1371,21 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-16 space-y-2">
-            <h2 className="font-serif text-4xl md:text-5xl font-black text-on-surface tracking-tight">Scale Academic Excellence</h2>
+        <motion.div 
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-7xl mx-auto px-6 relative z-10"
+        >
+          <div id="scale-heading" className="text-center mb-16 space-y-2">
+            <h2 className="font-serif text-4xl md:text-5xl font-black text-on-surface tracking-tight">
+              <HeadingReveal text="Scale Academic Excellence" variant="words" />
+            </h2>
             <p className="text-on-surface-variant/80 text-sm">Flexible licensing plans built for prep schools to global universities.</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-6xl mx-auto">
+          <div id="pricing-plans-stack" className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-6xl mx-auto">
             {/* Left-Hand Interactive Hub (The Menu Stack) */}
             <div className="lg:col-span-4 flex flex-col justify-center items-center lg:self-center w-full">
               <div className="w-full max-w-md lg:w-64 flex flex-row lg:flex-col items-center justify-center gap-1.5 bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/20 relative z-20 overflow-x-auto lg:overflow-x-visible no-scrollbar">
@@ -881,32 +1490,35 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                   </div>
 
                   {/* Content Bottom CTA Button */}
-                  <div className="mt-8 pt-4 border-t border-outline-variant/20">
-                    <button 
+                  <div className="mt-8 pt-4 border-t border-outline-variant/20 flex justify-center w-full">
+                    <MagneticButton 
                       onClick={onGetStarted}
                       className={`w-full py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${
                         pricingPlans.find(p => p.id === selectedPlanId)?.popular 
-                          ? "bg-primary text-on-primary hover:bg-primary-container shadow-lg shadow-primary/25 hover:scale-[1.01]" 
-                          : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest border border-outline-variant/30 hover:scale-[1.01]"
+                          ? "bg-primary text-on-primary hover:bg-primary-container shadow-lg shadow-primary/25" 
+                          : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest border border-outline-variant/30"
                       }`}
                     >
                       {pricingPlans.find(p => p.id === selectedPlanId)?.ctaText}
-                    </button>
+                    </MagneticButton>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </motion.div>
           </div>
-
+ 
           {/* Trust Message */}
           <p className="text-center font-body-md text-on-surface-variant/60 text-sm mt-16 max-w-2xl mx-auto">
             Trusted by students, educators, and institutions building the future of learning.
           </p>
-        </div>
+        </motion.div>
       </section>
+
+      <SectionDivider />
 
       {/* FINAL CTA SECTION */}
       <section 
+        id="cta"
         ref={ctaSectionRef}
         onMouseMove={handleCtaMouseMove}
         className="py-32 bg-surface-container-lowest/20 dark:bg-bg-surface text-on-surface relative overflow-hidden border-b border-outline-variant/10 transition-colors duration-300"
@@ -914,8 +1526,16 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         {/* Low-opacity Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
-        {/* Ambient Pulsing Background Glows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 dark:bg-primary/10 rounded-full blur-[140px] pointer-events-none animate-pulse duration-[8000ms]" />
+        {/* Ambient Pulsing Background Glows with premium drift */}
+        <motion.div 
+          animate={{ 
+            x: ["-50%", "-40%", "-60%", "-50%"], 
+            y: ["-50%", "-60%", "-40%", "-50%"],
+            scale: [1, 1.1, 0.9, 1]
+          }}
+          transition={{ repeat: Infinity, duration: 20, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/6 dark:bg-primary/12 rounded-full blur-[140px] pointer-events-none" 
+        />
 
         {/* Soft Spotlight Following Cursor */}
         <motion.div
@@ -926,7 +1546,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
           }}
         />
 
-        {/* Floating Educational Elements */}
+        {/* Floating Educational Elements with slow floating motion */}
         {[
           { Icon: BookOpen, top: "15%", left: "12%", delay: 0 },
           { Icon: GraduationCap, top: "68%", left: "15%", delay: 1.5 },
@@ -938,11 +1558,11 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             className="absolute text-primary/10 dark:text-primary/20 hidden md:block pointer-events-none"
             style={{ top, left, right }}
             animate={{
-              y: [0, -12, 0],
-              rotate: [0, 5, 0]
+              y: [0, -18, 0],
+              rotate: [0, 8, 0]
             }}
             transition={{
-              duration: 6,
+              duration: 7,
               repeat: Infinity,
               ease: "easeInOut",
               delay
@@ -959,9 +1579,9 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             <AnimatePresence mode="wait">
               <motion.h2
                 key={phraseIndex}
-                initial={{ y: 24, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -24, opacity: 0 }}
+                initial={{ y: 24, opacity: 0, filter: "blur(4px)" }}
+                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: -24, opacity: 0, filter: "blur(4px)" }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight"
               >
@@ -989,18 +1609,18 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4"
           >
-            <button
+            <MagneticButton
               onClick={onGetStarted}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:scale-[1.02] active:scale-98"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300"
             >
               Get Started Free
-            </button>
-            <button
+            </MagneticButton>
+            <MagneticButton
               onClick={onGetStarted}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl border border-outline-variant/60 hover:bg-surface-container-high text-base font-bold transition-all duration-300 hover:scale-[1.02] active:scale-98 text-on-surface"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl border border-outline-variant/60 hover:bg-surface-container-high text-base font-bold transition-all duration-300 text-on-surface"
             >
               Schedule Demo
-            </button>
+            </MagneticButton>
           </motion.div>
 
           {/* Trust Indicators */}

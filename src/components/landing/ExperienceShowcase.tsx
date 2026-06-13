@@ -32,6 +32,27 @@ const roles = [
   }
 ];
 
+const HeadingReveal = ({ text }: { text: string }) => {
+  const words = text.split(" ");
+  return (
+    <span>
+      {words.map((word, i) => (
+        <span key={i} className="inline-block overflow-hidden mr-2 md:mr-3 last:mr-0">
+          <motion.span
+            className="inline-block"
+            initial={{ y: "100%", filter: "blur(3px)" }}
+            whileInView={{ y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 0.7, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  );
+};
+
 export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStarted }: ExperienceShowcaseProps) {
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
