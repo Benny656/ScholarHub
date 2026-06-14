@@ -1,17 +1,11 @@
 import type { Notification } from '../types';
+import { apiClient } from '../lib/apiClient';
 import { supabase } from '../lib/supabase';
 
 export const notificationsService = {
   async getNotifications(userId: string): Promise<Notification[]> {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false }) as any;
-
-    if (error) throw error;
-    if (!data) return [];
-
+    console.log('[NotificationsService] Fetching notifications from backend for User:', userId);
+    const data = await apiClient.get<any[]>('/notifications');
     return data.map((row: any) => ({
       id: row.id,
       title: row.title || 'Notification',
@@ -23,25 +17,17 @@ export const notificationsService = {
   },
 
   async markNotificationRead(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('id', id);
-
-    if (error) throw error;
+    console.log('[NotificationsService] Marking notification read on backend:', id);
+    await apiClient.put(`/notifications/${id}/read`);
   },
 
   async markAsRead(id: string): Promise<void> {
     return this.markNotificationRead(id);
   },
 
-  async markAllAsRead(userId: string): Promise<void> {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('user_id', userId);
-
-    if (error) throw error;
+  async markAllAsRead(_userId: string): Promise<void> {
+    console.log('[NotificationsService] Marking all notifications read on backend');
+    await apiClient.put('/notifications/read-all');
   },
 
   subscribeToNotifications(userId: string, onNotification: (notif: Notification) => void) {

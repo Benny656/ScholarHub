@@ -402,3 +402,73 @@ create table if not exists public.admin_logs (
 
 alter table public.admin_logs enable row level security;
 create policy "Admin full access on admin_logs" on public.admin_logs for all using (public.is_admin());
+
+-- ───────────────────────────────────────────────────────────────────
+-- 16. LIVE SESSIONS
+-- ───────────────────────────────────────────────────────────────────
+create table if not exists public.live_sessions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  classroom_id uuid references public.courses(id) ON DELETE CASCADE,
+  teacher_id uuid references public.users(id),
+  meeting_room_id text not null,
+  meeting_url text,
+  status text CHECK (status IN ('LIVE', 'ENDED')) DEFAULT 'LIVE',
+  started_at timestamptz DEFAULT now(),
+  ended_at timestamptz,
+  created_at timestamptz DEFAULT now()
+);
+
+-- ───────────────────────────────────────────────────────────────────
+-- 17. SESSION PARTICIPANTS
+-- ───────────────────────────────────────────────────────────────────
+create table if not exists public.session_participants (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id uuid references public.live_sessions(id) ON DELETE CASCADE,
+  user_id uuid references public.users(id),
+  role text,
+  joined_at timestamptz DEFAULT now(),
+  left_at timestamptz
+);
+
+-- ───────────────────────────────────────────────────────────────────
+-- 18. RECORDINGS
+-- ───────────────────────────────────────────────────────────────────
+create table if not exists public.recordings (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id uuid references public.live_sessions(id) ON DELETE CASCADE,
+  recording_url text,
+  duration integer,
+  created_at timestamptz DEFAULT now()
+);
+
+alter table public.live_sessions enable row level security;
+alter table public.session_participants enable row level security;
+alter table public.recordings enable row level security;
+
+create policy "Admin full access on live_sessions" on public.live_sessions for all using (public.is_admin());
+create policy "Admin full access on session_participants" on public.session_participants for all using (public.is_admin());
+create policy "Admin full access on recordings" on public.recordings for all using (public.is_admin());
+
+create policy "Users read live_sessions for enrolled courses" on public.live_sessions
+  for select using (exists (
+    select 1 from public.enrollments where course_id = live_sessions.classroom_id and student_id = auth.uid()
+  ) or teacher_id = auth.uid());
+
+create policy "Teachers manage live_sessions for owned courses" on public.live_sessions
+  for all using (exists (
+    select 1 from public.courses where id = classroom_id and teacher_id = auth.uid()
+  ));
+
+create policy "Users manage session_participants if part of session" on public.session_participants
+  for all using (true) with check (true);
+
+create policy "Users view recordings for enrolled courses" on public.recordings
+  for select using (exists (
+    select 1 from public.live_sessions ls
+    join public.enrollments e on e.course_id = ls.classroom_id
+    where ls.id = recordings.session_id and e.student_id = auth.uid()
+  ) or exists (
+    select 1 from public.live_sessions ls
+    where ls.id = recordings.session_id and ls.teacher_id = auth.uid()
+  ));
+

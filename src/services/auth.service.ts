@@ -1,5 +1,6 @@
 import type { User, UserRole } from '../types';
 import { supabase } from '../lib/supabase';
+import { apiClient } from '../lib/apiClient';
 
 export interface LoginPayload {
   email: string;
@@ -44,45 +45,19 @@ export const authService = {
       passwordStr = password || '';
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: emailStr,
-      password: passwordStr,
-    });
-    if (error) throw error;
+    // Call Express login route
+    const data = await apiClient.post<any>('/auth/login', { email: emailStr, password: passwordStr });
     
-    // Fetch profile from public.users
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
-      
-    if (userError && userError.code !== 'PGRST116') {
-      console.error('Error fetching user profile:', userError);
+    // Set session in client-side Supabase client
+    if (data.token) {
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.token,
+        refresh_token: '',
+      });
+      if (sessionError) console.error('Error setting client-side session:', sessionError);
     }
     
-    const userDataAny = userData as any;
-    const user: User = {
-      id: data.user.id,
-      name: userDataAny?.name || emailStr.split('@')[0],
-      email: data.user.email!,
-      role: (userDataAny?.role as UserRole) || 'student',
-      avatar: userDataAny?.avatar_url || '',
-      createdAt: data.user.created_at,
-      user_type: userDataAny?.user_type || 'college',
-      school_name: userDataAny?.school_name,
-      grade_class: userDataAny?.grade_class,
-      roll_number: userDataAny?.roll_number,
-      studentId: userDataAny?.student_id,
-      institution: userDataAny?.institution,
-      department: userDataAny?.department,
-      expertise: userDataAny?.expertise,
-    };
-
-    return {
-      user,
-      token: data.session?.access_token || '',
-    };
+    return data;
   },
 
   async register(
@@ -91,104 +66,62 @@ export const authService = {
     name?: string,
     role?: UserRole
   ): Promise<AuthResponse> {
-    let emailStr: string;
-    let passwordStr: string;
-    let nameStr: string;
-    let roleStr: UserRole;
-    let avatarUrlStr = '';
-
+    let payload: any = {};
     if (typeof emailOrPayload === 'object' && emailOrPayload !== null) {
-      emailStr = emailOrPayload.email;
-      passwordStr = emailOrPayload.password;
-      nameStr = emailOrPayload.name;
-      roleStr = emailOrPayload.role;
-      avatarUrlStr = emailOrPayload.avatarUrl || '';
+      payload = {
+        email: emailOrPayload.email,
+        password: emailOrPayload.password,
+        name: emailOrPayload.name,
+        role: emailOrPayload.role,
+        avatarUrl: emailOrPayload.avatarUrl,
+        user_type: emailOrPayload.user_type,
+        school_name: emailOrPayload.school_name,
+        grade_class: emailOrPayload.grade_class,
+        roll_number: emailOrPayload.roll_number,
+        institution: emailOrPayload.institution,
+        studentId: emailOrPayload.studentId,
+        department: emailOrPayload.department,
+        expertise: emailOrPayload.expertise,
+      };
     } else {
-      emailStr = emailOrPayload;
-      passwordStr = password || '';
-      nameStr = name || '';
-      roleStr = role || 'student';
+      payload = {
+        email: emailOrPayload,
+        password: password,
+        name: name,
+        role: role || 'student',
+      };
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email: emailStr,
-      password: passwordStr,
-      options: {
-        data: {
-          name: nameStr,
-          role: roleStr,
-          avatar_url: avatarUrlStr,
-          user_type: typeof emailOrPayload === 'object' ? (emailOrPayload.user_type || 'college') : 'college',
-        }
-      }
-    });
-    if (error) throw error;
-    
-    if (!data.user) {
-      throw new Error('Registration failed, no user returned.');
-    }
-    
-    // Save to users table
-    const { error: insertError } = await supabase.from('users').insert({
-      id: data.user.id,
-      name: nameStr,
-      email: emailStr,
-      role: roleStr,
-      avatar_url: avatarUrlStr,
-      xp: 0,
-      level: 1,
-      streak: 0,
-      last_login: new Date().toISOString().split('T')[0],
-      user_type: typeof emailOrPayload === 'object' ? (emailOrPayload.user_type || 'college') : 'college',
-      school_name: typeof emailOrPayload === 'object' ? emailOrPayload.school_name : null,
-      grade_class: typeof emailOrPayload === 'object' ? emailOrPayload.grade_class : null,
-      roll_number: typeof emailOrPayload === 'object' ? emailOrPayload.roll_number : null,
-      institution: typeof emailOrPayload === 'object' ? emailOrPayload.institution : null,
-      student_id: typeof emailOrPayload === 'object' ? emailOrPayload.studentId : null,
-      department: typeof emailOrPayload === 'object' ? emailOrPayload.department : null,
-      expertise: typeof emailOrPayload === 'object' ? emailOrPayload.expertise : null,
-    });
+    // Call Express register route
+    const data = await apiClient.post<any>('/auth/register', payload);
 
-    if (insertError) {
-      console.error('Error inserting into public.users:', insertError);
+    // Set session in client-side Supabase client
+    if (data.token) {
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.token,
+        refresh_token: '',
+      });
+      if (sessionError) console.error('Error setting client-side session:', sessionError);
     }
 
-    const newUser: User = {
-      id: data.user.id,
-      name: nameStr,
-      email: emailStr,
-      role: roleStr,
-      avatar: avatarUrlStr,
-      createdAt: data.user.created_at,
-      user_type: typeof emailOrPayload === 'object' ? (emailOrPayload.user_type || 'college') : 'college',
-      school_name: typeof emailOrPayload === 'object' ? emailOrPayload.school_name : undefined,
-      grade_class: typeof emailOrPayload === 'object' ? emailOrPayload.grade_class : undefined,
-      roll_number: typeof emailOrPayload === 'object' ? emailOrPayload.roll_number : undefined,
-      institution: typeof emailOrPayload === 'object' ? emailOrPayload.institution : undefined,
-      studentId: typeof emailOrPayload === 'object' ? emailOrPayload.studentId : undefined,
-      department: typeof emailOrPayload === 'object' ? emailOrPayload.department : undefined,
-      expertise: typeof emailOrPayload === 'object' ? (emailOrPayload.expertise ? [emailOrPayload.expertise] : []) : undefined,
-    } as any;
-
-    return {
-      user: newUser,
-      token: data.session?.access_token || '',
-    };
+    return data;
   },
 
   async logout(): Promise<void> {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      await apiClient.post('/auth/logout');
+    } catch (err) {
+      console.error('Express backend logout failed:', err);
+    }
+    await supabase.auth.signOut();
   },
 
   async resetPassword(emailOrToken: string, password?: string): Promise<{ message: string }> {
     if (password) {
-      // original resetPassword(token, password) implementation
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       return { message: 'Password reset successfully' };
     } else {
-      // resetPassword(email) implementation requested by user
       const { error } = await supabase.auth.resetPasswordForEmail(emailOrToken);
       if (error) throw error;
       return { message: `Password reset link sent to ${emailOrToken}` };
@@ -200,38 +133,53 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error || !user) return null;
+    try {
+      // Get current user context from backend
+      const data = await apiClient.get<any>('/auth/me');
+      if (!data) return null;
+      
+      return {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        avatar: data.avatar || '',
+        createdAt: new Date().toISOString(),
+      } as any;
+    } catch (err) {
+      console.warn('Backend getCurrentUser failed, trying client-side Supabase fallback:', err);
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) return null;
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+      const { data: userData } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-    const userDataAny = userData as any;
-    return {
-      id: user.id,
-      name: userDataAny?.name || user.email?.split('@')[0] || 'Unknown',
-      email: user.email!,
-      role: (userDataAny?.role as UserRole) || 'student',
-      avatar: userDataAny?.avatar_url || '',
-      createdAt: user.created_at,
-      xp: userDataAny?.xp ?? 0,
-      level: userDataAny?.level ?? 1,
-      streak: userDataAny?.streak ?? 0,
-      user_type: userDataAny?.user_type || 'college',
-      school_name: userDataAny?.school_name,
-      grade_class: userDataAny?.grade_class,
-      roll_number: userDataAny?.roll_number,
-      studentId: userDataAny?.student_id,
-      institution: userDataAny?.institution,
-      department: userDataAny?.department,
-      expertise: userDataAny?.expertise,
-    } as any;
+      const userDataAny = userData as any;
+      return {
+        id: user.id,
+        name: userDataAny?.name || user.email?.split('@')[0] || 'Unknown',
+        email: user.email!,
+        role: (userDataAny?.role as UserRole) || 'student',
+        avatar: userDataAny?.avatar_url || '',
+        createdAt: user.created_at,
+        xp: userDataAny?.xp ?? 0,
+        level: userDataAny?.level ?? 1,
+        streak: userDataAny?.streak ?? 0,
+        user_type: userDataAny?.user_type || 'college',
+        school_name: userDataAny?.school_name,
+        grade_class: userDataAny?.grade_class,
+        roll_number: userDataAny?.roll_number,
+        studentId: userDataAny?.student_id,
+        institution: userDataAny?.institution,
+        department: userDataAny?.department,
+        expertise: userDataAny?.expertise,
+      } as any;
+    }
   },
 
-  // Keep getMe for compatibility with AuthContext.tsx
   async getMe(): Promise<User> {
     const user = await this.getCurrentUser();
     if (!user) throw new Error('Unauthorized');

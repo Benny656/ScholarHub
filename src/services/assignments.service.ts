@@ -1,130 +1,41 @@
 import type { Assignment, Quiz } from '../types';
-import { supabase } from '../lib/supabase';
+import { apiClient } from '../lib/apiClient';
+import { uploadService } from './upload.service';
 
 export const assignmentsService = {
   async getAssignments(courseIdOrUserId?: string): Promise<Assignment[]> {
-    let query = supabase.from('assignments').select('*, courses(title)') as any;
-    
-    let isStudentId = false;
-    let enrolledCourseIds: string[] = [];
-    
+    console.log('[AssignmentsService] Fetching assignments from backend');
+    let path = '/assignments';
     if (courseIdOrUserId) {
-      // Check if it's a student ID
-      const { data: enrolls } = await supabase
-        .from('enrollments')
-        .select('course_id')
-        .eq('student_id', courseIdOrUserId) as any;
-        
-      if (enrolls && enrolls.length > 0) {
-        isStudentId = true;
-        enrolledCourseIds = enrolls.map((e: any) => e.course_id).filter(Boolean);
-      }
+      path += `?userIdOrCourseId=${courseIdOrUserId}`;
     }
-
-    if (courseIdOrUserId) {
-      if (isStudentId) {
-        query = query.in('course_id', enrolledCourseIds);
-      } else {
-        query = query.eq('course_id', courseIdOrUserId);
-      }
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    if (!data) return [];
-
-    let studentId = isStudentId ? courseIdOrUserId : null;
-    if (!studentId) {
-      const { data: { user } } = await supabase.auth.getUser();
-      studentId = user?.id;
-    }
-
-    const { data: subData } = studentId 
-      ? await supabase.from('submissions').select('*').eq('student_id', studentId) as any
-      : { data: [] };
-
-    return data.map((asg: any) => {
-      const sub = subData?.find((s: any) => s.assignment_id === asg.id);
-      const daysLeft = Math.ceil((new Date(asg.due_date).getTime() - Date.now()) / 86400000);
-      let status: Assignment['status'] = 'pending';
-      if (sub) {
-        status = sub.grade !== null && sub.grade !== undefined ? 'graded' : 'submitted';
-      } else if (daysLeft < 0) {
-        status = 'overdue';
-      }
-
-      return {
-        id: asg.id,
-        title: asg.title || '',
-        description: asg.description || '',
-        courseId: asg.course_id || '',
-        courseName: asg.courses?.title || 'Unknown Course',
-        dueDate: asg.due_date,
-        status,
-        priority: daysLeft <= 3 ? 'high' : 'medium',
-        maxScore: Number(asg.max_grade) || 100,
-        score: sub ? Number(sub.grade) : undefined,
-        feedback: sub?.feedback || undefined,
-        files: sub?.file_url ? [sub.file_url] : [],
-        submittedAt: sub?.submitted_at || undefined,
-        type: 'file',
-      };
-    });
+    return apiClient.get<Assignment[]>(path);
   },
 
   async getAssignmentById(id: string): Promise<Assignment> {
-    const { data, error } = await supabase
-      .from('assignments')
-      .select('*, courses(title)')
-      .eq('id', id)
-      .single() as any;
-
-    if (error) throw error;
-
-    return {
-      id: data.id,
-      title: data.title || '',
-      description: data.description || '',
-      courseId: data.course_id || '',
-      courseName: data.courses?.title || 'Unknown Course',
-      dueDate: data.due_date,
-      status: 'pending',
-      priority: 'medium',
-      maxScore: Number(data.max_grade) || 100,
-      type: 'file',
-    };
+    console.log('[AssignmentsService] Fetching assignment details from backend for:', id);
+    return apiClient.get<Assignment>(`/assignments/${id}`);
   },
 
   async submitAssignment(
     assignmentId: string,
     fileUrlOrPayload: string | { text?: string; files?: File[] }
   ): Promise<Assignment> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    console.log('[AssignmentsService] Submitting assignment via backend for:', assignmentId);
 
     let fileUrl = '';
     if (typeof fileUrlOrPayload === 'string') {
       fileUrl = fileUrlOrPayload;
+    } else if (fileUrlOrPayload.files && fileUrlOrPayload.files[0]) {
+      const uploadResult = await uploadService.uploadFile(fileUrlOrPayload.files[0], `assignments/${assignmentId}`);
+      fileUrl = uploadResult.url;
     } else {
-      fileUrl = fileUrlOrPayload.files && fileUrlOrPayload.files[0] 
-        ? `https://niebnbpcmnfqfyodkqvr.supabase.co/storage/v1/object/public/assignments/${fileUrlOrPayload.files[0].name}` 
-        : fileUrlOrPayload.text || '';
+      fileUrl = fileUrlOrPayload.text || '';
     }
 
-    const { data, error } = await supabase
-      .from('submissions')
-      .upsert({
-        assignment_id: assignmentId,
-        student_id: user.id,
-        file_url: fileUrl,
-        submitted_at: new Date().toISOString(),
-      })
-      .select()
-      .single() as any;
-
-    if (error) throw error;
-
+    const data = await apiClient.post<any>(`/assignments/${assignmentId}/submit`, { fileUrl });
     const asg = await this.getAssignmentById(assignmentId);
+    
     return {
       ...asg,
       status: 'submitted',
@@ -134,23 +45,13 @@ export const assignmentsService = {
   },
 
   async gradeSubmission(submissionId: string, grade: number, feedback: string): Promise<any> {
-    const { data, error } = await supabase
-      .from('submissions')
-      .update({
-        grade,
-        feedback,
-      })
-      .eq('id', submissionId)
-      .select()
-      .single() as any;
-
-    if (error) throw error;
-    return data;
+    console.log('[AssignmentsService] Grading submission via backend:', submissionId);
+    return apiClient.post<any>(`/submissions/${submissionId}/grade`, { grade, feedback });
   },
 
   async gradeAssignment(id: string, score: number, feedback: string): Promise<Assignment> {
     const data = await this.gradeSubmission(id, score, feedback);
-    const asg = await this.getAssignmentById(data.assignment_id);
+    const asg = await this.getAssignmentById(data.assignment_id || id);
     return {
       ...asg,
       status: 'graded',
@@ -160,32 +61,13 @@ export const assignmentsService = {
   },
 
   async getQuiz(assignmentId: string): Promise<Quiz> {
-    const { data, error } = await supabase
-      .from('quizzes')
-      .select('*')
-      .eq('course_id', assignmentId)
-      .limit(1) as any;
-
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      throw new Error('Quiz not found');
-    }
-
-    return {
-      id: data[0].id,
-      assignmentId: data[0].course_id,
-      title: data[0].title || 'Quiz',
-      questions: data[0].questions || [],
-      timeLimit: data[0].duration_minutes || 30,
-      attempts: 0,
-      maxAttempts: 1,
-    };
+    console.log('[AssignmentsService] Fetching quiz from backend for course:', assignmentId);
+    return apiClient.get<Quiz>(`/quizzes/${assignmentId}`);
   },
 
   async submitQuiz(quizId: string, answers: Record<string, number>): Promise<{ score: number; total: number; results: Record<string, boolean> }> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
-
+    console.log('[AssignmentsService] Submitting quiz attempt to backend:', quizId);
+    
     const quiz = await this.getQuiz(quizId);
     let score = 0;
     const results: Record<string, boolean> = {};
@@ -197,41 +79,13 @@ export const assignmentsService = {
     });
     const total = quiz.questions.reduce((sum: number, q: any) => sum + q.points, 0);
 
-    const { error } = await supabase
-      .from('quiz_results')
-      .insert({
-        quiz_id: quizId,
-        student_id: user.id,
-        score,
-        answers,
-        completed_at: new Date().toISOString(),
-      });
-
-    if (error) throw error;
+    await apiClient.post<any>(`/quizzes/${quizId}/submit`, { score, answers });
 
     return { score, total, results };
   },
 
   async getTeacherAssignments(teacherId: string): Promise<Assignment[]> {
-    const { data, error } = await supabase
-      .from('assignments')
-      .select('*, courses(title)')
-      .eq('teacher_id', teacherId) as any;
-
-    if (error) throw error;
-    if (!data) return [];
-
-    return data.map((asg: any) => ({
-      id: asg.id,
-      title: asg.title || '',
-      description: asg.description || '',
-      courseId: asg.course_id || '',
-      courseName: asg.courses?.title || 'Unknown Course',
-      dueDate: asg.due_date,
-      status: 'pending',
-      priority: 'medium',
-      maxScore: Number(asg.max_grade) || 100,
-      type: 'file',
-    }));
+    console.log('[AssignmentsService] Fetching assignments for teacher from backend');
+    return apiClient.get<Assignment[]>(`/teacher/assignments?teacherId=${teacherId}`);
   }
 };

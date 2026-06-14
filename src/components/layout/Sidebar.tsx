@@ -16,7 +16,8 @@ import {
   ShieldCheck, 
   CreditCard,
   History,
-  Activity
+  Activity,
+  ChevronRight
 } from "lucide-react";
 import { Role, allRoles } from "../../lib/mockData";
 
@@ -180,20 +181,33 @@ export default function Sidebar({
         </div>
 
         {/* Current Active Persona Card */}
-        <div className="p-3 bg-neutral-50 dark:bg-neutral-800/20 rounded-xl flex items-center gap-3">
+        <div 
+          role="button"
+          tabIndex={0}
+          onClick={() => setActiveTab('settings')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setActiveTab('settings');
+            }
+          }}
+          aria-label="View profile settings"
+          className="p-3 bg-neutral-50 dark:bg-neutral-800/20 hover:bg-neutral-100 dark:hover:bg-neutral-800/40 rounded-xl flex items-center gap-3 cursor-pointer group transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:outline-none"
+        >
           <img
             src={activeRole.avatar}
             alt={activeRole.name}
-            className="w-10 h-10 rounded-full object-cover border-2 border-brand-primary/20 bg-neutral-100"
+            className="w-10 h-10 rounded-full object-cover border-2 border-brand-primary/20 bg-neutral-100 group-hover:border-brand-primary transition-all duration-200"
           />
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-neutral-800 dark:text-neutral-200 truncate leading-tight">
+            <p className="text-xs font-bold text-neutral-800 dark:text-neutral-200 truncate leading-tight group-hover:text-brand-primary transition-all duration-200">
               {activeRole.name}
             </p>
             <p className="text-[10px] text-neutral-500 dark:text-neutral-400 truncate mt-0.5">
               {activeRole.badge}
             </p>
           </div>
+          <ChevronRight className="w-4 h-4 text-neutral-400 group-hover:text-brand-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
         </div>
 
       </div>

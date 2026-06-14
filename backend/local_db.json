@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "id": "da7eat5d-0000-0000-0000-lhngley8taa0",
+      "name": "jerlin",
+      "email": "jerlinsubhiksha@gmail.com",
+      "role": "student",
+      "avatar_url": "",
+      "xp": 0,
+      "level": 1,
+      "streak": 0,
+      "last_login": "2026-06-14",
+      "user_type": "college",
+      "school_name": null,
+      "grade_class": null,
+      "roll_number": null,
+      "institution": "karunya",
+      "student_id": null,
+      "department": null,
+      "expertise": null,
+      "status": "active"
+    }
+  ],
+  "courses": [
+    {
+      "id": "c_trdjvfi",
+      "title": "Testing Express API Course",
+      "description": "Automated test suite course description.",
+      "category": "Computer Science",
+      "level": "Beginner",
+      "price": 1999,
+      "tags": [
+        "test",
+        "express"
+      ],
+      "is_published": false,
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "thumbnail_url": "",
+      "created_at": "2026-06-14T09:32:29.418Z",
+      "users": {
+        "name": "Professor Smith",
+        "avatar_url": ""
+      }
+    },
+    {
+      "id": "c_rkqqj6g",
+      "title": "computer organization",
+      "description": "",
+      "category": "Computer Science",
+      "level": "Beginner",
+      "price": 0,
+      "tags": [],
+      "is_published": true,
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "thumbnail_url": "",
+      "created_at": "2026-06-14T09:34:36.319Z",
+      "users": {
+        "name": "Professor Smith",
+        "avatar_url": ""
+      }
+    }
+  ],
+  "sessions": [
+    {
+      "id": "sess_z23i680",
+      "course_id": "general",
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "title": "Live Classroom Session",
+      "room_id": "classroom_general_1781430166093",
+      "scheduled_at": "2026-06-14T09:42:46.093Z",
+      "status": "scheduled"
+    },
+    {
+      "id": "sess_wmkw30x",
+      "course_id": "general",
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "title": "Live Classroom Session",
+      "room_id": "classroom_general_1781430166342",
+      "scheduled_at": "2026-06-14T09:42:46.342Z",
+      "status": "scheduled"
+    }
+  ],
+  "enrollments": [],
+  "assignments": [],
+  "attendance": [],
+  "messages": [],
+  "notifications": []
+}

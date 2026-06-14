@@ -1,4 +1,5 @@
 import type { AttendanceRecord, AttendanceSummary } from '../types';
+import { apiClient } from '../lib/apiClient';
 import { supabase } from '../lib/supabase';
 
 const generateCalendarData = () => {
@@ -16,33 +17,13 @@ const generateCalendarData = () => {
 
 export const attendanceService = {
   async markAttendance(courseId: string, classId: string, status: 'present' | 'absent' | 'late'): Promise<any> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthenticated');
-
-    const { data, error } = await supabase
-      .from('attendance')
-      .insert({
-        student_id: user.id,
-        course_id: courseId,
-        class_id: classId,
-        date: new Date().toISOString().split('T')[0],
-        status,
-      })
-      .select('*, users(name)')
-      .single() as any;
-
-    if (error) throw error;
-    return data;
+    console.log('[AttendanceService] Marking attendance on backend');
+    return apiClient.post<any>('/attendance/mark', { courseId, classId, status });
   },
 
   async getAttendance(studentId: string): Promise<any[]> {
-    const { data, error } = await supabase
-      .from('attendance')
-      .select('*, users(name), courses(title)')
-      .eq('student_id', studentId) as any;
-
-    if (error) throw error;
-    return data || [];
+    console.log('[AttendanceService] Fetching attendance from backend for:', studentId);
+    return apiClient.get<any[]>(`/attendance?studentId=${studentId}`);
   },
 
   async generateQR(classId: string): Promise<string> {
@@ -50,7 +31,6 @@ export const attendanceService = {
     return `nexlearn://attendance/${classId}?expires=${expiresAt}`;
   },
 
-  // Backward compatibility with Attendance.tsx
   async getStudentAttendance(userId: string): Promise<{ records: AttendanceRecord[]; summary: AttendanceSummary; calendarData: { date: string; count: number }[] }> {
     const data = await this.getAttendance(userId);
     
@@ -85,27 +65,10 @@ export const attendanceService = {
   },
 
   async getCourseAttendance(courseId: string, date?: string): Promise<AttendanceRecord[]> {
-    let query = supabase
-      .from('attendance')
-      .select('*, users(name)')
-      .eq('course_id', courseId) as any;
-
-    if (date) {
-      query = query.eq('date', date);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    return (data || []).map((row: any) => ({
-      id: row.id,
-      studentId: row.student_id,
-      studentName: row.users?.name || 'Student',
-      courseId: row.course_id,
-      date: row.date,
-      status: row.status as any,
-      markedBy: row.qr_code ? 'qr' : 'manual',
-    }));
+    console.log('[AttendanceService] Fetching course attendance from backend');
+    let path = `/attendance/course/${courseId}`;
+    if (date) path += `?date=${date}`;
+    return apiClient.get<AttendanceRecord[]>(path);
   },
 
   async generateQRCode(courseId: string, expiresIn: number = 300): Promise<{ qrData: string; expiresAt: string; sessionId: string }> {
@@ -119,60 +82,13 @@ export const attendanceService = {
   },
 
   async scanQRCode(qrData: string, studentId: string): Promise<AttendanceRecord> {
-    const parts = qrData.split('/');
-    const courseId = parts[3] || 'c1';
-    
-    const { data, error } = await supabase
-      .from('attendance')
-      .insert({
-        student_id: studentId,
-        course_id: courseId,
-        date: new Date().toISOString().split('T')[0],
-        status: 'present',
-        qr_code: qrData,
-      })
-      .select('*, users(name)')
-      .single() as any;
-
-    if (error) throw error;
-
-    return {
-      id: data.id,
-      studentId: data.student_id,
-      studentName: data.users?.name || 'Student',
-      courseId: data.course_id,
-      date: data.date,
-      status: data.status as any,
-      markedBy: 'qr',
-    };
+    console.log('[AttendanceService] Scanning QR code on backend');
+    return apiClient.post<AttendanceRecord>('/attendance/scan', { qrData, studentId });
   },
 
   async getAttendanceReport(courseId: string): Promise<{ studentName: string; percentage: number; total: number; present: number }[]> {
-    const { data, error } = await supabase
-      .from('attendance')
-      .select('*, users(name)')
-      .eq('course_id', courseId) as any;
-
-    if (error) throw error;
-
-    const userMap: Record<string, { present: number; total: number; name: string }> = {};
-    data?.forEach((row: any) => {
-      const uId = row.student_id;
-      if (!userMap[uId]) {
-        userMap[uId] = { present: 0, total: 0, name: row.users?.name || 'Student' };
-      }
-      userMap[uId].total++;
-      if (row.status === 'present') {
-        userMap[uId].present++;
-      }
-    });
-
-    return Object.values(userMap).map(u => ({
-      studentName: u.name,
-      percentage: Math.round((u.present / u.total) * 100),
-      total: u.total,
-      present: u.present,
-    }));
+    console.log('[AttendanceService] Fetching course report from backend');
+    return apiClient.get<any[]>(`/attendance/report/${courseId}`);
   },
 
   subscribeToAttendance(courseId: string, onUpdate: (payload: any) => void) {

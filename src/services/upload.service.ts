@@ -1,5 +1,4 @@
-// File Upload Service Placeholder
-// Replace with real implementation (S3, Cloudinary, Supabase Storage, etc.)
+import { apiClient } from '../lib/apiClient';
 
 export interface UploadResult {
   url: string;
@@ -15,49 +14,73 @@ export interface UploadProgress {
   percentage: number;
 }
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 export const uploadService = {
   async uploadFile(
     file: File,
     folder: string = 'general',
     onProgress?: (progress: UploadProgress) => void
   ): Promise<UploadResult> {
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      await delay(100);
-      onProgress?.({ loaded: (file.size * i) / 100, total: file.size, percentage: i });
-    }
+    console.log('[UploadService] Uploading file to backend:', file.name, 'Folder:', folder);
 
-    // In real app: Use FormData + fetch to POST /api/upload or directly to S3
-    return {
-      url: `https://storage.nexlearn.com/${folder}/${Date.now()}-${file.name}`,
-      key: `${folder}/${Date.now()}-${file.name}`,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    };
+    onProgress?.({ loaded: 0, total: file.size, percentage: 0 });
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+
+    const token = await (await import('../lib/supabase')).supabase.auth.getSession().then(({ data }) => data.session?.access_token);
+
+    return new Promise<UploadResult>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:5000/api/upload');
+      
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentage = Math.round((event.loaded / event.total) * 100);
+          onProgress?.({ loaded: event.loaded, total: event.total, percentage });
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const result = JSON.parse(xhr.responseText);
+            resolve(result);
+          } catch (e) {
+            reject(new Error('Invalid response JSON'));
+          }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Network error during upload'));
+      };
+
+      xhr.send(formData);
+    });
   },
 
   async uploadAvatar(file: File, userId: string): Promise<UploadResult> {
-    // In real app: POST /api/upload/avatar with resize to 200x200
     return this.uploadFile(file, `avatars/${userId}`);
   },
 
   async uploadAssignmentFile(file: File, assignmentId: string): Promise<UploadResult> {
-    // In real app: POST /api/upload/assignment with virus scan
     return this.uploadFile(file, `assignments/${assignmentId}`);
   },
 
   async uploadCourseMaterial(file: File, courseId: string): Promise<UploadResult> {
-    // In real app: POST /api/upload/course-material with CDN distribution
     return this.uploadFile(file, `courses/${courseId}/materials`);
   },
 
   async deleteFile(key: string): Promise<void> {
-    await delay(300);
-    // In real app: DELETE /api/upload with { key }
-    console.log('[UploadService] Mock delete:', key);
+    console.log('[UploadService] Deleting file via backend:', key);
+    await apiClient.delete(`/upload/${encodeURIComponent(key)}`);
   },
 
   getFileIcon(type: string): string {

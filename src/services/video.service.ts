@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { apiClient } from '../lib/apiClient';
 
 export interface RoomDetails {
   roomId: string;
@@ -23,19 +24,11 @@ export const videoService = {
     
     const mockRoomId = `hms_room_${Math.random().toString(36).substring(2, 10)}`;
 
-    const { data, error } = await supabase
-      .from('live_classes')
-      .insert({
-        course_id: courseId,
-        title,
-        room_id: mockRoomId,
-        status: 'scheduled',
-        scheduled_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-      })
-      .select()
-      .single() as any;
-
-    if (error) throw error;
+    const data = await apiClient.post<any>(`/classrooms/${courseId}/sessions`, {
+      title,
+      scheduledAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      roomId: mockRoomId,
+    });
 
     return {
       roomId: data.room_id,

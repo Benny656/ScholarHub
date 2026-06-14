@@ -45,6 +45,8 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
       navigate('/profile');
     } else if (tabId === 'help') {
       navigate('/messages');
+    } else if (tabId === 'live') {
+      navigate('/classroom/general');
     } else {
       // Navigate based on user role base path
       let basePath = '';

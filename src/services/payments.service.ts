@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { apiClient } from '../lib/apiClient';
 
 export interface PaymentOrder {
   id: string;
@@ -10,53 +10,23 @@ export interface PaymentOrder {
 
 export const paymentsService = {
   async createOrder(courseId: string, amount: number): Promise<PaymentOrder> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
-
-    console.log('[PaymentsService] Creating checkout order for Course:', courseId, 'Amount:', amount);
-
-    const mockOrderId = `order_${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
-
-    const { data, error } = await supabase
-      .from('payments')
-      .insert({
-        user_id: user.id,
-        course_id: courseId,
-        amount,
-        currency: 'INR',
-        status: 'created',
-        razorpay_order_id: mockOrderId,
-      })
-      .select()
-      .single() as any;
-
-    if (error) throw error;
-
-    return {
-      id: mockOrderId,
-      amount,
-      currency: 'INR',
-      receipt: data.id,
-      status: 'created',
-    };
+    console.log('[PaymentsService] Creating checkout order via Backend for Course:', courseId, 'Amount:', amount);
+    return apiClient.post<PaymentOrder>('/payments/order', { courseId, amount });
   },
 
-  async verifyPayment(orderId: string, _razorpayPaymentId?: string, _razorpaySignature?: string): Promise<boolean> {
-    console.log('[PaymentsService] Verifying payment for Order:', orderId);
-    
-    const isValid = (_razorpaySignature !== undefined ? _razorpaySignature !== '' : true);
-
-    if (isValid) {
-      const { error } = await supabase
-        .from('payments')
-        .update({ status: 'captured' })
-        .eq('razorpay_order_id', orderId);
-
-      if (error) {
-        console.error('Error updating payment status:', error);
-      }
+  async verifyPayment(orderId: string, razorpayPaymentId?: string, razorpaySignature?: string, courseId?: string): Promise<boolean> {
+    console.log('[PaymentsService] Verifying payment via Backend for Order:', orderId);
+    try {
+      const response = await apiClient.post<any>('/payments/verify', {
+        orderId,
+        razorpayPaymentId,
+        razorpaySignature,
+        courseId
+      });
+      return response.success === true;
+    } catch (error) {
+      console.error('Error verifying payment on backend:', error);
+      return false;
     }
-
-    return isValid;
   }
 };

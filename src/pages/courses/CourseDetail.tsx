@@ -5,6 +5,7 @@ import { Star, Users, Clock, BookOpen, Play, ChevronDown, ChevronRight, CheckCir
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
 import { GlassCard, Badge, ProgressBar, PageHeader, Button, SkeletonCard } from '../../components/ui/index';
+import { paymentsService } from '../../services/payments.service';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
 
@@ -25,11 +26,77 @@ export function CourseDetail() {
   }, [id]);
 
   const handleEnroll = async () => {
-    if (!user || !id) return;
+    if (!user || !id || !course) return;
     setEnrolling(true);
-    await coursesService.enrollStudent(id, user.id);
-    setEnrolling(false);
-    toast.success("You're enrolled! Let's start learning 🎉");
+    
+    // If it is a paid course and user is not a school user
+    if (user?.user_type !== 'school' && course.price > 0) {
+      try {
+        const order = await paymentsService.createOrder(id, course.price);
+        
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_mockkeyid',
+          amount: order.amount * 100,
+          currency: order.currency,
+          name: 'ScholarHub',
+          description: `Enroll in ${course.title}`,
+          order_id: order.id,
+          handler: async (response: any) => {
+            setEnrolling(true);
+            const verified = await paymentsService.verifyPayment(
+              order.id,
+              response.razorpay_payment_id,
+              response.razorpay_signature,
+              id
+            );
+            setEnrolling(false);
+            if (verified) {
+              toast.success("Payment successful! You're enrolled 🎉");
+              window.location.reload();
+            } else {
+              toast.error("Payment verification failed.");
+            }
+          },
+          prefill: {
+            name: user.name || '',
+            email: user.email || '',
+          },
+          theme: {
+            color: '#7c3aed',
+          },
+        };
+
+        if (!(window as any).Razorpay) {
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.async = true;
+          script.onload = () => {
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+          };
+          document.body.appendChild(script);
+        } else {
+          const rzp = new (window as any).Razorpay(options);
+          rzp.open();
+        }
+      } catch (err: any) {
+        console.error('Payment initiation error:', err);
+        toast.error('Could not initiate payment. Try again.');
+      } finally {
+        setEnrolling(false);
+      }
+    } else {
+      try {
+        await coursesService.enrollStudent(id, user.id);
+        toast.success("You're enrolled! Let's start learning 🎉");
+        window.location.reload();
+      } catch (err: any) {
+        console.error('Enrollment error:', err);
+        toast.error(err.message || 'Failed to enroll');
+      } finally {
+        setEnrolling(false);
+      }
+    }
   };
 
   if (loading) return <div className="space-y-6"><div className="p-6 grid grid-cols-3 gap-6">{[1,2,3].map(i => <SkeletonCard key={i} />)}</div></div>;

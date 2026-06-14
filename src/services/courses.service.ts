@@ -1,5 +1,4 @@
 import type { Course, Enrollment } from '../types';
-import { supabase } from '../lib/supabase';
 
 function mapDBCourseToFrontend(dbCourse: any): Course {
   return {
@@ -28,26 +27,28 @@ function mapDBCourseToFrontend(dbCourse: any): Course {
   };
 }
 
+import { apiClient } from '../lib/apiClient';
+
 export const coursesService = {
   async getCourses(filters?: { category?: string; level?: string; search?: string }): Promise<Course[]> {
-    let query = supabase
-      .from('courses')
-      .select('*, users(name, avatar_url)') as any;
-
+    let url = '/classrooms';
+    const params = new URLSearchParams();
     if (filters?.category && filters.category !== 'All') {
-      query = query.eq('category', filters.category);
+      params.append('category', filters.category);
     }
     if (filters?.level && filters.level !== 'All') {
-      query = query.eq('level', filters.level);
+      params.append('level', filters.level);
     }
     if (filters?.search) {
-      query = query.ilike('title', `%${filters.search}%`);
+      params.append('search', filters.search);
+    }
+    
+    const queryString = params.toString();
+    if (queryString) {
+      url += `?${queryString}`;
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
-    if (!data) return [];
-
+    const data = await apiClient.get<any[]>(url);
     return data.map(mapDBCourseToFrontend);
   },
 
@@ -56,28 +57,16 @@ export const coursesService = {
   },
 
   async getCourseById(id: string): Promise<Course> {
-    const { data, error } = await supabase
-      .from('courses')
-      .select('*, users(name, avatar_url)')
-      .eq('id', id)
-      .single() as any;
-
-    if (error) throw error;
-    
-    const { data: lessonsData } = await supabase
-      .from('lessons')
-      .select('*')
-      .eq('course_id', id)
-      .order('order_index') as any;
-
+    const data = await apiClient.get<any>(`/classrooms/${id}`);
     const course = mapDBCourseToFrontend(data);
-    if (lessonsData) {
-      course.lessons = lessonsData.length;
+    
+    if (data.lessons) {
+      course.lessons = data.lessons.length;
       course.curriculum = [
         {
           id: 's1',
           title: 'Course Content',
-          lessons: lessonsData.map((l: any) => ({
+          lessons: data.lessons.map((l: any) => ({
             id: l.id,
             title: l.title,
             type: l.type as any,
@@ -91,14 +80,8 @@ export const coursesService = {
   },
 
   async getEnrolledCourses(userId: string): Promise<{ course: Course; enrollment: Enrollment }[]> {
-    const { data, error } = await supabase
-      .from('enrollments')
-      .select('*, courses(*, users(name, avatar_url))')
-      .eq('student_id', userId) as any;
-
-    if (error) throw error;
-    if (!data) return [];
-
+    console.log('[CoursesService] Fetching enrolled courses from backend for User:', userId);
+    const data = await apiClient.get<any[]>('/classrooms/enrolled');
     return data.map((item: any) => ({
       course: mapDBCourseToFrontend(item.courses),
       enrollment: {
@@ -112,73 +95,38 @@ export const coursesService = {
   },
 
   async createCourse(data: Partial<Course>): Promise<Course> {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: inserted, error } = await supabase
-      .from('courses')
-      .insert({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        level: data.level,
-        price: data.price,
-        teacher_id: user?.id || data.instructorId,
-        tags: data.tags,
-        is_published: data.isPublished || false,
-        duration_hours: 10,
-        thumbnail_url: data.thumbnail || '',
-      })
-      .select('*, users(name, avatar_url)')
-      .single() as any;
-
-    if (error) throw error;
+    const inserted = await apiClient.post<any>('/classrooms', {
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      level: data.level,
+      price: data.price,
+      tags: data.tags,
+      isPublished: data.isPublished,
+      thumbnail: data.thumbnail,
+    });
     return mapDBCourseToFrontend(inserted);
   },
 
   async updateCourse(id: string, data: Partial<Course>): Promise<Course> {
-    const { data: updated, error } = await supabase
-      .from('courses')
-      .update({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        level: data.level,
-        price: data.price,
-        tags: data.tags,
-        is_published: data.isPublished,
-      })
-      .eq('id', id)
-      .select('*, users(name, avatar_url)')
-      .single() as any;
-
-    if (error) throw error;
+    const updated = await apiClient.put<any>(`/classrooms/${id}`, {
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      level: data.level,
+      price: data.price,
+      tags: data.tags,
+      isPublished: data.isPublished,
+    });
     return mapDBCourseToFrontend(updated);
   },
 
   async deleteCourse(id: string): Promise<void> {
-    const { error } = await supabase.from('courses').delete().eq('id', id);
-    if (error) throw error;
+    await apiClient.delete(`/classrooms/${id}`);
   },
 
   async enrollCourse(courseId: string, studentId?: string): Promise<Enrollment> {
-    let sId = studentId;
-    if (!sId) {
-      const { data: { user } } = await supabase.auth.getUser();
-      sId = user?.id;
-    }
-    if (!sId) throw new Error('Unauthenticated');
-
-    const { data, error } = await supabase
-      .from('enrollments')
-      .insert({
-        course_id: courseId,
-        student_id: sId,
-        progress: 0,
-      })
-      .select()
-      .single() as any;
-
-    if (error) throw error;
-
+    const data = await apiClient.post<any>(`/classrooms/${courseId}/enroll`, { studentId });
     return {
       courseId: data.course_id,
       userId: data.student_id,
@@ -197,26 +145,21 @@ export const coursesService = {
     progressOrStudentId: number | string,
     maybeProgress?: number
   ): Promise<any> {
+    console.log('[CoursesService] Updating progress on backend:', enrollmentIdOrCourseId);
+    let progress = 0;
+    let studentId: string | undefined;
+
     if (typeof progressOrStudentId === 'number') {
-      const { data, error } = await supabase
-        .from('enrollments')
-        .update({ progress: progressOrStudentId })
-        .eq('id', enrollmentIdOrCourseId)
-        .select()
-        .single() as any;
-      if (error) throw error;
-      return data;
+      progress = progressOrStudentId;
     } else {
-      const { data, error } = await supabase
-        .from('enrollments')
-        .update({ progress: maybeProgress ?? 0 })
-        .eq('course_id', enrollmentIdOrCourseId)
-        .eq('student_id', progressOrStudentId)
-        .select()
-        .single() as any;
-      if (error) throw error;
-      return data;
+      studentId = progressOrStudentId;
+      progress = maybeProgress ?? 0;
     }
+
+    return apiClient.put<any>(`/classrooms/${enrollmentIdOrCourseId}/progress`, {
+      progress,
+      studentId
+    });
   },
 
   getCategories(): string[] {

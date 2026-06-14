@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginBypass = useCallback((role: UserRole) => {
     const mockUsers: Record<UserRole, User> = {
       admin: {
-        id: 'mock-admin-id',
+        id: 'da7eb000-0000-0000-0000-000000000000',
         name: 'Benny Manuel (Demo Admin)',
         email: 'admin@nexlearn.com',
         role: 'admin',
@@ -146,7 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user_type: 'college',
       },
       teacher: {
-        id: 'mock-teacher-id',
+        id: 'da7eb000-0000-0000-0000-000000000001',
         name: 'Professor Smith (Demo Teacher)',
         email: 'teacher@nexlearn.com',
         role: 'teacher',
@@ -155,7 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user_type: 'college',
       },
       student: {
-        id: 'mock-student-id',
+        id: 'da7eb000-0000-0000-0000-000000000002',
         name: 'Ben (Demo Student)',
         email: 'student@nexlearn.com',
         role: 'student',

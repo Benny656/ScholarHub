@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GraduationCap, Menu, X, Bell, Moon, Sun, ArrowRight, User } from "lucide-react";
+import { GraduationCap, Menu, X, Bell, Moon, Sun, ArrowRight, User, ChevronRight } from "lucide-react";
 import { Role } from "../../lib/mockData";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -110,16 +110,23 @@ export default function MobileNavigation({
                 </div>
 
                 {/* Profile Identity info */}
-                <div className="p-3 bg-neutral-50 dark:bg-neutral-850 rounded-xl flex items-center gap-3">
+                <div 
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleTabClick('settings')}
+                  aria-label="View profile settings"
+                  className="p-3 bg-neutral-50 dark:bg-neutral-850 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl flex items-center gap-3 cursor-pointer group transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                >
                   <img
                     src={activeRole.avatar}
                     alt={activeRole.name}
-                    className="w-9 h-9 rounded-full object-cover border-2 border-brand-primary/20 bg-neutral-100"
+                    className="w-9 h-9 rounded-full object-cover border-2 border-brand-primary/20 bg-neutral-100 group-hover:border-brand-primary transition-all duration-200"
                   />
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-neutral-800 dark:text-neutral-200 truncate">{activeRole.name}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-neutral-800 dark:text-neutral-200 truncate group-hover:text-brand-primary transition-all duration-200">{activeRole.name}</p>
                     <p className="text-[10px] text-neutral-500">{activeRole.badge}</p>
                   </div>
+                  <ChevronRight className="w-4 h-4 text-neutral-400 group-hover:text-brand-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
                 </div>
 
                 {/* Navigation lists */}

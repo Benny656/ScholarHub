@@ -170,10 +170,10 @@ export function StudentDashboard() {
           <Link to="/notifications" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-lg text-sm transition-colors border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">
             <Bell size={14} />
           </Link>
-          <button className="flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-transparent dark:border-neutral-700">
+          <Link to="/classroom/general" className="flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-neutral-200 dark:border-neutral-700 hover:scale-102 hover:shadow-sm">
             <PlayCircle size={16} />
             Join Next Class
-          </button>
+          </Link>
           <button className="flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
             <Sparkles size={16} />
             AI Assistant
@@ -217,7 +217,7 @@ export function StudentDashboard() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Live Classroom', icon: Video, to: '/live', color: 'text-brand-primary bg-brand-primary/10 hover:bg-brand-primary hover:text-white' },
+          { label: 'Live Classroom', icon: Video, to: '/classroom/general', color: 'text-brand-primary bg-brand-primary/10 hover:bg-brand-primary hover:text-white' },
           { label: 'Resources', icon: BookOpen, to: '/resources', color: 'text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white dark:bg-blue-500/10 dark:text-blue-400' },
           { label: 'Assignments', icon: FileText, to: '/assignments', color: 'text-amber-600 bg-amber-50 hover:bg-amber-600 hover:text-white dark:bg-amber-500/10 dark:text-amber-400' },
           { label: 'Certificates', icon: Award, to: '/certificates', color: 'text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white dark:bg-emerald-500/10 dark:text-emerald-400' },
@@ -674,7 +674,7 @@ export function StudentDashboard() {
                     </div>
                   ))}
                 </div>
-                <Link to="/live" className="mt-4 flex items-center justify-center gap-2 w-full py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:bg-brand-accent transition-colors">
+                <Link to="/classroom/general" className="mt-4 flex items-center justify-center gap-2 w-full py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:bg-brand-accent transition-colors hover:scale-102 hover:shadow-sm">
                   <Monitor size={12} /> Enter Live Classroom
                 </Link>
               </div>

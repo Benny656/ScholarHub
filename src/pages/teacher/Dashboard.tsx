@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../lib/apiClient';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -117,6 +118,24 @@ export function TeacherDashboard() {
   const lastName = user?.name ? user.name.split(' ').pop() : 'Professor';
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   
+  const [stats, setStats] = useState(STATS);
+  const [coursesList, setCoursesList] = useState(COURSES);
+  const [todayClasses, setTodayClasses] = useState(TODAY_CLASSES);
+
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const data = await apiClient.get('/teacher/dashboard');
+        if (data.stats) setStats(data.stats);
+        if (data.courses && data.courses.length > 0) setCoursesList(data.courses);
+        if (data.todayClasses) setTodayClasses(data.todayClasses);
+      } catch (err) {
+        console.error('Failed to load backend dashboard, using mock fallback:', err);
+      }
+    }
+    loadDashboard();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
@@ -150,9 +169,9 @@ export function TeacherDashboard() {
           <button className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-transparent dark:border-neutral-700">
             <FileText size={14} /> Create Assignment
           </button>
-          <button className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-transparent dark:border-neutral-700">
+          <Link to="/classroom/general" className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-neutral-200 dark:border-neutral-700 hover:scale-102 hover:shadow-sm">
             <Video size={14} /> Start Live Class
-          </button>
+          </Link>
           <button className="flex items-center gap-2 px-3 py-2 bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary rounded-lg text-sm font-medium transition-colors">
             <Sparkles size={14} /> Generate Quiz
           </button>
@@ -170,10 +189,10 @@ export function TeacherDashboard() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Active Courses', value: STATS.activeCourses, icon: BookOpen },
-          { label: 'Total Students', value: STATS.totalStudents, icon: Users },
-          { label: 'Pending Evaluations', value: STATS.pendingEvaluations, icon: ClipboardList },
-          { label: 'Attendance Rate', value: `${STATS.attendanceRate}%`, icon: CheckCircle2 },
+          { label: 'Active Courses', value: stats.activeCourses, icon: BookOpen },
+          { label: 'Total Students', value: stats.totalStudents, icon: Users },
+          { label: 'Pending Evaluations', value: stats.pendingEvaluations, icon: ClipboardList },
+          { label: 'Attendance Rate', value: `${stats.attendanceRate}%`, icon: CheckCircle2 },
         ].map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants} className="p-5 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl flex flex-col gap-3">
             <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
@@ -206,7 +225,7 @@ export function TeacherDashboard() {
                 action={<Link to="/courses" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">Manage <ArrowRight size={14} /></Link>} 
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {COURSES.map(course => (
+                {coursesList.map(course => (
                   <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
@@ -455,10 +474,10 @@ export function TeacherDashboard() {
             <Panel>
               <PanelHeader 
                 title="Today's Classes" 
-                action={<span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full font-medium">{TODAY_CLASSES.length} Sessions</span>}
+                action={<span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full font-medium">{todayClasses.length} Sessions</span>}
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {TODAY_CLASSES.map(cls => (
+                {todayClasses.map(cls => (
                   <div key={cls.id} className="p-4 flex items-center justify-between gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                     <div>
                       <p className="text-xs font-medium text-brand-primary mb-0.5">{cls.time}</p>
@@ -576,9 +595,9 @@ export function TeacherDashboard() {
                     </button>
                   ))}
                 </div>
-                <button className="w-full flex items-center justify-center gap-2 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors">
+                <Link to="/classroom/general" className="w-full flex items-center justify-center gap-2 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors hover:scale-102 hover:shadow-sm">
                   <Video size={12} /> Start Live Session
-                </button>
+                </Link>
               </div>
             </Panel>
           </motion.div>

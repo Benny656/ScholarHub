@@ -1,15 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Building, Tag, Shield, Camera, Save, Key, Smartphone, AlertTriangle, CheckCircle, Moon, Sun } from 'lucide-react';
+import { User, Mail, Building, Tag, Shield, Camera, Save, Key, Smartphone, AlertTriangle, Moon, Sun, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
 import { authService } from '../../services/auth.service';
 import { uploadService } from '../../services/upload.service';
-import { GlassCard, Badge, Button, Input, PageHeader } from '../../components/ui/index';
+import { GlassCard, Button, PageHeader } from '../../components/ui/index';
 import toast from 'react-hot-toast';
 
 export function Profile() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const [tab, setTab] = useState<'profile' | 'security' | 'preferences'>('profile');
   const [editing, setEditing] = useState(false);
@@ -25,6 +27,16 @@ export function Profile() {
     linkedin: 'linkedin.com/in/alexjohnson',
   });
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (e) {
+      toast.error('Failed to logout');
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -61,7 +73,7 @@ export function Profile() {
     { id: 'preferences', label: 'Preferences', icon: <Tag size={15} /> },
   ];
 
-  const inputStyle = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 focus:border-[#64748B]/60 text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant';
+  const inputStyle = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant';
   const style = { background: 'color-mix(in srgb, var(--color-on-surface) 5%, transparent)', fontFamily: 'Inter, sans-serif' };
 
   return (
@@ -70,51 +82,73 @@ export function Profile() {
       <div className="p-6 max-w-3xl mx-auto space-y-5">
         {/* Avatar + Info */}
         <GlassCard>
-          <div className="flex items-start gap-5">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
             <div className="relative flex-shrink-0">
               <motion.div
                 whileHover={{ scale: 1.03 }}
-                className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-3xl font-black text-on-surface cursor-pointer"
+                className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-3xl font-black text-on-surface cursor-pointer relative overflow-hidden group"
                 onClick={handleAvatarUpload}
                 style={{ boxShadow: '0 8px 32px rgba(139,92,246,0.3)' }}
               >
-                {form.name[0]}
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={form.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span>{form.name[0]}</span>
+                )}
+                {/* Hover Camera Overlay */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1 text-white text-[10px] font-semibold transition-opacity duration-200">
+                  <Camera size={14} />
+                  <span>Update</span>
+                </div>
               </motion.div>
-              <button
-                onClick={handleAvatarUpload}
-                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-xl flex items-center justify-center text-on-surface transition-all"
-                style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
-              >
-                <Camera size={13} />
-              </button>
+              {/* Online status indicator */}
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white dark:border-neutral-900 bg-emerald-500 flex items-center justify-center shadow-lg" title="Active & Online">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-ping absolute" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 relative" />
+              </span>
             </div>
-            <div className="flex-1">
-              <div className="flex items-start justify-between">
+            <div className="flex-1 w-full">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-xl font-bold text-on-surface mb-1" style={{ fontFamily: 'Geist, sans-serif' }}>{form.name}</h2>
-                  <p className="text-sm text-on-surface-variant mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>{form.email}</p>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant={user?.role === 'teacher' ? 'blue' : user?.role === 'admin' ? 'purple' : 'slate'} size="md">
-                      {user?.role || 'student'}
-                    </Badge>
-                    <Badge variant="emerald" size="md">Active</Badge>
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-on-surface mb-1 tracking-tight" style={{ fontFamily: 'Geist, sans-serif' }}>{form.name}</h2>
+                  <p className="text-sm text-on-surface-variant mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>{form.email}</p>
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <span className={`px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs font-semibold border ${
+                      user?.role === 'teacher' 
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                        : user?.role === 'admin' 
+                          ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' 
+                          : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                    }`}>
+                      <Shield size={12} />
+                      <span className="capitalize">{user?.role || 'student'}</span>
+                    </span>
+                    <span className="px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Active & Online
+                    </span>
                   </div>
                 </div>
-                <Button variant={editing ? 'secondary' : 'primary'} size="sm" icon={editing ? undefined : <User size={14} />} onClick={() => setEditing(!editing)}>
-                  {editing ? 'Cancel' : 'Edit Profile'}
-                </Button>
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+                  <Button variant={editing ? 'secondary' : 'primary'} size="sm" icon={editing ? undefined : <User size={14} />} onClick={() => setEditing(!editing)}>
+                    {editing ? 'Cancel' : 'Edit Profile'}
+                  </Button>
+                  <Button variant="danger" size="sm" icon={<LogOut size={14} />} onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </GlassCard>
 
         {/* Tab nav */}
-        <div className="flex gap-1 p-1 rounded-2xl" style={{ background: 'color-mix(in srgb, var(--color-on-surface) 4%, transparent)' }}>
+        <div className="flex gap-1.5 p-1.5 rounded-2xl" style={{ background: 'color-mix(in srgb, var(--color-on-surface) 4%, transparent)' }}>
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id as any)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${tab === t.id ? 'text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:outline-none ${tab === t.id ? 'text-on-surface font-semibold shadow-sm' : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'}`}
               style={tab === t.id ? { background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' } : {}}>
-              {t.icon} {t.label}
+              <span className="scale-110">{t.icon}</span> <span>{t.label}</span>
             </button>
           ))}
         </div>
@@ -125,7 +159,7 @@ export function Profile() {
             <GlassCard>
               <h2 className="text-base font-bold text-on-surface mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>Personal Information</h2>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Full Name</label>
                     <div className="relative">
@@ -168,7 +202,7 @@ export function Profile() {
                     className={`${inputStyle} disabled:opacity-60 resize-none`} style={style} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-on-surface-variant mb-1.5">GitHub</label>
                     <input value={form.github} onChange={e => setForm(p => ({ ...p, github: e.target.value }))} disabled={!editing}
