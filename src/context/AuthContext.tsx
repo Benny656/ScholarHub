@@ -3,11 +3,20 @@ import type { User, AuthState, UserRole } from '../types';
 import { authService } from '../services/auth.service';
 import { supabase } from '../lib/supabase';
 
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  requireRoleSelection?: boolean;
+}
+
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
   register: (data: Parameters<typeof authService.register>[0]) => Promise<void>;
   loginBypass: (role: UserRole) => void;
+  completeRoleSelection: (role: UserRole) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -15,6 +24,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 type Action =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
+  | { type: 'REQUIRE_ROLE_SELECTION'; payload: { token: string } }
   | { type: 'LOGOUT' };
 
 const initialState: AuthState = {
@@ -22,6 +32,7 @@ const initialState: AuthState = {
   token: null,
   isAuthenticated: false,
   isLoading: true,
+  requireRoleSelection: false,
 };
 
 function authReducer(state: AuthState, action: Action): AuthState {
@@ -35,6 +46,15 @@ function authReducer(state: AuthState, action: Action): AuthState {
         token: action.payload.token,
         isAuthenticated: true,
         isLoading: false,
+        requireRoleSelection: false,
+      };
+    case 'REQUIRE_ROLE_SELECTION':
+      return {
+        ...state,
+        token: action.payload.token,
+        isAuthenticated: false,
+        isLoading: false,
+        requireRoleSelection: true,
       };
     case 'LOGOUT':
       return { ...initialState, isLoading: false };
@@ -68,9 +88,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
-          const user = await authService.getMe();
-          if (mounted) {
-            dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
+          const profile = await authService.getProfile(session.user.id);
+          if (profile) {
+            let user = await authService.getMe().catch(() => null);
+            if (!user) {
+               user = {
+                 id: profile.id,
+                 name: profile.full_name,
+                 email: profile.email,
+                 role: profile.role,
+                 avatar: profile.avatar_url,
+                 createdAt: profile.created_at,
+               } as any;
+            } else {
+               user.role = profile.role;
+               user.name = profile.full_name || user.name;
+            }
+            if (mounted) {
+              dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
+            }
+          } else {
+            // No profile -> requires role selection
+            if (mounted) {
+              dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: session.access_token } });
+            }
           }
         } else {
           if (mounted) {
@@ -90,8 +131,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         try {
-          const user = await authService.getMe();
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
+          const profile = await authService.getProfile(session.user.id);
+          if (profile) {
+            let user = await authService.getMe().catch(() => null);
+            if (!user) {
+               user = {
+                 id: profile.id,
+                 name: profile.full_name,
+                 email: profile.email,
+                 role: profile.role,
+                 avatar: profile.avatar_url,
+                 createdAt: profile.created_at,
+               } as any;
+            } else {
+               user.role = profile.role;
+               user.name = profile.full_name || user.name;
+            }
+            dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
+          } else {
+            dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: session.access_token } });
+          }
         } catch (err) {
           console.error('Error fetching user profile after sign in', err);
           dispatch({ type: 'SET_LOADING', payload: false });
@@ -134,6 +193,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
   }, []);
 
+  const completeRoleSelection = useCallback(async (role: UserRole) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session');
+      
+      const identity = session.user.identities?.[0];
+      const provider = identity?.provider || 'email';
+      const fullName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0];
+      
+      const profileData = {
+        id: session.user.id,
+        email: session.user.email,
+        full_name: fullName,
+        avatar_url: session.user.user_metadata?.avatar_url || '',
+        role: role,
+        provider: provider,
+      };
+      
+      await authService.createProfile(profileData);
+      
+      let user = await authService.getMe().catch(() => null);
+      if (!user) {
+         user = {
+           id: profileData.id,
+           name: profileData.full_name,
+           email: profileData.email,
+           role: profileData.role,
+           avatar: profileData.avatar_url,
+           createdAt: new Date().toISOString(),
+         } as any;
+      } else {
+         user.role = profileData.role as UserRole;
+         user.name = profileData.full_name;
+      }
+      
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
+    } catch (err) {
+      dispatch({ type: 'SET_LOADING', payload: false });
+      throw err;
+    }
+  }, []);
+
   const loginBypass = useCallback((role: UserRole) => {
     const mockUsers: Record<UserRole, User> = {
       admin: {
@@ -170,7 +272,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, register, loginBypass }}>
+    <AuthContext.Provider value={{ ...state, login, logout, register, loginBypass, completeRoleSelection }}>
       {children}
     </AuthContext.Provider>
   );

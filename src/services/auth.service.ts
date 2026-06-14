@@ -60,6 +60,29 @@ export const authService = {
     return data;
   },
 
+  async loginWithOAuth(provider: 'google' | 'github'): Promise<void> {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/login`,
+      },
+    });
+    if (error) throw error;
+  },
+
+  async getProfile(userId: string): Promise<any> {
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching profile:', error);
+    }
+    return data;
+  },
+
+  async createProfile(profileData: any): Promise<void> {
+    const { error } = await supabase.from('profiles').insert([profileData]);
+    if (error) throw error;
+  },
+
   async register(
     emailOrPayload: string | RegisterPayload,
     password?: string,

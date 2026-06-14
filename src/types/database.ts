@@ -15,6 +15,16 @@ export type UserRow = {
   status: 'active' | 'suspended' | null;
 };
 
+export type ProfileRow = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: 'student' | 'teacher' | 'admin' | null;
+  provider: string | null;
+  created_at: string;
+};
+
 export type CourseRow = {
   id: string;
   title: string | null;
@@ -155,6 +165,7 @@ export type PaymentRow = {
 };
 
 // Standalone flat Insert types
+export type ProfileInsert = Partial<Omit<ProfileRow, 'created_at'>> & { id: string };
 export type UserInsert = Partial<Omit<UserRow, 'created_at'>> & { id: string };
 export type CourseInsert = Partial<Omit<CourseRow, 'id' | 'created_at'>>;
 export type EnrollmentInsert = Partial<Omit<EnrollmentRow, 'id' | 'enrolled_at'>>;
@@ -171,6 +182,7 @@ export type NotificationInsert = Partial<Omit<NotificationRow, 'id' | 'created_a
 export type PaymentInsert = Partial<Omit<PaymentRow, 'id' | 'created_at'>>;
 
 // Standalone flat Update types
+export type ProfileUpdate = Partial<ProfileRow>;
 export type UserUpdate = Partial<UserRow>;
 export type CourseUpdate = Partial<CourseRow>;
 export type EnrollmentUpdate = Partial<EnrollmentRow>;
@@ -201,6 +213,12 @@ export type AdminLogUpdate = Partial<AdminLogRow>;
 export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: ProfileRow;
+        Insert: ProfileInsert;
+        Update: ProfileUpdate;
+        Relationships: [];
+      };
       users: {
         Row: UserRow;
         Insert: UserInsert;
