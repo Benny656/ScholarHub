@@ -12,15 +12,6 @@ import { apiClient } from '../../lib/apiClient';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 
-const PARTICIPANTS = [
-  { id: 'u2', name: 'Dr. Sarah Chen', isMuted: false, isCameraOff: false, isHandRaised: false, role: 'host' },
-  { id: 'u1', name: 'Alex Johnson', isMuted: false, isCameraOff: false, isHandRaised: true, role: 'participant' },
-  { id: 'u8', name: 'Jordan Lee', isMuted: true, isCameraOff: false, isHandRaised: false, role: 'participant' },
-  { id: 'u9', name: 'Priya Sharma', isMuted: false, isCameraOff: true, isHandRaised: false, role: 'participant' },
-  { id: 'u10', name: 'Marcus Brown', isMuted: true, isCameraOff: true, isHandRaised: false, role: 'participant' },
-  { id: 'u11', name: 'Sara Wilson', isMuted: false, isCameraOff: false, isHandRaised: false, role: 'participant' },
-];
-
 const CHAT_MSGS = [
   { sender: 'Dr. Sarah Chen', msg: 'Welcome everyone! Today we cover advanced React patterns.', time: '10:01 AM', isHost: true },
   { sender: 'Alex Johnson', msg: 'Excited for this session!', time: '10:02 AM', isHost: false },
