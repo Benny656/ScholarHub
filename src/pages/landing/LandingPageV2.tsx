@@ -1207,7 +1207,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   {/* Role label badge on image */}
                   <div className="absolute bottom-5 left-5">
-                    <span className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full">
+                    <span className="inline-flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/15 text-white text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       {roleSlides[activeRoleIndex].label}
                     </span>

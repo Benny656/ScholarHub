@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Search, Star, Users, Clock, BookOpen, Plus } from 'lucide-react';
 import { coursesService } from '../../services/courses.service';
@@ -125,12 +125,12 @@ function GeometricThumbnail({ category }: { category: string }) {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 25 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 22 } }
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 260, damping: 22 } }
 };
 
 // Immersive Glassmorphism Card with 3D Mouse Tilt & Border cursor glow tracking
-function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
-  course: Course; index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
+function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
+  course: Course; _index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
 }) {
   const { user } = useAuth();
   const userType = user?.user_type;
@@ -226,7 +226,7 @@ function CourseCard({ course, index, enrolled, onEnroll, progress = 0 }: {
         {/* Progress Bar for Enrolled Students */}
         {enrolled && (
           <div className="mb-4">
-            <div className="flex justify-between text-[10px] text-slate-400 mb-1">
+            <div className="flex justify-between text-[10px] text-neutral-500 dark:text-slate-400 mb-1">
               <span>Enrollment Progress</span>
               <span>{progress}%</span>
             </div>
@@ -400,7 +400,7 @@ export function CourseCatalog() {
                   key={cat}
                   onClick={() => setCategory(cat)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative ${
-                    category === cat ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                    category === cat ? 'text-white' : 'text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
                   }`}
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
@@ -450,8 +450,8 @@ export function CourseCatalog() {
         ) : sorted.length === 0 ? (
           <div className="text-center py-24 glass rounded-3xl border border-white/5 max-w-lg mx-auto">
             <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No courses found</h3>
-            <p className="text-sm text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No courses found</h3>
+            <p className="text-sm text-neutral-500 dark:text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
           </div>
         ) : (
           <motion.div 

@@ -60,7 +60,7 @@ export function CreateCourse() {
     toast.success('AI Quiz generated! 🤖', { icon: '✨' });
   };
 
-  const inputStyle = { background: 'rgba(255,255,255,0.05)', fontFamily: 'Inter, sans-serif' };
+  const inputStyle = { fontFamily: 'Inter, sans-serif' };
 
   return (
     <div className="space-y-6">
@@ -99,15 +99,15 @@ export function CreateCourse() {
           {step === 1 && (
             <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <GlassCard>
-                <h2 className="text-lg font-bold text-white mb-5" style={{ fontFamily: 'Geist, sans-serif' }}>Course Details</h2>
+                <h2 className="text-lg font-bold text-neutral-900 dark:text-white mb-5" style={{ fontFamily: 'Geist, sans-serif' }}>Course Details</h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Course Title *</label>
-                    <input type="text" value={form.title} onChange={e => update('title', e.target.value)} placeholder="e.g. Complete React Development Bootcamp" className="w-full px-4 py-2.5 rounded-xl border border-white/10 focus:border-purple-500/60 text-white text-sm outline-none" style={inputStyle} />
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title *</label>
+                    <input type="text" value={form.title} onChange={e => update('title', e.target.value)} placeholder="e.g. Complete React Development Bootcamp" className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-white/10 focus:border-purple-500/60 bg-neutral-100/50 dark:bg-white/5 text-neutral-900 dark:text-white text-sm outline-none" style={inputStyle} />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Description *</label>
-                    <textarea value={form.description} onChange={e => update('description', e.target.value)} rows={4} placeholder="Describe what students will learn..." className="w-full px-4 py-2.5 rounded-xl border border-white/10 focus:border-purple-500/60 text-white text-sm outline-none resize-none" style={inputStyle} />
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Description *</label>
+                    <textarea value={form.description} onChange={e => update('description', e.target.value)} rows={4} placeholder="Describe what students will learn..." className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-white/10 focus:border-purple-500/60 bg-neutral-100/50 dark:bg-white/5 text-neutral-900 dark:text-white text-sm outline-none resize-none" style={inputStyle} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <Select label="Category" value={form.category} onChange={e => update('category', e.target.value)}
@@ -129,7 +129,7 @@ export function CreateCourse() {
             <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <GlassCard>
                 <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Geist, sans-serif' }}>Course Curriculum</h2>
+                  <h2 className="text-lg font-bold text-neutral-900 dark:text-white" style={{ fontFamily: 'Geist, sans-serif' }}>Course Curriculum</h2>
                   <div className="flex items-center gap-2">
                     <Button variant="secondary" icon={<Sparkles size={14} />} size="sm" onClick={handleGenerateQuiz} loading={generatingQuiz}>
                       AI Quiz
@@ -142,35 +142,34 @@ export function CreateCourse() {
                 </div>
                 <div className="space-y-4">
                   {form.sections.map((sec, si) => (
-                    <div key={si} className="rounded-xl border border-white/8 overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
-                        <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 text-xs font-bold flex items-center justify-center">{si + 1}</div>
+                    <div key={si} className="rounded-xl border border-neutral-200 dark:border-white/8 overflow-hidden bg-neutral-50/50 dark:bg-white/3">
+                      <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200 dark:border-white/5">
+                        <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-300 text-xs font-bold flex items-center justify-center">{si + 1}</div>
                         <input
                           value={sec.title}
                           onChange={e => {
                             const s = [...form.sections]; s[si] = { ...s[si], title: e.target.value };
                             update('sections', s);
                           }}
-                          className="flex-1 bg-transparent text-sm font-semibold text-white outline-none placeholder-slate-500"
+                          className="flex-1 bg-transparent text-sm font-semibold text-neutral-900 dark:text-white outline-none placeholder-slate-500"
                           placeholder="Section title..."
                         />
-                        <button onClick={() => update('sections', form.sections.filter((_, i) => i !== si))} className="text-slate-600 hover:text-red-400 transition-colors">
+                        <button onClick={() => update('sections', form.sections.filter((_, i) => i !== si))} className="text-slate-500 hover:text-red-500 transition-colors">
                           <X size={14} />
                         </button>
                       </div>
                       <div className="p-3 space-y-2">
                         {sec.lessons.map((les, li) => (
-                          <div key={li} className="flex items-center gap-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                          <div key={li} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-neutral-100/50 dark:bg-white/5">
                             <select
                               value={les.type}
                               onChange={e => {
                                 const s = [...form.sections]; s[si].lessons[li] = { ...les, type: e.target.value };
                                 update('sections', s);
                               }}
-                              className="text-xs bg-transparent border border-white/10 rounded-lg px-2 py-1 text-slate-400 outline-none"
-                              style={{ background: 'rgba(255,255,255,0.05)' }}
+                              className="text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-lg px-2 py-1 text-neutral-700 dark:text-slate-300 outline-none"
                             >
-                              {['video','pdf','quiz','assignment'].map(t => <option key={t} value={t} style={{ background: '#0d1421' }}>{t}</option>)}
+                              {['video','pdf','quiz','assignment'].map(t => <option key={t} value={t} className="bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">{t}</option>)}
                             </select>
                             <input
                               value={les.title}
@@ -178,7 +177,7 @@ export function CreateCourse() {
                                 const s = [...form.sections]; s[si].lessons[li] = { ...les, title: e.target.value };
                                 update('sections', s);
                               }}
-                              className="flex-1 bg-transparent text-sm text-slate-300 outline-none placeholder-slate-500"
+                              className="flex-1 bg-transparent text-sm text-neutral-900 dark:text-slate-300 outline-none placeholder-slate-500"
                               placeholder="Lesson title..."
                             />
                             <button onClick={() => {
@@ -202,10 +201,10 @@ export function CreateCourse() {
                 </div>
 
                 {/* Upload area */}
-                <div className="mt-4 rounded-xl border-2 border-dashed border-white/15 hover:border-purple-500/30 p-8 text-center cursor-pointer transition-all hover:bg-white/3">
+                <div className="mt-4 rounded-xl border-2 border-dashed border-neutral-200 dark:border-white/15 hover:border-purple-500/30 p-8 text-center cursor-pointer transition-all hover:bg-neutral-50 dark:hover:bg-white/3">
                   <Upload size={24} className="text-slate-500 mx-auto mb-2" />
-                  <p className="text-sm text-slate-400">Drag & drop course materials or <span className="text-purple-400">browse files</span></p>
-                  <p className="text-xs text-slate-600 mt-1">PDF, Video, PPT — up to 500MB</p>
+                  <p className="text-sm text-neutral-500 dark:text-slate-400">Drag & drop course materials or <span className="text-purple-400">browse files</span></p>
+                  <p className="text-xs text-neutral-400 dark:text-slate-500 mt-1">PDF, Video, PPT — up to 500MB</p>
                 </div>
               </GlassCard>
             </motion.div>
@@ -215,7 +214,7 @@ export function CreateCourse() {
           {step === 3 && (
             <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <GlassCard>
-                <h2 className="text-lg font-bold text-white mb-5" style={{ fontFamily: 'Geist, sans-serif' }}>Learning Outcomes</h2>
+                <h2 className="text-lg font-bold text-neutral-900 dark:text-white mb-5" style={{ fontFamily: 'Geist, sans-serif' }}>Learning Outcomes</h2>
                 {([
                   { field: 'outcomes' as const, label: 'What students will learn', placeholder: 'e.g. Build full-stack web apps', color: 'emerald' },
                   { field: 'requirements' as const, label: 'Requirements / Prerequisites', placeholder: 'e.g. Basic JavaScript knowledge', color: 'blue' },
@@ -223,7 +222,7 @@ export function CreateCourse() {
                 ] as const).map(({ field, label, placeholder, color }) => (
                   <div key={field} className="mb-6">
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-slate-300" style={{ fontFamily: 'Inter, sans-serif' }}>{label}</label>
+                      <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300" style={{ fontFamily: 'Inter, sans-serif' }}>{label}</label>
                       <button onClick={() => addListItem(field)} className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"><Plus size={13} /> Add</button>
                     </div>
                     <div className="space-y-2">
@@ -234,8 +233,8 @@ export function CreateCourse() {
                             value={item}
                             onChange={e => updateListItem(field, idx, e.target.value)}
                             placeholder={placeholder}
-                            className="flex-1 px-3 py-2 rounded-xl border border-white/10 focus:border-purple-500/60 text-white text-sm outline-none"
-                            style={{ background: 'rgba(255,255,255,0.05)', fontFamily: 'Inter, sans-serif' }}
+                            className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-white/10 focus:border-purple-500/60 bg-neutral-100/50 dark:bg-white/5 text-neutral-900 dark:text-white text-sm outline-none"
+                            style={{ fontFamily: 'Inter, sans-serif' }}
                           />
                           {form[field].length > 1 && (
                             <button onClick={() => removeListItem(field, idx)} className="text-slate-600 hover:text-red-400 transition-colors"><X size={14} /></button>
@@ -262,9 +261,9 @@ export function CreateCourse() {
                   >
                     <Rocket size={36} className="text-white" />
                   </motion.div>
-                  <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Geist, sans-serif' }}>Ready to Launch?</h2>
-                  <p className="text-slate-400 mb-8 max-w-md mx-auto text-sm">
-                    Your course <strong className="text-white">"{form.title || 'Untitled Course'}"</strong> is ready to go live. Students will be able to enroll immediately.
+                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Geist, sans-serif' }}>Ready to Launch?</h2>
+                  <p className="text-neutral-500 dark:text-slate-400 mb-8 max-w-md mx-auto text-sm">
+                    Your course <strong className="text-neutral-900 dark:text-white">"{form.title || 'Untitled Course'}"</strong> is ready to go live. Students will be able to enroll immediately.
                   </p>
                   <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto mb-6 text-left">
                     {[
@@ -273,9 +272,9 @@ export function CreateCourse() {
                       { label: 'Price', val: form.price ? `₹${form.price}` : 'Free' },
                       { label: 'Sections', val: form.sections.length },
                     ].map(item => (
-                      <div key={item.label} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                      <div key={item.label} className="p-3 rounded-xl bg-neutral-100/50 dark:bg-white/5">
                         <p className="text-xs text-slate-500 mb-0.5">{item.label}</p>
-                        <p className="text-sm font-semibold text-white">{item.val}</p>
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-white">{item.val}</p>
                       </div>
                     ))}
                   </div>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Star, Users, Clock, BookOpen, Play, ChevronDown, ChevronRight, CheckCircle, Lock, Award, Download } from 'lucide-react';
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
-import { GlassCard, Badge, ProgressBar, PageHeader, Button, SkeletonCard } from '../../components/ui/index';
+import { GlassCard, Badge, PageHeader, Button, SkeletonCard } from '../../components/ui/index';
 import { paymentsService } from '../../services/payments.service';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
@@ -114,18 +114,18 @@ export function CourseDetail() {
                   <Badge variant={LEVEL_COLORS[course.level]}>{course.level}</Badge>
                   <Badge variant="purple">{course.category}</Badge>
                 </div>
-                <h1 className="text-3xl font-bold text-white mb-3 leading-tight" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>{course.title}</h1>
-                <p className="text-slate-300 mb-4 text-sm leading-relaxed max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>{course.description}</p>
+                <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-3 leading-tight" style={{ fontFamily: 'Geist, Inter, sans-serif' }}>{course.title}</h1>
+                <p className="text-neutral-600 dark:text-slate-300 mb-4 text-sm leading-relaxed max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>{course.description}</p>
 
                 <div className="flex items-center gap-4 flex-wrap text-sm">
                   <div className="flex items-center gap-1">
                     {[1,2,3,4,5].map(s => <Star key={s} size={14} fill={s <= Math.floor(course.rating) ? '#F59E0B' : 'none'} className="text-amber-400" />)}
                     <span className="text-amber-400 ml-1 font-bold">{course.rating}</span>
-                    <span className="text-slate-400 ml-1">({course.reviews.toLocaleString()} reviews)</span>
+                    <span className="text-neutral-500 dark:text-slate-400 ml-1">({course.reviews.toLocaleString()} reviews)</span>
                   </div>
-                  <span className="flex items-center gap-1.5 text-slate-300"><Users size={14} className="text-blue-400" /> {course.enrolled.toLocaleString()} students</span>
-                  <span className="flex items-center gap-1.5 text-slate-300"><BookOpen size={14} className="text-purple-400" /> {course.lessons} lessons</span>
-                  <span className="flex items-center gap-1.5 text-slate-300"><Clock size={14} className="text-emerald-400" /> {course.duration}</span>
+                  <span className="flex items-center gap-1.5 text-neutral-600 dark:text-slate-300"><Users size={14} className="text-blue-400" /> {course.enrolled.toLocaleString()} students</span>
+                  <span className="flex items-center gap-1.5 text-neutral-600 dark:text-slate-300"><BookOpen size={14} className="text-purple-400" /> {course.lessons} lessons</span>
+                  <span className="flex items-center gap-1.5 text-neutral-600 dark:text-slate-300"><Clock size={14} className="text-emerald-400" /> {course.duration}</span>
                 </div>
 
                 <div className="flex items-center gap-3 mt-4">
@@ -133,8 +133,8 @@ export function CourseDetail() {
                     {course.instructor[0]}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white">{course.instructor}</p>
-                    <p className="text-xs text-slate-400">Course Instructor</p>
+                    <p className="text-sm font-medium text-neutral-900 dark:text-white">{course.instructor}</p>
+                    <p className="text-xs text-neutral-500 dark:text-slate-400">Course Instructor</p>
                   </div>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export function CourseDetail() {
               <div className="w-full lg:w-80 flex-shrink-0">
                 <GlassCard className="sticky top-4">
                   <div className="text-center mb-5">
-                    <p className="text-3xl font-bold text-white mb-1">
+                    <p className="text-3xl font-bold text-neutral-900 dark:text-white mb-1">
                       {user?.user_type === 'school' ? 'Free Forever' : `₹${course.price}`}
                     </p>
                     {enrolled && <p className="text-sm text-emerald-400">✓ Already enrolled</p>}
@@ -166,7 +166,7 @@ export function CourseDetail() {
                       { icon: <Download size={14} />, label: 'Downloadable resources' },
                       { icon: <Award size={14} />, label: 'Certificate on completion' },
                     ].map((f, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
+                      <div key={i} className="flex items-center gap-2 text-sm text-neutral-600 dark:text-slate-300">
                         <span className="text-purple-400">{f.icon}</span> {f.label}
                       </div>
                     ))}
@@ -193,12 +193,12 @@ export function CourseDetail() {
             <div className="lg:col-span-2 space-y-6">
               {/* Outcomes */}
               <GlassCard tint="emerald">
-                <h2 className="text-lg font-bold text-white mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>What you'll learn</h2>
+                <h2 className="text-lg font-bold text-neutral-900 dark:text-white mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>What you'll learn</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {course.outcomes.map((o, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle size={15} className="text-emerald-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-slate-300" style={{ fontFamily: 'Inter, sans-serif' }}>{o}</span>
+                      <span className="text-sm text-neutral-600 dark:text-slate-300" style={{ fontFamily: 'Inter, sans-serif' }}>{o}</span>
                     </div>
                   ))}
                 </div>
@@ -206,7 +206,7 @@ export function CourseDetail() {
 
               {/* Curriculum */}
               <GlassCard>
-                <h2 className="text-lg font-bold text-white mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>Course Curriculum</h2>
+                <h2 className="text-lg font-bold text-neutral-900 dark:text-white mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>Course Curriculum</h2>
                 <div className="space-y-2">
                   {(course.curriculum.length ? course.curriculum : [
                     { id: 's1', title: 'Getting Started', lessons: [
@@ -218,31 +218,30 @@ export function CourseDetail() {
                       { id: 'l4', title: 'Practical Quiz', type: 'quiz' as const, isCompleted: false, isLocked: !enrolled },
                     ]},
                   ]).map(section => (
-                    <div key={section.id} className="rounded-xl overflow-hidden border border-white/8">
+                    <div key={section.id} className="rounded-xl overflow-hidden border border-neutral-200 dark:border-white/10">
                       <button
                         onClick={() => setOpenSection(openSection === section.id ? null : section.id)}
-                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
-                        style={{ background: 'rgba(255,255,255,0.04)' }}
+                        className="w-full flex items-center justify-between px-4 py-3 bg-neutral-50 dark:bg-white/5 hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors"
                       >
-                        <span className="text-sm font-semibold text-white">{section.title}</span>
+                        <span className="text-sm font-semibold text-neutral-900 dark:text-white">{section.title}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-slate-500">{section.lessons.length} lessons</span>
-                          {openSection === section.id ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronRight size={14} className="text-slate-400" />}
+                          <span className="text-xs text-neutral-500 dark:text-slate-400">{section.lessons.length} lessons</span>
+                          {openSection === section.id ? <ChevronDown size={14} className="text-neutral-500 dark:text-slate-400" /> : <ChevronRight size={14} className="text-neutral-500 dark:text-slate-400" />}
                         </div>
                       </button>
                       {openSection === section.id && (
                         <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
                           {section.lessons.map(lesson => (
-                            <div key={lesson.id} className={`flex items-center gap-3 px-4 py-2.5 border-t border-white/5 ${lesson.isLocked ? 'opacity-50' : 'hover:bg-white/3'} transition-colors`}>
+                            <div key={lesson.id} className={`flex items-center gap-3 px-4 py-2.5 border-t border-neutral-200 dark:border-white/5 ${lesson.isLocked ? 'opacity-50' : 'hover:bg-neutral-50 dark:hover:bg-white/5'} transition-colors`}>
                               <div className="flex-shrink-0">
                                 {lesson.isCompleted ? <CheckCircle size={15} className="text-emerald-400" /> :
-                                 lesson.isLocked ? <Lock size={14} className="text-slate-500" /> :
+                                 lesson.isLocked ? <Lock size={14} className="text-neutral-500 dark:text-slate-400" /> :
                                  lesson.type === 'video' ? <Play size={14} className="text-blue-400" /> :
                                  lesson.type === 'quiz' ? <span className="text-amber-400 text-xs">Q</span> :
                                  <BookOpen size={14} className="text-purple-400" />}
                               </div>
-                              <span className="flex-1 text-sm text-slate-300">{lesson.title}</span>
-                              {lesson.duration && <span className="text-xs text-slate-500">{lesson.duration}</span>}
+                              <span className="flex-1 text-sm text-neutral-600 dark:text-slate-300">{lesson.title}</span>
+                              {lesson.duration && <span className="text-xs text-neutral-500 dark:text-slate-500">{lesson.duration}</span>}
                               <Badge variant={lesson.type === 'video' ? 'blue' : lesson.type === 'quiz' ? 'amber' : 'purple'} size="sm">{lesson.type}</Badge>
                             </div>
                           ))}
@@ -257,10 +256,10 @@ export function CourseDetail() {
             {/* Right: Requirements */}
             <div className="space-y-5">
               <GlassCard>
-                <h2 className="text-base font-bold text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Requirements</h2>
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Requirements</h2>
                 <ul className="space-y-2">
                   {course.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    <li key={i} className="flex items-start gap-2 text-sm text-neutral-600 dark:text-slate-300">
                       <span className="text-purple-400 flex-shrink-0">•</span> {r}
                     </li>
                   ))}
@@ -268,20 +267,20 @@ export function CourseDetail() {
               </GlassCard>
 
               <GlassCard tint="blue">
-                <h2 className="text-base font-bold text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>About the Instructor</h2>
+                <h2 className="text-base font-bold text-neutral-900 dark:text-white mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>About the Instructor</h2>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
                     {course.instructor[0]}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">{course.instructor}</p>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white">{course.instructor}</p>
                     <div className="flex items-center gap-1 mt-0.5">
                       <Star size={11} fill="#F59E0B" className="text-amber-400" />
                       <span className="text-xs text-amber-400">{course.rating}</span>
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">Expert instructor with 10+ years of industry experience, passionate about making complex topics accessible to everyone.</p>
+                <p className="text-xs text-neutral-500 dark:text-slate-400 leading-relaxed">Expert instructor with 10+ years of industry experience, passionate about making complex topics accessible to everyone.</p>
               </GlassCard>
             </div>
           </div>
@@ -302,10 +301,10 @@ export function EditCourse() {
   return (
     <div className="space-y-6">
       <PageHeader title={`Edit: ${course.title}`} subtitle="Update course details" breadcrumb={[{ label: 'Courses' }, { label: 'Edit' }]} />
-      <div className="p-6 text-center text-slate-400 py-20">
+      <div className="p-6 text-center text-neutral-500 dark:text-slate-400 py-20">
         <p className="text-4xl mb-4">✏️</p>
-        <p className="text-lg font-semibold text-white mb-2">Course Editor</p>
-        <p className="text-sm text-slate-400">Same interface as Create Course, pre-filled with current data.</p>
+        <p className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">Course Editor</p>
+        <p className="text-sm text-neutral-500 dark:text-slate-400">Same interface as Create Course, pre-filled with current data.</p>
         <Link to="/courses/create" className="inline-block mt-4">
           <Button variant="primary">Open Full Editor →</Button>
         </Link>
