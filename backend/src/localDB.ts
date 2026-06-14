@@ -15,6 +15,7 @@ interface LocalDBData {
   live_sessions?: any[];
   session_participants?: any[];
   recordings?: any[];
+  submissions?: any[];
 }
 
 const defaultData: LocalDBData = {
@@ -29,6 +30,7 @@ const defaultData: LocalDBData = {
   live_sessions: [],
   session_participants: [],
   recordings: [],
+  submissions: [],
 };
 
 function readDB(): LocalDBData {
@@ -220,5 +222,76 @@ export const localDB = {
     db.recordings.push(recording);
     writeDB(db);
     return recording;
+  },
+
+  // Assignments
+  getAssignments(): any[] {
+    return readDB().assignments || [];
+  },
+  getAssignmentsByCourseId(courseId: string): any[] {
+    return (readDB().assignments || []).filter(a => a.course_id === courseId);
+  },
+  addAssignment(assignment: any) {
+    const db = readDB();
+    if (!db.assignments) db.assignments = [];
+    db.assignments.push(assignment);
+    writeDB(db);
+    return assignment;
+  },
+
+  // Submissions
+  getSubmissions(): any[] {
+    return readDB().submissions || [];
+  },
+  getSubmissionsByAssignmentId(assignmentId: string): any[] {
+    return (readDB().submissions || []).filter(s => s.assignment_id === assignmentId);
+  },
+  addSubmission(submission: any) {
+    const db = readDB();
+    if (!db.submissions) db.submissions = [];
+    const idx = db.submissions.findIndex(
+      s => s.assignment_id === submission.assignment_id && s.student_id === submission.student_id
+    );
+    if (idx >= 0) {
+      db.submissions[idx] = { ...db.submissions[idx], ...submission };
+    } else {
+      db.submissions.push(submission);
+    }
+    writeDB(db);
+    return submission;
+  },
+  updateSubmission(id: string, updates: any) {
+    const db = readDB();
+    if (!db.submissions) db.submissions = [];
+    const idx = db.submissions.findIndex(s => s.id === id);
+    if (idx >= 0) {
+      db.submissions[idx] = { ...db.submissions[idx], ...updates };
+      writeDB(db);
+      return db.submissions[idx];
+    }
+    return null;
+  },
+
+  // Attendance
+  getAttendance(): any[] {
+    return readDB().attendance || [];
+  },
+  addAttendance(attendance: any) {
+    const db = readDB();
+    if (!db.attendance) db.attendance = [];
+    db.attendance.push(attendance);
+    writeDB(db);
+    return attendance;
+  },
+  updateAttendance(id: string, updates: any) {
+    const db = readDB();
+    if (!db.attendance) db.attendance = [];
+    const idx = db.attendance.findIndex(a => a.id === id);
+    if (idx >= 0) {
+      db.attendance[idx] = { ...db.attendance[idx], ...updates };
+      writeDB(db);
+      return db.attendance[idx];
+    }
+    return null;
   }
 };

@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import apiRoutes from './routes/api.routes.js';
+import { liveController } from './controllers/live.controller.js';
 
 // Load environment variables
 dotenv.config();
@@ -66,15 +67,18 @@ io.on('connection', (socket) => {
   console.log(`Socket connected: ${socket.id}`);
 
   // Join a classroom room
-  socket.on('join-room', (roomId) => {
+  socket.on('join-room', ({ roomId, userId, userName, role, token }) => {
     socket.join(roomId);
+    socket.data = { userId, userName, role, token, classroomId: roomId };
     console.log(`Socket ${socket.id} joined room ${roomId}`);
     socket.to(roomId).emit('user-connected', socket.id);
   });
 
   // Track live Jitsi conference room participants
-  socket.on('join-conference', ({ roomId, userId, userName, role }) => {
+  socket.on('join-conference', ({ roomId, sessionId, userId, userName, role, token }) => {
     socket.join(roomId);
+    socket.data = { ...socket.data, userId, userName, role, token, sessionId, conferenceRoomId: roomId };
+    
     if (!activeRoomParticipants.has(roomId)) {
       activeRoomParticipants.set(roomId, new Map());
     }
@@ -83,6 +87,11 @@ io.on('connection', (socket) => {
     const participants = Array.from(activeRoomParticipants.get(roomId)!.values());
     io.to(roomId).emit('participant-list-update', participants);
     io.to(roomId).emit('participant-joined', { userId, userName, role });
+    
+    // Global sync for teacher dashboards
+    if (role === 'student') {
+      io.emit('global-attendance-update', { userId, userName, role, sessionId, status: 'present' });
+    }
 
     console.log(`[Socket] ${userName} (${role}) joined conference ${roomId}`);
   });
@@ -96,6 +105,12 @@ io.on('connection', (socket) => {
         const participants = Array.from(activeRoomParticipants.get(roomId)!.values());
         io.to(roomId).emit('participant-list-update', participants);
         io.to(roomId).emit('participant-left', participant);
+        
+        // Global sync for teacher dashboards
+        if (participant.role === 'student') {
+          io.emit('global-attendance-update', { userId: participant.userId, userName: participant.userName, role: participant.role, status: 'left' });
+        }
+        
         console.log(`[Socket] ${participant.userName} left conference ${roomId}`);
       }
     }
@@ -109,7 +124,22 @@ io.on('connection', (socket) => {
 
   // Real-time chat messages inside a classroom
   socket.on('send-message', ({ roomId, message }) => {
-    socket.to(roomId).emit('receive-message', message);
+    const user = socket.data;
+    if (!user || !user.userId || !user.userName || !user.role) {
+      console.warn(`[Socket] Unauthenticated send-message attempt from socket ${socket.id} in room ${roomId}`);
+      return;
+    }
+    
+    // Construct verified message strictly with user profile
+    const verifiedMessage = {
+      sender: user.userName,
+      role: user.role,
+      msg: message.msg,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isHost: user.role === 'teacher'
+    };
+    
+    socket.to(roomId).emit('receive-message', verifiedMessage);
   });
 
   // Real-time whiteboard draw events
@@ -141,7 +171,17 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('breakout-room-created', breakoutRoom);
   });
 
-  socket.on('disconnecting', () => {
+  socket.on('disconnecting', async () => {
+    const { sessionId, userId, token } = socket.data || {};
+    if (sessionId && userId) {
+      console.log(`[Socket] User ${userId} is disconnecting from session ${sessionId}`);
+      try {
+        await liveController.processParticipantLeave(sessionId, userId, token || 'mock-bypass-token');
+      } catch (err) {
+        console.error('[Socket] disconnect processParticipantLeave error:', err);
+      }
+    }
+
     // Check all rooms the socket was in before disconnecting
     for (const roomId of socket.rooms) {
       if (activeRoomParticipants.has(roomId)) {

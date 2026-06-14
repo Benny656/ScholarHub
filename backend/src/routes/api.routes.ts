@@ -57,6 +57,11 @@ router.post('/live/create-breakout-room', liveController.createBreakoutRoom);
 router.get('/live/session/:classroomId', liveController.getActiveSession);
 router.post('/live/join', liveController.joinSession);
 router.post('/live/leave', liveController.leaveSession);
+router.get('/live/classroom/:classroomId/assignments', liveController.getClassroomAssignments);
+router.post('/live/classroom/:classroomId/assignments', roleMiddleware(['teacher', 'admin']), liveController.createClassroomAssignment);
+router.get('/live/assignments/:assignmentId/submissions', roleMiddleware(['teacher', 'admin']), liveController.getAssignmentSubmissions);
+router.post('/live/assignments/:assignmentId/submit', liveController.submitClassroomAssignment);
+router.post('/live/submissions/:submissionId/grade', roleMiddleware(['teacher', 'admin']), liveController.gradeClassroomSubmission);
 
 // --- Teacher Dashboard ---
 router.get('/teacher/dashboard', roleMiddleware(['teacher', 'admin']), dashboardController.getTeacherDashboard);

@@ -82,7 +82,116 @@
   ],
   "enrollments": [],
   "assignments": [],
-  "attendance": [],
+  "attendance": [
+    {
+      "id": "att_7z6cwwx",
+      "student_id": "da7eb000-0000-0000-0000-000000000001",
+      "course_id": "general",
+      "class_id": "sess_5af94w9",
+      "date": "2026-06-14",
+      "status": "partial",
+      "marked_at": "2026-06-14T15:47:13.557Z"
+    },
+    {
+      "id": "att_y5z52bg",
+      "student_id": "da7eb000-0000-0000-0000-000000000001",
+      "course_id": "general",
+      "class_id": "sess_0elbyew",
+      "date": "2026-06-14",
+      "status": "partial",
+      "marked_at": "2026-06-14T16:21:35.019Z"
+    }
+  ],
   "messages": [],
-  "notifications": []
+  "notifications": [],
+  "live_sessions": [
+    {
+      "id": "sess_886atzu",
+      "classroom_id": "general",
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "meeting_room_id": "classroom_general_1781451332769",
+      "meeting_url": "https://meet.jit.si/classroom_general_1781451332769",
+      "status": "ENDED",
+      "started_at": "2026-06-14T15:35:33.062Z",
+      "created_at": "2026-06-14T15:35:33.062Z",
+      "ended_at": "2026-06-14T15:37:33.497Z"
+    },
+    {
+      "id": "sess_5af94w9",
+      "classroom_id": "general",
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "meeting_room_id": "classroom_general_1781452004729",
+      "meeting_url": "https://meet.jit.si/classroom_general_1781452004729",
+      "status": "ENDED",
+      "started_at": "2026-06-14T15:46:45.167Z",
+      "created_at": "2026-06-14T15:46:45.167Z",
+      "ended_at": "2026-06-14T15:47:11.151Z"
+    },
+    {
+      "id": "sess_0elbyew",
+      "classroom_id": "general",
+      "teacher_id": "da7eb000-0000-0000-0000-000000000001",
+      "meeting_room_id": "classroom_general_1781452685340",
+      "meeting_url": "https://meet.jit.si/classroom_general_1781452685340",
+      "status": "LIVE",
+      "started_at": "2026-06-14T15:58:05.749Z",
+      "created_at": "2026-06-14T15:58:05.749Z"
+    }
+  ],
+  "session_participants": [
+    {
+      "id": "part_ma4q1zt",
+      "session_id": "sess_886atzu",
+      "user_id": "da7eb000-0000-0000-0000-000000000001",
+      "role": "teacher",
+      "joined_at": "2026-06-14T15:35:33.383Z"
+    },
+    {
+      "id": "part_kg54jyk",
+      "session_id": "sess_5af94w9",
+      "user_id": "da7eb000-0000-0000-0000-000000000001",
+      "role": "teacher",
+      "joined_at": "2026-06-14T15:46:45.630Z",
+      "left_at": "2026-06-14T15:47:12.302Z"
+    },
+    {
+      "id": "part_6glo0ox",
+      "session_id": "sess_0elbyew",
+      "user_id": "da7eb000-0000-0000-0000-000000000001",
+      "role": "teacher",
+      "joined_at": "2026-06-14T15:58:06.252Z",
+      "left_at": "2026-06-14T16:00:39.376Z"
+    },
+    {
+      "id": "part_hmj38k3",
+      "session_id": "sess_0elbyew",
+      "user_id": "da7eb000-0000-0000-0000-000000000001",
+      "role": "teacher",
+      "joined_at": "2026-06-14T16:19:18.679Z",
+      "left_at": "2026-06-14T16:21:33.854Z"
+    },
+    {
+      "id": "part_5vs94dl",
+      "session_id": "sess_0elbyew",
+      "user_id": "da7eb000-0000-0000-0000-000000000001",
+      "role": "teacher",
+      "joined_at": "2026-06-14T16:30:29.007Z"
+    }
+  ],
+  "recordings": [
+    {
+      "id": "rec_tuyrsnu",
+      "session_id": "sess_886atzu",
+      "recording_url": "https://meet.jit.si/rec/classroom_general_1781451332769.mp4",
+      "duration": 120,
+      "created_at": "2026-06-14T15:37:34.987Z"
+    },
+    {
+      "id": "rec_3qmwc5k",
+      "session_id": "sess_5af94w9",
+      "recording_url": "https://meet.jit.si/rec/classroom_general_1781452004729.mp4",
+      "duration": 25,
+      "created_at": "2026-06-14T15:47:11.801Z"
+    }
+  ]
 }

@@ -171,7 +171,7 @@ create table if not exists public.attendance (
   course_id uuid references public.courses(id),
   class_id uuid,
   date date,
-  status text CHECK (status IN ('present','absent','late')),
+  status text CHECK (status IN ('present','absent','late','partial')),
   qr_code text,
   marked_at timestamptz DEFAULT now()
 );

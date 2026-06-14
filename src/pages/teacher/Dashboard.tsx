@@ -20,83 +20,30 @@ import { PeerReviewCenter } from '../../components/features/PeerReviewCenter';
 import { VoiceAssistantModal } from '../../components/features/VoiceAssistantModal';
 import { Mic } from 'lucide-react';
 
-// --- Mock Data ---
-const STUDENTS = [
-  { name: 'Alex Johnson', course: 'Web Dev', progress: 68, attendance: '84%', status: 'Active' },
-  { name: 'Priya Sharma', course: 'Web Dev', progress: 92, attendance: '96%', status: 'Active' },
-  { name: 'Jordan Lee', course: 'DSA', progress: 45, attendance: '71%', status: 'At Risk' },
-  { name: 'Marcus Brown', course: 'DSA', progress: 78, attendance: '89%', status: 'Active' },
-];
-
-const QUESTION_SETS = [
-  { id: 'q1', title: 'Graph Algorithms Quiz', category: 'DSA', questions: 20, difficulty: 'Medium' },
-  { id: 'q2', title: 'React Hooks Deep Dive', category: 'Web Dev', questions: 15, difficulty: 'Hard' },
-  { id: 'q3', title: 'ML Fundamentals Bank', category: 'Machine Learning', questions: 40, difficulty: 'Easy' },
-];
-
-const UPCOMING_EXAMS = [
-  { id: 'e1', title: 'Midterm Exam: Data Structures', course: 'DSA', date: 'Jun 20, 9:00 AM', students: 189 },
-  { id: 'e2', title: 'Final Project Presentation', course: 'Web Dev', date: 'Jun 25, 2:00 PM', students: 247 },
-  { id: 'e3', title: 'ML Quiz 3', course: 'Machine Learning', date: 'Jun 18, 11:00 AM', students: 134 },
-];
-
+// --- Dynamic Data States ---
+const STUDENTS: any[] = [];
+const QUESTION_SETS: any[] = [];
+const UPCOMING_EXAMS: any[] = [];
 
 const STATS = {
-  activeCourses: 4,
-  totalStudents: 847,
-  pendingEvaluations: 12,
-  attendanceRate: 94,
+  activeCourses: 0,
+  totalStudents: 0,
+  pendingEvaluations: 0,
+  attendanceRate: 0,
 };
 
-const COURSES = [
-  { id: 'c1', title: 'Full-Stack Web Development', students: 247, progress: 68, nextSession: 'Today, 10:00 AM' },
-  { id: 'c2', title: 'Data Structures & Algorithms', students: 189, progress: 45, nextSession: 'Today, 2:00 PM' },
-  { id: 'c3', title: 'Machine Learning Fundamentals', students: 134, progress: 32, nextSession: 'Tomorrow, 1:00 PM' },
-  { id: 'c4', title: 'Advanced React Patterns', students: 277, progress: 85, nextSession: 'Thu, 9:00 AM' },
-];
-
-const TODAY_CLASSES = [
-  { id: 'l1', title: 'Web Dev: Advanced React', time: '10:00 AM', course: 'Full-Stack Web Development' },
-  { id: 'l2', title: 'DSA: Graph Algorithms', time: '2:00 PM', course: 'Data Structures & Algorithms' },
-  { id: 'l3', title: 'Office Hours', time: '4:00 PM', course: 'General' },
-];
+const COURSES: any[] = [];
+const TODAY_CLASSES: any[] = [];
 
 const ASSIGNMENTS = {
-  pendingReview: [
-    { id: 'a1', title: 'React Component Architecture', course: 'Web Dev', submitted: 45, due: 'Yesterday' },
-    { id: 'a2', title: 'Binary Trees Implementation', course: 'DSA', submitted: 18, due: '2 Days Ago' },
-  ],
-  recentlySubmitted: [
-    { id: 'a3', title: 'ML Model Evaluation', course: 'Machine Learning', submitted: 134, due: 'Today' },
-  ],
+  pendingReview: [],
+  recentlySubmitted: [],
 };
 
-const PERFORMANCE_DATA = [
-  { range: '90-100', students: 145 },
-  { range: '80-89', students: 312 },
-  { range: '70-79', students: 256 },
-  { range: '60-69', students: 89 },
-  { range: '<60', students: 45 },
-];
-
-const ATTENDANCE_TREND = [
-  { week: 'W1', rate: 98 },
-  { week: 'W2', rate: 96 },
-  { week: 'W3', rate: 97 },
-  { week: 'W4', rate: 94 },
-  { week: 'W5', rate: 92 },
-  { week: 'W6', rate: 94 },
-];
-
-const MESSAGES = [
-  { id: 'm1', sender: 'Alex Johnson', subject: 'Question about Assignment 3', time: '1h ago' },
-  { id: 'm2', sender: 'Priya Sharma', subject: 'Extension request', time: '3h ago' },
-];
-
-const CALENDAR_EVENTS = [
-  { id: 'e1', title: 'Department Meeting', type: 'meeting', time: 'Tomorrow, 3:00 PM' },
-  { id: 'e2', title: 'Grades Due for Midterms', type: 'deadline', time: 'Fri, 11:59 PM' },
-];
+const PERFORMANCE_DATA: any[] = [];
+const ATTENDANCE_TREND: any[] = [];
+const MESSAGES: any[] = [];
+const CALENDAR_EVENTS: any[] = [];
 
 // --- Components ---
 
@@ -225,27 +172,31 @@ export function TeacherDashboard() {
                 action={<Link to="/courses" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">Manage <ArrowRight size={14} /></Link>} 
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {coursesList.map(course => (
-                  <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
-                      <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                        <span className="flex items-center gap-1"><Users size={12}/> {course.students}</span>
-                        <span>•</span>
-                        <span>{course.progress}% Completed</span>
+                {coursesList.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  coursesList.map(course => (
+                    <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
+                        <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                          <span className="flex items-center gap-1"><Users size={12}/> {course.students}</span>
+                          <span>•</span>
+                          <span>{course.progress}% Completed</span>
+                        </div>
+                      </div>
+                      
+                      <div className="sm:text-right shrink-0">
+                        <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Next Session</p>
+                        <p className="text-xs font-medium text-neutral-900 dark:text-neutral-200">{course.nextSession}</p>
+                      </div>
+
+                      <div className="shrink-0 flex items-center gap-2">
+                          <button className="p-1.5 text-neutral-400 hover:text-brand-primary transition-colors border border-transparent hover:border-brand-primary/20 hover:bg-brand-primary/5 rounded-md"><Edit size={14}/></button>
                       </div>
                     </div>
-                    
-                    <div className="sm:text-right shrink-0">
-                      <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Next Session</p>
-                      <p className="text-xs font-medium text-neutral-900 dark:text-neutral-200">{course.nextSession}</p>
-                    </div>
-
-                    <div className="shrink-0 flex items-center gap-2">
-                        <button className="p-1.5 text-neutral-400 hover:text-brand-primary transition-colors border border-transparent hover:border-brand-primary/20 hover:bg-brand-primary/5 rounded-md"><Edit size={14}/></button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -266,7 +217,7 @@ export function TeacherDashboard() {
                     Needs Grading
                   </h4>
                   <div className="space-y-3">
-                    {ASSIGNMENTS.pendingReview.map(task => (
+                    {ASSIGNMENTS.pendingReview.length === 0 ? <p className="text-xs text-neutral-500">No data available yet</p> : ASSIGNMENTS.pendingReview.map((task: any) => (
                       <div key={task.id} className="p-3 bg-red-50/50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/20 rounded-lg">
                         <div className="flex justify-between items-start mb-1">
                           <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{task.title}</p>
@@ -288,7 +239,7 @@ export function TeacherDashboard() {
                     Recently Submitted
                   </h4>
                   <div className="space-y-3">
-                    {ASSIGNMENTS.recentlySubmitted.map(task => (
+                    {ASSIGNMENTS.recentlySubmitted.length === 0 ? <p className="text-xs text-neutral-500">No data available yet</p> : ASSIGNMENTS.recentlySubmitted.map((task: any) => (
                       <div key={task.id} className="p-3 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 rounded-lg">
                         <div className="flex justify-between items-start mb-1">
                           <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight">{task.title}</p>
@@ -314,15 +265,19 @@ export function TeacherDashboard() {
                 <PanelHeader title="Grade Distribution" />
                 <div className="p-5 h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={PERFORMANCE_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }} barSize={16}>
-                      <XAxis dataKey="range" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <Tooltip 
-                        cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}
-                      />
-                      <Bar dataKey="students" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                    {PERFORMANCE_DATA.length > 0 ? (
+                      <BarChart data={PERFORMANCE_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }} barSize={16}>
+                        <XAxis dataKey="range" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <Tooltip 
+                          cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
+                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}
+                        />
+                        <Bar dataKey="students" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-xs text-neutral-500">No data available yet</div>
+                    )}
                   </ResponsiveContainer>
                 </div>
               </Panel>
@@ -333,14 +288,18 @@ export function TeacherDashboard() {
                 <PanelHeader title="Global Attendance Trend" />
                 <div className="p-5 h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={ATTENDANCE_TREND} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                      <XAxis dataKey="week" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 100]} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e5e5', fontSize: '12px' }}
-                      />
-                      <Line type="monotone" dataKey="rate" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
-                    </LineChart>
+                    {ATTENDANCE_TREND.length > 0 ? (
+                      <LineChart data={ATTENDANCE_TREND} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                        <XAxis dataKey="week" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 100]} />
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '8px', border: '1px solid #e5e5e5', fontSize: '12px' }}
+                        />
+                        <Line type="monotone" dataKey="rate" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
+                      </LineChart>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-xs text-neutral-500">No data available yet</div>
+                    )}
                   </ResponsiveContainer>
                 </div>
               </Panel>
@@ -364,31 +323,35 @@ export function TeacherDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                    {STUDENTS.map((s, i) => (
-                      <tr key={i} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-bold shrink-0">{s.name.charAt(0)}</div>
-                            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{s.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3 text-xs text-neutral-500 dark:text-neutral-400">{s.course}</td>
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-2 w-28">
-                            <div className="flex-1 h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full">
-                              <div className="h-full bg-brand-primary rounded-full" style={{ width: `${s.progress}%` }} />
+                    {STUDENTS.length === 0 ? (
+                      <tr><td colSpan={5} className="px-5 py-6 text-center text-xs text-neutral-500">No data available yet</td></tr>
+                    ) : (
+                      STUDENTS.map((s, i) => (
+                        <tr key={i} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-bold shrink-0">{s.name.charAt(0)}</div>
+                              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{s.name}</span>
                             </div>
-                            <span className="text-[11px] text-neutral-600 dark:text-neutral-400 shrink-0">{s.progress}%</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">{s.attendance}</td>
-                        <td className="px-5 py-3">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                            s.status === 'Active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
-                          }`}>{s.status}</span>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="px-5 py-3 text-xs text-neutral-500 dark:text-neutral-400">{s.course}</td>
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2 w-28">
+                              <div className="flex-1 h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full">
+                                <div className="h-full bg-brand-primary rounded-full" style={{ width: `${s.progress}%` }} />
+                              </div>
+                              <span className="text-[11px] text-neutral-600 dark:text-neutral-400 shrink-0">{s.progress}%</span>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">{s.attendance}</td>
+                          <td className="px-5 py-3">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                              s.status === 'Active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+                            }`}>{s.status}</span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -403,25 +366,29 @@ export function TeacherDashboard() {
                 action={<button className="flex items-center gap-1 text-xs font-semibold text-brand-primary hover:underline"><HelpCircle size={12} /> Create Question</button>}
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {QUESTION_SETS.map(q => (
-                  <div key={q.id} className="p-4 flex items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{q.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-primary/10 text-brand-primary">{q.category}</span>
-                        <span className="text-xs text-neutral-500">{q.questions} questions</span>
+                {QUESTION_SETS.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  QUESTION_SETS.map(q => (
+                    <div key={q.id} className="p-4 flex items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{q.title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-primary/10 text-brand-primary">{q.category}</span>
+                          <span className="text-xs text-neutral-500">{q.questions} questions</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                          q.difficulty === 'Easy' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' :
+                          q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' :
+                          'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+                        }`}>{q.difficulty}</span>
+                        <button className="text-xs text-brand-primary hover:underline font-medium">Use</button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                        q.difficulty === 'Easy' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' :
-                        q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' :
-                        'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
-                      }`}>{q.difficulty}</span>
-                      <button className="text-xs text-brand-primary hover:underline font-medium">Use</button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -439,18 +406,22 @@ export function TeacherDashboard() {
                 action={<button className="flex items-center gap-1 text-xs font-semibold text-brand-primary hover:underline">+ Schedule Exam</button>}
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {UPCOMING_EXAMS.map(ex => (
-                  <div key={ex.id} className="p-4 flex items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{ex.title}</p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{ex.course} &bull; <span className="text-neutral-700 dark:text-neutral-300 font-medium">{ex.date}</span></p>
+                {UPCOMING_EXAMS.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  UPCOMING_EXAMS.map(ex => (
+                    <div key={ex.id} className="p-4 flex items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{ex.title}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{ex.course} &bull; <span className="text-neutral-700 dark:text-neutral-300 font-medium">{ex.date}</span></p>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-xs text-neutral-500"><Users size={10} className="inline mr-1"/>{ex.students}</span>
+                        <button className="text-xs text-neutral-500 hover:text-brand-primary transition-colors"><Edit size={12} /></button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-xs text-neutral-500"><Users size={10} className="inline mr-1"/>{ex.students}</span>
-                      <button className="text-xs text-neutral-500 hover:text-brand-primary transition-colors"><Edit size={12} /></button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -477,18 +448,22 @@ export function TeacherDashboard() {
                 action={<span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full font-medium">{todayClasses.length} Sessions</span>}
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {todayClasses.map(cls => (
-                  <div key={cls.id} className="p-4 flex items-center justify-between gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div>
-                      <p className="text-xs font-medium text-brand-primary mb-0.5">{cls.time}</p>
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{cls.title}</p>
-                      <p className="text-[10px] text-neutral-500 dark:text-neutral-400">{cls.course}</p>
+                {todayClasses.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  todayClasses.map(cls => (
+                    <div key={cls.id} className="p-4 flex items-center justify-between gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div>
+                        <p className="text-xs font-medium text-brand-primary mb-0.5">{cls.time}</p>
+                        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{cls.title}</p>
+                        <p className="text-[10px] text-neutral-500 dark:text-neutral-400">{cls.course}</p>
+                      </div>
+                      <button className="shrink-0 p-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors" title="Join Session">
+                        <Video size={16} />
+                      </button>
                     </div>
-                    <button className="shrink-0 p-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors" title="Join Session">
-                      <Video size={16} />
-                    </button>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -534,20 +509,24 @@ export function TeacherDashboard() {
                 action={<Link to="/messages" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"><MessageSquare size={14}/></Link>} 
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {MESSAGES.map(msg => (
-                  <div key={msg.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center shrink-0 font-semibold text-xs">
-                      {msg.sender.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex justify-between items-baseline mb-0.5">
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate pr-2">{msg.sender}</p>
-                        <span className="text-[10px] text-neutral-500 shrink-0">{msg.time}</span>
+                {MESSAGES.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  MESSAGES.map(msg => (
+                    <div key={msg.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center shrink-0 font-semibold text-xs">
+                        {msg.sender.charAt(0)}
                       </div>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{msg.subject}</p>
+                      <div className="min-w-0">
+                        <div className="flex justify-between items-baseline mb-0.5">
+                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate pr-2">{msg.sender}</p>
+                          <span className="text-[10px] text-neutral-500 shrink-0">{msg.time}</span>
+                        </div>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{msg.subject}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -560,17 +539,21 @@ export function TeacherDashboard() {
                 action={<Link to="/calendar" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Calendar size={14} /></Link>}
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {CALENDAR_EVENTS.map(event => (
-                  <div key={event.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                      {event.type === 'meeting' ? <Users size={16} className="text-blue-500" /> : <AlertTriangle size={16} className="text-red-500" />}
+                {CALENDAR_EVENTS.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  CALENDAR_EVENTS.map(event => (
+                    <div key={event.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                        {event.type === 'meeting' ? <Users size={16} className="text-blue-500" /> : <AlertTriangle size={16} className="text-red-500" />}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{event.title}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{event.time}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{event.title}</p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{event.time}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>

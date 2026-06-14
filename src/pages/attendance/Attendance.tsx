@@ -8,6 +8,8 @@ import { aiService } from '../../services/ai.service';
 import { GlassCard, Badge, ProgressBar, PageHeader, Button, SectionHeader, Avatar } from '../../components/ui/index';
 import toast from 'react-hot-toast';
 
+import { io } from 'socket.io-client';
+
 function HeatCell({ count }: { count: number }) {
   const o = count === 0 ? 0.05 : count === 1 ? 0.3 : count === 2 ? 0.55 : count === 3 ? 0.75 : 1;
   return <div className="w-4 h-4 rounded-sm transition-all hover:scale-125" style={{ background: `rgba(78,222,163,${o})` }} title={`${count} classes`} />;
@@ -16,7 +18,7 @@ function HeatCell({ count }: { count: number }) {
 export function Attendance() {
   const { user } = useAuth();
   const [tab, setTab] = useState<'overview' | 'qr' | 'scanner' | 'reports' | 'insights'>('overview');
-  const [summary, setSummary] = useState({ total: 45, present: 38, absent: 4, late: 3, percentage: 84 });
+  const [summary, setSummary] = useState({ total: 0, present: 0, absent: 0, late: 0, percentage: 0 });
   const [calendarData, setCalendarData] = useState<{ date: string; count: number }[]>([]);
   const [report, setReport] = useState<{ studentName: string; percentage: number; total: number; present: number }[]>([]);
   const [qrData, setQrData] = useState<{ qrData: string; expiresAt: string; sessionId: string } | null>(null);
@@ -26,13 +28,34 @@ export function Attendance() {
   const [insights, setInsights] = useState<Awaited<ReturnType<typeof aiService.getAttendanceInsights>>>([]);
   const [loadingInsights, setLoadingInsights] = useState(false);
 
-  useEffect(() => {
+  const fetchAttendanceData = () => {
     if (!user) return;
     attendanceService.getStudentAttendance(user.id).then(({ summary: s, calendarData: c }) => {
       setSummary(s);
       setCalendarData(c);
     });
+    // Hardcoded course ID for demo, usually comes from context or params
     attendanceService.getAttendanceReport('c1').then(setReport);
+  };
+
+  useEffect(() => {
+    fetchAttendanceData();
+
+    // Listen to real-time attendance sync
+    const backendUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    const socket = io(backendUrl);
+
+    socket.on('global-attendance-update', (data: any) => {
+      console.log('Real-time attendance update received:', data);
+      if (user?.role === 'teacher') {
+        toast.success(`${data.userName} marked ${data.status === 'present' ? 'Present' : 'Left'}`);
+      }
+      fetchAttendanceData();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, [user]);
 
   useEffect(() => {
@@ -142,9 +165,9 @@ export function Attendance() {
                 <GlassCard>
                   <SectionHeader title="Activity Calendar" subtitle="Last 63 days" />
                   <div className="flex flex-wrap gap-1">
-                    {(calendarData.length ? calendarData : Array.from({ length: 63 }, (_, i) => ({ date: String(i), count: Math.random() > 0.35 ? Math.floor(Math.random() * 4) + 1 : 0 }))).map((c, i) => (
+                    {calendarData.length ? calendarData.map((c, i) => (
                       <HeatCell key={i} count={c.count} />
-                    ))}
+                    )) : <div className="text-xs text-neutral-500 py-4">No activity data available yet</div>}
                   </div>
                   <div className="flex items-center gap-2 mt-3 text-xs text-outline">
                     <span>Less</span>
@@ -229,19 +252,20 @@ export function Attendance() {
                 </div>
                 <div className="h-52 p-5">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={report.length ? report : [
-                      { studentName: 'Alex J.', percentage: 84 }, { studentName: 'Priya S.', percentage: 96 },
-                      { studentName: 'Jordan L.', percentage: 71 }, { studentName: 'Marcus B.', percentage: 62 }, { studentName: 'Sara W.', percentage: 89 },
-                    ]} barSize={32}>
-                      <XAxis dataKey="studentName" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                      <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
-                      <Tooltip contentStyle={TOOLTIP} formatter={(v: number) => [`${v}%`, 'Attendance']} />
-                      <Bar dataKey="percentage" radius={[6, 6, 0, 0]} isAnimationActive>
-                        {(report.length ? report : [84, 96, 71, 62, 89]).map((v, i) => (
-                          <Cell key={i} fill={typeof v === 'number' && v >= 80 ? '#4edea3' : typeof v === 'number' && v >= 70 ? '#F59E0B' : '#EF4444'} />
-                        ))}
-                      </Bar>
-                    </BarChart>
+                    {report.length > 0 ? (
+                      <BarChart data={report} barSize={32}>
+                        <XAxis dataKey="studentName" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+                        <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
+                        <Tooltip contentStyle={TOOLTIP} formatter={(v: number) => [`${v}%`, 'Attendance']} />
+                        <Bar dataKey="percentage" radius={[6, 6, 0, 0]} isAnimationActive>
+                          {report.map((v, i) => (
+                            <Cell key={i} fill={typeof v.percentage === 'number' && v.percentage >= 80 ? '#4edea3' : typeof v.percentage === 'number' && v.percentage >= 70 ? '#F59E0B' : '#EF4444'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-xs text-neutral-500">No report data available yet</div>
+                    )}
                   </ResponsiveContainer>
                 </div>
                 <div className="overflow-x-auto">
@@ -252,31 +276,29 @@ export function Attendance() {
                       ))}
                     </tr></thead>
                     <tbody>
-                      {(report.length ? report : [
-                        { studentName: 'Alex Johnson', total: 45, present: 38, percentage: 84 },
-                        { studentName: 'Priya Sharma', total: 45, present: 43, percentage: 96 },
-                        { studentName: 'Jordan Lee', total: 45, present: 32, percentage: 71 },
-                        { studentName: 'Marcus Brown', total: 45, present: 28, percentage: 62 },
-                        { studentName: 'Sara Wilson', total: 45, present: 40, percentage: 89 },
-                      ]).map((r, i) => (
-                        <tr key={i} className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors">
-                          <td className="px-5 py-3.5">
-                            <div className="flex items-center gap-2.5">
-                              <Avatar name={r.studentName} size="sm" />
-                              <span className="font-medium text-on-surface">{r.studentName}</span>
-                            </div>
-                          </td>
-                          <td className="px-5 py-3.5 text-on-surface-variant">{r.total}</td>
-                          <td className="px-5 py-3.5 text-on-surface-variant">{r.present}</td>
-                          <td className="px-5 py-3.5">
-                            <div className="flex items-center gap-2">
-                              <ProgressBar value={r.percentage} color={r.percentage >= 80 ? 'emerald' : r.percentage >= 70 ? 'amber' : 'red'} />
-                              <span className="text-xs font-bold w-10" style={{ color: r.percentage >= 80 ? '#4edea3' : r.percentage >= 70 ? '#F59E0B' : '#EF4444' }}>{r.percentage}%</span>
-                            </div>
-                          </td>
-                          <td className="px-5 py-3.5"><Badge variant={r.percentage >= 75 ? 'emerald' : 'red'}>{r.percentage >= 75 ? 'On Track' : 'At Risk'}</Badge></td>
-                        </tr>
-                      ))}
+                      {report.length === 0 ? (
+                        <tr><td colSpan={5} className="px-5 py-6 text-center text-xs text-neutral-500">No report data available yet</td></tr>
+                      ) : (
+                        report.map((r, i) => (
+                          <tr key={i} className="border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors">
+                            <td className="px-5 py-3.5">
+                              <div className="flex items-center gap-2.5">
+                                <Avatar name={r.studentName} size="sm" />
+                                <span className="font-medium text-on-surface">{r.studentName}</span>
+                              </div>
+                            </td>
+                            <td className="px-5 py-3.5 text-on-surface-variant">{r.total}</td>
+                            <td className="px-5 py-3.5 text-on-surface-variant">{r.present}</td>
+                            <td className="px-5 py-3.5">
+                              <div className="flex items-center gap-2">
+                                <ProgressBar value={r.percentage} color={r.percentage >= 80 ? 'emerald' : r.percentage >= 70 ? 'amber' : 'red'} />
+                                <span className="text-xs font-bold w-10" style={{ color: r.percentage >= 80 ? '#4edea3' : r.percentage >= 70 ? '#F59E0B' : '#EF4444' }}>{r.percentage}%</span>
+                              </div>
+                            </td>
+                            <td className="px-5 py-3.5"><Badge variant={r.percentage >= 75 ? 'emerald' : 'red'}>{r.percentage >= 75 ? 'On Track' : 'At Risk'}</Badge></td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>

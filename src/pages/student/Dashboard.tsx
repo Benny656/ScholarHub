@@ -19,96 +19,40 @@ import { OfflineSync } from '../../components/features/OfflineSync';
 import { VoiceAssistantModal } from '../../components/features/VoiceAssistantModal';
 import { Mic } from 'lucide-react';
 
-// --- Mock Data ---
+// --- Dynamic Data States ---
 const ACADEMIC_DATA = {
-  cgpa: '3.82',
+  cgpa: '0.00',
   maxCgpa: '4.0',
-  attendance: 92,
-  activeCourses: 4,
-  pendingAssignments: 3,
-  semester: 'Fall 2026',
-  creditsCompleted: 45,
-  creditsRemaining: 75,
-  academicStanding: 'Excellent',
+  attendance: 0,
+  activeCourses: 0,
+  pendingAssignments: 0,
+  semester: 'Current',
+  creditsCompleted: 0,
+  creditsRemaining: 0,
+  academicStanding: 'N/A',
 };
 
-const COURSES = [
-  { id: 'c1', title: 'Advanced Data Structures', faculty: 'Dr. Alan Turing', progress: 68, nextSession: 'Tomorrow, 10:00 AM', color: 'bg-indigo-500' },
-  { id: 'c2', title: 'Machine Learning Fundamentals', faculty: 'Prof. Ada Lovelace', progress: 34, nextSession: 'Wed, 2:00 PM', color: 'bg-emerald-500' },
-  { id: 'c3', title: 'Cloud Computing Architecture', faculty: 'Dr. Vint Cerf', progress: 85, nextSession: 'Thu, 1:00 PM', color: 'bg-blue-500' },
-  { id: 'c4', title: 'Quantum Computing Intro', faculty: 'Prof. Richard Feynman', progress: 12, nextSession: 'Fri, 9:00 AM', color: 'bg-purple-500' },
-];
+const COURSES: any[] = [];
 
 const ASSIGNMENTS = {
-  dueToday: [
-    { id: 'a1', title: 'Graph Traversal Implementation', course: 'Adv. Data Structures', time: '11:59 PM', priority: 'high' }
-  ],
-  upcoming: [
-    { id: 'a2', title: 'Neural Network Project', course: 'Machine Learning', date: 'Oct 15', priority: 'medium' },
-    { id: 'a3', title: 'AWS Infrastructure Diagram', course: 'Cloud Computing', date: 'Oct 18', priority: 'low' }
-  ],
-  submitted: [
-    { id: 'a4', title: 'Binary Trees Essay', course: 'Adv. Data Structures', grade: 'Pending' }
-  ]
+  dueToday: [],
+  upcoming: [],
+  submitted: []
 };
 
-const PERFORMANCE_DATA = [
-  { subject: 'CS101', grade: 95 },
-  { subject: 'CS102', grade: 88 },
-  { subject: 'MTH201', grade: 92 },
-  { subject: 'PHY101', grade: 78 },
-  { subject: 'ENG101', grade: 85 },
-];
+const PERFORMANCE_DATA: any[] = [];
+const ATTENDANCE_TREND: any[] = [];
+const CALENDAR_EVENTS: any[] = [];
+const CERTIFICATES: any[] = [];
 
-const ATTENDANCE_TREND = [
-  { week: 'W1', present: 100 },
-  { week: 'W2', present: 95 },
-  { week: 'W3', present: 90 },
-  { week: 'W4', present: 92 },
-  { week: 'W5', present: 88 },
-  { week: 'W6', present: 95 },
-];
-
-const CALENDAR_EVENTS = [
-  { id: 'e1', title: 'Midterm Physics', type: 'exam', time: 'Oct 14, 9:00 AM' },
-  { id: 'e2', title: 'Guest Lecture: AI Ethics', type: 'event', time: 'Oct 16, 3:00 PM' },
-];
-
-const CERTIFICATES = [
-  { id: 'cert1', title: 'AWS Cloud Practitioner', date: 'Sep 2026' },
-  { id: 'cert2', title: 'Python Data Analysis', date: 'Aug 2026' },
-];
-
-// --- NEW: Learning Resources Data ---
-const RESOURCES = {
-  Videos: [
-    { id: 'v1', title: 'Intro to Neural Networks', course: 'Machine Learning', duration: '32 min' },
-    { id: 'v2', title: 'Binary Search Trees Deep Dive', course: 'Data Structures', duration: '45 min' },
-    { id: 'v3', title: 'AWS EC2 Setup Guide', course: 'Cloud Computing', duration: '18 min' },
-  ],
-  PDFs: [
-    { id: 'p1', title: 'Graph Algorithms Cheatsheet', course: 'Data Structures', size: '1.2 MB' },
-    { id: 'p2', title: 'ML Model Evaluation Notes', course: 'Machine Learning', size: '845 KB' },
-    { id: 'p3', title: 'Quantum Gates Reference', course: 'Quantum Computing', size: '2.1 MB' },
-  ],
-  PPTs: [
-    { id: 's1', title: 'Week 8: Recurrent Networks', course: 'Machine Learning', slides: '28 slides' },
-    { id: 's2', title: 'Distributed Systems Overview', course: 'Cloud Computing', slides: '42 slides' },
-  ],
-  Paths: [
-    { id: 'lp1', title: 'ML Engineer Learning Path', progress: 38, modules: 12 },
-    { id: 'lp2', title: 'Cloud Architecture Roadmap', progress: 65, modules: 8 },
-  ],
+const RESOURCES: any = {
+  Videos: [],
+  PDFs: [],
+  PPTs: [],
+  Paths: [],
 };
 
-// --- NEW: Grades Data ---
-const GRADES = [
-  { subject: 'Advanced Data Structures', code: 'CS301', grade: 'A', gpa: 4.0, credits: 4, status: 'In Progress' },
-  { subject: 'Machine Learning Fund.', code: 'CS402', grade: 'A-', gpa: 3.7, credits: 3, status: 'In Progress' },
-  { subject: 'Cloud Computing Arch.', code: 'CS415', grade: 'B+', gpa: 3.3, credits: 3, status: 'In Progress' },
-  { subject: 'Quantum Computing Intro', code: 'CS490', grade: 'A', gpa: 4.0, credits: 3, status: 'In Progress' },
-  { subject: 'Technical Writing', code: 'ENG201', grade: 'B+', gpa: 3.3, credits: 2, status: 'Complete' },
-];
+const GRADES: any[] = [];
 
 // --- Components ---
 
@@ -297,29 +241,33 @@ export function StudentDashboard() {
                 action={<Link to="/courses" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">View All <ArrowRight size={14} /></Link>} 
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {COURSES.map(course => (
-                  <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{course.faculty}</p>
-                    </div>
-                    
-                    <div className="w-full sm:w-48 shrink-0">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Progress</span>
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{course.progress}%</span>
+                {COURSES.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  COURSES.map(course => (
+                    <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{course.faculty}</p>
                       </div>
-                      <div className="h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                        <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.progress}%` }} />
+                      
+                      <div className="w-full sm:w-48 shrink-0">
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Progress</span>
+                          <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{course.progress}%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                          <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.progress}%` }} />
+                        </div>
+                      </div>
+                      
+                      <div className="sm:text-right shrink-0">
+                        <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Next Session</p>
+                        <p className="text-xs font-medium text-neutral-900 dark:text-neutral-200">{course.nextSession}</p>
                       </div>
                     </div>
-                    
-                    <div className="sm:text-right shrink-0">
-                      <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Next Session</p>
-                      <p className="text-xs font-medium text-neutral-900 dark:text-neutral-200">{course.nextSession}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -340,7 +288,7 @@ export function StudentDashboard() {
                     Due Today
                   </h4>
                   <div className="space-y-3">
-                    {ASSIGNMENTS.dueToday.map(task => (
+                    {ASSIGNMENTS.dueToday.length === 0 ? <p className="text-xs text-neutral-500">No data available yet</p> : ASSIGNMENTS.dueToday.map((task: any) => (
                       <div key={task.id} className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-lg">
                         <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">{task.title}</p>
                         <div className="flex justify-between items-center text-xs">
@@ -359,7 +307,7 @@ export function StudentDashboard() {
                     Upcoming
                   </h4>
                   <div className="space-y-3">
-                    {ASSIGNMENTS.upcoming.map(task => (
+                    {ASSIGNMENTS.upcoming.length === 0 ? <p className="text-xs text-neutral-500">No data available yet</p> : ASSIGNMENTS.upcoming.map((task: any) => (
                       <div key={task.id} className="p-3 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 rounded-lg">
                         <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1 leading-tight">{task.title}</p>
                         <div className="flex justify-between items-center text-xs">
@@ -378,7 +326,7 @@ export function StudentDashboard() {
                     Submitted
                   </h4>
                   <div className="space-y-3">
-                    {ASSIGNMENTS.submitted.map(task => (
+                    {ASSIGNMENTS.submitted.length === 0 ? <p className="text-xs text-neutral-500">No data available yet</p> : ASSIGNMENTS.submitted.map((task: any) => (
                       <div key={task.id} className="p-3 border border-neutral-200/50 dark:border-neutral-800 rounded-lg flex items-start gap-2 opacity-70">
                         <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 shrink-0" />
                         <div>
@@ -419,7 +367,11 @@ export function StudentDashboard() {
               </div>
 
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {resourceTab === 'Videos' && RESOURCES.Videos.map(r => (
+                {RESOURCES[resourceTab].length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  <>
+                {resourceTab === 'Videos' && RESOURCES.Videos.map((r: any) => (
                   <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
@@ -433,7 +385,7 @@ export function StudentDashboard() {
                     <button className="text-xs font-medium text-brand-primary hover:underline shrink-0">Watch</button>
                   </div>
                 ))}
-                {resourceTab === 'PDFs' && RESOURCES.PDFs.map(r => (
+                {resourceTab === 'PDFs' && RESOURCES.PDFs.map((r: any) => (
                   <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
@@ -447,7 +399,7 @@ export function StudentDashboard() {
                     <button className="text-xs font-medium text-brand-primary hover:underline shrink-0 flex items-center gap-1"><Download size={12} /> Download</button>
                   </div>
                 ))}
-                {resourceTab === 'PPTs' && RESOURCES.PPTs.map(r => (
+                {resourceTab === 'PPTs' && RESOURCES.PPTs.map((r: any) => (
                   <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
@@ -461,7 +413,7 @@ export function StudentDashboard() {
                     <button className="text-xs font-medium text-brand-primary hover:underline shrink-0">View</button>
                   </div>
                 ))}
-                {resourceTab === 'Paths' && RESOURCES.Paths.map(r => (
+                {resourceTab === 'Paths' && RESOURCES.Paths.map((r: any) => (
                   <div key={r.id} className="p-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
@@ -480,6 +432,8 @@ export function StudentDashboard() {
                     </div>
                   </div>
                 ))}
+                  </>
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -506,20 +460,24 @@ export function StudentDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                    {GRADES.map((g, i) => (
-                      <tr key={i} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                        <td className="px-5 py-3 text-sm font-medium text-neutral-900 dark:text-neutral-100">{g.subject}</td>
-                        <td className="px-5 py-3 text-xs text-neutral-500 dark:text-neutral-400 font-mono">{g.code}</td>
-                        <td className="px-5 py-3">
-                          <span className={`text-sm font-bold ${g.grade.startsWith('A') ? 'text-emerald-600 dark:text-emerald-400' : g.grade.startsWith('B') ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600 dark:text-amber-400'}`}>{g.grade}</span>
-                        </td>
-                        <td className="px-5 py-3 text-sm text-neutral-700 dark:text-neutral-300 font-medium">{g.gpa.toFixed(1)}</td>
-                        <td className="px-5 py-3 text-sm text-neutral-500 dark:text-neutral-400">{g.credits} cr.</td>
-                        <td className="px-5 py-3">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${g.status === 'Complete' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'}`}>{g.status}</span>
-                        </td>
-                      </tr>
-                    ))}
+                    {GRADES.length === 0 ? (
+                      <tr><td colSpan={6} className="px-5 py-6 text-center text-xs text-neutral-500">No data available yet</td></tr>
+                    ) : (
+                      GRADES.map((g, i) => (
+                        <tr key={i} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                          <td className="px-5 py-3 text-sm font-medium text-neutral-900 dark:text-neutral-100">{g.subject}</td>
+                          <td className="px-5 py-3 text-xs text-neutral-500 dark:text-neutral-400 font-mono">{g.code}</td>
+                          <td className="px-5 py-3">
+                            <span className={`text-sm font-bold ${g.grade.startsWith('A') ? 'text-emerald-600 dark:text-emerald-400' : g.grade.startsWith('B') ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600 dark:text-amber-400'}`}>{g.grade}</span>
+                          </td>
+                          <td className="px-5 py-3 text-sm text-neutral-700 dark:text-neutral-300 font-medium">{g.gpa.toFixed(1)}</td>
+                          <td className="px-5 py-3 text-sm text-neutral-500 dark:text-neutral-400">{g.credits} cr.</td>
+                          <td className="px-5 py-3">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${g.status === 'Complete' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'}`}>{g.status}</span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -583,14 +541,18 @@ export function StudentDashboard() {
               <div className="p-5">
                 <div className="h-[120px] mb-2">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={ATTENDANCE_TREND} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                      <XAxis dataKey="week" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 100]} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e5e5', fontSize: '12px' }}
-                      />
-                      <Line type="monotone" dataKey="present" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
-                    </LineChart>
+                    {ATTENDANCE_TREND.length > 0 ? (
+                      <LineChart data={ATTENDANCE_TREND} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                        <XAxis dataKey="week" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 100]} />
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '8px', border: '1px solid #e5e5e5', fontSize: '12px' }}
+                        />
+                        <Line type="monotone" dataKey="present" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
+                      </LineChart>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-xs text-neutral-500">No data available yet</div>
+                    )}
                   </ResponsiveContainer>
                 </div>
                 {ACADEMIC_DATA.attendance < 85 && (
@@ -611,17 +573,21 @@ export function StudentDashboard() {
                 action={<Link to="/calendar" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Calendar size={14} /></Link>}
               />
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {CALENDAR_EVENTS.map(event => (
-                  <div key={event.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                      <FileText size={16} className="text-neutral-600 dark:text-neutral-400" />
+                {CALENDAR_EVENTS.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-neutral-500">No data available yet</div>
+                ) : (
+                  CALENDAR_EVENTS.map(event => (
+                    <div key={event.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                        <FileText size={16} className="text-neutral-600 dark:text-neutral-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{event.title}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{event.time}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{event.title}</p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{event.time}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Panel>
           </motion.div>
@@ -634,15 +600,19 @@ export function StudentDashboard() {
                 action={<Link to="/certificates" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Award size={14} /></Link>} 
               />
               <div className="p-4 space-y-3">
-                {CERTIFICATES.map(cert => (
-                  <div key={cert.id} className="flex justify-between items-center p-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <GraduationCap size={14} className="text-brand-primary shrink-0" />
-                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{cert.title}</span>
+                {CERTIFICATES.length === 0 ? (
+                  <div className="text-center text-xs text-neutral-500 py-2">No data available yet</div>
+                ) : (
+                  CERTIFICATES.map(cert => (
+                    <div key={cert.id} className="flex justify-between items-center p-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <GraduationCap size={14} className="text-brand-primary shrink-0" />
+                        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{cert.title}</span>
+                      </div>
+                      <span className="text-xs text-neutral-500">{cert.date}</span>
                     </div>
-                    <span className="text-xs text-neutral-500">{cert.date}</span>
-                  </div>
-                ))}
+                  ))
+                )}
                 <Link to="/certificates" className="flex items-center justify-center gap-1 text-xs text-brand-primary hover:underline font-medium pt-1">
                   View all certificates <ChevronRight size={12} />
                 </Link>
