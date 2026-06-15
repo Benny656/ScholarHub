@@ -217,6 +217,13 @@ export const authService = {
         data: {
           full_name: payload.name,
           role: payload.role,
+          avatar_url: payload.avatarUrl || null,
+          institution: payload.institution || null,
+          student_id: payload.studentId || null,
+          grade_level: payload.gradeLevel || null,
+          teacher_id: payload.teacherId || null,
+          department: payload.department || null,
+          expertise: payload.expertise || null,
         },
       },
     });
@@ -227,28 +234,40 @@ export const authService = {
     }
     if (!authData.user) throw new Error('Signup failed: No user returned');
 
-    await this.createProfile({
-      id: authData.user.id,
-      email: payload.email,
-      full_name: payload.name,
-      role: payload.role,
-      avatar_url: payload.avatarUrl || null,
-      institution: payload.institution || null,
-      student_id: payload.studentId || null,
-      grade_level: payload.gradeLevel || null,
-      teacher_id: payload.teacherId || null,
-      department: payload.department || null,
-      expertise: payload.expertise || null,
-    });
+    // If email confirmation is enabled, session will be null.
+    // We cannot query or insert into profiles because auth.uid() is null.
+    if (!authData.session) {
+      const teacherTrack: TeacherTrack | undefined = payload.role === 'teacher'
+        ? payload.gradeLevel === 'k12' ? 'k12' : 'college'
+        : undefined;
+
+      const mappedUser: User = {
+        id: authData.user.id,
+        name: payload.name,
+        email: payload.email,
+        role: payload.role,
+        avatar: payload.avatarUrl || '',
+        createdAt: authData.user.created_at,
+        studentId: payload.studentId,
+        gradeLevel: payload.gradeLevel,
+        teacherId: payload.teacherId,
+        institution: payload.institution,
+        department: payload.department,
+        expertise: payload.expertise ? payload.expertise.split(',').map(item => item.trim()).filter(Boolean) : undefined,
+        teacherTrack,
+      };
+      
+      return { user: mappedUser, token: '' };
+    }
 
     const user = await this.getCurrentUser();
     if (!user) {
       const profile = await this.getProfile(authData.user.id);
-      if (!profile) throw new Error('Profile creation failed');
-      return { user: mapProfileToUser(authData.user, profile), token: authData.session?.access_token || '' };
+      if (!profile) throw new Error('Profile creation pending');
+      return { user: mapProfileToUser(authData.user, profile), token: authData.session.access_token };
     }
 
-    return { user, token: authData.session?.access_token || '' };
+    return { user, token: authData.session.access_token };
   },
 
   async logout(): Promise<void> {

@@ -1,4 +1,4 @@
-﻿-- Enable required extensions
+-- Enable required extensions
 create extension if not exists "uuid-ossp";
 
 -- ───────────────────────────────────────────────────────────────────
@@ -29,6 +29,7 @@ create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public
 as $$
 begin
+  -- Insert into the legacy users table
   insert into public.users (
     id, name, email, role, avatar_url, xp, level, streak, last_login,
     student_id, grade_level, teacher_id, institution, department, expertise, status
@@ -48,17 +49,6 @@ begin
     new.raw_user_meta_data->>'teacher_id',
     new.raw_user_meta_data->>'institution',
     new.raw_user_meta_data->>'department',
-    new.raw_user_meta_data->>'expertise',
-    'active'
-  );
-  return new;
-end;
-$$;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
 
 -- ───────────────────────────────────────────────────────────────────
 -- 2. COURSES
