@@ -40,7 +40,7 @@ export function CreateCourse() {
 
   const handlePublish = async () => {
     setSaving(true);
-    await coursesService.createCourse({ ...form, isPublished: true });
+    await coursesService.createCourse({ ...form, isPublished: true } as any);
     setSaving(false);
     toast.success('Course published successfully! 🚀');
     navigate('/courses');
@@ -48,7 +48,7 @@ export function CreateCourse() {
 
   const handleSaveDraft = async () => {
     setSaving(true);
-    await coursesService.createCourse({ ...form, isPublished: false });
+    await coursesService.createCourse({ ...form, isPublished: false } as any);
     setSaving(false);
     toast.success('Draft saved');
   };

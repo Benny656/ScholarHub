@@ -33,10 +33,10 @@ function CertificateCard({ cert, onView }: { cert: Certificate; onView: (c: Cert
           </div>
         </div>
         <div className="p-4">
-          <h3 className="text-sm font-bold text-on-surface mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>{cert.courseName}</h3>
+          <h3 className="text-sm font-bold text-on-surface mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>{cert.courseTitle}</h3>
           <p className="text-xs text-on-surface-variant mb-2">{cert.instructorName}</p>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-on-surface-variant">{new Date(cert.issuedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+            <p className="text-xs text-on-surface-variant">{new Date(cert.issueDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             <p className="text-xs font-bold text-[#D97706]">Grade: {cert.grade}</p>
           </div>
         </div>
@@ -87,7 +87,7 @@ function CertificateViewer({ cert, onClose }: { cert: Certificate; onClose: () =
             {cert.studentName}
           </motion.h1>
           <p className="text-lg text-on-surface-variant mb-1">has successfully completed</p>
-          <h2 className="text-2xl font-bold text-on-surface mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>{cert.courseName}</h2>
+          <h2 className="text-2xl font-bold text-on-surface mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>{cert.courseTitle}</h2>
           <p className="text-on-surface-variant mb-4">Instructed by {cert.instructorName}</p>
 
           <div className="flex items-center justify-center gap-6 mb-4">
@@ -98,7 +98,7 @@ function CertificateViewer({ cert, onClose }: { cert: Certificate; onClose: () =
             <div className="w-px h-10 bg-on-surface/10" />
             <div className="text-center">
               <p className="text-xs text-on-surface-variant">Date</p>
-              <p className="text-sm font-semibold text-on-surface">{new Date(cert.issuedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+              <p className="text-sm font-semibold text-on-surface">{new Date(cert.issueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
             </div>
             <div className="w-px h-10 bg-on-surface/10" />
             <div className="text-center">
@@ -147,8 +147,8 @@ export function Certificates() {
 
   // Mock certificates if empty
   const MOCK_CERTS: Certificate[] = [
-    { id: 'cert1', studentId: 'u1', studentName: 'Alex Johnson', courseId: 'c1', courseName: 'Full-Stack Web Development', instructorName: 'Dr. Sarah Chen', issuedAt: '2024-06-01T00:00:00Z', verificationCode: 'NX-2024-WD-001', grade: 'A-', pdfUrl: '' },
-    { id: 'cert2', studentId: 'u1', studentName: 'Alex Johnson', courseId: 'c3', courseName: 'UI/UX Design Masterclass', instructorName: 'Emma Lawson', issuedAt: '2024-03-15T00:00:00Z', verificationCode: 'NX-2024-UX-047', grade: 'A', pdfUrl: '' },
+    { id: 'cert1', studentId: 'u1', studentName: 'Alex Johnson', courseId: 'c1', courseTitle: 'Full-Stack Web Development', instructorName: 'Dr. Sarah Chen', issueDate: '2024-06-01T00:00:00Z', verificationCode: 'NX-2024-WD-001', grade: 'A-', pdfUrl: '' },
+    { id: 'cert2', studentId: 'u1', studentName: 'Alex Johnson', courseId: 'c3', courseTitle: 'UI/UX Design Masterclass', instructorName: 'Emma Lawson', issueDate: '2024-03-15T00:00:00Z', verificationCode: 'NX-2024-UX-047', grade: 'A', pdfUrl: '' },
   ];
 
   const displayCerts = certificates.length ? certificates : MOCK_CERTS;
@@ -216,10 +216,10 @@ export function CertificateVerify() {
             <div className="space-y-3 text-left">
               {[
                 { label: 'Student', value: cert.studentName },
-                { label: 'Course', value: cert.courseName },
+                { label: 'Course', value: cert.courseTitle },
                 { label: 'Instructor', value: cert.instructorName },
                 { label: 'Grade', value: cert.grade },
-                { label: 'Issued', value: new Date(cert.issuedAt).toLocaleDateString() },
+                { label: 'Issued', value: new Date(cert.issueDate).toLocaleDateString() },
                 { label: 'Certificate ID', value: cert.verificationCode },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between">

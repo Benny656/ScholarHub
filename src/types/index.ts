@@ -229,6 +229,7 @@ export interface Certificate {
   verificationCode: string;
   instructorName: string;
   grade?: string;
+  pdfUrl?: string;
 }
 
 // ─── Classroom ────────────────────────────────────────────────────────────────

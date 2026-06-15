@@ -2,6 +2,17 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster as SonnerToaster } from 'sonner';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Layout
 import { V2DashboardLayout } from './layouts/V2DashboardLayout';
@@ -196,6 +207,7 @@ function AppContent() {
           <FloatingElements3D />
           <AppRoutes />
           <ThemeAwareToaster />
+          <SonnerToaster position="top-right" richColors />
         </motion.div>
       )}
     </AnimatePresence>
@@ -205,13 +217,15 @@ function AppContent() {
 // ─── Root App ─────────────────────────────────────────────────────────────────
 function App() {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
