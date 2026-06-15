@@ -13,10 +13,7 @@ export interface RegisterPayload {
   password: string;
   role: UserRole;
   avatarUrl?: string;
-  user_type?: 'school' | 'college';
-  school_name?: string;
-  grade_class?: string;
-  roll_number?: string;
+  teacher_type?: 'college' | 'k12';
   institution?: string;
   studentId?: string;
   department?: string;
@@ -77,7 +74,7 @@ export const authService = {
   },
 
   async createProfile(profileData: any): Promise<void> {
-    const { error } = await supabase.from('profiles').insert([profileData]);
+    const { error } = await supabase.from('profiles').upsert(profileData);
     if (error) throw error;
   },
 
@@ -115,14 +112,11 @@ export const authService = {
       full_name: payload.name,
       role: payload.role,
       avatar_url: payload.avatarUrl,
-      user_type: payload.user_type,
-      school_name: payload.school_name,
-      grade_class: payload.grade_class,
-      roll_number: payload.roll_number,
       institution: payload.institution,
       student_id: payload.studentId,
       department: payload.department,
       expertise: payload.expertise,
+      teacher_type: payload.teacher_type,
     };
 
     await this.createProfile(profileData);
@@ -169,14 +163,11 @@ export const authService = {
       xp: profile.xp ?? 0,
       level: profile.level ?? 1,
       streak: profile.streak ?? 0,
-      user_type: profile.user_type || 'college',
-      school_name: profile.school_name,
-      grade_class: profile.grade_class,
-      roll_number: profile.roll_number,
       studentId: profile.student_id,
       institution: profile.institution,
       department: profile.department,
       expertise: profile.expertise,
+      teacher_type: profile.teacher_type,
     } as any;
   },
 

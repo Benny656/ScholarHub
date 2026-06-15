@@ -27,13 +27,14 @@ import { FloatingElements3D } from './components/FloatingElements3D';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 
 // Auth & Theme context
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { useTheme } from './hooks/useTheme';
 
 // Auth pages
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
+import { RoleSelection } from './pages/auth/RoleSelection';
 import { ForgotPassword, ResetPassword } from './pages/auth/ForgotPassword';
 
 // Dashboards
@@ -91,6 +92,28 @@ function DashboardWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── Auth Redirector ──────────────────────────────────────────────────────────
+function AuthRedirector({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user, requireRoleSelection, isLoading } = useAuth();
+
+  if (isLoading) return null;
+
+  if (requireRoleSelection) {
+    return <Navigate to="/onboarding/role-selection" replace />;
+  }
+
+  if (isAuthenticated && user) {
+    if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+    if (user.role === 'teacher') {
+      if ((user as any).teacher_type === 'k12') return <Navigate to="/k12-teacher/dashboard" replace />;
+      return <Navigate to="/teacher/dashboard" replace />;
+    }
+    return <Navigate to="/unistudents/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 // ─── App routes ───────────────────────────────────────────────────────────────
 function AppRoutes() {
   const location = useLocation();
@@ -99,11 +122,12 @@ function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {/* ─── Landing ─── */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<AuthRedirector><LandingPage /></AuthRedirector>} />
 
         {/* ─── Auth ─── */}
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/onboarding/role-selection" element={<PageWrapper><RoleSelection /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
 
@@ -111,6 +135,7 @@ function AppRoutes() {
         <Route path="/unistudents/dashboard" element={<DashboardWrapper><StudentDashboard /></DashboardWrapper>} />
         <Route path="/school-student/dashboard" element={<DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper>} />
         <Route path="/teacher/dashboard" element={<DashboardWrapper><TeacherDashboard /></DashboardWrapper>} />
+        <Route path="/k12-teacher/dashboard" element={<DashboardWrapper><TeacherDashboard /></DashboardWrapper>} />
         <Route path="/admin/dashboard" element={<DashboardWrapper><AdminDashboard /></DashboardWrapper>} />
 
         {/* ─── Courses ─── */}
@@ -189,12 +214,13 @@ function ThemeAwareToaster() {
 
 // ─── App content — must be inside ThemeProvider ────────────────────────────────
 function AppContent() {
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading: authLoading } = useAuth();
+  const [appReady, setAppReady] = useState(false);
 
   return (
     <AnimatePresence mode="wait">
-      {isLoading ? (
-        <LoadingScreen key="global-loader" onComplete={() => setIsLoading(false)} />
+      {(!appReady || authLoading) ? (
+        <LoadingScreen key="global-loader" onComplete={() => setAppReady(true)} />
       ) : (
         <motion.div
           key="app-content"

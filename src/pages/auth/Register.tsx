@@ -87,14 +87,11 @@ export function Register() {
         password: form.password,
         name: form.name,
         role: role as UserRole,
-        user_type: role === 'student' ? userType : 'college',
-        school_name: role === 'student' && userType === 'school' ? form.schoolName : undefined,
-        grade_class: role === 'student' && userType === 'school' ? form.gradeClass : undefined,
-        roll_number: role === 'student' && userType === 'school' ? form.rollNumber : undefined,
         institution: role === 'student' && userType === 'college' ? form.institution : undefined,
         studentId: role === 'student' && userType === 'college' ? form.studentId : undefined,
         department: role === 'teacher' ? form.department : undefined,
         expertise: role === 'teacher' ? form.expertise : undefined,
+        teacher_type: role === 'teacher' ? 'college' : undefined,
       });
       toast.success('Welcome to ScholarHub! 🎉');
       navigate(role === 'student' ? '/unistudents/dashboard' : '/teacher/dashboard');

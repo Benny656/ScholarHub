@@ -12,11 +12,11 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  login: (email: string, password: string, role: UserRole) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (data: Parameters<typeof authService.register>[0]) => Promise<void>;
   loginBypass: (role: UserRole) => void;
-  completeRoleSelection: (role: UserRole) => Promise<void>;
+  completeRoleSelection: (role: UserRole, teacherType?: 'college' | 'k12') => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session) {
           const profile = await authService.getProfile(session.user.id);
-          if (profile) {
+          if (profile && profile.role) {
             let user = await authService.getMe().catch(() => null);
             if (!user) {
                user = {
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
             }
           } else {
-            // No profile -> requires role selection
+            // No profile or missing role -> requires role selection
             if (mounted) {
               dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: session.access_token } });
             }
@@ -132,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (event === 'SIGNED_IN' && session) {
         try {
           const profile = await authService.getProfile(session.user.id);
-          if (profile) {
+          if (profile && profile.role) {
             let user = await authService.getMe().catch(() => null);
             if (!user) {
                user = {
@@ -166,11 +166,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const login = useCallback(async (email: string, password: string, role: UserRole) => {
+  const login = useCallback(async (email: string, password: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       // supabase.auth.onAuthStateChange will catch the successful login
-      await authService.login({ email, password, role });
+      await authService.login({ email, password });
     } catch (err) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw err;
@@ -193,24 +193,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
   }, []);
 
-  const completeRoleSelection = useCallback(async (role: UserRole) => {
+  const completeRoleSelection = useCallback(async (role: UserRole, teacherType?: 'college' | 'k12') => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session');
       
-      const identity = session.user.identities?.[0];
-      const provider = identity?.provider || 'email';
       const fullName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0];
       
-      const profileData = {
+      const profileData: any = {
         id: session.user.id,
         email: session.user.email,
         full_name: fullName,
         avatar_url: session.user.user_metadata?.avatar_url || '',
         role: role,
-        provider: provider,
       };
+      
+      if (teacherType) profileData.teacher_type = teacherType;
       
       await authService.createProfile(profileData);
       

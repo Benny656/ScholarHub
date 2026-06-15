@@ -10,8 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export function Login() {
   const { toggle, isDark } = useTheme();
-  const { user, isAuthenticated, loginBypass, requireRoleSelection, completeRoleSelection } = useAuth();
-  const [role, setRole] = useState<UserRole>('student');
+  const { loginBypass } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,22 +24,22 @@ export function Login() {
     }
   }, [location]);
 
-  useEffect(() => {
-    if (isAuthenticated && user && !requireRoleSelection) {
-      const routes: Record<UserRole, string> = { student: '/unistudents/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
-      navigate(routes[user.role] || '/unistudents/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, user, requireRoleSelection, navigate]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
     setIsLoading(true);
     try {
-      await authService.login({ email, password, role });
+      const { user } = await authService.login({ email, password });
       toast.success(`Welcome back!`, { icon: '🎉' });
-      const routes: Record<UserRole, string> = { student: '/unistudents/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
-      navigate(routes[role]);
+      if (!user.role) {
+        navigate('/onboarding/role-selection');
+      } else {
+        if (user.role === 'admin') navigate('/admin/dashboard');
+        else if (user.role === 'teacher') {
+          if ((user as any).teacher_type === 'k12') navigate('/k12-teacher/dashboard');
+          else navigate('/teacher/dashboard');
+        } else navigate('/unistudents/dashboard');
+      }
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
     } finally {
@@ -54,19 +53,6 @@ export function Login() {
       await authService.loginWithOAuth(provider);
     } catch (err: any) {
       toast.error(err.message || 'OAuth login failed');
-      setIsLoading(false);
-    }
-  };
-
-  const handleRoleSelection = async (selectedRole: UserRole) => {
-    setIsLoading(true);
-    try {
-      await completeRoleSelection(selectedRole);
-      toast.success(`Welcome! Signed in as ${selectedRole}`, { icon: '🎉' });
-      const routes: Record<UserRole, string> = { student: '/unistudents/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
-      navigate(routes[selectedRole]);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to complete profile');
       setIsLoading(false);
     }
   };
@@ -173,53 +159,13 @@ export function Login() {
             </p>
           </div>
 
-          <AnimatePresence mode="wait">
-            {requireRoleSelection ? (
-              <motion.div
-                key="role-selection"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div className="text-center space-y-2">
-                  <h4 className="font-bold text-lg text-on-surface">Choose how you will use ScholarHub</h4>
-                  <p className="text-xs text-on-surface-variant">Please select your primary role to continue.</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => handleRoleSelection('student')}
-                    disabled={isLoading}
-                    className="p-4 rounded-xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer"
-                  >
-                    <div className="w-12 h-12 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <GraduationCap className="w-6 h-6" />
-                    </div>
-                    <div className="font-bold text-sm text-on-surface">Student</div>
-                    <div className="text-[10px] text-on-surface-variant mt-1">School / College</div>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleRoleSelection('teacher')}
-                    disabled={isLoading}
-                    className="p-4 rounded-xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer"
-                  >
-                    <div className="w-12 h-12 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-                    </div>
-                    <div className="font-bold text-sm text-on-surface">Teacher</div>
-                    <div className="text-[10px] text-on-surface-variant mt-1">Faculty Lecturer</div>
-                  </button>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="login-form"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
+          <div>
+            <motion.div
+              key="login-form"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
                 {/* Social Auth Buttons */}
                 <div className="space-y-3 mb-6">
                   <button
@@ -296,22 +242,6 @@ export function Login() {
               </div>
             </div>
 
-            {/* Role picker selection context */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">
-                Target Access Role level
-              </label>
-              <select
-                className="w-full px-3.5 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all bg-transparent border-outline-variant/30 focus:border-[#6D5DFC]"
-                value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
-              >
-                <option value="student" className="bg-surface text-on-surface">Student (School/College)</option>
-                <option value="teacher" className="bg-surface text-on-surface">Teacher (Faculty Lecturer)</option>
-                <option value="admin" className="bg-surface text-on-surface">Institutional Administrator</option>
-              </select>
-            </div>
-
             <button
               type="submit"
               disabled={isLoading}
@@ -331,8 +261,7 @@ export function Login() {
             </div>
           </form>
           </motion.div>
-          )}
-          </AnimatePresence>
+          </div>
 
           {/* Direct Dashboard Bypass (Developer Mode) */}
           <div className="mt-4 pt-3 border-t border-outline-variant/20 flex flex-col gap-1.5">
