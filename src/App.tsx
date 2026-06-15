@@ -26,7 +26,7 @@ import { Register } from './pages/auth/Register';
 import { ForgotPassword, ResetPassword } from './pages/auth/ForgotPassword';
 
 // Dashboards
-import { StudentDashboard } from './pages/student/Dashboard';
+import { StudentDashboard } from './pages/unistudents/Dashboard';
 import { SchoolStudentDashboard } from './pages/school-student/SchoolStudentDashboard';
 import { TeacherDashboard } from './pages/teacher/Dashboard';
 import { AdminDashboard } from './pages/admin/Dashboard';
@@ -97,7 +97,7 @@ function AppRoutes() {
         <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
 
         {/* ─── Dashboards ─── */}
-        <Route path="/student/dashboard" element={<DashboardWrapper><StudentDashboard /></DashboardWrapper>} />
+        <Route path="/unistudents/dashboard" element={<DashboardWrapper><StudentDashboard /></DashboardWrapper>} />
         <Route path="/school-student/dashboard" element={<DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper>} />
         <Route path="/teacher/dashboard" element={<DashboardWrapper><TeacherDashboard /></DashboardWrapper>} />
         <Route path="/admin/dashboard" element={<DashboardWrapper><AdminDashboard /></DashboardWrapper>} />

@@ -97,7 +97,7 @@ export function Register() {
         expertise: role === 'teacher' ? form.expertise : undefined,
       });
       toast.success('Welcome to ScholarHub! 🎉');
-      navigate(role === 'student' ? '/student/dashboard' : '/teacher/dashboard');
+      navigate(role === 'student' ? '/unistudents/dashboard' : '/teacher/dashboard');
     } catch (err) {
       toast.error('Registration failed. Please try again.');
     } finally {

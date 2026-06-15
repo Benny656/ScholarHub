@@ -27,8 +27,8 @@ export function Login() {
 
   useEffect(() => {
     if (isAuthenticated && user && !requireRoleSelection) {
-      const routes: Record<UserRole, string> = { student: '/student/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
-      navigate(routes[user.role] || '/student/dashboard', { replace: true });
+      const routes: Record<UserRole, string> = { student: '/unistudents/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
+      navigate(routes[user.role] || '/unistudents/dashboard', { replace: true });
     }
   }, [isAuthenticated, user, requireRoleSelection, navigate]);
 
@@ -39,7 +39,7 @@ export function Login() {
     try {
       await authService.login({ email, password, role });
       toast.success(`Welcome back!`, { icon: '🎉' });
-      const routes: Record<UserRole, string> = { student: '/student/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
+      const routes: Record<UserRole, string> = { student: '/unistudents/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
       navigate(routes[role]);
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
@@ -63,18 +63,12 @@ export function Login() {
     try {
       await completeRoleSelection(selectedRole);
       toast.success(`Welcome! Signed in as ${selectedRole}`, { icon: '🎉' });
-      const routes: Record<UserRole, string> = { student: '/student/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
+      const routes: Record<UserRole, string> = { student: '/unistudents/dashboard', teacher: '/teacher/dashboard', admin: '/admin/dashboard' };
       navigate(routes[selectedRole]);
     } catch (err: any) {
       toast.error(err.message || 'Failed to complete profile');
       setIsLoading(false);
     }
-  };
-
-  const autofill = (demoRole: UserRole) => {
-    setRole(demoRole);
-    setEmail(`${demoRole}@nexlearn.com`);
-    setPassword('password123');
   };
 
   return (
@@ -343,40 +337,6 @@ export function Login() {
           )}
           </AnimatePresence>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-outline-variant/30" />
-            </div>
-            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider text-on-surface-variant">
-              <span className="bg-surface-container-lowest/90 dark:bg-surface-container-lowest/60 px-3 transition-colors">Bypass checkpoints demo access</span>
-            </div>
-          </div>
-
-          {/* Instant verification bypass tags */}
-          <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-            <button
-              type="button"
-              onClick={() => autofill('student')}
-              className="p-2 border border-outline-variant/30 hover:bg-on-surface/5 rounded-xl leading-snug transition-all cursor-pointer text-left text-on-surface-variant"
-            >
-              Student dashboard
-            </button>
-            <button
-              type="button"
-              onClick={() => autofill('teacher')}
-              className="p-2 border border-outline-variant/30 hover:bg-on-surface/5 rounded-xl leading-snug transition-all cursor-pointer text-left text-on-surface-variant"
-            >
-              Teacher console
-            </button>
-            <button
-              type="button"
-              onClick={() => autofill('admin')}
-              className="p-2 border border-outline-variant/30 hover:bg-on-surface/5 rounded-xl leading-snug transition-all cursor-pointer text-left text-on-surface-variant col-span-2"
-            >
-              Dean Admin cockpit
-            </button>
-          </div>
-
           {/* Direct Dashboard Bypass (Developer Mode) */}
           <div className="mt-4 pt-3 border-t border-outline-variant/20 flex flex-col gap-1.5">
             <div className="text-[9px] text-amber-500/80 font-bold uppercase tracking-wider text-center">
@@ -388,7 +348,7 @@ export function Login() {
                 onClick={() => {
                   loginBypass('student');
                   toast.success('Bypassed as Student', { icon: '⚡' });
-                  navigate('/student/dashboard');
+                  navigate('/unistudents/dashboard');
                 }}
                 className="py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-[10px] font-bold transition-all cursor-pointer text-center"
               >

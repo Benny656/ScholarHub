@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -9,9 +9,27 @@ import {
   Users, BookOpen, ShieldAlert, Activity, 
   UserPlus, FileText, Download, TrendingUp, CheckCircle2, 
   AlertTriangle, Server, Database, Cloud, FileCode, IndianRupee, Zap, FileSpreadsheet,
-  ShieldCheck, Lock, Eye, Key, CreditCard, Building2, UserCog, Settings
+  ShieldCheck, Lock, Eye, Key, CreditCard, Building2, UserCog, Settings,
+  LogOut, Search, CheckCircle, XCircle, Trash2, Unlock, Star, Shield
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import {
+  getAdminLogs,
+  getSystemStats,
+  getUsersList,
+  updateUserStatus,
+  changeUserRole,
+  deleteUser,
+  getCoursesList,
+  updateCourseStatus,
+  featureCourse,
+  deleteCourse,
+  getAnalyticsData,
+  getSystemSettings,
+  saveSystemSettings,
+  logAction
+} from '../../services/admin.service';
 import { ProctoringDashboard } from '../../components/features/ProctoringDashboard';
 import { BlockchainVerification } from '../../components/features/BlockchainVerification';
 
@@ -119,6 +137,194 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function AdminDashboard() {
   const { user } = useAuth();
   
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'courses' | 'analytics' | 'institutions' | 'settings'>('overview');
+  const [loading, setLoading] = useState(true);
+
+  // States
+  const [stats, setStats] = useState<any>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
+  const [logs, setLogs] = useState<any[]>([]);
+
+  // Filtering / Search / Pagination
+  const [userSearch, setUserSearch] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState('all');
+  const [userStatusFilter, setUserStatusFilter] = useState('all');
+  const [userPage, setUserPage] = useState(1);
+  const itemsPerPage = 8;
+
+  const [courseSearch, setCourseSearch] = useState('');
+  const [courseStatusFilter, setCourseStatusFilter] = useState('all');
+  const [coursePage, setCoursePage] = useState(1);
+
+  // Modals / Details Dialogs
+  const [selectedCourseAnalytics, setSelectedCourseAnalytics] = useState<any | null>(null);
+  const [brandingLogo, setBrandingLogo] = useState('https://scholarhub.io/logo.png');
+  const [brandingPrimaryColor, setBrandingPrimaryColor] = useState('#EF4444');
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    destructive: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+    destructive: false
+  });
+
+  // Load all dashboard data
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [statsData, usersData, coursesData, analyticsData, logsData] = await Promise.all([
+        getSystemStats(),
+        getUsersList(),
+        getCoursesList(),
+        getAnalyticsData(),
+        getAdminLogs()
+      ]);
+      setStats(statsData);
+      setUsers(usersData);
+      setCourses(coursesData);
+      setAnalytics(analyticsData);
+      setLogs(logsData);
+      setSettings(getSystemSettings());
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to retrieve administrative data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const triggerConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void,
+    destructive = false
+  ) => {
+    setConfirmDialog({
+      isOpen: true,
+      title,
+      description,
+      onConfirm: () => {
+        onConfirm();
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+      },
+      destructive
+    });
+  };
+
+  // Admin action execution with auto-refresh
+  const handleUserStatusToggle = (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'suspended' ? 'active' : 'suspended';
+    triggerConfirm(
+      `${newStatus === 'suspended' ? 'Suspend' : 'Activate'} User Account?`,
+      `Are you sure you want to change this user status to ${newStatus}?`,
+      async () => {
+        try {
+          await updateUserStatus(user!.id, userId, newStatus);
+          toast.success(`User account ${newStatus === 'suspended' ? 'suspended' : 'activated'} successfully.`);
+          loadData();
+        } catch (err) {
+          toast.error('Failed to change user status.');
+        }
+      },
+      newStatus === 'suspended'
+    );
+  };
+
+  const handleUserRoleChange = async (userId: string, newRole: 'student' | 'teacher' | 'admin') => {
+    try {
+      await changeUserRole(user!.id, userId, newRole);
+      toast.success(`User role updated to ${newRole}.`);
+      loadData();
+    } catch (err) {
+      toast.error('Failed to update user role.');
+    }
+  };
+
+  const handleUserDelete = (userId: string) => {
+    triggerConfirm(
+      'Permanently Delete User?',
+      'WARNING: Deleting this user is permanent and will remove all their enrollments and submissions.',
+      async () => {
+        try {
+          await deleteUser(user!.id, userId);
+          toast.success('User profile deleted.');
+          loadData();
+        } catch (err) {
+          toast.error('Failed to delete user.');
+        }
+      },
+      true
+    );
+  };
+
+  const handleCourseStatusToggle = (courseId: string, currentPublished: boolean) => {
+    const newPublished = !currentPublished;
+    triggerConfirm(
+      `${newPublished ? 'Approve' : 'Reject'} Course Listing?`,
+      `Are you sure you want to ${newPublished ? 'approve and publish' : 'reject and hide'} this course?`,
+      async () => {
+        try {
+          await updateCourseStatus(user!.id, courseId, newPublished);
+          toast.success(`Course successfully ${newPublished ? 'published' : 'unpublished'}.`);
+          loadData();
+        } catch (err) {
+          toast.error('Failed to modify course status.');
+        }
+      },
+      !newPublished
+    );
+  };
+
+  const handleCourseFeatureToggle = async (courseId: string, currentFeatured: boolean) => {
+    try {
+      await featureCourse(user!.id, courseId, !currentFeatured);
+      toast.success(`Course feature state updated.`);
+      loadData();
+    } catch (err) {
+      toast.error('Failed to feature course.');
+    }
+  };
+
+  const handleCourseDelete = (courseId: string) => {
+    triggerConfirm(
+      'Permanently Delete Course?',
+      'WARNING: This will delete the course listing and remove all students enrolled.',
+      async () => {
+        try {
+          await deleteCourse(user!.id, courseId);
+          toast.success('Course deleted successfully.');
+          loadData();
+        } catch (err) {
+          toast.error('Failed to delete course.');
+        }
+      },
+      true
+    );
+  };
+
+  const handleSettingsSave = () => {
+    try {
+      saveSystemSettings(user!.id, settings);
+      toast.success('System settings saved.');
+      loadData();
+    } catch (err) {
+      toast.error('Failed to save settings.');
+    }
+  };
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
@@ -160,6 +366,33 @@ export function AdminDashboard() {
         </div>
       </motion.div>
 
+      
+      {/* ─── TABS NAVIGATION ─── */}
+      <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 mt-4 mb-6 overflow-x-auto">
+        {[
+          { id: 'overview', label: 'Overview', icon: TrendingUp },
+          { id: 'users', label: 'Users', icon: Users },
+          { id: 'courses', label: 'Courses', icon: BookOpen },
+          { id: 'settings', label: 'Settings', icon: Settings }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium transition-colors border-b-2 shrink-0 ${
+              activeTab === tab.id 
+                ? 'border-brand-primary text-brand-primary bg-brand-primary/5' 
+                : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+            }`}
+          >
+            <tab.icon size={16} />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+
+      {activeTab === 'overview' && (
+      <div className="space-y-8 animate-fadeIn">
       {/* ─── QUICK STATISTICS ─── */}
       <motion.div 
         variants={containerVariants}
@@ -168,10 +401,10 @@ export function AdminDashboard() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Total Students', value: STATS.totalStudents.toLocaleString(), icon: Users, trend: '+4.2%' },
-          { label: 'Total Teachers', value: STATS.totalTeachers.toLocaleString(), icon: FileText, trend: '+1.1%' },
-          { label: 'Active Courses', value: STATS.activeCourses, icon: BookOpen, trend: '+12' },
-          { label: 'Global Attendance', value: `${STATS.attendanceRate}%`, icon: Activity, trend: '-2.1%' },
+          { label: 'Total Users', value: stats?.totalUsers?.toLocaleString() || '0', icon: Users, trend: 'Live' },
+          { label: 'Active Sessions', value: stats?.activeSessions?.toLocaleString() || '0', icon: Activity, trend: 'Live' },
+          { label: 'Active Courses', value: stats?.totalCourses || '0', icon: BookOpen, trend: 'Live' },
+          { label: 'Revenue', value: `₹${stats?.revenue?.toLocaleString() || '0'}`, icon: IndianRupee, trend: 'Gross' },
         ].map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants} className="p-5 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl flex flex-col gap-3">
             <div className="flex items-center justify-between">
@@ -544,6 +777,420 @@ export function AdminDashboard() {
 
         </div>
       </motion.div>
-    </div>
+          </div>
+      )}
+
+{activeTab === 'users' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight">User Directory</h2>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">Search, manage roles, suspend, or delete user accounts.</p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleExportCSV}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-200 dark:bg-neutral-700 text-sm font-semibold cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" /> Export CSV
+                  </button>
+                </div>
+              </div>
+
+              {/* Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="relative md:col-span-2">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                  <input
+                    type="text"
+                    value={userSearch}
+                    onChange={(e) => {
+                      setUserSearch(e.target.value);
+                      setUserPage(1);
+                    }}
+                    placeholder="Search users by name or email..."
+                    className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                  />
+                </div>
+
+                <div>
+                  <select
+                    value={userRoleFilter}
+                    onChange={(e) => {
+                      setUserRoleFilter(e.target.value);
+                      setUserPage(1);
+                    }}
+                    className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                  >
+                    <option value="all">All Roles</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+
+                <div>
+                  <select
+                    value={userStatusFilter}
+                    onChange={(e) => {
+                      setUserStatusFilter(e.target.value);
+                      setUserPage(1);
+                    }}
+                    className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active Only</option>
+                    <option value="suspended">Suspended Only</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Users Table */}
+              <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-500 text-xs font-bold uppercase tracking-wider">
+                        <th className="p-4 pl-6">User</th>
+                        <th className="p-4">Role</th>
+                        <th className="p-4">Type</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4 text-center">XP</th>
+                        <th className="p-4 pr-6 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {paginatedUsers.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="p-8 text-center text-neutral-400 dark:text-neutral-500">No matching user records found.</td>
+                        </tr>
+                      ) : (
+                        paginatedUsers.map((u) => (
+                          <tr key={u.id} className="hover:bg-white/2 transition-colors">
+                            <td className="p-4 pl-6">
+                              <div className="flex flex-col">
+                                <span className="font-bold">{u.name || 'Anonymous Learner'}</span>
+                                <span className="text-xs text-neutral-400 dark:text-neutral-500">{u.email}</span>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <select
+                                value={u.role || 'student'}
+                                onChange={(e) => handleUserRoleChange(u.id, e.target.value as any)}
+                                className="bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs rounded px-2 py-1 outline-none text-neutral-900 dark:text-neutral-100 focus:border-[#EF4444]/40"
+                              >
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                              </select>
+                            </td>
+                            <td className="p-4">
+                              <span className="text-xs capitalize font-medium">{u.user_type || 'College'}</span>
+                            </td>
+                            <td className="p-4">
+                              <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
+                                u.status === 'suspended'
+                                  ? 'bg-red-500/10 text-[#EF4444] border-[#EF4444]/20'
+                                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                              }`}>
+                                {u.status || 'active'}
+                              </span>
+                            </td>
+                            <td className="p-4 text-center font-mono font-bold text-xs">{u.xp || 0}</td>
+                            <td className="p-4 pr-6 text-right">
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  onClick={() => handleUserStatusToggle(u.id, u.status)}
+                                  className={`p-1.5 rounded-lg border hover:scale-105 transition-all cursor-pointer ${
+                                    u.status === 'suspended'
+                                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                                      : 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444] hover:bg-[#EF4444]/20'
+                                  }`}
+                                  title={u.status === 'suspended' ? 'Activate' : 'Suspend'}
+                                >
+                                  {u.status === 'suspended' ? <Unlock size={14} /> : <Lock size={14} />}
+                                </button>
+                                <button
+                                  onClick={() => handleUserDelete(u.id)}
+                                  className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 hover:scale-105 transition-all cursor-pointer"
+                                  title="Delete User"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Pagination */}
+              {filteredUsers.length > itemsPerPage && (
+                <div className="flex justify-between items-center text-xs text-neutral-400 dark:text-neutral-500">
+                  <span>Showing {(userPage - 1) * itemsPerPage + 1} to {Math.min(userPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users</span>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={userPage === 1}
+                      onClick={() => setUserPage((p) => p - 1)}
+                      className="px-3 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:bg-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      Prev
+                    </button>
+                    <button
+                      disabled={userPage * itemsPerPage >= filteredUsers.length}
+                      onClick={() => setUserPage((p) => p + 1)}
+                      className="px-3 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:bg-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+{activeTab === 'courses' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight">Course Catalogue</h2>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">Approve, reject, feature, or remove course catalog requests.</p>
+              </div>
+
+              {/* Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="relative md:col-span-2">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                  <input
+                    type="text"
+                    value={courseSearch}
+                    onChange={(e) => {
+                      setCourseSearch(e.target.value);
+                      setCoursePage(1);
+                    }}
+                    placeholder="Search courses by title..."
+                    className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                  />
+                </div>
+
+                <div>
+                  <select
+                    value={courseStatusFilter}
+                    onChange={(e) => {
+                      setCourseStatusFilter(e.target.value);
+                      setCoursePage(1);
+                    }}
+                    className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="published">Approved & Published</option>
+                    <option value="draft">Draft / Rejected</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Courses Table */}
+              <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-500 text-xs font-bold uppercase tracking-wider">
+                        <th className="p-4 pl-6">Course Thumbnail & Title</th>
+                        <th className="p-4">Instructor</th>
+                        <th className="p-4">Price</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4 pr-6 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {paginatedCourses.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-neutral-400 dark:text-neutral-500">No course records found.</td>
+                        </tr>
+                      ) : (
+                        paginatedCourses.map((c) => (
+                          <tr key={c.id} className="hover:bg-white/2 transition-colors">
+                            <td className="p-4 pl-6">
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-8 rounded bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 overflow-hidden flex-shrink-0">
+                                  {c.thumbnail_url ? (
+                                    <img src={c.thumbnail_url} className="w-full h-full object-cover" alt="" />
+                                  ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-[#EF4444]/20 to-[#8B5CF6]/20" />
+                                  )}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="font-bold truncate max-w-[240px]">{c.title || 'Untitled Course'}</span>
+                                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{c.category || 'General'}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-xs">{c.users?.name || 'Unknown Instructor'}</span>
+                                <span className="text-[10px] text-neutral-900 dark:text-neutral-100/30">{c.users?.email}</span>
+                              </div>
+                            </td>
+                            <td className="p-4 font-bold text-xs font-mono">₹{c.price || 0}</td>
+                            <td className="p-4">
+                              <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border ${
+                                c.is_published
+                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                  : 'bg-red-500/10 text-[#EF4444] border-[#EF4444]/20'
+                              }`}>
+                                {c.is_published ? 'Published' : 'Rejected / Draft'}
+                              </span>
+                            </td>
+                            <td className="p-4 pr-6 text-right">
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  onClick={() => setSelectedCourseAnalytics(c)}
+                                  className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-200 dark:bg-neutral-700 hover:scale-105 transition-all cursor-pointer"
+                                  title="View Analytics"
+                                >
+                                  <FileText size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleCourseFeatureToggle(c.id, false)} // Simulated action
+                                  className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 hover:text-amber-400 hover:scale-105 transition-all cursor-pointer"
+                                  title="Feature Course"
+                                >
+                                  <Star size={14} className="fill-transparent" />
+                                </button>
+                                <button
+                                  onClick={() => handleCourseStatusToggle(c.id, c.is_published)}
+                                  className={`p-1.5 rounded-lg border hover:scale-105 transition-all cursor-pointer ${
+                                    c.is_published
+                                      ? 'bg-[#EF4444]/10 border-[#EF4444]/20 text-[#EF4444] hover:bg-[#EF4444]/20'
+                                      : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                                  }`}
+                                  title={c.is_published ? 'Reject & Unpublish' : 'Approve & Publish'}
+                                >
+                                  {c.is_published ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                                </button>
+                                <button
+                                  onClick={() => handleCourseDelete(c.id)}
+                                  className="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 hover:scale-105 transition-all cursor-pointer"
+                                  title="Delete Course"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+{activeTab === 'settings' && settings && (
+            <div className="space-y-8 animate-fadeIn">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight">System Settings & Configs</h2>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">Configure global announcements, maintenance toggles, and SMTP credentials.</p>
+              </div>
+
+              <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-6 max-w-3xl">
+                {/* Announcements */}
+                <div className="space-y-1">
+                  <label className="text-xs text-neutral-400 dark:text-neutral-500 uppercase font-bold">System-wide Banner Announcement</label>
+                  <input
+                    type="text"
+                    value={settings.announcement}
+                    onChange={(e) => setSettings({ ...settings, announcement: e.target.value })}
+                    className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                  />
+                </div>
+
+                {/* Toggles */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-white/2">
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm font-bold">System Maintenance Mode</h4>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500">Lock down public access to course players and live classrooms.</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={settings.maintenanceMode}
+                    onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
+                    className="w-6 h-6 border-neutral-200 dark:border-neutral-800 rounded outline-none accent-[#EF4444] cursor-pointer"
+                  />
+                </div>
+
+                {/* Feature flags */}
+                <div className="space-y-3">
+                  <h4 className="text-xs text-neutral-400 dark:text-neutral-500 uppercase font-bold tracking-wider">Feature Flags</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { id: 'aiTutor', label: 'AI Tutor Widget' },
+                      { id: 'blockchainCertificates', label: 'Blockchain certificates' },
+                      { id: 'liveClassrooms', label: 'Live class integration' },
+                    ].map((f) => (
+                      <div key={f.id} className="p-3 bg-white/3 border border-neutral-200 dark:border-neutral-800 rounded-xl flex items-center justify-between">
+                        <span className="text-xs font-semibold">{f.label}</span>
+                        <input
+                          type="checkbox"
+                          checked={settings.featureFlags[f.id]}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            featureFlags: {
+                              ...settings.featureFlags,
+                              [f.id]: e.target.checked
+                            }
+                          })}
+                          className="w-4 h-4 accent-[#EF4444] cursor-pointer"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* SMTP Email Settings */}
+                <div className="space-y-3">
+                  <h4 className="text-xs text-neutral-400 dark:text-neutral-500 uppercase font-bold tracking-wider">SMTP Email Server Settings</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase font-bold">SMTP Server Host</label>
+                      <input
+                        type="text"
+                        value={settings.emailSettings.smtpHost}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          emailSettings: { ...settings.emailSettings, smtpHost: e.target.value }
+                        })}
+                        className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2 px-3 text-xs text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase font-bold">Sender Address</label>
+                      <input
+                        type="email"
+                        value={settings.emailSettings.senderEmail}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          emailSettings: { ...settings.emailSettings, senderEmail: e.target.value }
+                        })}
+                        className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2 px-3 text-xs text-neutral-900 dark:text-neutral-100 outline-none focus:border-[#EF4444]/40"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 flex justify-end">
+                  <button
+                    onClick={handleSettingsSave}
+                    className="px-6 py-2.5 rounded-xl bg-[#EF4444] text-neutral-900 dark:text-neutral-100 font-bold hover:bg-[#EF4444]/90 transition-colors shadow-lg shadow-[#EF4444]/20 cursor-pointer"
+                  >
+                    Save Settings Configuration
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+</div>
   );
 }
