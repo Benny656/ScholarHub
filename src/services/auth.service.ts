@@ -183,15 +183,38 @@ export const authService = {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error || !session?.user) return null;
 
+    const adminEmails = [
+      'bennymanuel2020@gmail.com',
+      'Jerlinsubhiksha@gmail.com',
+      'deepsiseropa@gmail.com',
+      'fredricknewbegin@gmail.com'
+    ];
+    const userEmail = session.user.email?.toLowerCase() || '';
+    const isAdminEmail = adminEmails.map(e => e.toLowerCase()).includes(userEmail);
+
     const existing = await this.getProfile(session.user.id);
-    if (existing) return existing;
+    
+    // If profile exists but needs an admin upgrade because they just signed up 
+    // and the trigger defaulted them to student or null
+    if (existing) {
+      if (isAdminEmail && existing.role !== 'admin') {
+        // Only force upgrade if we detect it's an initial onboarding state 
+        // or a default assignment. We use a simple check:
+        // Admin emails are always forced to admin on their first session check if they aren't admin yet.
+        return this.createProfile({
+          ...existing,
+          role: 'admin',
+        });
+      }
+      return existing;
+    }
 
     return this.createProfile({
       id: session.user.id,
       email: session.user.email || null,
       full_name: getAuthName(session.user),
       avatar_url: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
-      role: null,
+      role: isAdminEmail ? 'admin' : null,
     });
   },
 
@@ -205,7 +228,7 @@ export const authService = {
   },
 
   async register(emailOrPayload: string | RegisterPayload, password?: string, name?: string, role?: UserRole): Promise<AuthResponse> {
-    const payload: RegisterPayload = typeof emailOrPayload === 'object'
+    let payload: RegisterPayload = typeof emailOrPayload === 'object'
       ? emailOrPayload
       : {
           email: emailOrPayload,
@@ -213,6 +236,16 @@ export const authService = {
           name: name || '',
           role: role || 'student',
         };
+
+    const adminEmails = [
+      'bennymanuel2020@gmail.com',
+      'Jerlinsubhiksha@gmail.com',
+      'deepsiseropa@gmail.com',
+      'fredricknewbegin@gmail.com'
+    ];
+    if (adminEmails.map(e => e.toLowerCase()).includes(payload.email.toLowerCase())) {
+      payload.role = 'admin' as UserRole;
+    }
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: payload.email,
