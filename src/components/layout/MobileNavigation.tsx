@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { GraduationCap, Menu, X, Bell, Moon, Sun, ArrowRight, User, ChevronRight } from "lucide-react";
-import { Role } from "../../lib/mockData";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MobileNavigationProps {
-  activeRole: Role;
-  onChangeRole: (roleId: Role["id"]) => void;
+  activeRole: any;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   theme: "light" | "dark";
@@ -18,7 +16,6 @@ interface MobileNavigationProps {
 
 export default function MobileNavigation({
   activeRole,
-  onChangeRole,
   activeTab,
   setActiveTab,
   theme,

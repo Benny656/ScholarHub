@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/layout/Sidebar';
 import Navbar from '../components/layout/Navbar';
 import MobileNavigation from '../components/layout/MobileNavigation';
-import { allRoles } from '../lib/mockData';
 import { BookOpen, CheckSquare, Settings } from 'lucide-react';
 import { getDashboardPath } from '../services/auth.service';
 
@@ -22,16 +21,18 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Map real user to V2 role object for UI rendering
-  let roleId = user.role as string;
-  if (roleId === 'student') roleId = 'student_college';
-  
   // Custom user mapped to V2 Role interface
-  const activeRole = allRoles.find(r => r.id === roleId) || {
-    id: roleId,
+  const activeRole = {
+    id: user.role === 'teacher' 
+      ? (user.teacherTrack === 'k12' ? 'k12-teacher' : 'teacher')
+      : user.role === 'student' 
+        ? (user.gradeLevel === 'k12' ? 'school-student' : 'unistudents')
+        : 'admin',
     name: user.name,
-    badge: user.role.toUpperCase(),
-    avatar: user.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name)
+    badge: user.role === 'teacher' ? (user.teacherTrack === 'k12' ? 'K-12 TEACHER' : 'COLLEGE TEACHER') :
+           user.role === 'student' ? (user.gradeLevel === 'k12' ? 'SCHOOL STUDENT' : 'UNIVERSITY STUDENT') : 'ADMIN',
+    avatar: user.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name),
+    roleType: user.role
   };
 
   // Derive active tab from location pathname
@@ -50,8 +51,8 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
       // Navigate based on user role base path
       let basePath = '';
       if (user.role === 'admin') basePath = '/admin';
-      else if (user.role === 'teacher') basePath = '/teacher';
-      else if (user.role === 'student') basePath = '/unistudents';
+      else if (user.role === 'teacher') basePath = user.teacherTrack === 'k12' ? '/k12-teacher' : '/teacher';
+      else if (user.role === 'student') basePath = user.gradeLevel === 'k12' ? '/school-student' : '/unistudents';
       
       if (tabId === 'dashboard') {
         navigate(`${basePath}/dashboard`);
@@ -75,10 +76,6 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
       <div className="hidden md:flex">
         <Sidebar
           activeRole={activeRole as any}
-          onChangeRole={(newRoleId) => {
-            console.log("Mock role switch:", newRoleId);
-            // In a real app with real auth, changing role might mean logging out and logging in as someone else
-          }}
           activeTab={activeTab}
           setActiveTab={handleSetActiveTab}
           theme={theme}
@@ -93,7 +90,6 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
         {/* Mobile top stick header */}
         <MobileNavigation
           activeRole={activeRole as any}
-          onChangeRole={() => {}}
           activeTab={activeTab}
           setActiveTab={handleSetActiveTab}
           theme={theme}

@@ -99,14 +99,18 @@ function mapProfileToUser(
   };
 }
 
-export function getDashboardPath(user: Pick<User, 'role' | 'teacherTrack'> | Pick<Profile, 'role' | 'grade_level'> | null | undefined) {
+export function getDashboardPath(user: Pick<User, 'role' | 'teacherTrack' | 'gradeLevel'> | Pick<Profile, 'role' | 'grade_level'> | null | undefined) {
   if (!user?.role) return '/onboarding/role-selection';
   if (user.role === 'admin') return '/admin/dashboard';
+  
   if (user.role === 'teacher') {
-    const track = 'teacherTrack' in user ? user.teacherTrack : (user as Pick<Profile, 'grade_level'>).grade_level === 'k12' ? 'k12' : 'college';
+    const track = 'teacherTrack' in user && user.teacherTrack ? user.teacherTrack : (user as Pick<Profile, 'grade_level'>).grade_level === 'k12' ? 'k12' : 'college';
     return track === 'k12' ? '/k12-teacher/dashboard' : '/teacher/dashboard';
   }
-  return '/unistudents/dashboard';
+  
+  // Student
+  const gradeLevel = 'gradeLevel' in user && user.gradeLevel ? user.gradeLevel : (user as Pick<Profile, 'grade_level'>).grade_level === 'k12' ? 'k12' : 'college';
+  return gradeLevel === 'k12' ? '/school-student/dashboard' : '/unistudents/dashboard';
 }
 
 export const authService = {

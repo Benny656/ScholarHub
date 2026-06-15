@@ -20,12 +20,12 @@ export function RoleSelection() {
     }
   }, [isAuthenticated, user, requireRoleSelection, navigate]);
 
-  const handleRoleSelection = async (selectedRole: UserRole, teacherTrack?: 'college' | 'k12') => {
+  const handleRoleSelection = async (selectedRole: UserRole, trackOrLevel?: 'college' | 'k12') => {
     setIsLoading(true);
     try {
-      await completeRoleSelection(selectedRole, teacherTrack);
+      await completeRoleSelection(selectedRole, trackOrLevel);
       toast.success(`Welcome! Profile completed.`, { icon: '🎉' });
-      navigate(getDashboardPath({ role: selectedRole, teacherTrack }));
+      navigate(getDashboardPath({ role: selectedRole, gradeLevel: trackOrLevel, teacherTrack: trackOrLevel }));
       
     } catch (err: any) {
       toast.error(err.message || 'Failed to complete profile');
@@ -71,29 +71,29 @@ export function RoleSelection() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
-              onClick={() => handleRoleSelection('student')}
+              onClick={() => handleRoleSelection('student', 'k12')}
               disabled={isLoading}
               className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
             >
               <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <GraduationCap className="w-8 h-8" />
               </div>
-              <div className="font-bold text-lg text-on-surface">Student</div>
-              <div className="text-xs text-on-surface-variant mt-2">School or College Student</div>
+              <div className="font-bold text-lg text-on-surface">School Student</div>
+              <div className="text-xs text-on-surface-variant mt-2">K-12 Student</div>
             </button>
             
             <button
-              onClick={() => handleRoleSelection('teacher', 'college')}
+              onClick={() => handleRoleSelection('student', 'college')}
               disabled={isLoading}
               className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
             >
               <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <BookOpen className="w-8 h-8" />
+                <GraduationCap className="w-8 h-8" />
               </div>
-              <div className="font-bold text-lg text-on-surface">College Teacher</div>
-              <div className="text-xs text-on-surface-variant mt-2">University / Higher Ed Faculty</div>
+              <div className="font-bold text-lg text-on-surface">University Student</div>
+              <div className="text-xs text-on-surface-variant mt-2">College or Higher Ed Student</div>
             </button>
 
             <button
@@ -106,6 +106,18 @@ export function RoleSelection() {
               </div>
               <div className="font-bold text-lg text-on-surface">K-12 Teacher</div>
               <div className="text-xs text-on-surface-variant mt-2">Primary / Secondary Educator</div>
+            </button>
+
+            <button
+              onClick={() => handleRoleSelection('teacher', 'college')}
+              disabled={isLoading}
+              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
+            >
+              <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <BookOpen className="w-8 h-8" />
+              </div>
+              <div className="font-bold text-lg text-on-surface">College Teacher</div>
+              <div className="text-xs text-on-surface-variant mt-2">University / Higher Ed Faculty</div>
             </button>
           </div>
         </motion.div>

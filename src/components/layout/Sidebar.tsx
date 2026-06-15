@@ -22,8 +22,7 @@ import {
 import { Role, allRoles } from "../../lib/mockData";
 
 interface SidebarProps {
-  activeRole: Role;
-  onChangeRole: (roleId: Role["id"]) => void;
+  activeRole: any;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   theme: "light" | "dark";
@@ -33,7 +32,6 @@ interface SidebarProps {
 
 export default function Sidebar({
   activeRole,
-  onChangeRole,
   activeTab,
   setActiveTab,
   theme,
@@ -102,31 +100,6 @@ export default function Sidebar({
             </p>
           </div>
         </button>
-
-        {/* Unified Fast Role Switcher */}
-        <div className="p-3 bg-neutral-100/50 dark:bg-neutral-800/40 rounded-xl border border-neutral-200/50 dark:border-neutral-800 space-y-2">
-          <p className="text-[10px] uppercase font-bold tracking-wider text-neutral-400">
-            Reviewer Persona Switcher
-          </p>
-          <div className="grid grid-cols-2 gap-1.5">
-            {allRoles.map((role) => {
-              const isSelected = activeRole.id === role.id;
-              return (
-                <button
-                  key={role.id}
-                  onClick={() => onChangeRole(role.id)}
-                  className={`px-2 py-1.5 text-[11px] font-medium rounded-lg text-left truncate transition-all duration-150 ${
-                    isSelected
-                      ? "bg-brand-primary text-white shadow-sm"
-                      : "bg-white hover:bg-neutral-200/50 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-                  }`}
-                >
-                  {role.id === "student_school" ? "Student (School)" : role.id === "student_college" ? "Student (College)" : role.name.split(" ")[1] || role.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Dynamic Navigation Menu */}
         <nav className="space-y-1">

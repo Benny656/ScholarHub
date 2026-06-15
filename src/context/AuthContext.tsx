@@ -15,7 +15,7 @@ interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
   register: (data: Parameters<typeof authService.register>[0]) => Promise<User>;
-  completeRoleSelection: (role: UserRole, teacherTrack?: 'college' | 'k12') => Promise<void>;
+  completeRoleSelection: (role: UserRole, trackOrLevel?: 'college' | 'k12') => Promise<void>;
   getAuthenticatedRedirectPath: () => string;
 }
 
@@ -151,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await authService.logout();
   }, []);
 
-  const completeRoleSelection = useCallback(async (role: UserRole, teacherTrack?: 'college' | 'k12') => {
+  const completeRoleSelection = useCallback(async (role: UserRole, trackOrLevel?: 'college' | 'k12') => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || null,
         avatar_url: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
         role,
-        grade_level: role === 'teacher' && teacherTrack === 'k12' ? 'k12' : null,
+        grade_level: trackOrLevel === 'k12' ? 'k12' : trackOrLevel === 'college' ? 'college' : null,
       });
 
       const user = await authService.getMe();

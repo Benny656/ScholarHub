@@ -42,6 +42,7 @@ import { ForgotPassword, ResetPassword } from './pages/auth/ForgotPassword';
 import { StudentDashboard } from './pages/unistudents/Dashboard';
 import { SchoolStudentDashboard } from './pages/school-student/SchoolStudentDashboard';
 import { TeacherDashboard } from './pages/teacher/Dashboard';
+import { K12TeacherDashboard } from './pages/teacher/K12TeacherDashboard';
 import { AdminDashboard } from './pages/admin/Dashboard';
 
 // Courses
@@ -141,7 +142,7 @@ function AppRoutes() {
         <Route path="/unistudents/dashboard" element={<ProtectedRoute><DashboardWrapper><StudentDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/school-student/dashboard" element={<ProtectedRoute><DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/k12-teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/k12-teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><K12TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardWrapper><AdminDashboard /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Courses ─── */}
