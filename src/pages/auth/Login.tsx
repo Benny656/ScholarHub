@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, GraduationCap, ArrowRight, Moon, Sun } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Moon, Sun } from 'lucide-react';
 import { authService } from '../../services/auth.service';
-import type { UserRole } from '../../types';
+import { getDashboardPath } from '../../services/auth.service';
 import toast from 'react-hot-toast';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../context/AuthContext';
 
 export function Login() {
   const { toggle, isDark } = useTheme();
-  const { loginBypass } = useAuth();
+  const { login, getAuthenticatedRedirectPath, isAuthenticated, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,22 +24,20 @@ export function Login() {
     }
   }, [location]);
 
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate(getAuthenticatedRedirectPath(), { replace: true });
+    }
+  }, [authLoading, getAuthenticatedRedirectPath, isAuthenticated, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
     setIsLoading(true);
     try {
-      const { user } = await authService.login({ email, password });
+      const user = await login(email, password);
       toast.success(`Welcome back!`, { icon: '🎉' });
-      if (!user.role) {
-        navigate('/onboarding/role-selection');
-      } else {
-        if (user.role === 'admin') navigate('/admin/dashboard');
-        else if (user.role === 'teacher') {
-          if ((user as any).teacher_type === 'k12') navigate('/k12-teacher/dashboard');
-          else navigate('/teacher/dashboard');
-        } else navigate('/unistudents/dashboard');
-      }
+      navigate(getDashboardPath(user), { replace: true });
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
     } finally {
@@ -261,48 +259,6 @@ export function Login() {
             </div>
           </form>
           </motion.div>
-          </div>
-
-          {/* Direct Dashboard Bypass (Developer Mode) */}
-          <div className="mt-4 pt-3 border-t border-outline-variant/20 flex flex-col gap-1.5">
-            <div className="text-[9px] text-amber-500/80 font-bold uppercase tracking-wider text-center">
-              Developer Direct Bypass (No Login Required)
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  loginBypass('student');
-                  toast.success('Bypassed as Student', { icon: '⚡' });
-                  navigate('/unistudents/dashboard');
-                }}
-                className="py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-[10px] font-bold transition-all cursor-pointer text-center"
-              >
-                Student
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  loginBypass('teacher');
-                  toast.success('Bypassed as Teacher', { icon: '⚡' });
-                  navigate('/teacher/dashboard');
-                }}
-                className="py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-[10px] font-bold transition-all cursor-pointer text-center"
-              >
-                Teacher
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  loginBypass('admin');
-                  toast.success('Bypassed as Admin', { icon: '⚡' });
-                  navigate('/admin/dashboard');
-                }}
-                className="py-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 border border-amber-500/40 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer text-center shadow-sm"
-              >
-                Admin ⚡
-              </button>
-            </div>
           </div>
 
           <p className="text-center text-[11px] text-on-surface-variant mt-6">

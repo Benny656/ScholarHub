@@ -1,4 +1,4 @@
-import type { User, UserRole } from '../types';
+import type { User, UserRole, TeacherTrack } from '../types';
 import { supabase } from '../lib/supabase';
 
 export interface LoginPayload {
@@ -13,9 +13,10 @@ export interface RegisterPayload {
   password: string;
   role: UserRole;
   avatarUrl?: string;
-  teacher_type?: 'college' | 'k12';
   institution?: string;
   studentId?: string;
+  gradeLevel?: string;
+  teacherId?: string;
   department?: string;
   expertise?: string;
 }
@@ -25,27 +26,99 @@ export interface AuthResponse {
   token: string;
 }
 
-export const authService = {
-  async login(
-    emailOrPayload: string | LoginPayload,
-    password?: string
-  ): Promise<AuthResponse> {
-    let emailStr: string;
-    let passwordStr: string;
+export type Profile = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: UserRole | null;
+  institution: string | null;
+  student_id: string | null;
+  grade_level: string | null;
+  teacher_id: string | null;
+  department: string | null;
+  expertise: string | null;
+  created_at: string;
+  updated_at: string | null;
+};
 
-    if (typeof emailOrPayload === 'object' && emailOrPayload !== null) {
-      emailStr = emailOrPayload.email;
-      passwordStr = emailOrPayload.password;
-    } else {
-      emailStr = emailOrPayload;
-      passwordStr = password || '';
-    }
+export const PROFILE_COLUMNS =
+  'id,email,full_name,avatar_url,role,institution,student_id,grade_level,teacher_id,department,expertise,created_at,updated_at';
+
+const PROFILE_FIELDS = new Set([
+  'id',
+  'email',
+  'full_name',
+  'avatar_url',
+  'role',
+  'institution',
+  'student_id',
+  'grade_level',
+  'teacher_id',
+  'department',
+  'expertise',
+  'created_at',
+  'updated_at',
+]);
+
+function sanitizeProfilePayload(payload: Record<string, unknown>) {
+  const clean: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(payload)) {
+    if (PROFILE_FIELDS.has(key) && value !== undefined) clean[key] = value;
+  }
+  return clean;
+}
+
+function getAuthName(user: NonNullable<Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user']>) {
+  return user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown';
+}
+
+function mapProfileToUser(
+  authUser: NonNullable<Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user']>,
+  profile: Profile
+): User {
+  const teacherTrack: TeacherTrack | undefined = profile.role === 'teacher'
+    ? profile.grade_level === 'k12' ? 'k12' : 'college'
+    : undefined;
+
+  return {
+    id: authUser.id,
+    name: profile.full_name || getAuthName(authUser),
+    email: profile.email || authUser.email || '',
+    role: (profile.role as UserRole) || 'student',
+    avatar: profile.avatar_url || '',
+    createdAt: profile.created_at || authUser.created_at,
+    updatedAt: profile.updated_at || undefined,
+    studentId: profile.student_id || undefined,
+    gradeLevel: profile.grade_level || undefined,
+    teacherId: profile.teacher_id || undefined,
+    institution: profile.institution || undefined,
+    department: profile.department || undefined,
+    expertise: profile.expertise ? profile.expertise.split(',').map(item => item.trim()).filter(Boolean) : undefined,
+    teacherTrack,
+  };
+}
+
+export function getDashboardPath(user: Pick<User, 'role' | 'teacherTrack'> | Pick<Profile, 'role' | 'grade_level'> | null | undefined) {
+  if (!user?.role) return '/onboarding/role-selection';
+  if (user.role === 'admin') return '/admin/dashboard';
+  if (user.role === 'teacher') {
+    const track = 'teacherTrack' in user ? user.teacherTrack : (user as Pick<Profile, 'grade_level'>).grade_level === 'k12' ? 'k12' : 'college';
+    return track === 'k12' ? '/k12-teacher/dashboard' : '/teacher/dashboard';
+  }
+  return '/unistudents/dashboard';
+}
+
+export const authService = {
+  async login(emailOrPayload: string | LoginPayload, password?: string): Promise<AuthResponse> {
+    const email = typeof emailOrPayload === 'object' ? emailOrPayload.email : emailOrPayload;
+    const passwordValue = typeof emailOrPayload === 'object' ? emailOrPayload.password : password || '';
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: emailStr,
-      password: passwordStr,
+      email,
+      password: passwordValue,
     });
-    
+
     if (error) throw error;
     if (!data.session) throw new Error('No session returned');
 
@@ -65,65 +138,117 @@ export const authService = {
     if (error) throw error;
   },
 
-  async getProfile(userId: string): Promise<any> {
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error fetching profile:', error);
-    }
-    return data;
-  },
+  async getProfile(userId: string): Promise<Profile | null> {
+    console.info('[profiles.select]', { columns: PROFILE_COLUMNS, id: userId });
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(PROFILE_COLUMNS)
+      .eq('id', userId)
+      .maybeSingle();
 
-  async createProfile(profileData: any): Promise<void> {
-    const { error } = await supabase.from('profiles').upsert(profileData);
-    if (error) throw error;
-  },
-
-  async register(
-    emailOrPayload: string | RegisterPayload,
-    password?: string,
-    name?: string,
-    role?: UserRole
-  ): Promise<AuthResponse> {
-    let payload: RegisterPayload;
-    if (typeof emailOrPayload === 'object' && emailOrPayload !== null) {
-      payload = emailOrPayload;
-    } else {
-      payload = {
-        email: emailOrPayload as string,
-        password: password!,
-        name: name || '',
-        role: role || 'student',
-      };
+    if (error) {
+      console.error('[profiles.select.error]', error);
+      throw error;
     }
 
-    // 1. Create Auth user
+    return data as Profile | null;
+  },
+
+  async createProfile(profileData: Partial<Profile> & { id: string }): Promise<Profile> {
+    const payload = sanitizeProfilePayload({
+      ...profileData,
+      updated_at: new Date().toISOString(),
+    });
+    console.info('[profiles.upsert]', { columns: PROFILE_COLUMNS, payload });
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert(payload as any, { onConflict: 'id' })
+      .select(PROFILE_COLUMNS)
+      .single();
+
+    if (error) {
+      console.error('[profiles.upsert.error]', error);
+      throw error;
+    }
+
+    return data as Profile;
+  },
+
+  async ensureProfileForSession(): Promise<Profile | null> {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error || !session?.user) return null;
+
+    const existing = await this.getProfile(session.user.id);
+    if (existing) return existing;
+
+    return this.createProfile({
+      id: session.user.id,
+      email: session.user.email || null,
+      full_name: getAuthName(session.user),
+      avatar_url: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
+      role: null,
+    });
+  },
+
+  getRateLimitMessage(error: any): string | null {
+    const status = error?.status || error?.statusCode;
+    const message = String(error?.message || '').toLowerCase();
+    if (status === 429 || message.includes('rate limit') || message.includes('too many requests')) {
+      return 'Too many signup attempts. Please wait a few minutes and try again.';
+    }
+    return null;
+  },
+
+  async register(emailOrPayload: string | RegisterPayload, password?: string, name?: string, role?: UserRole): Promise<AuthResponse> {
+    const payload: RegisterPayload = typeof emailOrPayload === 'object'
+      ? emailOrPayload
+      : {
+          email: emailOrPayload,
+          password: password!,
+          name: name || '',
+          role: role || 'student',
+        };
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
+      options: {
+        data: {
+          full_name: payload.name,
+          role: payload.role,
+        },
+      },
     });
 
-    if (authError) throw authError;
+    if (authError) {
+      console.error('[auth.signup.error]', authError);
+      throw authError;
+    }
     if (!authData.user) throw new Error('Signup failed: No user returned');
 
-    // 2. Insert matching profile row into public.profiles
-    const profileData = {
+    await this.createProfile({
       id: authData.user.id,
       email: payload.email,
       full_name: payload.name,
       role: payload.role,
-      avatar_url: payload.avatarUrl,
-      institution: payload.institution,
-      student_id: payload.studentId,
-      department: payload.department,
-      expertise: payload.expertise,
-      teacher_type: payload.teacher_type,
-    };
-
-    await this.createProfile(profileData);
+      avatar_url: payload.avatarUrl || null,
+      institution: payload.institution || null,
+      student_id: payload.studentId || null,
+      grade_level: payload.gradeLevel || null,
+      teacher_id: payload.teacherId || null,
+      department: payload.department || null,
+      expertise: payload.expertise || null,
+    });
 
     const user = await this.getCurrentUser();
-    // If auto sign-in is disabled or requires email confirmation, user might be null here
-    return { user: user as any, token: authData.session?.access_token || '' };
+    if (!user) {
+      const profile = await this.getProfile(authData.user.id);
+      if (!profile) throw new Error('Profile creation failed');
+      return { user: mapProfileToUser(authData.user, profile), token: authData.session?.access_token || '' };
+    }
+
+    return { user, token: authData.session?.access_token || '' };
   },
 
   async logout(): Promise<void> {
@@ -135,11 +260,11 @@ export const authService = {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       return { message: 'Password reset successfully' };
-    } else {
-      const { error } = await supabase.auth.resetPasswordForEmail(emailOrToken);
-      if (error) throw error;
-      return { message: `Password reset link sent to ${emailOrToken}` };
     }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(emailOrToken);
+    if (error) throw error;
+    return { message: `Password reset link sent to ${emailOrToken}` };
   },
 
   async forgotPassword(email: string): Promise<{ message: string }> {
@@ -153,22 +278,7 @@ export const authService = {
     const profile = await this.getProfile(user.id);
     if (!profile) return null;
 
-    return {
-      id: user.id,
-      name: profile.full_name || user.email?.split('@')[0] || 'Unknown',
-      email: user.email!,
-      role: (profile.role as UserRole) || 'student',
-      avatar: profile.avatar_url || '',
-      createdAt: profile.created_at || user.created_at,
-      xp: profile.xp ?? 0,
-      level: profile.level ?? 1,
-      streak: profile.streak ?? 0,
-      studentId: profile.student_id,
-      institution: profile.institution,
-      department: profile.department,
-      expertise: profile.expertise,
-      teacher_type: profile.teacher_type,
-    } as any;
+    return mapProfileToUser(user, profile);
   },
 
   async getMe(): Promise<User> {
@@ -180,46 +290,40 @@ export const authService = {
   async updateProfile(data: Partial<User>): Promise<User> {
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error || !user) throw new Error('Unauthorized');
-    
-    const dbData: any = {};
-    if (data.name !== undefined) dbData.full_name = data.name;
-    if (data.avatar !== undefined) dbData.avatar_url = data.avatar;
-    if (data.role !== undefined) dbData.role = data.role;
-    
+
+    const dbData = sanitizeProfilePayload({
+      full_name: data.name,
+      email: data.email,
+      avatar_url: data.avatar,
+      role: data.role,
+      institution: data.institution,
+      student_id: data.studentId,
+      grade_level: data.gradeLevel,
+      teacher_id: data.teacherId,
+      department: data.department,
+      expertise: Array.isArray(data.expertise) ? data.expertise.join(', ') : data.expertise,
+      updated_at: new Date().toISOString(),
+    });
+
+    console.info('[profiles.update]', { columns: PROFILE_COLUMNS, payload: dbData, id: user.id });
     const { data: updated, error: updateError } = await supabase
       .from('profiles')
-      .update(dbData)
+      .update(dbData as any)
       .eq('id', user.id)
-      .select()
+      .select(PROFILE_COLUMNS)
       .single();
-      
-    if (updateError) throw updateError;
-    
-    const updatedAny = updated as any;
-    return {
-      id: user.id,
-      name: updatedAny.full_name,
-      email: user.email!,
-      role: updatedAny.role,
-      avatar: updatedAny.avatar_url,
-      createdAt: user.created_at,
-      xp: updatedAny.xp,
-      level: updatedAny.level,
-      streak: updatedAny.streak,
-      user_type: updatedAny.user_type || 'college',
-      school_name: updatedAny.school_name,
-      grade_class: updatedAny.grade_class,
-      roll_number: updatedAny.roll_number,
-      studentId: updatedAny.student_id,
-      institution: updatedAny.institution,
-      department: updatedAny.department,
-      expertise: updatedAny.expertise,
-    } as any;
+
+    if (updateError) {
+      console.error('[profiles.update.error]', updateError);
+      throw updateError;
+    }
+
+    return mapProfileToUser(user, updated as Profile);
   },
 
   async changePassword(_currentPassword: string, newPassword: string): Promise<{ message: string }> {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw error;
     return { message: 'Password changed successfully' };
-  }
+  },
 };

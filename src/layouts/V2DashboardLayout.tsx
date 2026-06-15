@@ -8,9 +8,10 @@ import Navbar from '../components/layout/Navbar';
 import MobileNavigation from '../components/layout/MobileNavigation';
 import { allRoles } from '../lib/mockData';
 import { BookOpen, CheckSquare, Settings } from 'lucide-react';
+import { getDashboardPath } from '../services/auth.service';
 
 export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -23,9 +24,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
 
   // Map real user to V2 role object for UI rendering
   let roleId = user.role as string;
-  if (roleId === 'student') {
-    roleId = user.user_type === 'school' ? 'student_school' : 'student_college';
-  }
+  if (roleId === 'student') roleId = 'student_college';
   
   // Custom user mapped to V2 Role interface
   const activeRole = allRoles.find(r => r.id === roleId) || {
@@ -52,9 +51,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
       let basePath = '';
       if (user.role === 'admin') basePath = '/admin';
       else if (user.role === 'teacher') basePath = '/teacher';
-      else if (user.role === 'student') {
-        basePath = user.user_type === 'school' ? '/school-student' : '/student';
-      }
+      else if (user.role === 'student') basePath = '/unistudents';
       
       if (tabId === 'dashboard') {
         navigate(`${basePath}/dashboard`);
@@ -65,7 +62,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    navigate(getDashboardPath(user));
   };
 
   // Mock notifications

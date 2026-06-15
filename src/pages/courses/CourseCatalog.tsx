@@ -132,8 +132,6 @@ const cardVariants = {
 function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
   course: Course; _index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
 }) {
-  const { user } = useAuth();
-  const userType = user?.user_type;
   const cardRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
@@ -236,7 +234,7 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
 
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/15">
           <div>
-            <p className="text-lg font-bold text-on-surface">{userType === 'school' ? 'Free Forever' : `₹${course.price}`}</p>
+            <p className="text-lg font-bold text-on-surface">₹{course.price}</p>
             <p className="text-[10px] text-on-surface-variant">{course.instructor}</p>
           </div>
           
@@ -471,7 +469,7 @@ export function CourseCatalog() {
               <CourseCard
                 key={course.id}
                 course={course}
-                index={i}
+                _index={i}
                 enrolled={isEnrolled(course.id)}
                 progress={getProgress(course.id)}
                 onEnroll={user?.role === 'student' ? handleEnroll : undefined}

@@ -29,8 +29,7 @@ export function CourseDetail() {
     if (!user || !id || !course) return;
     setEnrolling(true);
     
-    // If it is a paid course and user is not a school user
-    if (user?.user_type !== 'school' && course.price > 0) {
+    if (course.price > 0) {
       try {
         const order = await paymentsService.createOrder(id, course.price);
         
@@ -144,7 +143,7 @@ export function CourseDetail() {
                 <GlassCard className="sticky top-4">
                   <div className="text-center mb-5">
                     <p className="text-3xl font-bold text-neutral-900 dark:text-white mb-1">
-                      {user?.user_type === 'school' ? 'Free Forever' : `₹${course.price}`}
+                      ₹{course.price}
                     </p>
                     {enrolled && <p className="text-sm text-emerald-400">✓ Already enrolled</p>}
                   </div>
@@ -156,7 +155,7 @@ export function CourseDetail() {
                     </Link>
                   ) : (
                     <Button variant="primary" className="w-full justify-center" onClick={handleEnroll} loading={enrolling}>
-                      {user?.user_type === 'school' ? 'Enroll Now' : `Enroll Now — ₹${course.price}`}
+                      Enroll Now — ₹{course.price}
                     </Button>
                   )}
                   <div className="mt-4 space-y-2">

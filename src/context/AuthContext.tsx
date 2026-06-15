@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useReducer, useCallback } from 'react';
-import type { User, AuthState, UserRole } from '../types';
-import { authService } from '../services/auth.service';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
+import type { User, UserRole } from '../types';
+import { authService, getDashboardPath } from '../services/auth.service';
 import { supabase } from '../lib/supabase';
 
 interface AuthState {
@@ -8,15 +8,15 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  requireRoleSelection?: boolean;
+  requireRoleSelection: boolean;
 }
 
 interface AuthContextValue extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
-  register: (data: Parameters<typeof authService.register>[0]) => Promise<void>;
-  loginBypass: (role: UserRole) => void;
-  completeRoleSelection: (role: UserRole, teacherType?: 'college' | 'k12') => Promise<void>;
+  register: (data: Parameters<typeof authService.register>[0]) => Promise<User>;
+  completeRoleSelection: (role: UserRole, teacherTrack?: 'college' | 'k12') => Promise<void>;
+  getAuthenticatedRedirectPath: () => string;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -51,8 +51,9 @@ function authReducer(state: AuthState, action: Action): AuthState {
     case 'REQUIRE_ROLE_SELECTION':
       return {
         ...state,
+        user: null,
         token: action.payload.token,
-        isAuthenticated: false,
+        isAuthenticated: true,
         isLoading: false,
         requireRoleSelection: true,
       };
@@ -66,97 +67,52 @@ function authReducer(state: AuthState, action: Action): AuthState {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Initialize and listen to auth state changes
+  const loadSessionUser = useCallback(async (accessToken: string) => {
+    const profile = await authService.ensureProfileForSession();
+    if (!profile?.role) {
+      dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: accessToken } });
+      return;
+    }
+
+    const user = await authService.getMe();
+    dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: accessToken } });
+  }, []);
+
   useEffect(() => {
     let mounted = true;
 
     async function initializeAuth() {
       try {
-        const bypassUserStr = localStorage.getItem('scholarhub_bypass_user');
-        if (bypassUserStr) {
-          try {
-            const bypassUser = JSON.parse(bypassUserStr);
-            if (mounted) {
-              dispatch({ type: 'LOGIN_SUCCESS', payload: { user: bypassUser, token: 'mock-bypass-token' } });
-              return;
-            }
-          } catch (e) {
-            localStorage.removeItem('scholarhub_bypass_user');
-          }
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        if (!session) {
+          if (mounted) dispatch({ type: 'SET_LOADING', payload: false });
+          return;
         }
 
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session) {
-          const profile = await authService.getProfile(session.user.id);
-          if (profile && profile.role) {
-            let user = await authService.getMe().catch(() => null);
-            if (!user) {
-               user = {
-                 id: profile.id,
-                 name: profile.full_name,
-                 email: profile.email,
-                 role: profile.role,
-                 avatar: profile.avatar_url,
-                 createdAt: profile.created_at,
-               } as any;
-            } else {
-               user.role = profile.role;
-               user.name = profile.full_name || user.name;
-            }
-            if (mounted) {
-              dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
-            }
-          } else {
-            // No profile or missing role -> requires role selection
-            if (mounted) {
-              dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: session.access_token } });
-            }
-          }
-        } else {
-          if (mounted) {
-            dispatch({ type: 'SET_LOADING', payload: false });
-          }
-        }
+        if (mounted) await loadSessionUser(session.access_token);
       } catch (err) {
-        console.error('Error getting initial session', err);
-        if (mounted) {
-          dispatch({ type: 'SET_LOADING', payload: false });
-        }
+        console.error('[auth.initialize.error]', err);
+        if (mounted) dispatch({ type: 'SET_LOADING', payload: false });
       }
     }
 
     initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_OUT') {
+        dispatch({ type: 'LOGOUT' });
+        return;
+      }
+
+      if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session) {
         try {
-          const profile = await authService.getProfile(session.user.id);
-          if (profile && profile.role) {
-            let user = await authService.getMe().catch(() => null);
-            if (!user) {
-               user = {
-                 id: profile.id,
-                 name: profile.full_name,
-                 email: profile.email,
-                 role: profile.role,
-                 avatar: profile.avatar_url,
-                 createdAt: profile.created_at,
-               } as any;
-            } else {
-               user.role = profile.role;
-               user.name = profile.full_name || user.name;
-            }
-            dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
-          } else {
-            dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: session.access_token } });
-          }
+          await loadSessionUser(session.access_token);
         } catch (err) {
-          console.error('Error fetching user profile after sign in', err);
+          console.error('[auth.state_change.error]', err);
           dispatch({ type: 'SET_LOADING', payload: false });
         }
-      } else if (event === 'SIGNED_OUT') {
-        dispatch({ type: 'LOGOUT' });
       }
     });
 
@@ -164,13 +120,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [loadSessionUser]);
 
   const login = useCallback(async (email: string, password: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      // supabase.auth.onAuthStateChange will catch the successful login
-      await authService.login({ email, password });
+      const { user, token } = await authService.login({ email, password });
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      return user;
     } catch (err) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw err;
@@ -180,7 +137,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = useCallback(async (data: Parameters<typeof authService.register>[0]) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      await authService.register(data);
+      const { user, token } = await authService.register(data);
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      return user;
     } catch (err) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw err;
@@ -189,45 +148,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    localStorage.removeItem('scholarhub_bypass_user');
-    await supabase.auth.signOut();
+    await authService.logout();
   }, []);
 
-  const completeRoleSelection = useCallback(async (role: UserRole, teacherType?: 'college' | 'k12') => {
+  const completeRoleSelection = useCallback(async (role: UserRole, teacherTrack?: 'college' | 'k12') => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No session');
-      
-      const fullName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0];
-      
-      const profileData: any = {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) throw error || new Error('No active session');
+
+      await authService.createProfile({
         id: session.user.id,
-        email: session.user.email,
-        full_name: fullName,
-        avatar_url: session.user.user_metadata?.avatar_url || '',
-        role: role,
-      };
-      
-      if (teacherType) profileData.teacher_type = teacherType;
-      
-      await authService.createProfile(profileData);
-      
-      let user = await authService.getMe().catch(() => null);
-      if (!user) {
-         user = {
-           id: profileData.id,
-           name: profileData.full_name,
-           email: profileData.email,
-           role: profileData.role,
-           avatar: profileData.avatar_url,
-           createdAt: new Date().toISOString(),
-         } as any;
-      } else {
-         user.role = profileData.role as UserRole;
-         user.name = profileData.full_name;
-      }
-      
+        email: session.user.email || null,
+        full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || null,
+        avatar_url: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
+        role,
+        grade_level: role === 'teacher' && teacherTrack === 'k12' ? 'k12' : null,
+      });
+
+      const user = await authService.getMe();
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
     } catch (err) {
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -235,43 +174,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const loginBypass = useCallback((role: UserRole) => {
-    const mockUsers: Record<UserRole, User> = {
-      admin: {
-        id: 'da7eb000-0000-0000-0000-000000000000',
-        name: 'Benny Manuel (Demo Admin)',
-        email: 'admin@nexlearn.com',
-        role: 'admin',
-        avatar: 'https://ui-avatars.com/api/?name=Benny+Manuel&background=6D5DFC&color=fff',
-        createdAt: new Date().toISOString(),
-        user_type: 'college',
-      },
-      teacher: {
-        id: 'da7eb000-0000-0000-0000-000000000001',
-        name: 'Professor Smith (Demo Teacher)',
-        email: 'teacher@nexlearn.com',
-        role: 'teacher',
-        avatar: 'https://ui-avatars.com/api/?name=Professor+Smith&background=10B981&color=fff',
-        createdAt: new Date().toISOString(),
-        user_type: 'college',
-      },
-      student: {
-        id: 'da7eb000-0000-0000-0000-000000000002',
-        name: 'Ben (Demo Student)',
-        email: 'student@nexlearn.com',
-        role: 'student',
-        avatar: 'https://ui-avatars.com/api/?name=Ben&background=3B82F6&color=fff',
-        createdAt: new Date().toISOString(),
-        user_type: 'college',
-      }
-    };
-    const user = mockUsers[role];
-    localStorage.setItem('scholarhub_bypass_user', JSON.stringify(user));
-    dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: 'mock-bypass-token' } });
-  }, []);
+  const getAuthenticatedRedirectPath = useCallback(() => {
+    if (state.requireRoleSelection) return '/onboarding/role-selection';
+    return getDashboardPath(state.user);
+  }, [state.requireRoleSelection, state.user]);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, register, loginBypass, completeRoleSelection }}>
+    <AuthContext.Provider value={{ ...state, login, logout, register, completeRoleSelection, getAuthenticatedRedirectPath }}>
       {children}
     </AuthContext.Provider>
   );

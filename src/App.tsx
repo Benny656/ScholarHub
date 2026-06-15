@@ -30,6 +30,7 @@ import { LoadingScreen } from './components/ui/LoadingScreen';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { useTheme } from './hooks/useTheme';
+import { getDashboardPath } from './services/auth.service';
 
 // Auth pages
 import { Login } from './pages/auth/Login';
@@ -103,13 +104,18 @@ function AuthRedirector({ children }: { children: React.ReactNode }) {
   }
 
   if (isAuthenticated && user) {
-    if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
-    if (user.role === 'teacher') {
-      if ((user as any).teacher_type === 'k12') return <Navigate to="/k12-teacher/dashboard" replace />;
-      return <Navigate to="/teacher/dashboard" replace />;
-    }
-    return <Navigate to="/unistudents/dashboard" replace />;
+    return <Navigate to={getDashboardPath(user)} replace />;
   }
+
+  return <>{children}</>;
+}
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading, requireRoleSelection } = useAuth();
+
+  if (isLoading) return null;
+  if (requireRoleSelection) return <Navigate to="/onboarding/role-selection" replace />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   return <>{children}</>;
 }
@@ -125,50 +131,50 @@ function AppRoutes() {
         <Route path="/" element={<AuthRedirector><LandingPage /></AuthRedirector>} />
 
         {/* ─── Auth ─── */}
-        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-        <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/login" element={<AuthRedirector><PageWrapper><Login /></PageWrapper></AuthRedirector>} />
+        <Route path="/register" element={<AuthRedirector><PageWrapper><Register /></PageWrapper></AuthRedirector>} />
         <Route path="/onboarding/role-selection" element={<PageWrapper><RoleSelection /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
 
         {/* ─── Dashboards ─── */}
-        <Route path="/unistudents/dashboard" element={<DashboardWrapper><StudentDashboard /></DashboardWrapper>} />
-        <Route path="/school-student/dashboard" element={<DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper>} />
-        <Route path="/teacher/dashboard" element={<DashboardWrapper><TeacherDashboard /></DashboardWrapper>} />
-        <Route path="/k12-teacher/dashboard" element={<DashboardWrapper><TeacherDashboard /></DashboardWrapper>} />
-        <Route path="/admin/dashboard" element={<DashboardWrapper><AdminDashboard /></DashboardWrapper>} />
+        <Route path="/unistudents/dashboard" element={<ProtectedRoute><DashboardWrapper><StudentDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/school-student/dashboard" element={<ProtectedRoute><DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/k12-teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardWrapper><AdminDashboard /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Courses ─── */}
-        <Route path="/courses" element={<DashboardWrapper><CourseCatalog /></DashboardWrapper>} />
-        <Route path="/courses/create" element={<DashboardWrapper><CreateCourse /></DashboardWrapper>} />
-        <Route path="/courses/:id" element={<DashboardWrapper><CourseDetail /></DashboardWrapper>} />
-        <Route path="/courses/:id/edit" element={<DashboardWrapper><EditCourse /></DashboardWrapper>} />
+        <Route path="/courses" element={<ProtectedRoute><DashboardWrapper><CourseCatalog /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/courses/create" element={<ProtectedRoute><DashboardWrapper><CreateCourse /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/courses/:id" element={<ProtectedRoute><DashboardWrapper><CourseDetail /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/courses/:id/edit" element={<ProtectedRoute><DashboardWrapper><EditCourse /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Live Classroom ─── */}
-        <Route path="/classroom/:id" element={<DashboardWrapper><LiveClassroom /></DashboardWrapper>} />
+        <Route path="/classroom/:id" element={<ProtectedRoute><DashboardWrapper><LiveClassroom /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── LMS Course Player ─── */}
-        <Route path="/learn/:courseId/:lessonId" element={<DashboardWrapper><CoursePlayer /></DashboardWrapper>} />
+        <Route path="/learn/:courseId/:lessonId" element={<ProtectedRoute><DashboardWrapper><CoursePlayer /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Assignments ─── */}
-        <Route path="/assignments" element={<DashboardWrapper><Assignments /></DashboardWrapper>} />
-        <Route path="/assignments/:id" element={<DashboardWrapper><AssignmentDetail /></DashboardWrapper>} />
-        <Route path="/assignments/:id/quiz" element={<DashboardWrapper><Quiz /></DashboardWrapper>} />
+        <Route path="/assignments" element={<ProtectedRoute><DashboardWrapper><Assignments /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/assignments/:id" element={<ProtectedRoute><DashboardWrapper><AssignmentDetail /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/assignments/:id/quiz" element={<ProtectedRoute><DashboardWrapper><Quiz /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Other screens ─── */}
-        <Route path="/attendance" element={<DashboardWrapper><Attendance /></DashboardWrapper>} />
-        <Route path="/messages" element={<DashboardWrapper><Messages /></DashboardWrapper>} />
-        <Route path="/analytics" element={<DashboardWrapper><Analytics /></DashboardWrapper>} />
-        <Route path="/calendar" element={<DashboardWrapper><CalendarPage /></DashboardWrapper>} />
-        <Route path="/certificates" element={<DashboardWrapper><Certificates /></DashboardWrapper>} />
-        <Route path="/verify/:certId" element={<DashboardWrapper><CertificateVerify /></DashboardWrapper>} />
-        <Route path="/profile" element={<DashboardWrapper><Profile /></DashboardWrapper>} />
+        <Route path="/attendance" element={<ProtectedRoute><DashboardWrapper><Attendance /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/messages" element={<ProtectedRoute><DashboardWrapper><Messages /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><DashboardWrapper><Analytics /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><DashboardWrapper><CalendarPage /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/certificates" element={<ProtectedRoute><DashboardWrapper><Certificates /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/verify/:certId" element={<ProtectedRoute><DashboardWrapper><CertificateVerify /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><DashboardWrapper><Profile /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/pricing" element={<PageWrapper><PricingPage /></PageWrapper>} />
 
         {/* ─── Secure Admin Panel ─── */}
         <Route path="/scholar-hub-admin-panel" element={<Navigate to="/scholar-hub-admin-panel/login" replace />} />
         <Route path="/scholar-hub-admin-panel/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
-        <Route path="/scholar-hub-admin-panel/dashboard" element={<DashboardWrapper><AdminGuard><AdminDashboard /></AdminGuard></DashboardWrapper>} />
+        <Route path="/scholar-hub-admin-panel/dashboard" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AdminDashboard /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Fallbacks ─── */}
         <Route path="/404" element={<PageWrapper><NotFound /></PageWrapper>} />

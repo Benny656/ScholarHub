@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Moon, Sun, BookOpen, Users } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import type { UserRole } from '../../types';
+import { getDashboardPath } from '../../services/auth.service';
 import toast from 'react-hot-toast';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -15,24 +16,16 @@ export function RoleSelection() {
 
   useEffect(() => {
     if (isAuthenticated && user && !requireRoleSelection) {
-      if (user.role === 'admin') navigate('/admin/dashboard', { replace: true });
-      else if (user.role === 'teacher') {
-        if ((user as any).teacher_type === 'k12') navigate('/k12-teacher/dashboard', { replace: true });
-        else navigate('/teacher/dashboard', { replace: true });
-      }
-      else navigate('/unistudents/dashboard', { replace: true });
+      navigate(getDashboardPath(user), { replace: true });
     }
   }, [isAuthenticated, user, requireRoleSelection, navigate]);
 
-  const handleRoleSelection = async (selectedRole: UserRole, teacherType?: 'college' | 'k12') => {
+  const handleRoleSelection = async (selectedRole: UserRole, teacherTrack?: 'college' | 'k12') => {
     setIsLoading(true);
     try {
-      await completeRoleSelection(selectedRole, teacherType);
+      await completeRoleSelection(selectedRole, teacherTrack);
       toast.success(`Welcome! Profile completed.`, { icon: '🎉' });
-      
-      if (selectedRole === 'student') navigate('/unistudents/dashboard');
-      else if (selectedRole === 'teacher' && teacherType === 'college') navigate('/teacher/dashboard');
-      else if (selectedRole === 'teacher' && teacherType === 'k12') navigate('/k12-teacher/dashboard');
+      navigate(getDashboardPath({ role: selectedRole, teacherTrack }));
       
     } catch (err: any) {
       toast.error(err.message || 'Failed to complete profile');

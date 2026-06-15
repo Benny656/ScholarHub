@@ -12,6 +12,12 @@ export type UserRow = {
   streak: number;
   last_login: string | null;
   created_at: string;
+  student_id: string | null;
+  grade_level: string | null;
+  teacher_id: string | null;
+  institution: string | null;
+  department: string | null;
+  expertise: string | null;
   status: 'active' | 'suspended' | null;
 };
 
@@ -21,8 +27,14 @@ export type ProfileRow = {
   full_name: string | null;
   avatar_url: string | null;
   role: 'student' | 'teacher' | 'admin' | null;
-  provider: string | null;
+  institution: string | null;
+  student_id: string | null;
+  grade_level: string | null;
+  teacher_id: string | null;
+  department: string | null;
+  expertise: string | null;
   created_at: string;
+  updated_at: string | null;
 };
 
 export type CourseRow = {

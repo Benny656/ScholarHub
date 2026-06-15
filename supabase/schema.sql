@@ -1,4 +1,4 @@
--- Enable required extensions
+﻿-- Enable required extensions
 create extension if not exists "uuid-ossp";
 
 -- ───────────────────────────────────────────────────────────────────
@@ -15,11 +15,9 @@ create table if not exists public.users (
   streak integer DEFAULT 0,
   last_login date,
   created_at timestamptz DEFAULT now(),
-  user_type text CHECK (user_type IN ('school','college')) DEFAULT 'college',
-  school_name text,
-  grade_class text,
-  roll_number text,
   student_id text,
+  grade_level text,
+  teacher_id text,
   institution text,
   department text,
   expertise text,
@@ -33,7 +31,7 @@ as $$
 begin
   insert into public.users (
     id, name, email, role, avatar_url, xp, level, streak, last_login,
-    user_type, school_name, grade_class, roll_number, student_id, institution, department, expertise, status
+    student_id, grade_level, teacher_id, institution, department, expertise, status
   )
   values (
     new.id,
@@ -45,11 +43,9 @@ begin
     1,
     0,
     current_date,
-    coalesce(new.raw_user_meta_data->>'user_type', 'college'),
-    new.raw_user_meta_data->>'school_name',
-    new.raw_user_meta_data->>'grade_class',
-    new.raw_user_meta_data->>'roll_number',
     new.raw_user_meta_data->>'student_id',
+    new.raw_user_meta_data->>'grade_level',
+    new.raw_user_meta_data->>'teacher_id',
     new.raw_user_meta_data->>'institution',
     new.raw_user_meta_data->>'department',
     new.raw_user_meta_data->>'expertise',
@@ -471,39 +467,35 @@ create policy "Users view recordings for enrolled courses" on public.recordings
     select 1 from public.live_sessions ls
     where ls.id = recordings.session_id and ls.teacher_id = auth.uid()
   ));
+-- ───────────────────────────────────────────────────────────────────
+-- 19. PROFILES
+-- ───────────────────────────────────────────────────────────────────
+create table if not exists public.profiles (
+  id uuid references auth.users PRIMARY KEY,
+  email text,
+  full_name text,
+  avatar_url text,
+  role text CHECK (role IN ('student','teacher','admin')),
+  institution text,
+  student_id text,
+  grade_level text,
+  teacher_id text,
+  department text,
+  expertise text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
 
+alter table public.profiles enable row level security;
 
- - -    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
- - -   1 9 .   P R O F I L E S 
- - -    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
- c r e a t e   t a b l e   i f   n o t   e x i s t s   p u b l i c . p r o f i l e s   ( 
-     i d   u u i d   r e f e r e n c e s   a u t h . u s e r s   P R I M A R Y   K E Y , 
-     e m a i l   t e x t , 
-     f u l l _ n a m e   t e x t , 
-     a v a t a r _ u r l   t e x t , 
-     r o l e   t e x t   C H E C K   ( r o l e   I N   ( ' s t u d e n t ' , ' t e a c h e r ' , ' a d m i n ' ) ) , 
-     p r o v i d e r   t e x t , 
-     c r e a t e d _ a t   t i m e s t a m p t z   D E F A U L T   n o w ( ) 
- ) ; 
- 
- a l t e r   t a b l e   p u b l i c . p r o f i l e s   e n a b l e   r o w   l e v e l   s e c u r i t y ; 
- c r e a t e   p o l i c y   \  
- A d m i n  
- f u l l  
- a c c e s s  
- o n  
- p r o f i l e s \   o n   p u b l i c . p r o f i l e s   f o r   a l l   u s i n g   ( p u b l i c . i s _ a d m i n ( ) ) ; 
- c r e a t e   p o l i c y   \ U s e r s  
- r e a d  
- s e l f  
- p r o f i l e \   o n   p u b l i c . p r o f i l e s   f o r   s e l e c t   u s i n g   ( a u t h . u i d ( )   =   i d ) ; 
- c r e a t e   p o l i c y   \ U s e r s  
- i n s e r t  
- s e l f  
- p r o f i l e \   o n   p u b l i c . p r o f i l e s   f o r   i n s e r t   w i t h   c h e c k   ( a u t h . u i d ( )   =   i d ) ; 
- c r e a t e   p o l i c y   \ U s e r s  
- u p d a t e  
- s e l f  
- p r o f i l e \   o n   p u b l i c . p r o f i l e s   f o r   u p d a t e   u s i n g   ( a u t h . u i d ( )   =   i d ) ; 
-  
- 
+create policy "Admin full access on profiles" on public.profiles
+  for all using (public.is_admin());
+
+create policy "Users read self profile" on public.profiles
+  for select using (auth.uid() = id);
+
+create policy "Users insert self profile" on public.profiles
+  for insert with check (auth.uid() = id);
+
+create policy "Users update self profile" on public.profiles
+  for update using (auth.uid() = id) with check (auth.uid() = id);

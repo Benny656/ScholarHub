@@ -85,8 +85,7 @@ begin
       'authenticated',
       jsonb_build_object(
         'name',      p_name,
-        'role',      'admin',
-        'user_type', 'college'
+        'role',      'admin'
       ),
       now(),
       now(),
@@ -108,7 +107,6 @@ begin
     level,
     streak,
     last_login,
-    user_type,
     status
   ) values (
     v_user_id,
@@ -120,7 +118,6 @@ begin
     1,
     0,
     current_date,
-    'college',
     'active'
   )
   on conflict (id) do update set

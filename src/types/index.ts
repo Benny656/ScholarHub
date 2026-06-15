@@ -1,5 +1,6 @@
 // ─── Auth ────────────────────────────────────────────────────────────────────
 export type UserRole = 'student' | 'teacher' | 'admin';
+export type TeacherTrack = 'college' | 'k12';
 
 export interface User {
   id: string;
@@ -11,21 +12,18 @@ export interface User {
   phone?: string;
   institution?: string;
   createdAt: string;
+  updatedAt?: string;
   // Student-specific
   studentId?: string;
+  gradeLevel?: string;
   enrolledCourses?: string[];
   // Teacher-specific
   teacherId?: string;
   department?: string;
   expertise?: string[];
+  teacherTrack?: TeacherTrack;
   // Admin-specific
   permissions?: string[];
-  
-  // School student additions
-  user_type?: 'school' | 'college';
-  school_name?: string;
-  grade_class?: string;
-  roll_number?: string;
   status?: 'active' | 'suspended';
 }
 

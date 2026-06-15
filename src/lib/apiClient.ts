@@ -6,29 +6,12 @@ export async function apiFetch<T = any>(
   options: RequestInit = {}
 ): Promise<T> {
   const { data: { session } } = await supabase.auth.getSession();
-  let token = session?.access_token;
-  let bypassRole: string | null = null;
-
-  if (!token) {
-    const bypassUserStr = localStorage.getItem('scholarhub_bypass_user');
-    if (bypassUserStr) {
-      try {
-        const bypassUser = JSON.parse(bypassUserStr);
-        token = 'mock-bypass-token';
-        bypassRole = bypassUser.role;
-      } catch (e) {
-        // ignore
-      }
-    }
-  }
+  const token = session?.access_token;
 
   const headers = new Headers(options.headers);
   headers.set('Content-Type', 'application/json');
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
-  }
-  if (bypassRole) {
-    headers.set('x-bypass-role', bypassRole);
   }
 
   const response = await fetch(`${BASE_URL}${path}`, {
