@@ -25,6 +25,7 @@ import { NotFound } from './components/NotFound';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { FloatingElements3D } from './components/FloatingElements3D';
 import { LoadingScreen } from './components/ui/LoadingScreen';
+import { AppLoading } from './components/ui/AppLoading';
 
 // Auth & Theme context
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -98,7 +99,7 @@ function DashboardWrapper({ children }: { children: React.ReactNode }) {
 function AuthRedirector({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user, requireRoleSelection, isLoading } = useAuth();
 
-  if (isLoading) return null;
+  if (isLoading) return <AppLoading />;
 
   if (requireRoleSelection) {
     return <Navigate to="/onboarding/role-selection" replace />;
@@ -114,7 +115,7 @@ function AuthRedirector({ children }: { children: React.ReactNode }) {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, requireRoleSelection } = useAuth();
 
-  if (isLoading) return null;
+  if (isLoading) return <AppLoading />;
   if (requireRoleSelection) return <Navigate to="/onboarding/role-selection" replace />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
@@ -223,10 +224,11 @@ function ThemeAwareToaster() {
 function AppContent() {
   const { isLoading: authLoading } = useAuth();
   const [appReady, setAppReady] = useState(false);
+  const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
-      {(!appReady || authLoading) ? (
+      {(!appReady && location.pathname === '/') ? (
         <LoadingScreen key="global-loader" onComplete={() => setAppReady(true)} />
       ) : (
         <motion.div
