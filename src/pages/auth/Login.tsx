@@ -251,13 +251,10 @@ export function Login() {
                   </button>
                 </div>
 
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-outline-variant/30" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase font-bold tracking-wider text-on-surface-variant">
-                    <span className="bg-surface-container-lowest/90 dark:bg-surface-container-lowest/60 px-3">OR</span>
-                  </div>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex-1 border-t border-outline-variant/30" />
+                  <span className="text-xs uppercase font-bold tracking-wider text-on-surface-variant shrink-0">OR</span>
+                  <div className="flex-1 border-t border-outline-variant/30" />
                 </div>
 
                 {/* Main login Form */}
