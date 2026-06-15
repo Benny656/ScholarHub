@@ -32,13 +32,14 @@ export const uploadService = {
 
     return new Promise<UploadResult>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://localhost:5000/api/upload');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      xhr.open('POST', `${apiUrl}/upload`);
       
       if (token) {
         xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       }
 
-      xhr.upload.onprogress = (event) => {
+      xhr.upload.onprogress = (event: any) => {
         if (event.lengthComputable) {
           const percentage = Math.round((event.loaded / event.total) * 100);
           onProgress?.({ loaded: event.loaded, total: event.total, percentage });

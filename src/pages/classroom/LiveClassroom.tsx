@@ -308,7 +308,8 @@ export function LiveClassroom() {
 
   // Setup Socket.IO connection and listeners
   useEffect(() => {
-    const socket = io('http://localhost:5000');
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+    const socket = io(socketUrl);
     socketRef.current = socket;
 
     if (id) {
