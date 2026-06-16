@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, Building, Tag } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, GraduationCap, BookOpen, Building, Tag, MailCheck } from 'lucide-react';
 import { AuthLayout } from '../../layouts/AuthLayout';
 import { authService } from '../../services/auth.service';
 import type { UserRole } from '../../types';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { getDashboardPath } from '../../services/auth.service';
 
 export function Register() {
   const [role, setRole] = useState<'student' | 'teacher'>('student');
   const [step, setStep] = useState(1);
-  const { register } = useAuth();
+  const [emailConfirmationSent, setEmailConfirmationSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const { register, isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -26,7 +30,13 @@ export function Register() {
   const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+
+  // Redirect after successful registration (email confirmation disabled path)
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(getDashboardPath(user), { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const update = (field: string, value: string) => {
     setForm(p => ({ ...p, [field]: value }));
@@ -84,10 +94,17 @@ export function Register() {
         department: role === 'teacher' ? form.department : undefined,
         expertise: role === 'teacher' ? form.expertise : undefined,
       });
+      // If we reach here, registration succeeded and a session was returned.
+      // The useEffect above will redirect once isAuthenticated becomes true.
       toast.success('Welcome to ScholarHub! 🎉');
-      navigate(role === 'student' ? '/unistudents/dashboard' : '/teacher/dashboard');
     } catch (err: any) {
-      toast.error(authService.getRateLimitMessage(err) || err.message || 'Registration failed. Please try again.');
+      if (err?.code === 'EMAIL_CONFIRMATION_REQUIRED') {
+        // Show the email confirmation screen — not an error
+        setRegisteredEmail(form.email);
+        setEmailConfirmationSent(true);
+      } else {
+        toast.error(authService.getRateLimitMessage(err) || err.message || 'Registration failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +115,46 @@ export function Register() {
   const inputStyle = { fontFamily: 'Inter, sans-serif' };
 
   const totalSteps = 2;
+
+  // ── Email confirmation sent screen ──────────────────────────────────────────
+  if (emailConfirmationSent) {
+    return (
+      <AuthLayout title="Check your email" subtitle="One more step to get started">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-6 py-4 text-center"
+        >
+          <div className="w-20 h-20 rounded-full bg-[#6D5DFC]/10 flex items-center justify-center">
+            <MailCheck className="w-10 h-10 text-[#6D5DFC]" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg text-on-surface">Confirm your email</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed">
+              We sent a verification link to{' '}
+              <span className="font-semibold text-on-surface">{registeredEmail}</span>.
+              Click the link in the email to activate your account.
+            </p>
+          </div>
+          <div className="w-full p-4 rounded-xl bg-[#6D5DFC]/5 border border-[#6D5DFC]/20 text-xs text-on-surface-variant">
+            Didn't receive it? Check your spam folder, or{' '}
+            <button
+              onClick={() => setEmailConfirmationSent(false)}
+              className="text-[#6D5DFC] font-semibold hover:underline"
+            >
+              try a different email
+            </button>.
+          </div>
+          <Link
+            to="/login"
+            className="text-sm font-semibold text-[#6D5DFC] hover:opacity-80 transition-opacity"
+          >
+            Back to Sign In
+          </Link>
+        </motion.div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout title="Create your account" subtitle="Join 12,000+ learners on ScholarHub">

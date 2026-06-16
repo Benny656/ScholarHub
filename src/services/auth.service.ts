@@ -271,36 +271,26 @@ export const authService = {
     }
     if (!authData.user) throw new Error('Signup failed: No user returned');
 
-    // If email confirmation is enabled, session will be null.
-    // We cannot query or insert into profiles because auth.uid() is null.
+    // If email confirmation is enabled, Supabase returns a user but no session.
+    // We cannot query or insert into profiles because auth.uid() is null server-side.
+    // Throw a typed error so the UI can display a friendly "check your email" message
+    // rather than attempting a broken auto-login with an empty token.
     if (!authData.session) {
-      const teacherTrack: TeacherTrack | undefined = payload.role === 'teacher'
-        ? payload.gradeLevel === 'k12' ? 'k12' : 'college'
-        : undefined;
-
-      const mappedUser: User = {
-        id: authData.user.id,
-        name: payload.name,
-        email: payload.email,
-        role: payload.role,
-        avatar: payload.avatarUrl || '',
-        createdAt: authData.user.created_at,
-        studentId: payload.studentId,
-        gradeLevel: payload.gradeLevel,
-        teacherId: payload.teacherId,
-        institution: payload.institution,
-        department: payload.department,
-        expertise: payload.expertise ? payload.expertise.split(',').map(item => item.trim()).filter(Boolean) : undefined,
-        teacherTrack,
-      };
-      
-      return { user: mappedUser, token: '' };
+      console.log('[auth.register] Email confirmation required — no session returned');
+      const err: any = new Error('Account created! Please check your email to verify your account before signing in.');
+      err.code = 'EMAIL_CONFIRMATION_REQUIRED';
+      throw err;
     }
+
+    // Session exists — email confirmation is disabled or auto-confirmed.
+    // Wait a brief moment for any DB trigger to create the profile row.
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     const user = await this.getCurrentUser();
     if (!user) {
+      console.warn('[auth.register] getCurrentUser returned null after signup — retrying profile fetch');
       const profile = await this.getProfile(authData.user.id);
-      if (!profile) throw new Error('Profile creation pending');
+      if (!profile) throw new Error('Profile creation failed. Please try logging in.');
       return { user: mapProfileToUser(authData.user, profile), token: authData.session.access_token };
     }
 

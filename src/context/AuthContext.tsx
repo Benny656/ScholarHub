@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import type { User, UserRole } from '../types';
 import { authService, getDashboardPath } from '../services/auth.service';
 import { supabase } from '../lib/supabase';
@@ -67,52 +67,86 @@ function authReducer(state: AuthState, action: Action): AuthState {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  // Guard: when login() or register() are in progress, suppress the concurrent
+  // onAuthStateChange SIGNED_IN event so we don't double-dispatch.
+  const isHandlingExplicitAuth = useRef(false);
+
   const loadSessionUser = useCallback(async (accessToken: string) => {
+    console.log('[auth] loadSessionUser → fetching profile for session token');
     const profile = await authService.ensureProfileForSession();
+    console.log('[auth] ensureProfileForSession →', profile ? `role=${profile.role}` : 'null profile');
+
     if (!profile?.role) {
+      console.log('[auth] No role on profile → dispatching REQUIRE_ROLE_SELECTION');
       dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: accessToken } });
       return;
     }
 
     const user = await authService.getMe();
+    console.log('[auth] getMe →', { id: user.id, role: user.role, name: user.name });
     dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: accessToken } });
   }, []);
 
   useEffect(() => {
     let mounted = true;
 
-    async function initializeAuth() {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-
-        if (!session) {
-          if (mounted) dispatch({ type: 'SET_LOADING', payload: false });
-          return;
-        }
-
-        if (mounted) await loadSessionUser(session.access_token);
-      } catch (err) {
-        console.error('[auth.initialize.error]', err);
-        if (mounted) dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    }
-
-    initializeAuth();
-
+    // ─── ONLY use onAuthStateChange for session restoration ──────────────────
+    // Do NOT call getSession() separately — Supabase v2 fires INITIAL_SESSION
+    // on mount which covers the persisted-session-restore case.  Calling both
+    // causes a race where loadSessionUser() runs twice in parallel.
+    // ─────────────────────────────────────────────────────────────────────────
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('[auth] onAuthStateChange →', event, session ? `user=${session.user.id}` : 'no session');
+
+      if (!mounted) {
+        console.log('[auth] Component unmounted — ignoring event:', event);
+        return;
+      }
+
+      // ── INITIAL_SESSION: fires on every page load / app boot ──────────────
+      if (event === 'INITIAL_SESSION') {
+        if (!session) {
+          // No persisted session — user is logged out. Stop loading.
+          console.log('[auth] INITIAL_SESSION → no session → user is logged out');
+          dispatch({ type: 'SET_LOADING', payload: false });
+        } else {
+          // Restore session from storage (page refresh / browser reopen)
+          console.log('[auth] INITIAL_SESSION → restoring session');
+          try {
+            await loadSessionUser(session.access_token);
+          } catch (err) {
+            console.error('[auth] INITIAL_SESSION restore error:', err);
+            dispatch({ type: 'SET_LOADING', payload: false });
+          }
+        }
+        return;
+      }
+
+      // ── SIGNED_OUT ────────────────────────────────────────────────────────
       if (event === 'SIGNED_OUT') {
+        console.log('[auth] SIGNED_OUT → dispatching LOGOUT');
         dispatch({ type: 'LOGOUT' });
         return;
       }
 
-      if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session) {
-        try {
-          await loadSessionUser(session.access_token);
-        } catch (err) {
-          console.error('[auth.state_change.error]', err);
-          dispatch({ type: 'SET_LOADING', payload: false });
+      // ── SIGNED_IN / TOKEN_REFRESHED / USER_UPDATED ────────────────────────
+      // Skip if an explicit login() / register() call is already handling this.
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        if (isHandlingExplicitAuth.current) {
+          console.log('[auth]', event, '→ suppressed (explicit auth in progress)');
+          return;
         }
+
+        if (session) {
+          console.log('[auth]', event, '→ loading session user');
+          try {
+            await loadSessionUser(session.access_token);
+          } catch (err) {
+            console.error('[auth]', event, 'error:', err);
+            dispatch({ type: 'SET_LOADING', payload: false });
+          }
+        }
+        return;
       }
     });
 
@@ -123,35 +157,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [loadSessionUser]);
 
   const login = useCallback(async (email: string, password: string) => {
+    console.log('[auth] login → starting for', email);
     dispatch({ type: 'SET_LOADING', payload: true });
+    isHandlingExplicitAuth.current = true;
     try {
       const { user, token } = await authService.login({ email, password });
+      console.log('[auth] login → success, user:', { id: user.id, role: user.role });
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
       return user;
     } catch (err) {
+      console.error('[auth] login → error:', err);
       dispatch({ type: 'SET_LOADING', payload: false });
       throw err;
+    } finally {
+      // Release guard after a short tick so the concurrent SIGNED_IN event
+      // (which fires synchronously from Supabase's signInWithPassword) is
+      // already past the isHandlingExplicitAuth check before we clear it.
+      setTimeout(() => {
+        isHandlingExplicitAuth.current = false;
+      }, 0);
     }
   }, []);
 
   const register = useCallback(async (data: Parameters<typeof authService.register>[0]) => {
+    console.log('[auth] register → starting for', data.email);
     dispatch({ type: 'SET_LOADING', payload: true });
+    isHandlingExplicitAuth.current = true;
     try {
       const { user, token } = await authService.register(data);
+      console.log('[auth] register → success, user:', { id: user.id, role: user.role });
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
       return user;
-    } catch (err) {
-      dispatch({ type: 'SET_LOADING', payload: false });
+    } catch (err: any) {
+      // Email confirmation required — not a real error, reset loading gently
+      if (err?.code === 'EMAIL_CONFIRMATION_REQUIRED') {
+        console.log('[auth] register → email confirmation required, resetting loading');
+        dispatch({ type: 'SET_LOADING', payload: false });
+      } else {
+        console.error('[auth] register → error:', err);
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
       throw err;
+    } finally {
+      setTimeout(() => {
+        isHandlingExplicitAuth.current = false;
+      }, 0);
     }
   }, []);
 
   const logout = useCallback(async () => {
+    console.log('[auth] logout → signing out');
     dispatch({ type: 'SET_LOADING', payload: true });
     await authService.logout();
+    // SIGNED_OUT event will fire from onAuthStateChange and dispatch LOGOUT
   }, []);
 
   const completeRoleSelection = useCallback(async (role: UserRole, trackOrLevel?: 'college' | 'k12') => {
+    console.log('[auth] completeRoleSelection → role:', role, 'track:', trackOrLevel);
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -167,8 +229,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       const user = await authService.getMe();
+      console.log('[auth] completeRoleSelection → profile created, user:', { id: user.id, role: user.role });
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: session.access_token } });
     } catch (err) {
+      console.error('[auth] completeRoleSelection → error:', err);
       dispatch({ type: 'SET_LOADING', payload: false });
       throw err;
     }
@@ -176,7 +240,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getAuthenticatedRedirectPath = useCallback(() => {
     if (state.requireRoleSelection) return '/onboarding/role-selection';
-    return getDashboardPath(state.user);
+    const path = getDashboardPath(state.user);
+    console.log('[auth] getAuthenticatedRedirectPath →', path);
+    return path;
   }, [state.requireRoleSelection, state.user]);
 
   return (
