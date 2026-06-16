@@ -19,12 +19,20 @@ const allowedOrigins = [
   'http://127.0.0.1:5173'
 ];
 
+if (process.env.CORS_ORIGIN) {
+  allowedOrigins.push(...process.env.CORS_ORIGIN.split(',').map(url => url.trim()));
+}
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(null, true); // Fallback for debugging, let's allow all for now
+      if (process.env.NODE_ENV === 'production') {
+        callback(new Error('Not allowed by CORS'));
+      } else {
+        callback(null, true); // Fallback for local debugging
+      }
     }
   },
   credentials: true
@@ -52,8 +60,11 @@ app.get('/health', (req, res) => {
 // Configure Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: '*', // Allow all origins for sockets
-    methods: ['GET', 'POST']
+    origin: process.env.NODE_ENV === 'production' && process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',').map(url => url.trim()) 
+      : '*',
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
