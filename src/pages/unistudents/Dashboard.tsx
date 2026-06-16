@@ -1,693 +1,688 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line
-} from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, Navigate } from 'react-router-dom';
+import { getDashboardPath } from '../../services/auth.service';
 import { 
-  BookOpen, Clock, AlertTriangle, Calendar, ChevronRight, 
-  MessageSquare, Sparkles, TrendingUp, PlayCircle, FileText, 
-  CheckCircle2, Award, ArrowRight, Video, FileImage, 
-  Download, Map, Monitor, Share2, Edit3, Hand,
-  Circle, GraduationCap, Bell, ExternalLink
+  BookOpen, 
+  Clock, 
+  AlertTriangle, 
+  Calendar, 
+  ChevronRight, 
+  PlayCircle, 
+  FileText, 
+  CheckCircle2, 
+  Award, 
+  ArrowRight, 
+  Video, 
+  Monitor,
+  Activity,
+  GraduationCap,
+  RefreshCw,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { PeerReviewCenter } from '../../components/features/PeerReviewCenter';
-import { AIStudyPlanner } from '../../components/features/AIStudyPlanner';
-import { OfflineSync } from '../../components/features/OfflineSync';
-import { VoiceAssistantModal } from '../../components/features/VoiceAssistantModal';
-import { Mic } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+import { GlassCard, Button, ProgressBar } from '../../components/ui/index';
 
-// --- Mock Data ---
-const ACADEMIC_DATA = {
-  cgpa: '3.82',
-  maxCgpa: '4.0',
-  attendance: 92,
-  activeCourses: 4,
-  pendingAssignments: 3,
-  semester: 'Fall 2026',
-  creditsCompleted: 45,
-  creditsRemaining: 75,
-  academicStanding: 'Excellent',
-};
+interface DbCourse {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  duration_hours: number;
+  total_lessons: number;
+  teacher_id: string;
+  users: {
+    name: string;
+    avatar_url: string;
+  } | null;
+}
 
-const COURSES = [
-  { id: 'c1', title: 'Advanced Data Structures', faculty: 'Dr. Alan Turing', progress: 68, nextSession: 'Tomorrow, 10:00 AM', color: 'bg-indigo-500' },
-  { id: 'c2', title: 'Machine Learning Fundamentals', faculty: 'Prof. Ada Lovelace', progress: 34, nextSession: 'Wed, 2:00 PM', color: 'bg-emerald-500' },
-  { id: 'c3', title: 'Cloud Computing Architecture', faculty: 'Dr. Vint Cerf', progress: 85, nextSession: 'Thu, 1:00 PM', color: 'bg-blue-500' },
-  { id: 'c4', title: 'Quantum Computing Intro', faculty: 'Prof. Richard Feynman', progress: 12, nextSession: 'Fri, 9:00 AM', color: 'bg-purple-500' },
-];
+interface EnrollmentWithCourse {
+  progress: number;
+  enrolled_at: string;
+  courses: DbCourse | null;
+}
 
-const ASSIGNMENTS = {
-  dueToday: [
-    { id: 'a1', title: 'Graph Traversal Implementation', course: 'Adv. Data Structures', time: '11:59 PM', priority: 'high' }
-  ],
-  upcoming: [
-    { id: 'a2', title: 'Neural Network Project', course: 'Machine Learning', date: 'Oct 15', priority: 'medium' },
-    { id: 'a3', title: 'AWS Infrastructure Diagram', course: 'Cloud Computing', date: 'Oct 18', priority: 'low' }
-  ],
-  submitted: [
-    { id: 'a4', title: 'Binary Trees Essay', course: 'Adv. Data Structures', grade: 'Pending' }
-  ]
-};
+interface LiveClass {
+  id: string;
+  title: string;
+  scheduled_at: string;
+  room_id: string;
+  status: string;
+  courses: {
+    id: string;
+    title: string;
+    users: {
+      name: string;
+    } | null;
+  } | null;
+}
 
-const PERFORMANCE_DATA = [
-  { subject: 'CS101', grade: 95 },
-  { subject: 'CS102', grade: 88 },
-  { subject: 'MTH201', grade: 92 },
-  { subject: 'PHY101', grade: 78 },
-  { subject: 'ENG101', grade: 85 },
-];
+interface PendingAssignment {
+  id: string;
+  title: string;
+  due_date: string;
+  max_grade: number;
+  course_id: string;
+  courses: {
+    title: string;
+  } | null;
+}
 
-const ATTENDANCE_TREND = [
-  { week: 'W1', present: 100 },
-  { week: 'W2', present: 95 },
-  { week: 'W3', present: 90 },
-  { week: 'W4', present: 92 },
-  { week: 'W5', present: 88 },
-  { week: 'W6', present: 95 },
-];
-
-const CALENDAR_EVENTS = [
-  { id: 'e1', title: 'Midterm Physics', type: 'exam', time: 'Oct 14, 9:00 AM' },
-  { id: 'e2', title: 'Guest Lecture: AI Ethics', type: 'event', time: 'Oct 16, 3:00 PM' },
-];
-
-const CERTIFICATES = [
-  { id: 'cert1', title: 'AWS Cloud Practitioner', date: 'Sep 2026' },
-  { id: 'cert2', title: 'Python Data Analysis', date: 'Aug 2026' },
-];
-
-// --- NEW: Learning Resources Data ---
-const RESOURCES = {
-  Videos: [
-    { id: 'v1', title: 'Intro to Neural Networks', course: 'Machine Learning', duration: '32 min' },
-    { id: 'v2', title: 'Binary Search Trees Deep Dive', course: 'Data Structures', duration: '45 min' },
-    { id: 'v3', title: 'AWS EC2 Setup Guide', course: 'Cloud Computing', duration: '18 min' },
-  ],
-  PDFs: [
-    { id: 'p1', title: 'Graph Algorithms Cheatsheet', course: 'Data Structures', size: '1.2 MB' },
-    { id: 'p2', title: 'ML Model Evaluation Notes', course: 'Machine Learning', size: '845 KB' },
-    { id: 'p3', title: 'Quantum Gates Reference', course: 'Quantum Computing', size: '2.1 MB' },
-  ],
-  PPTs: [
-    { id: 's1', title: 'Week 8: Recurrent Networks', course: 'Machine Learning', slides: '28 slides' },
-    { id: 's2', title: 'Distributed Systems Overview', course: 'Cloud Computing', slides: '42 slides' },
-  ],
-  Paths: [
-    { id: 'lp1', title: 'ML Engineer Learning Path', progress: 38, modules: 12 },
-    { id: 'lp2', title: 'Cloud Architecture Roadmap', progress: 65, modules: 8 },
-  ],
-};
-
-// --- NEW: Grades Data ---
-const GRADES = [
-  { subject: 'Advanced Data Structures', code: 'CS301', grade: 'A', gpa: 4.0, credits: 4, status: 'In Progress' },
-  { subject: 'Machine Learning Fund.', code: 'CS402', grade: 'A-', gpa: 3.7, credits: 3, status: 'In Progress' },
-  { subject: 'Cloud Computing Arch.', code: 'CS415', grade: 'B+', gpa: 3.3, credits: 3, status: 'In Progress' },
-  { subject: 'Quantum Computing Intro', code: 'CS490', grade: 'A', gpa: 4.0, credits: 3, status: 'In Progress' },
-  { subject: 'Technical Writing', code: 'ENG201', grade: 'B+', gpa: 3.3, credits: 2, status: 'Complete' },
-];
-
-// --- Components ---
-
-const Panel = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
-  <div className={`bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden ${className}`}>
-    {children}
-  </div>
-);
-
-const PanelHeader = ({ title, action }: { title: string, action?: React.ReactNode }) => (
-  <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
-    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{title}</h3>
-    {action && <div className="text-xs">{action}</div>}
-  </div>
-);
+interface ActivityItem {
+  id: string;
+  type: 'enrollment' | 'submission' | 'attendance' | 'certificate';
+  title: string;
+  timestamp: string;
+  badgeText: string;
+  badgeVariant: 'blue' | 'emerald' | 'amber' | 'purple';
+  icon: any;
+}
 
 export function StudentDashboard() {
   const { user } = useAuth();
-  const firstName = user?.name ? user.name.split(' ')[0] : 'Ben';
-  const [resourceTab, setResourceTab] = useState<'Videos' | 'PDFs' | 'PPTs' | 'Paths'>('Videos');
-  const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+
+  if (user && (user.role !== 'student' || user.gradeLevel === 'k12')) {
+    return <Navigate to={getDashboardPath(user)} replace />;
+  }
+
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Student';
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+  // Dashboard Data State
+  const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
+  const [upcomingClasses, setUpcomingClasses] = useState<LiveClass[]>([]);
+  const [pendingAssignments, setPendingAssignments] = useState<PendingAssignment[]>([]);
+  const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
+  const [attendancePercentage, setAttendancePercentage] = useState<number>(0);
+  
+  // Daily Summary Stats
+  const [stats, setStats] = useState({
+    classesCountToday: 0,
+    pendingAssignmentsCount: 0,
+    averageProgress: 0
+  });
+
+  const loadDashboardData = async () => {
+    if (!user) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1. Fetch Enrollments
+      const { data: enrollmentsData, error: enrollError } = await supabase
+        .from('enrollments')
+        .select(`
+          progress, 
+          enrolled_at, 
+          courses (
+            id, 
+            title, 
+            description, 
+            category, 
+            level, 
+            duration_hours, 
+            total_lessons, 
+            teacher_id,
+            users (
+              name,
+              avatar_url
+            )
+          )
+        `)
+        .eq('student_id', user.id);
+
+      if (enrollError) throw enrollError;
+      const validEnrollments = (enrollmentsData || []) as any[] as EnrollmentWithCourse[];
+      setEnrollments(validEnrollments);
+
+      const enrolledCourseIds = validEnrollments
+        .map(e => e.courses?.id)
+        .filter((id): id is string => !!id);
+
+      // Average progress calculation
+      const avgProgress = validEnrollments.length > 0
+        ? Math.round(validEnrollments.reduce((sum, e) => sum + Number(e.progress), 0) / validEnrollments.length)
+        : 0;
+
+      // 2. Fetch Upcoming Classes if enrolled in any courses
+      let classes: LiveClass[] = [];
+      let todayClassesCount = 0;
+      if (enrolledCourseIds.length > 0) {
+        const { data: classesData, error: classesError } = await supabase
+          .from('live_classes')
+          .select(`
+            id, 
+            title, 
+            scheduled_at, 
+            room_id, 
+            status,
+            courses (
+              id, 
+              title,
+              users (
+                name
+              )
+            )
+          `)
+          .in('course_id', enrolledCourseIds)
+          .gte('scheduled_at', new Date().toISOString())
+          .order('scheduled_at', { ascending: true })
+          .limit(3);
+
+        if (classesError) throw classesError;
+        classes = (classesData || []) as any[] as LiveClass[];
+        
+        // Count classes scheduled for today
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+        
+        todayClassesCount = classes.filter(c => {
+          const schedDate = new Date(c.scheduled_at);
+          return schedDate >= startOfToday && schedDate <= endOfToday;
+        }).length;
+      }
+      setUpcomingClasses(classes);
+
+      // 3. Fetch Assignments and Submissions to filter Pending Assignments
+      let pending: PendingAssignment[] = [];
+      let submissionsList: any[] = [];
+      
+      if (enrolledCourseIds.length > 0) {
+        const { data: assignmentsData, error: assignmentsError } = await supabase
+          .from('assignments')
+          .select(`
+            id, 
+            title, 
+            due_date, 
+            max_grade, 
+            course_id,
+            courses (
+              title
+            )
+          `)
+          .in('course_id', enrolledCourseIds)
+          .order('due_date', { ascending: true });
+
+        if (assignmentsError) throw assignmentsError;
+
+        const { data: submissionsData, error: submissionsError } = await supabase
+          .from('submissions')
+          .select('assignment_id, submitted_at, grade')
+          .eq('student_id', user.id);
+
+        if (submissionsError) throw submissionsError;
+        submissionsList = submissionsData || [];
+
+        const submittedIds = new Set(submissionsList.map(s => s.assignment_id));
+        pending = ((assignmentsData || []) as any[] as PendingAssignment[])
+          .filter(a => !submittedIds.has(a.id))
+          .slice(0, 5);
+      }
+      setPendingAssignments(pending);
+
+      // 4. Fetch Attendance and calculate percentage
+      let attendanceList: any[] = [];
+      if (enrolledCourseIds.length > 0) {
+        const { data: attendanceData, error: attendanceError } = await supabase
+          .from('attendance')
+          .select(`
+            id, 
+            date, 
+            status, 
+            marked_at,
+            courses (
+              title
+            )
+          `)
+          .eq('student_id', user.id);
+
+        if (attendanceError) throw attendanceError;
+        attendanceList = attendanceData || [];
+        
+        const totalClasses = attendanceList.length;
+        const presentClasses = attendanceList.filter(a => a.status === 'present' || a.status === 'late').length;
+        setAttendancePercentage(totalClasses > 0 ? Math.round((presentClasses / totalClasses) * 100) : 100);
+      } else {
+        setAttendancePercentage(100);
+      }
+
+      // 5. Fetch Certificates
+      const { data: certificatesData, error: certError } = await supabase
+        .from('certificates')
+        .select(`
+          id, 
+          issued_at,
+          courses (
+            title
+          )
+        `)
+        .eq('student_id', user.id)
+        .order('issued_at', { ascending: false })
+        .limit(5);
+      
+      const certsList = certificatesData || [];
+
+      // 6. Build Recent Activity Feed (up to 5 items)
+      const activities: ActivityItem[] = [];
+
+      // Add enrollments to activity
+      validEnrollments.forEach((e, i) => {
+        if (e.enrolled_at) {
+          activities.push({
+            id: `enroll-${i}-${e.courses?.id}`,
+            type: 'enrollment',
+            title: `Enrolled in course "${e.courses?.title || 'Unknown course'}"`,
+            timestamp: e.enrolled_at,
+            badgeText: 'Enrollment',
+            badgeVariant: 'blue',
+            icon: BookOpen
+          });
+        }
+      });
+
+      // Add submissions to activity
+      submissionsList.forEach((s, i) => {
+        if (s.submitted_at) {
+          activities.push({
+            id: `sub-${i}-${s.assignment_id}`,
+            type: 'submission',
+            title: `Submitted assignment: ${s.assignments?.title || 'Assignment Details'}`,
+            timestamp: s.submitted_at,
+            badgeText: s.grade !== null && s.grade !== undefined ? `Graded: ${s.grade}` : 'Submitted',
+            badgeVariant: s.grade !== null && s.grade !== undefined ? 'emerald' : 'purple',
+            icon: FileText
+          });
+        }
+      });
+
+      // Add attendance markings to activity
+      attendanceList.forEach((a, i) => {
+        if (a.marked_at) {
+          activities.push({
+            id: `att-${i}-${a.id}`,
+            type: 'attendance',
+            title: `Marked ${a.status} in course "${a.courses?.title || 'Class'}"`,
+            timestamp: a.marked_at,
+            badgeText: a.status.toUpperCase(),
+            badgeVariant: a.status === 'present' ? 'emerald' : a.status === 'late' ? 'amber' : 'amber',
+            icon: Clock
+          });
+        }
+      });
+
+      // Add certificates to activity
+      certsList.forEach((c, i) => {
+        if (c.issued_at) {
+          activities.push({
+            id: `cert-${i}-${c.id}`,
+            type: 'certificate',
+            title: `Awarded Certificate for "${c.courses?.title || 'Course'}"`,
+            timestamp: c.issued_at,
+            badgeText: 'Certificate',
+            badgeVariant: 'emerald',
+            icon: Award
+          });
+        }
+      });
+
+      // Sort and take top 5
+      const sortedActivities = activities
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 5);
+      
+      setRecentActivities(sortedActivities);
+
+      // Save Daily Summary stats
+      setStats({
+        classesCountToday: todayClassesCount,
+        pendingAssignmentsCount: pending.length,
+        averageProgress: avgProgress
+      });
+
+    } catch (err: any) {
+      console.error('[Dashboard.tsx] Error loading student dashboard:', err);
+      setError(err.message || 'Failed to load dashboard data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
-  };
+  useEffect(() => {
+    loadDashboardData();
+  }, [user]);
 
-  const resourceTabs = ['Videos', 'PDFs', 'PPTs', 'Paths'] as const;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading your summary dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <GlassCard tint="red" className="max-w-md mx-auto my-12 text-center p-8">
+        <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+        <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Error Loading Dashboard</h3>
+        <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">{error}</p>
+        <Button variant="primary" onClick={loadDashboardData} icon={<RefreshCw size={14} />}>Retry</Button>
+      </GlassCard>
+    );
+  }
 
   return (
     <div className="max-w-[1200px] mx-auto pb-12 font-sans space-y-8">
-      <VoiceAssistantModal isOpen={isVoiceOpen} onClose={() => setIsVoiceOpen(false)} />
       
-      {/* ─── HERO SECTION ─── */}
+      {/* ─── SECTION 1: WELCOME + DAILY SUMMARY ─── */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-6"
       >
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
             Welcome back, {firstName}
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            You have <span className="font-medium text-neutral-900 dark:text-neutral-200">3 upcoming deadlines</span> and <span className="font-medium text-neutral-900 dark:text-neutral-200">2 live sessions</span> this week.
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+            Here is your daily summary: You have <span className="font-semibold text-brand-primary">{stats.classesCountToday} live classes</span> scheduled today, <span className="font-semibold text-brand-primary">{stats.pendingAssignmentsCount} pending assignments</span>, and your average course progress is <span className="font-semibold text-brand-primary">{stats.averageProgress}%</span>.
           </p>
         </div>
-        
-        <div className="flex items-center gap-3">
-          <Link to="/messages" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-lg text-sm transition-colors border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">
-            <MessageSquare size={14} />
-            <span>Messages</span>
-          </Link>
-          <Link to="/notifications" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-lg text-sm transition-colors border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800">
+        <div className="flex items-center gap-3 shrink-0">
+          <Link to="/messages" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-xl text-sm transition-colors border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900">
             <Bell size={14} />
+            <span>Discussion Board</span>
           </Link>
-          <Link to="/classroom/general" className="flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg text-sm font-medium transition-colors border border-neutral-200 dark:border-neutral-700 hover:scale-102 hover:shadow-sm">
-            <PlayCircle size={16} />
-            Join Next Class
-          </Link>
-          <button className="flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-            <Sparkles size={16} />
-            AI Assistant
-          </button>
-          <button onClick={() => setIsVoiceOpen(true)} className="flex items-center justify-center w-9 h-9 bg-brand-primary/10 text-brand-primary rounded-lg hover:bg-brand-primary/20 transition-colors shadow-sm">
-            <Mic size={16} />
-          </button>
+          <Button variant="secondary" size="sm" onClick={loadDashboardData} icon={<RefreshCw size={13} />}>Refresh</Button>
         </div>
       </motion.div>
 
-      {/* ─── QUICK STATISTICS ─── */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {[
-          { label: 'Current CGPA', value: `${ACADEMIC_DATA.cgpa} / ${ACADEMIC_DATA.maxCgpa}`, icon: TrendingUp },
-          { label: 'Attendance', value: `${ACADEMIC_DATA.attendance}%`, icon: Clock },
-          { label: 'Active Courses', value: ACADEMIC_DATA.activeCourses, icon: BookOpen },
-          { label: 'Pending Assignments', value: ACADEMIC_DATA.pendingAssignments, icon: AlertTriangle },
-        ].map((stat, idx) => (
-          <motion.div key={idx} variants={itemVariants} className="p-5 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
-              <stat.icon size={16} />
-              <span className="text-xs font-medium uppercase tracking-wider">{stat.label}</span>
-            </div>
-            <div className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-              {stat.value}
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* ─── QUICK ACCESS CARDS ─── */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {[
-          { label: 'Live Classroom', icon: Video, to: '/classroom/general', color: 'text-brand-primary bg-brand-primary/10 hover:bg-brand-primary hover:text-white' },
-          { label: 'Resources', icon: BookOpen, to: '/resources', color: 'text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white dark:bg-blue-500/10 dark:text-blue-400' },
-          { label: 'Assignments', icon: FileText, to: '/assignments', color: 'text-amber-600 bg-amber-50 hover:bg-amber-600 hover:text-white dark:bg-amber-500/10 dark:text-amber-400' },
-          { label: 'Certificates', icon: Award, to: '/certificates', color: 'text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white dark:bg-emerald-500/10 dark:text-emerald-400' },
-        ].map((card, idx) => (
-          <motion.div key={idx} variants={itemVariants}>
-            <Link to={card.to} className={`flex items-center gap-3 p-4 rounded-xl border border-neutral-200/60 dark:border-neutral-800 transition-all group ${card.color}`}>
-              <card.icon size={18} />
-              <span className="text-sm font-medium">{card.label}</span>
-              <ArrowRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* ─── MAIN GRID ─── */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
-      >
+      {/* Main Grid Layout for Sections 2-5 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         
-        {/* LEFT COLUMN (Main Content) */}
+        {/* Left Side: Operations */}
         <div className="lg:col-span-2 space-y-6 lg:space-y-8">
           
-          {/* Academic Overview & Performance */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div variants={itemVariants}>
-              <Panel className="h-full">
-                <PanelHeader title="Academic Overview" />
-                <div className="p-5 space-y-4">
-                  <div className="flex justify-between items-center pb-3 border-b border-neutral-100 dark:border-neutral-800/50">
-                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Current Semester</span>
-                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-200">{ACADEMIC_DATA.semester}</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-neutral-100 dark:border-neutral-800/50">
-                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Credits Completed</span>
-                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-200">{ACADEMIC_DATA.creditsCompleted}</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-neutral-100 dark:border-neutral-800/50">
-                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Credits Remaining</span>
-                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-200">{ACADEMIC_DATA.creditsRemaining}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Academic Standing</span>
-                    <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{ACADEMIC_DATA.academicStanding}</span>
-                  </div>
-                </div>
-              </Panel>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <Panel className="h-full">
-                <PanelHeader title="Performance Analytics" />
-                <div className="p-5 h-[180px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={PERFORMANCE_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }} barSize={16}>
-                      <XAxis dataKey="subject" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={[0, 100]} />
-                      <Tooltip 
-                        cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}
-                      />
-                      <Bar dataKey="grade" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </Panel>
-            </motion.div>
-          </div>
-
-          {/* Course Dashboard */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Course Dashboard" 
-                action={<Link to="/courses" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">View All <ArrowRight size={14} /></Link>} 
-              />
+          {/* ─── SECTION 2: UPCOMING CLASSES ─── */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <GlassCard padding="p-0">
+              <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                  <Video size={16} className="text-red-500" />
+                  Upcoming Classes
+                </h3>
+                <span className="text-[10px] bg-red-500/10 text-red-500 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Next 3</span>
+              </div>
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {COURSES.map(course => (
-                  <div key={course.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{course.title}</h4>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{course.faculty}</p>
-                    </div>
-                    
-                    <div className="w-full sm:w-48 shrink-0">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Progress</span>
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{course.progress}%</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                        <div className={`h-full ${course.color} rounded-full`} style={{ width: `${course.progress}%` }} />
-                      </div>
-                    </div>
-                    
-                    <div className="sm:text-right shrink-0">
-                      <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Next Session</p>
-                      <p className="text-xs font-medium text-neutral-900 dark:text-neutral-200">{course.nextSession}</p>
-                    </div>
+                {upcomingClasses.length === 0 ? (
+                  <div className="p-6 text-center text-neutral-500 dark:text-neutral-400 text-sm">
+                    No classes scheduled. Complete your readings in active courses.
                   </div>
-                ))}
+                ) : (
+                  upcomingClasses.map(cls => (
+                    <div key={cls.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{cls.title}</h4>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Course: {cls.courses?.title || 'LMS Classroom'}</p>
+                      </div>
+                      <div className="flex items-center gap-4 shrink-0">
+                        <div className="text-right">
+                          <p className="text-xs font-semibold text-neutral-900 dark:text-neutral-200">
+                            {new Date(cls.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                            {new Date(cls.scheduled_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <Link to={`/classroom/${cls.courses?.id || cls.id}`}>
+                          <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 hover:scale-105 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-500/20 transition-all">
+                            Join Class
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
-            </Panel>
+            </GlassCard>
           </motion.div>
 
-          {/* Assignment Center */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Assignment Center" 
-                action={<Link to="/assignments" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">See all</Link>}
-              />
-              <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                {/* Due Today */}
-                <div>
-                  <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                    Due Today
-                  </h4>
-                  <div className="space-y-3">
-                    {ASSIGNMENTS.dueToday.map(task => (
-                      <div key={task.id} className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-lg">
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">{task.title}</p>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-neutral-600 dark:text-neutral-400">{task.course}</span>
-                          <span className="font-semibold text-red-600 dark:text-red-400">{task.time}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Upcoming */}
-                <div>
-                  <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                    Upcoming
-                  </h4>
-                  <div className="space-y-3">
-                    {ASSIGNMENTS.upcoming.map(task => (
-                      <div key={task.id} className="p-3 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 rounded-lg">
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1 leading-tight">{task.title}</p>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-neutral-500 dark:text-neutral-400 truncate mr-2">{task.course}</span>
-                          <span className="font-medium text-neutral-700 dark:text-neutral-300 shrink-0">{task.date}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Submitted */}
-                <div>
-                  <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    Submitted
-                  </h4>
-                  <div className="space-y-3">
-                    {ASSIGNMENTS.submitted.map(task => (
-                      <div key={task.id} className="p-3 border border-neutral-200/50 dark:border-neutral-800 rounded-lg flex items-start gap-2 opacity-70">
-                        <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 line-through decoration-neutral-300 dark:decoration-neutral-600 mb-1 leading-tight">{task.title}</p>
-                          <p className="text-[10px] text-neutral-500">{task.course}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
+          {/* ─── SECTION 3: PENDING ASSIGNMENTS ─── */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <GlassCard padding="p-0">
+              <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                  <FileText size={16} className="text-amber-500" />
+                  Pending Assignments
+                </h3>
+                <span className="text-[10px] bg-amber-500/10 text-amber-500 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Next 5</span>
               </div>
-            </Panel>
-          </motion.div>
-
-          {/* ─── NEW: LEARNING RESOURCES ─── */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Learning Resources" 
-                action={<Link to="/resources" className="text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-1">Browse All <ArrowRight size={14} /></Link>}
-              />
-              {/* Tabs */}
-              <div className="flex gap-1 px-5 pt-4 border-b border-neutral-100 dark:border-neutral-800">
-                {resourceTabs.map(tab => (
-                  <button
-                    key={tab}
-                    onClick={() => setResourceTab(tab)}
-                    className={`pb-3 px-3 text-xs font-semibold transition-colors border-b-2 -mb-px ${
-                      resourceTab === tab
-                        ? 'border-brand-primary text-brand-primary'
-                        : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {resourceTab === 'Videos' && RESOURCES.Videos.map(r => (
-                  <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
-                        <Video size={14} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.course} • {r.duration}</p>
-                      </div>
-                    </div>
-                    <button className="text-xs font-medium text-brand-primary hover:underline shrink-0">Watch</button>
+                {pendingAssignments.length === 0 ? (
+                  <div className="p-6 text-center text-neutral-500 dark:text-neutral-400 text-sm">
+                    No pending assignments. You are fully caught up! 🎉
                   </div>
-                ))}
-                {resourceTab === 'PDFs' && RESOURCES.PDFs.map(r => (
-                  <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
-                        <FileText size={14} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.course} • {r.size}</p>
-                      </div>
-                    </div>
-                    <button className="text-xs font-medium text-brand-primary hover:underline shrink-0 flex items-center gap-1"><Download size={12} /> Download</button>
-                  </div>
-                ))}
-                {resourceTab === 'PPTs' && RESOURCES.PPTs.map(r => (
-                  <div key={r.id} className="p-4 flex items-center justify-between hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
-                        <FileImage size={14} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.course} • {r.slides}</p>
-                      </div>
-                    </div>
-                    <button className="text-xs font-medium text-brand-primary hover:underline shrink-0">View</button>
-                  </div>
-                ))}
-                {resourceTab === 'Paths' && RESOURCES.Paths.map(r => (
-                  <div key={r.id} className="p-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
-                          <Map size={14} />
+                ) : (
+                  pendingAssignments.map(asg => {
+                    const isOverdue = new Date(asg.due_date) < new Date();
+                    return (
+                      <div key={asg.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{asg.title}</h4>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Course: {asg.courses?.title || 'Unknown Course'}</p>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{r.title}</p>
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400">{r.modules} modules</p>
+                        <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end w-full sm:w-auto">
+                          <div className="text-left sm:text-right">
+                            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Due Date</p>
+                            <p className={`text-xs font-semibold ${isOverdue ? 'text-red-500' : 'text-neutral-950 dark:text-neutral-200'}`}>
+                              {new Date(asg.due_date).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          </div>
+                          <Link to={`/assignments/${asg.id}`}>
+                            <button className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 transition-colors">
+                              Submit
+                            </button>
+                          </Link>
                         </div>
                       </div>
-                      <span className="text-xs font-semibold text-brand-primary">{r.progress}%</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-neutral-100 dark:bg-neutral-800 rounded-full ml-11">
-                      <div className="h-full bg-brand-primary rounded-full" style={{ width: `${r.progress}%` }} />
-                    </div>
-                  </div>
-                ))}
+                    );
+                  })
+                )}
               </div>
-            </Panel>
-          </motion.div>
-
-          {/* ─── NEW: GRADES DASHBOARD ─── */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Grades Dashboard" 
-                action={
-                  <span className="flex items-center gap-2">
-                    <span className="text-xs text-neutral-500">CGPA:</span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{ACADEMIC_DATA.cgpa} / {ACADEMIC_DATA.maxCgpa}</span>
-                  </span>
-                }
-              />
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50">
-                      {['Subject', 'Code', 'Grade', 'GPA', 'Credits', 'Status'].map(h => (
-                        <th key={h} className="px-5 py-3 text-left text-[10px] font-extrabold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                    {GRADES.map((g, i) => (
-                      <tr key={i} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                        <td className="px-5 py-3 text-sm font-medium text-neutral-900 dark:text-neutral-100">{g.subject}</td>
-                        <td className="px-5 py-3 text-xs text-neutral-500 dark:text-neutral-400 font-mono">{g.code}</td>
-                        <td className="px-5 py-3">
-                          <span className={`text-sm font-bold ${g.grade.startsWith('A') ? 'text-emerald-600 dark:text-emerald-400' : g.grade.startsWith('B') ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600 dark:text-amber-400'}`}>{g.grade}</span>
-                        </td>
-                        <td className="px-5 py-3 text-sm text-neutral-700 dark:text-neutral-300 font-medium">{g.gpa.toFixed(1)}</td>
-                        <td className="px-5 py-3 text-sm text-neutral-500 dark:text-neutral-400">{g.credits} cr.</td>
-                        <td className="px-5 py-3">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${g.status === 'Complete' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'}`}>{g.status}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="px-5 py-3 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30 flex items-center justify-between">
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">Semester GPA · Fall 2026</span>
-                <Link to="/grades" className="text-xs text-brand-primary hover:underline font-medium">Full Transcript →</Link>
-              </div>
-            </Panel>
-          </motion.div>
-
-          {/* ─── NEW: ADVANCED LEARNING ─── */}
-          <motion.div variants={itemVariants}>
-            <PeerReviewCenter role="student" />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <AIStudyPlanner />
+            </GlassCard>
           </motion.div>
 
         </div>
 
-        {/* RIGHT COLUMN (Side Content) */}
+        {/* Right Side: Snapshots & Activity */}
         <div className="space-y-6 lg:space-y-8">
           
-          {/* AI Academic Assistant */}
-          <motion.div variants={itemVariants}>
-            <Panel className="bg-gradient-to-b from-brand-primary/5 to-transparent border-brand-primary/20">
-              <PanelHeader 
-                title="AI Assistant" 
-                action={<Sparkles size={14} className="text-brand-primary" />}
-              />
-              <div className="p-5">
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
-                  Your academic copilot. Generate practice questions, summarize notes, or plan your study schedule.
-                </p>
-                <div className="space-y-2 mb-4">
-                  <button className="w-full text-left text-xs p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-brand-primary/50 hover:bg-white dark:hover:bg-neutral-800 transition-colors text-neutral-700 dark:text-neutral-300 truncate">
-                    Summarize recent ML lecture
-                  </button>
-                  <button className="w-full text-left text-xs p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-brand-primary/50 hover:bg-white dark:hover:bg-neutral-800 transition-colors text-neutral-700 dark:text-neutral-300 truncate">
-                    Generate Quiz: Quantum Computing
-                  </button>
-                </div>
-                <div className="relative">
-                  <input 
-                    type="text" 
-                    placeholder="Ask a question..." 
-                    className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg py-2 pl-3 pr-10 text-sm focus:outline-none focus:border-brand-primary transition-colors"
-                  />
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-brand-primary text-white rounded-md hover:bg-brand-accent transition-colors">
-                    <MessageSquare size={12} />
-                  </button>
-                </div>
-              </div>
-            </Panel>
-          </motion.div>
-
-          {/* Attendance Analytics */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader title="Attendance Trend" />
-              <div className="p-5">
-                <div className="h-[120px] mb-2">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={ATTENDANCE_TREND} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                      <XAxis dataKey="week" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 100]} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e5e5', fontSize: '12px' }}
-                      />
-                      <Line type="monotone" dataKey="present" stroke="#10b981" strokeWidth={2} dot={{ r: 3, fill: '#10b981' }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                {ACADEMIC_DATA.attendance < 85 && (
-                  <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg text-xs mt-4">
-                    <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-                    <p>Attendance dropping in Physics 101. Risk of penalty.</p>
+          {/* ─── SECTION 4: LEARNING PROGRESS SNAPSHOT ─── */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+            <GlassCard>
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
+                <GraduationCap size={16} className="text-purple-500" />
+                Learning Progress
+              </h3>
+              
+              <div className="space-y-4">
+                {enrollments.length === 0 ? (
+                  <div className="text-center py-4 text-neutral-500 dark:text-neutral-400 text-xs">
+                    Not enrolled in any active courses. Visit the catalog to start!
                   </div>
+                ) : (
+                  enrollments.map((e, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-neutral-800 dark:text-neutral-300 truncate max-w-[180px]">{e.courses?.title || 'Unknown Course'}</span>
+                        <span className="text-brand-primary font-semibold">{e.progress}%</span>
+                      </div>
+                      <ProgressBar value={e.progress} color="purple" size="sm" />
+                    </div>
+                  ))
                 )}
               </div>
-            </Panel>
+            </GlassCard>
           </motion.div>
 
-          {/* Calendar & Schedule */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Schedule" 
-                action={<Link to="/calendar" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Calendar size={14} /></Link>}
-              />
-              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {CALENDAR_EVENTS.map(event => (
-                  <div key={event.id} className="p-4 flex gap-3 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
-                    <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                      <FileText size={16} className="text-neutral-600 dark:text-neutral-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 leading-tight mb-1">{event.title}</p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{event.time}</p>
-                    </div>
+          {/* ─── SECTION 5: RECENT ACTIVITY ─── */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <GlassCard>
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
+                <Activity size={16} className="text-emerald-500" />
+                Recent Activity
+              </h3>
+
+              <div className="space-y-4">
+                {recentActivities.length === 0 ? (
+                  <div className="text-center py-4 text-neutral-500 dark:text-neutral-400 text-xs">
+                    No recent activities recorded.
                   </div>
-                ))}
+                ) : (
+                  recentActivities.map(act => {
+                    const Icon = act.icon;
+                    return (
+                      <div key={act.id} className="flex gap-3 text-xs">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          act.badgeVariant === 'blue' ? 'bg-blue-500/10 text-blue-400' :
+                          act.badgeVariant === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' :
+                          act.badgeVariant === 'amber' ? 'bg-amber-500/10 text-amber-400' :
+                          'bg-purple-500/10 text-purple-400'
+                        }`}>
+                          <Icon size={14} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-neutral-800 dark:text-neutral-200 font-medium leading-normal">{act.title}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                              {new Date(act.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                              act.badgeVariant === 'blue' ? 'bg-blue-500/10 text-blue-400' :
+                              act.badgeVariant === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' :
+                              act.badgeVariant === 'amber' ? 'bg-amber-500/10 text-amber-400' :
+                              'bg-purple-500/10 text-purple-400'
+                            }`}>
+                              {act.badgeText}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
-            </Panel>
+            </GlassCard>
           </motion.div>
 
-          {/* Certificates */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Recent Credentials" 
-                action={<Link to="/certificates" className="text-neutral-500 hover:text-neutral-900 transition-colors"><Award size={14} /></Link>} 
-              />
-              <div className="p-4 space-y-3">
-                {CERTIFICATES.map(cert => (
-                  <div key={cert.id} className="flex justify-between items-center p-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <GraduationCap size={14} className="text-brand-primary shrink-0" />
-                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{cert.title}</span>
-                    </div>
-                    <span className="text-xs text-neutral-500">{cert.date}</span>
-                  </div>
-                ))}
-                <Link to="/certificates" className="flex items-center justify-center gap-1 text-xs text-brand-primary hover:underline font-medium pt-1">
-                  View all certificates <ChevronRight size={12} />
-                </Link>
-              </div>
-            </Panel>
-          </motion.div>
+        </div>
 
-          {/* ─── NEW: LIVE CLASSROOM PREVIEW ─── */}
-          <motion.div variants={itemVariants}>
-            <Panel>
-              <PanelHeader 
-                title="Live Classroom" 
-                action={<span className="flex h-2 w-2 relative"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>}
-              />
-              <div className="p-4">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">Supports all live interaction features for your sessions.</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: 'Video Conferencing', icon: Video, active: true },
-                    { label: 'Screen Sharing', icon: Share2, active: true },
-                    { label: 'Whiteboard', icon: Edit3, active: true },
-                    { label: 'Real-Time Chat', icon: MessageSquare, active: true },
-                    { label: 'Raise Hand', icon: Hand, active: true },
-                    { label: 'Session Recording', icon: Circle, active: true },
-                  ].map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
-                      <feat.icon size={12} className="text-emerald-500 shrink-0" />
-                      <span className="text-[10px] font-medium text-neutral-700 dark:text-neutral-300 leading-tight">{feat.label}</span>
-                    </div>
-                  ))}
-                </div>
-                <Link to="/classroom/general" className="mt-4 flex items-center justify-center gap-2 w-full py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:bg-brand-accent transition-colors hover:scale-102 hover:shadow-sm">
-                  <Monitor size={12} /> Enter Live Classroom
-                </Link>
-              </div>
-            </Panel>
-          </motion.div>
+      </div>
 
-          {/* ─── NEW: OFFLINE SYNC ─── */}
-          <motion.div variants={itemVariants}>
-            <OfflineSync />
-          </motion.div>
+      {/* ─── SECTION 6: QUICK ACTIONS ─── */}
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="pt-4 border-t border-neutral-200/60 dark:border-neutral-800"
+      >
+        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          {/* Join Next Class */}
+          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+            <div>
+              <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-1">Live Classroom</p>
+              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+                {upcomingClasses[0] ? upcomingClasses[0].title : 'No class scheduled'}
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-1 mt-1">
+                {upcomingClasses[0] ? upcomingClasses[0].courses?.title : 'Check again later'}
+              </p>
+            </div>
+            {upcomingClasses[0] ? (
+              <Link to={`/classroom/${upcomingClasses[0].courses?.id || upcomingClasses[0].id}`}>
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-purple-500/20 transition-all self-start mt-2">
+                  <PlayCircle size={14} />
+                  <span>Join Class</span>
+                </button>
+              </Link>
+            ) : (
+              <button disabled className="flex items-center gap-1.5 text-xs font-semibold text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-4 py-2 rounded-xl cursor-not-allowed self-start mt-2">
+                <PlayCircle size={14} />
+                <span>Join Class</span>
+              </button>
+            )}
+          </div>
+
+          {/* Continue Course */}
+          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+            <div>
+              <p className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Active Progress</p>
+              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+                {enrollments[0] ? enrollments[0].courses?.title : 'Not enrolled'}
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                {enrollments[0] ? `Progress: ${enrollments[0].progress}%` : 'Visit course catalog'}
+              </p>
+            </div>
+            {enrollments[0] ? (
+              <Link to={`/learn/${enrollments[0].courses?.id}/l1`}>
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-purple-500/20 transition-all self-start mt-2">
+                  <BookOpen size={14} />
+                  <span>Continue Course</span>
+                </button>
+              </Link>
+            ) : (
+              <Link to="/courses">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-neutral-700 hover:bg-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2">
+                  <BookOpen size={14} />
+                  <span>Explore Courses</span>
+                </button>
+              </Link>
+            )}
+          </div>
+
+          {/* View Next Assignment */}
+          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+            <div>
+              <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Upcoming Deadline</p>
+              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+                {pendingAssignments[0] ? pendingAssignments[0].title : 'All caught up!'}
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                {pendingAssignments[0] ? `Due: ${new Date(pendingAssignments[0].due_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}` : 'No upcoming deadlines'}
+              </p>
+            </div>
+            {pendingAssignments[0] ? (
+              <Link to={`/assignments/${pendingAssignments[0].id}`}>
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-950 bg-amber-400 hover:bg-amber-500 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-amber-500/20 transition-all self-start mt-2">
+                  <FileText size={14} />
+                  <span>View Assignment</span>
+                </button>
+              </Link>
+            ) : (
+              <Link to="/assignments">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2">
+                  <FileText size={14} />
+                  <span>Assignment Center</span>
+                </button>
+              </Link>
+            )}
+          </div>
 
         </div>
       </motion.div>
+
     </div>
   );
 }

@@ -6,7 +6,22 @@ import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/layout/Sidebar';
 import Navbar from '../components/layout/Navbar';
 import MobileNavigation from '../components/layout/MobileNavigation';
-import { BookOpen, CheckSquare, Settings } from 'lucide-react';
+import { 
+  BookOpen, 
+  CheckSquare, 
+  Settings, 
+  LayoutDashboard, 
+  Calendar, 
+  Mail, 
+  User, 
+  ShieldCheck, 
+  CreditCard, 
+  Activity, 
+  Users, 
+  Video, 
+  BrainCircuit, 
+  BarChart3 
+} from 'lucide-react';
 import { getDashboardPath } from '../services/auth.service';
 
 export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -37,9 +52,22 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
 
   // Derive active tab from location pathname
   const pathParts = location.pathname.split('/').filter(Boolean);
-  const activeTab = pathParts.length > 1 ? pathParts[1] : 'dashboard'; // e.g. /student/courses -> 'courses'
+  let activeTab = 'dashboard';
+  if (pathParts.length > 0) {
+    if (['admin', 'unistudents', 'school-student', 'teacher', 'k12-teacher'].includes(pathParts[0]) && pathParts.length > 1) {
+      activeTab = pathParts[1];
+    } else {
+      activeTab = pathParts[0];
+    }
+  }
 
   const handleSetActiveTab = (tabId: string) => {
+    // If it's admin role, navigate within /admin/...
+    if (user.role === 'admin') {
+      navigate(`/admin/${tabId}`);
+      return;
+    }
+
     // If it's a generic settings or help link, navigate to common route or handle it
     if (tabId === 'settings') {
       navigate('/profile');
@@ -50,8 +78,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
     } else {
       // Navigate based on user role base path
       let basePath = '';
-      if (user.role === 'admin') basePath = '/admin';
-      else if (user.role === 'teacher') basePath = user.teacherTrack === 'k12' ? '/k12-teacher' : '/teacher';
+      if (user.role === 'teacher') basePath = user.teacherTrack === 'k12' ? '/k12-teacher' : '/teacher';
       else if (user.role === 'student') basePath = user.gradeLevel === 'k12' ? '/school-student' : '/unistudents';
       
       if (tabId === 'dashboard') {
@@ -64,6 +91,38 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogoClick = () => {
     navigate(getDashboardPath(user));
+  };
+
+  const getMenuItems = () => {
+    switch (activeRole.id) {
+      case "admin":
+        return [
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "users", label: "Users", icon: Users },
+          { id: "courses", label: "Courses", icon: BookOpen },
+          { id: "analytics", label: "Analytics", icon: BarChart3 },
+          { id: "settings", label: "Settings", icon: Settings },
+        ];
+      case "teacher":
+      case "k12-teacher":
+        return [
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "courses", label: "Courses", icon: BookOpen },
+          { id: "students", label: "Students", icon: Users },
+          { id: "assignments", label: "Assignments", icon: CheckSquare },
+          { id: "calendar", label: "Calendar", icon: Calendar },
+          { id: "messages", label: "Messages", icon: Mail },
+        ];
+      default: // students (school or college)
+        return [
+          { id: "dashboard", label: "Home", icon: LayoutDashboard },
+          { id: "courses", label: "Courses", icon: BookOpen },
+          { id: "assignments", label: "Assignments", icon: CheckSquare },
+          { id: "calendar", label: "Calendar", icon: Calendar },
+          { id: "messages", label: "Messages", icon: Mail },
+          { id: "profile", label: "Profile", icon: User },
+        ];
+    }
   };
 
   // Mock notifications
@@ -94,12 +153,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
           setActiveTab={handleSetActiveTab}
           theme={theme}
           toggleTheme={toggleTheme}
-          menuItems={[
-            { id: "dashboard", label: "Dashboard", icon: BookOpen },
-            { id: "courses", label: "My Courses", icon: BookOpen },
-            { id: "assignments", label: "Assignments", icon: CheckSquare },
-            ...(user.role === "admin" ? [{ id: "security", label: "Security auditing", icon: Settings }] : [])
-          ]}
+          menuItems={getMenuItems()}
           notificationCount={unreadNotificationsCount}
           onOpenNotifications={() => setNotificationsOpen(!notificationsOpen)}
           onLogoClick={handleLogoClick}

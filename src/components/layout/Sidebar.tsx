@@ -17,7 +17,8 @@ import {
   CreditCard,
   History,
   Activity,
-  ChevronRight
+  ChevronRight,
+  User
 } from "lucide-react";
 import { Role, allRoles } from "../../lib/mockData";
 
@@ -44,31 +45,30 @@ export default function Sidebar({
     switch (activeRole.id) {
       case "admin":
         return [
-          { id: "analytics", label: "Analytics Overview", icon: BarChart3 },
-          { id: "users", label: "User Inventory", icon: Users },
-          { id: "courses", label: "Course Management", icon: BookOpen },
-          { id: "security", label: "Security & Health", icon: ShieldCheck },
-          { id: "billing", label: "Subscription Revenue", icon: CreditCard },
-          { id: "activity", label: "Platform Activity", icon: Activity },
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "users", label: "Users", icon: Users },
+          { id: "courses", label: "Courses", icon: BookOpen },
+          { id: "analytics", label: "Analytics", icon: BarChart3 },
+          { id: "settings", label: "Settings", icon: Settings },
         ];
       case "teacher":
+      case "k12-teacher":
         return [
-          { id: "dashboard", label: "Workspace Home", icon: LayoutDashboard },
-          { id: "courses", label: "Course Management", icon: BookOpen },
-          { id: "students", label: "Students Registry", icon: Users },
-          { id: "assignments", label: "Pending Evaluations", icon: CheckSquare },
-          { id: "live", label: "Live Classroom", icon: Video },
-          { id: "attendance", label: "Real-time Attendance", icon: Calendar },
-          { id: "tutor", label: "AI Teacher Assistant", icon: BrainCircuit },
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "courses", label: "Courses", icon: BookOpen },
+          { id: "students", label: "Students", icon: Users },
+          { id: "assignments", label: "Assignments", icon: CheckSquare },
+          { id: "calendar", label: "Calendar", icon: Calendar },
+          { id: "messages", label: "Messages", icon: Mail },
         ];
       default: // students (school or college)
         return [
-          { id: "dashboard", label: "Student Home", icon: LayoutDashboard },
-          { id: "courses", label: "My Active Courses", icon: BookOpen },
-          { id: "assignments", label: "Assignment Center", icon: CheckSquare },
-          { id: "calendar", label: "Class Calendar", icon: Calendar },
-          { id: "messages", label: "Discussion Board", icon: Mail },
-          { id: "tutor", label: "Personalized AI Tutor", icon: BrainCircuit },
+          { id: "dashboard", label: "Home", icon: LayoutDashboard },
+          { id: "courses", label: "Courses", icon: BookOpen },
+          { id: "assignments", label: "Assignments", icon: CheckSquare },
+          { id: "calendar", label: "Calendar", icon: Calendar },
+          { id: "messages", label: "Messages", icon: Mail },
+          { id: "profile", label: "Profile", icon: User },
         ];
     }
   };
@@ -96,7 +96,7 @@ export default function Sidebar({
               Scholar <span className="text-brand-primary font-sans font-semibold group-hover:text-neutral-900 dark:group-hover:text-neutral-50 transition-colors duration-250">Hub</span>
             </h1>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 capitalize">
-              {activeRole.id === "admin" ? "Admin Management" : activeRole.id === "teacher" ? "Educator Workspace" : "University Platform"}
+              {activeRole.id === "admin" ? "Admin Management" : (activeRole.id === "teacher" || activeRole.id === "k12-teacher") ? "Educator Workspace" : "University Platform"}
             </p>
           </div>
         </button>

@@ -42,14 +42,18 @@ import { ForgotPassword, ResetPassword } from './pages/auth/ForgotPassword';
 // Dashboards
 import { StudentDashboard } from './pages/unistudents/Dashboard';
 import { SchoolStudentDashboard } from './pages/school-student/SchoolStudentDashboard';
-import { TeacherDashboard } from './pages/teacher/Dashboard';
+import { CollegeDashboard } from './pages/teacher/CollegeDashboard';
 import { K12TeacherDashboard } from './pages/teacher/K12TeacherDashboard';
 import { AdminDashboard } from './pages/admin/Dashboard';
+import { UsersPage } from './pages/admin/UsersPage';
+import { CoursesPage } from './pages/admin/CoursesPage';
+import { AnalyticsPage } from './pages/admin/AnalyticsPage';
+import { SettingsPage } from './pages/admin/SettingsPage';
 
 // Courses
 import { CourseCatalog } from './pages/courses/CourseCatalog';
 import { CreateCourse } from './pages/courses/CreateCourse';
-import { CourseDetail, EditCourse } from './pages/courses/CourseDetail';
+import { CourseDetail } from './pages/courses/CourseDetail';
 
 // Classroom & LMS
 import { LiveClassroom } from './pages/classroom/LiveClassroom';
@@ -142,15 +146,18 @@ function AppRoutes() {
         {/* ─── Dashboards ─── */}
         <Route path="/unistudents/dashboard" element={<ProtectedRoute><DashboardWrapper><StudentDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/school-student/dashboard" element={<ProtectedRoute><DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><CollegeDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/k12-teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><K12TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardWrapper><AdminDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AdminDashboard /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute><DashboardWrapper><AdminGuard><UsersPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/courses" element={<ProtectedRoute><DashboardWrapper><AdminGuard><CoursesPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AnalyticsPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute><DashboardWrapper><AdminGuard><SettingsPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Courses ─── */}
         <Route path="/courses" element={<ProtectedRoute><DashboardWrapper><CourseCatalog /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/courses/create" element={<ProtectedRoute><DashboardWrapper><CreateCourse /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/courses/:id" element={<ProtectedRoute><DashboardWrapper><CourseDetail /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/courses/:id/edit" element={<ProtectedRoute><DashboardWrapper><EditCourse /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Live Classroom ─── */}
         <Route path="/classroom/:id" element={<ProtectedRoute><DashboardWrapper><LiveClassroom /></DashboardWrapper></ProtectedRoute>} />
