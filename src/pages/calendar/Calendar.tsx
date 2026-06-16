@@ -4,7 +4,9 @@ import { ChevronLeft, ChevronRight, Plus, Calendar as CalIcon, List, Clock, Book
 import { calendarService } from '../../services/calendar.service';
 import { GlassCard, Badge, Button, PageHeader } from '../../components/ui/index';
 import type { CalendarEvent } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -21,6 +23,7 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
 };
 
 export function CalendarPage() {
+  const { user } = useAuth();
   const [view, setView] = useState<'month' | 'week' | 'list'>('month');
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -29,8 +32,9 @@ export function CalendarPage() {
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    calendarService.getEvents(date.getFullYear(), date.getMonth() + 1).then(setEvents);
-  }, [date]);
+    calendarService.getEvents(user?.id || 'guest', date.getMonth() + 1, date.getFullYear()).then(setEvents);
+  }, [date, user]);
+
 
   const year = date.getFullYear();
   const month = date.getMonth();
@@ -44,7 +48,7 @@ export function CalendarPage() {
   const getEventsForDay = (day: number) => {
     const d = new Date(year, month, day);
     return events.filter(e => {
-      const ed = new Date(e.startTime);
+      const ed = new Date(e.startTime || e.date);
       return ed.getDate() === day && ed.getMonth() === month && ed.getFullYear() === year;
     });
   };
@@ -53,21 +57,23 @@ export function CalendarPage() {
 
   const handleGoogleSync = async () => {
     setSyncing(true);
-    await calendarService.syncWithGoogle();
+    await calendarService.syncGoogleCalendar(user?.id || '');
     setSyncing(false);
     toast.success('Synced with Google Calendar! 📅');
   };
 
+
   const WEEK_HOURS = Array.from({ length: 14 }, (_, i) => i + 7); // 7 AM to 8 PM
 
   const mockEvents: CalendarEvent[] = events.length ? events : [
-    { id: 'e1', title: 'React Advanced Patterns', type: 'class', startTime: new Date(year, month, 10, 10, 0).toISOString(), endTime: new Date(year, month, 10, 11, 30).toISOString(), courseId: 'c1', courseName: 'Web Dev', description: 'Live session', location: 'Virtual Room A' },
-    { id: 'e2', title: 'ML Assignment Due', type: 'deadline', startTime: new Date(year, month, 15, 23, 59).toISOString(), endTime: new Date(year, month, 15, 23, 59).toISOString(), courseId: 'c2', courseName: 'ML', description: 'Submission deadline' },
-    { id: 'e3', title: 'Midterm Exam — DSA', type: 'exam', startTime: new Date(year, month, 20, 14, 0).toISOString(), endTime: new Date(year, month, 20, 16, 0).toISOString(), courseId: 'c4', courseName: 'DSA', description: 'In-person', location: 'Exam Hall B' },
-    { id: 'e4', title: 'Study Group Session', type: 'event', startTime: new Date(year, month, 22, 18, 0).toISOString(), endTime: new Date(year, month, 22, 20, 0).toISOString(), courseId: 'c1', courseName: 'Web Dev', description: 'Group study' },
-    { id: 'e5', title: 'UI/UX Design Class', type: 'class', startTime: new Date(year, month, 12, 9, 0).toISOString(), endTime: new Date(year, month, 12, 10, 30).toISOString(), courseId: 'c3', courseName: 'Design', description: 'Live session' },
-    { id: 'e6', title: 'React Architecture Due', type: 'deadline', startTime: new Date(year, month, today.getDate() + 8, 23, 59).toISOString(), endTime: new Date(year, month, today.getDate() + 8, 23, 59).toISOString(), courseId: 'c1', courseName: 'Web Dev', description: 'Assignment' },
+    { id: 'e1', title: 'React Advanced Patterns', type: 'class', date: new Date(year, month, 10).toISOString(), startTime: new Date(year, month, 10, 10, 0).toISOString(), endTime: new Date(year, month, 10, 11, 30).toISOString(), courseId: 'c1', courseName: 'Web Dev', description: 'Live session', location: 'Virtual Room A' },
+    { id: 'e2', title: 'ML Assignment Due', type: 'deadline', date: new Date(year, month, 15).toISOString(), startTime: new Date(year, month, 15, 23, 59).toISOString(), endTime: new Date(year, month, 15, 23, 59).toISOString(), courseId: 'c2', courseName: 'ML', description: 'Submission deadline' },
+    { id: 'e3', title: 'Midterm Exam — DSA', type: 'exam', date: new Date(year, month, 20).toISOString(), startTime: new Date(year, month, 20, 14, 0).toISOString(), endTime: new Date(year, month, 20, 16, 0).toISOString(), courseId: 'c4', courseName: 'DSA', description: 'In-person', location: 'Exam Hall B' },
+    { id: 'e4', title: 'Study Group Session', type: 'event', date: new Date(year, month, 22).toISOString(), startTime: new Date(year, month, 22, 18, 0).toISOString(), endTime: new Date(year, month, 22, 20, 0).toISOString(), courseId: 'c1', courseName: 'Web Dev', description: 'Group study' },
+    { id: 'e5', title: 'UI/UX Design Class', type: 'class', date: new Date(year, month, 12).toISOString(), startTime: new Date(year, month, 12, 9, 0).toISOString(), endTime: new Date(year, month, 12, 10, 30).toISOString(), courseId: 'c3', courseName: 'Design', description: 'Live session' },
+    { id: 'e6', title: 'React Architecture Due', type: 'deadline', date: new Date(year, month, today.getDate() + 8).toISOString(), startTime: new Date(year, month, today.getDate() + 8, 23, 59).toISOString(), endTime: new Date(year, month, today.getDate() + 8, 23, 59).toISOString(), courseId: 'c1', courseName: 'Web Dev', description: 'Assignment' },
   ];
+
 
   const displayEvents = events.length ? events : mockEvents;
 
@@ -131,7 +137,7 @@ export function CalendarPage() {
                     const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                     const isSelected = selectedDay?.getDate() === day && selectedDay?.getMonth() === month;
                     const dayEvents = displayEvents.filter(e => {
-                      const d = new Date(e.startTime);
+                      const d = new Date(e.startTime || e.date);
                       return d.getDate() === day && d.getMonth() === month && d.getFullYear() === year;
                     });
                     return (
@@ -180,7 +186,7 @@ export function CalendarPage() {
                             <span style={{ color: tc.text }}>{TYPE_ICONS[ev.type]}</span>
                             <div>
                               <p className="text-xs font-semibold" style={{ color: tc.text }}>{ev.title}</p>
-                              <p className="text-xs text-on-surface-variant">{new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                              <p className="text-xs text-on-surface-variant">{new Date(ev.startTime || ev.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                             </div>
                           </div>
                         );
@@ -193,14 +199,14 @@ export function CalendarPage() {
               <GlassCard>
                 <h3 className="text-sm font-bold text-on-surface mb-3" style={{ fontFamily: 'Geist, sans-serif' }}>Upcoming Events</h3>
                 <div className="space-y-2.5">
-                  {displayEvents.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()).slice(0, 5).map(ev => {
+                  {displayEvents.sort((a, b) => new Date(a.startTime || a.date).getTime() - new Date(b.startTime || b.date).getTime()).slice(0, 5).map(ev => {
                     const tc = TYPE_COLORS[ev.type];
                     return (
                       <div key={ev.id} className="flex items-start gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5" style={{ background: tc.text }} />
                         <div>
                           <p className="text-xs font-medium text-on-surface">{ev.title}</p>
-                          <p className="text-xs text-on-surface-variant">{new Date(ev.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                          <p className="text-xs text-on-surface-variant">{new Date(ev.startTime || ev.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                         </div>
                         <Badge variant={tc.badge} size="sm">{ev.type}</Badge>
                       </div>
@@ -229,14 +235,14 @@ export function CalendarPage() {
           <GlassCard>
             <h2 className="text-base font-bold text-on-surface mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>All Events</h2>
             <div className="space-y-3">
-              {displayEvents.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()).map((ev, i) => {
+              {displayEvents.sort((a, b) => new Date(a.startTime || a.date).getTime() - new Date(b.startTime || b.date).getTime()).map((ev, i) => {
                 const tc = TYPE_COLORS[ev.type];
                 return (
                   <motion.div key={ev.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                     className="flex items-start gap-4 p-4 rounded-xl border" style={{ background: tc.bg, borderColor: `${tc.text}30` }}>
                     <div className="flex-shrink-0 text-center min-w-[50px]">
-                      <p className="text-lg font-black text-on-surface">{new Date(ev.startTime).getDate()}</p>
-                      <p className="text-xs text-on-surface-variant">{MONTHS[new Date(ev.startTime).getMonth()].slice(0, 3)}</p>
+                      <p className="text-lg font-black text-on-surface">{new Date(ev.startTime || ev.date).getDate()}</p>
+                      <p className="text-xs text-on-surface-variant">{MONTHS[new Date(ev.startTime || ev.date).getMonth()].slice(0, 3)}</p>
                     </div>
                     <div className="w-px self-stretch" style={{ background: `${tc.text}40` }} />
                     <div className="flex-1 min-w-0">
@@ -244,7 +250,7 @@ export function CalendarPage() {
                         <p className="text-sm font-semibold text-on-surface">{ev.title}</p>
                         <Badge variant={tc.badge}>{ev.type}</Badge>
                       </div>
-                      <p className="text-xs text-on-surface-variant">{ev.courseName} · {new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}{ev.location ? ` · ${ev.location}` : ''}</p>
+                      <p className="text-xs text-on-surface-variant">{ev.courseName} · {new Date(ev.startTime || ev.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}{ev.location ? ` · ${ev.location}` : ''}</p>
                     </div>
                   </motion.div>
                 );

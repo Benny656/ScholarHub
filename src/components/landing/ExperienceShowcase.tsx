@@ -67,7 +67,7 @@ export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStart
   const teacherVideoRef = useRef<HTMLVideoElement>(null);
   const adminVideoRef = useRef<HTMLVideoElement>(null);
 
-  const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getActiveVideo = () => {
     if (activeTab === "tab1") return studentVideoRef.current;
@@ -186,7 +186,7 @@ export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStart
       y: 0, 
       filter: "blur(0px)", 
       scale: 1,
-      transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } 
+      transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } 
     }
   };
 

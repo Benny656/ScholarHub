@@ -83,7 +83,7 @@ export function Badge({ children, variant = 'purple', size = 'sm' }: BadgeProps)
 interface ProgressBarProps {
   value: number;
   max?: number;
-  color?: 'purple' | 'blue' | 'emerald' | 'amber';
+  color?: 'purple' | 'blue' | 'emerald' | 'amber' | 'red';
   size?: 'sm' | 'md' | 'lg';
   showLabel?: boolean;
 }
@@ -96,6 +96,7 @@ export function ProgressBar({ value, max = 100, color = 'purple', size = 'sm', s
     blue: 'bg-blue-500',
     emerald: 'bg-emerald-500',
     amber: 'bg-amber-500',
+    red: 'bg-red-500',
   };
   return (
     <div className="w-full">

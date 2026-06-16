@@ -7,7 +7,7 @@ const Panel = ({ children, className = '' }: { children: React.ReactNode, classN
   </div>
 );
 
-const PanelHeader = ({ title, action }: { title: string, action?: React.ReactNode }) => (
+const PanelHeader = ({ title, action }: { title: React.ReactNode, action?: React.ReactNode }) => (
   <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
     <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">{title}</h3>
     {action && <div className="text-xs">{action}</div>}

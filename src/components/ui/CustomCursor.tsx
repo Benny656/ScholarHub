@@ -23,7 +23,7 @@ export function CustomCursor() {
     const onLeaveDoc = () => setIsVisible(false);
     const onEnterDoc = () => setIsVisible(true);
 
-    let glowTimeout: NodeJS.Timeout;
+    let glowTimeout: ReturnType<typeof setTimeout>;
     const onDblClick = () => {
       setIsGlowing(true);
       clearTimeout(glowTimeout);

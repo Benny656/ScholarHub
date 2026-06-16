@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QrCode, Scan, Calendar, BarChart3, Sparkles, RefreshCw, CheckCircle, X, Clock, Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
 import { useAuth } from '../../context/AuthContext';
 import { attendanceService } from '../../services/attendance.service';
 import { aiService } from '../../services/ai.service';
@@ -230,12 +231,13 @@ export function Attendance() {
                 <div className="h-52 p-5">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={report.length ? report : [
-                      { studentName: 'Alex J.', percentage: 84 }, { studentName: 'Priya S.', percentage: 96 },
-                      { studentName: 'Jordan L.', percentage: 71 }, { studentName: 'Marcus B.', percentage: 62 }, { studentName: 'Sara W.', percentage: 89 },
+                      { studentName: 'Alex J.', percentage: 84, total: 45, present: 38 }, { studentName: 'Priya S.', percentage: 96, total: 45, present: 43 },
+                      { studentName: 'Jordan L.', percentage: 71, total: 45, present: 32 }, { studentName: 'Marcus B.', percentage: 62, total: 45, present: 28 }, { studentName: 'Sara W.', percentage: 89, total: 45, present: 40 },
                     ]} barSize={32}>
                       <XAxis dataKey="studentName" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                       <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
-                      <Tooltip contentStyle={TOOLTIP} formatter={(v: number) => [`${v}%`, 'Attendance']} />
+                      <Tooltip contentStyle={TOOLTIP} formatter={(v) => [`${v ?? 0}%`, 'Attendance']} />
+
                       <Bar dataKey="percentage" radius={[6, 6, 0, 0]} isAnimationActive>
                         {(report.length ? report : [84, 96, 71, 62, 89]).map((v, i) => (
                           <Cell key={i} fill={typeof v === 'number' && v >= 80 ? '#4edea3' : typeof v === 'number' && v >= 70 ? '#F59E0B' : '#EF4444'} />
@@ -271,6 +273,7 @@ export function Attendance() {
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-2">
                               <ProgressBar value={r.percentage} color={r.percentage >= 80 ? 'emerald' : r.percentage >= 70 ? 'amber' : 'red'} />
+
                               <span className="text-xs font-bold w-10" style={{ color: r.percentage >= 80 ? '#4edea3' : r.percentage >= 70 ? '#F59E0B' : '#EF4444' }}>{r.percentage}%</span>
                             </div>
                           </td>

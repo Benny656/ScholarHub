@@ -475,66 +475,7 @@ const MegaMenuDropdown = ({ isOpen, onMouseEnter, onMouseLeave, title, isActive,
   );
 };
 
-const FLOATING_NAV_SECTIONS = [
-  { id: "hero", label: "Home" },
-  { id: "roles-showcase", label: "Built For Everyone" },
-  { id: "platform", label: "Experience The Platform" },
-  { id: "pricing-plans-stack", label: "Pricing" },
-  { id: "cta", label: "Contact" }
-];
 
-const FloatingSectionNavigator = ({ activeSection, onNavigate }: { activeSection: string, onNavigate: (id: string) => void }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay: 1 }}
-      className="fixed right-6 top-1/2 -translate-y-1/2 z-[100] hidden md:flex flex-col gap-3 p-3 rounded-full bg-surface/60 dark:bg-surface-container-lowest/60 backdrop-blur-md border border-outline-variant/30 shadow-lg shadow-black/5"
-    >
-      {FLOATING_NAV_SECTIONS.map((section) => {
-        const isActive = activeSection === section.id || 
-                         (section.id === "pricing-plans-stack" && activeSection === "scale-heading");
-        return (
-          <button
-            key={section.id}
-            onClick={() => onNavigate(section.id)}
-            className="relative flex items-center justify-end group cursor-pointer h-6"
-            aria-label={`Navigate to ${section.label}`}
-          >
-            <AnimatePresence>
-              {isHovered && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0, marginRight: 0 }}
-                  animate={{ opacity: 1, width: "auto", marginRight: 12 }}
-                  exit={{ opacity: 0, width: 0, marginRight: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="overflow-hidden whitespace-nowrap text-xs font-bold tracking-wide text-on-surface-variant group-hover:text-primary transition-colors text-right flex-shrink-0"
-                >
-                  {section.label}
-                </motion.span>
-              )}
-            </AnimatePresence>
-            <motion.div
-              layout
-              className={`rounded-full transition-colors duration-300 flex-shrink-0 ${
-                isActive ? "bg-primary" : "bg-outline-variant/50 group-hover:bg-outline-variant"
-              }`}
-              animate={{
-                width: isActive ? 10 : 6,
-                height: isActive ? 10 : 6,
-              }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            />
-          </button>
-        );
-      })}
-    </motion.div>
-  );
-};
 
 export default function LandingPage({ theme, toggleTheme, onGetStarted }: LandingPageProps) {
   // Navbar states
@@ -552,7 +493,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   useEffect(() => {
-    const sectionIds = ["hero", "roles-showcase", "platform", "scale-heading", "pricing-plans-stack", "cta"];
+    const sectionIds = ["hero", "roles-showcase", "platform", "pricing-plans-stack", "cta"];
     const observers = sectionIds.map((id) => {
       const el = document.getElementById(id);
       if (!el) return null;
@@ -719,7 +660,6 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
     <div className="bg-bg-surface text-on-surface font-sans min-h-screen transition-colors duration-300">
       
       <HeroSequenceReveal />
-      <FloatingSectionNavigator activeSection={activeSection} onNavigate={scrollToSection} />
 
       {/* NAVIGATION BAR */}
       <motion.nav 

@@ -201,7 +201,7 @@ export interface PlatformStats {
 }
 
 // ─── Calendar ─────────────────────────────────────────────────────────────────
-export type EventType = 'class' | 'exam' | 'assignment' | 'meeting' | 'holiday';
+export type EventType = 'class' | 'exam' | 'assignment' | 'deadline' | 'event' | 'meeting' | 'holiday';
 
 export interface CalendarEvent {
   id: string;

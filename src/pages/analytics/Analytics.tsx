@@ -4,6 +4,8 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, CartesianGrid,
 } from 'recharts';
+
+
 import { TrendingUp, Award, Clock, BookOpen, Download, Target, Star } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { analyticsService } from '../../services/analytics.service';
@@ -89,7 +91,9 @@ export function Analytics() {
                   <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in srgb, var(--color-on-surface) 5%, transparent)" />
                   <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis domain={[60, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
-                  <Tooltip contentStyle={TOOLTIP} formatter={(v: number, name: string) => [`${v}%`, name === 'score' ? 'Your Score' : 'Class Avg']} />
+                  <Tooltip contentStyle={TOOLTIP} formatter={(v, name) => [`${v ?? 0}%`, name === 'score' ? 'Your Score' : 'Class Avg']} />
+
+
                   <Line type="monotone" dataKey="score" stroke="#06B6D4" strokeWidth={2.5} dot={{ fill: '#06B6D4', r: 4 }} activeDot={{ r: 6 }} isAnimationActive animationDuration={1200} />
                   <Line type="monotone" dataKey="avg" stroke="#3B82F6" strokeWidth={2} strokeDasharray="4 4" dot={false} isAnimationActive />
                 </LineChart>
@@ -112,7 +116,8 @@ export function Analytics() {
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar name="Your Grade" dataKey="grade" stroke="#06B6D4" fill="#06B6D4" fillOpacity={0.25} isAnimationActive animationDuration={1200} />
                   <Radar name="Class Avg" dataKey="avg" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} />
-                  <Tooltip contentStyle={TOOLTIP} formatter={(v: number) => [`${v}%`]} />
+                  <Tooltip contentStyle={TOOLTIP} formatter={(v) => [`${v ?? 0}%`]} />
+
                 </RadarChart>
               </ResponsiveContainer>
             </div>
@@ -129,7 +134,7 @@ export function Analytics() {
               <BarChart data={TIME_DATA} barSize={32}>
                 <XAxis dataKey="day" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}h`} />
-                <Tooltip contentStyle={TOOLTIP} formatter={(v: number) => [`${v}h`, 'Study time']} />
+                <Tooltip contentStyle={TOOLTIP} formatter={(v) => [`${v ?? 0}h`, 'Study time']} />
                 <Bar dataKey="hours" fill="url(#timeGrad)" radius={[6, 6, 0, 0]} isAnimationActive animationDuration={1000} />
                 <defs>
                   <linearGradient id="timeGrad" x1="0" y1="0" x2="0" y2="1">

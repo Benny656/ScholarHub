@@ -177,6 +177,28 @@ export function AdminDashboard() {
     destructive: false
   });
 
+  const handleExportCSV = () => {
+    toast.success('CSV Export started');
+  };
+
+  const filteredUsers = users.filter((u: any) => {
+    if (userSearch && !u.name?.toLowerCase().includes(userSearch.toLowerCase()) && !u.email?.toLowerCase().includes(userSearch.toLowerCase())) return false;
+    if (userRoleFilter !== 'all' && u.role !== userRoleFilter) return false;
+    if (userStatusFilter !== 'all' && (userStatusFilter === 'active' ? u.status !== 'suspended' : u.status === 'suspended')) return false;
+    return true;
+  });
+  const paginatedUsers = filteredUsers.slice((userPage - 1) * itemsPerPage, userPage * itemsPerPage);
+
+  const filteredCourses = courses.filter((c: any) => {
+    if (courseSearch && !c.title?.toLowerCase().includes(courseSearch.toLowerCase())) return false;
+    if (courseStatusFilter !== 'all') {
+      if (courseStatusFilter === 'published' && !c.is_published) return false;
+      if (courseStatusFilter === 'draft' && c.is_published) return false;
+    }
+    return true;
+  });
+  const paginatedCourses = filteredCourses.slice((coursePage - 1) * itemsPerPage, coursePage * itemsPerPage);
+
   // Load all dashboard data
   const loadData = async () => {
     try {

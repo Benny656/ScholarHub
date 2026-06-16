@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ClipboardList, Upload, X, Sparkles, AlertCircle, CheckCircle, Clock, FileText, ChevronRight, Download, Bot } from 'lucide-react';
+import { ClipboardList, Upload, X, Sparkles, AlertCircle, CheckCircle, Clock, FileText, ChevronRight, Download, Bot, BookOpen } from 'lucide-react';
 import { assignmentsService } from '../../services/assignments.service';
 import { aiService } from '../../services/ai.service';
 import { uploadService } from '../../services/upload.service';
