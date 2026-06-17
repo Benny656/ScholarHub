@@ -19,8 +19,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5173'
 ];
 
-if (process.env.CORS_ORIGIN) {
-  allowedOrigins.push(...process.env.CORS_ORIGIN.split(',').map(url => url.trim()));
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(...process.env.FRONTEND_URL.split(',').map(url => url.trim()));
 }
 
 app.use(cors({
@@ -60,11 +60,8 @@ app.get('/health', (req, res) => {
 // Configure Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' && process.env.CORS_ORIGIN 
-      ? process.env.CORS_ORIGIN.split(',').map(url => url.trim()) 
-      : '*',
-    methods: ['GET', 'POST'],
-    credentials: true
+    origin: '*',
+    methods: ['GET', 'POST']
   }
 });
 
