@@ -3,24 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { AppLoading } from '../ui/AppLoading';
+import { ADMIN_EMAILS } from '../../services/auth.service';
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [lastActivity, setLastActivity] = useState(Date.now());
 
+  const userEmail = user?.email?.toLowerCase();
+  const isAdminEmail = userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail);
+  const isAdmin = user?.role === 'admin' || isAdminEmail;
+
   useEffect(() => {
     if (isLoading) return;
     if (!isAuthenticated) {
       navigate('/scholar-hub-admin-panel/login', { replace: true });
-    } else if (user?.role !== 'admin') {
+    } else if (!isAdmin) {
       navigate('/404', { replace: true });
     }
-  }, [isAuthenticated, user, isLoading, navigate]);
+  }, [isAuthenticated, user, isLoading, navigate, isAdmin]);
 
   // Session expiry: 2 hours of inactivity
   useEffect(() => {
-    if (isLoading || !isAuthenticated || user?.role !== 'admin') return;
+    if (isLoading || !isAuthenticated || !isAdmin) return;
 
     const maxInactivity = 2 * 60 * 60 * 1000; // 2 hours
 
@@ -56,7 +61,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
     return <AppLoading />;
   }
 
-  if (!isAuthenticated || user?.role !== 'admin') {
+  if (!isAuthenticated || !isAdmin) {
     return null;
   }
 

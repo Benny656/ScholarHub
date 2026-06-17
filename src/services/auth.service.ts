@@ -1,6 +1,13 @@
 import type { User, UserRole, TeacherTrack } from '../types';
 import { supabase } from '../lib/supabase';
 
+export const ADMIN_EMAILS = [
+  'bennymanuel2020@gmail.com',
+  'Jerlinsubhiksha@gmail.com',
+  'deepsiseropa@gmail.com',
+  'fredricknewbegin@gmail.com'
+];
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -99,7 +106,12 @@ function mapProfileToUser(
   };
 }
 
-export function getDashboardPath(user: Pick<User, 'role' | 'teacherTrack' | 'gradeLevel'> | Pick<Profile, 'role' | 'grade_level'> | null | undefined) {
+export function getDashboardPath(user: (Pick<User, 'role' | 'teacherTrack' | 'gradeLevel'> & { email?: string }) | (Pick<Profile, 'role' | 'grade_level'> & { email?: string | null }) | null | undefined) {
+  const email = user?.email?.toLowerCase();
+  if (email && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+    return '/admin/dashboard';
+  }
+
   if (!user?.role) return '/onboarding/role-selection';
   if (user.role === 'admin') return '/admin/dashboard';
   
@@ -128,6 +140,19 @@ export const authService = {
 
     const user = await this.getCurrentUser();
     if (!user) throw new Error('User profile not found');
+
+    const userEmail = user.email?.toLowerCase();
+    if (userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail)) {
+      if (user.role !== 'admin') {
+        await this.createProfile({
+          id: user.id,
+          email: user.email,
+          full_name: user.name,
+          role: 'admin',
+        });
+        user.role = 'admin';
+      }
+    }
 
     return { user, token: data.session.access_token };
   },
@@ -183,14 +208,8 @@ export const authService = {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error || !session?.user) return null;
 
-    const adminEmails = [
-      'bennymanuel2020@gmail.com',
-      'Jerlinsubhiksha@gmail.com',
-      'deepsiseropa@gmail.com',
-      'fredricknewbegin@gmail.com'
-    ];
     const userEmail = session.user.email?.toLowerCase() || '';
-    const isAdminEmail = adminEmails.map(e => e.toLowerCase()).includes(userEmail);
+    const isAdminEmail = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail);
 
     const existing = await this.getProfile(session.user.id);
     
@@ -237,13 +256,7 @@ export const authService = {
           role: role || 'student',
         };
 
-    const adminEmails = [
-      'bennymanuel2020@gmail.com',
-      'Jerlinsubhiksha@gmail.com',
-      'deepsiseropa@gmail.com',
-      'fredricknewbegin@gmail.com'
-    ];
-    if (adminEmails.map(e => e.toLowerCase()).includes(payload.email.toLowerCase())) {
+    if (ADMIN_EMAILS.map(e => e.toLowerCase()).includes(payload.email.toLowerCase())) {
       payload.role = 'admin' as UserRole;
     }
 
@@ -324,7 +337,12 @@ export const authService = {
     const profile = await this.getProfile(user.id);
     if (!profile) return null;
 
-    return mapProfileToUser(user, profile);
+    const mapped = mapProfileToUser(user, profile);
+    const userEmail = mapped.email?.toLowerCase();
+    if (userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail)) {
+      mapped.role = 'admin';
+    }
+    return mapped;
   },
 
   async getMe(): Promise<User> {

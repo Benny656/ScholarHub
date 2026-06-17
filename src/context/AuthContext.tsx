@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import type { User, UserRole } from '../types';
-import { authService, getDashboardPath } from '../services/auth.service';
+import { authService, getDashboardPath, ADMIN_EMAILS } from '../services/auth.service';
 import { supabase } from '../lib/supabase';
 
 interface AuthState {
@@ -76,13 +76,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const profile = await authService.ensureProfileForSession();
     console.log('[auth] ensureProfileForSession →', profile ? `role=${profile.role}` : 'null profile');
 
-    if (!profile?.role) {
+    const userEmail = profile?.email?.toLowerCase();
+    const isAdminEmail = userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail);
+
+    if (profile && isAdminEmail && profile.role !== 'admin') {
+      profile.role = 'admin';
+    }
+
+    if (!profile?.role && !isAdminEmail) {
       console.log('[auth] No role on profile → dispatching REQUIRE_ROLE_SELECTION');
       dispatch({ type: 'REQUIRE_ROLE_SELECTION', payload: { token: accessToken } });
       return;
     }
 
     const user = await authService.getMe();
+    if (isAdminEmail) {
+      user.role = 'admin';
+    }
     console.log('[auth] getMe →', { id: user.id, role: user.role, name: user.name });
     dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: accessToken } });
   }, []);
@@ -162,6 +172,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isHandlingExplicitAuth.current = true;
     try {
       const { user, token } = await authService.login({ email, password });
+      
+      const userEmail = user.email?.toLowerCase();
+      if (userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail)) {
+        user.role = 'admin';
+      }
+
       console.log('[auth] login → success, user:', { id: user.id, role: user.role });
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
       return user;
@@ -180,11 +196,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const register = useCallback(async (data: Parameters<typeof authService.register>[0]) => {
-    console.log('[auth] register → starting for', data.email);
+    const email = typeof data === 'object' ? data.email : data;
+    console.log('[auth] register → starting for', email);
     dispatch({ type: 'SET_LOADING', payload: true });
     isHandlingExplicitAuth.current = true;
     try {
       const { user, token } = await authService.register(data);
+      
+      const userEmail = user.email?.toLowerCase();
+      if (userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail)) {
+        user.role = 'admin';
+      }
+
       console.log('[auth] register → success, user:', { id: user.id, role: user.role });
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
       return user;
@@ -239,6 +262,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const getAuthenticatedRedirectPath = useCallback(() => {
+    const userEmail = state.user?.email?.toLowerCase();
+    if (userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail)) {
+      return '/admin/dashboard';
+    }
+
     if (state.requireRoleSelection) return '/onboarding/role-selection';
     const path = getDashboardPath(state.user);
     console.log('[auth] getAuthenticatedRedirectPath →', path);

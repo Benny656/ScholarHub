@@ -31,7 +31,7 @@ import { AppLoading } from './components/ui/AppLoading';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { useTheme } from './hooks/useTheme';
-import { getDashboardPath } from './services/auth.service';
+import { getDashboardPath, ADMIN_EMAILS } from './services/auth.service';
 
 // Auth pages
 import { Login } from './pages/auth/Login';
@@ -105,6 +105,13 @@ function AuthRedirector({ children }: { children: React.ReactNode }) {
 
   if (isLoading) return <AppLoading />;
 
+  const userEmail = user?.email?.toLowerCase();
+  const isAdminEmail = userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail);
+
+  if (isAuthenticated && isAdminEmail) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
   if (requireRoleSelection) {
     return <Navigate to="/onboarding/role-selection" replace />;
   }
@@ -117,10 +124,14 @@ function AuthRedirector({ children }: { children: React.ReactNode }) {
 }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, requireRoleSelection } = useAuth();
+  const { isAuthenticated, isLoading, requireRoleSelection, user } = useAuth();
 
   if (isLoading) return <AppLoading />;
-  if (requireRoleSelection) return <Navigate to="/onboarding/role-selection" replace />;
+
+  const userEmail = user?.email?.toLowerCase();
+  const isAdminEmail = userEmail && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(userEmail);
+
+  if (requireRoleSelection && !isAdminEmail) return <Navigate to="/onboarding/role-selection" replace />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   return <>{children}</>;
