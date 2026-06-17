@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "seed:admins": "node scripts/seed-admins.js"
+    "seed:admins": "node scripts/seed-admins.js",
+    "seed:test-accounts": "node scripts/create-test-accounts.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
