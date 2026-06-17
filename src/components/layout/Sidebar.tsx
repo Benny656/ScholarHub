@@ -18,7 +18,9 @@ import {
   History,
   Activity,
   ChevronRight,
-  User
+  User,
+  Award,
+  Volume2
 } from "lucide-react";
 import { Role, allRoles } from "../../lib/mockData";
 
@@ -46,29 +48,61 @@ export default function Sidebar({
       case "admin":
         return [
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-          { id: "users", label: "Users", icon: Users },
-          { id: "courses", label: "Courses", icon: BookOpen },
-          { id: "analytics", label: "Analytics", icon: BarChart3 },
-          { id: "settings", label: "Settings", icon: Settings },
+          { id: "users", label: "User Management", icon: Users },
+          { id: "course-approvals", label: "Course Approvals", icon: CheckSquare },
+          { id: "platform-analytics", label: "Platform Analytics", icon: BarChart3 },
+          { id: "revenue-analytics", label: "Revenue Analytics", icon: CreditCard },
+          { id: "system-settings", label: "System Settings", icon: Settings },
         ];
-      case "teacher":
       case "k12-teacher":
         return [
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-          { id: "courses", label: "Courses", icon: BookOpen },
-          { id: "students", label: "Students", icon: Users },
-          { id: "assignments", label: "Assignments", icon: CheckSquare },
-          { id: "calendar", label: "Calendar", icon: Calendar },
-          { id: "messages", label: "Messages", icon: Mail },
+          { id: "my-classes", label: "My Classes", icon: Users },
+          { id: "daily-attendance", label: "Daily Attendance", icon: Activity },
+          { id: "assignments-grading", label: "Assignments & Grading", icon: CheckSquare },
+          { id: "report-cards", label: "Report Cards", icon: Award },
+          { id: "timetable", label: "Timetable", icon: Calendar },
+          { id: "parent-communication", label: "Parent Communication", icon: Mail },
+          { id: "announcements", label: "Announcements", icon: Volume2 },
         ];
-      default: // students (school or college)
+      case "teacher": // uni teacher
         return [
-          { id: "dashboard", label: "Home", icon: LayoutDashboard },
-          { id: "courses", label: "Courses", icon: BookOpen },
-          { id: "assignments", label: "Assignments", icon: CheckSquare },
-          { id: "calendar", label: "Calendar", icon: Calendar },
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "course-management", label: "Course Management", icon: BookOpen },
+          { id: "student-roster", label: "Student Roster", icon: Users },
+          { id: "question-banks", label: "Assignments & Question Banks", icon: CheckSquare },
+          { id: "exam-scheduling", label: "Exam Scheduling", icon: Calendar },
+          { id: "session-attendance", label: "Session Attendance", icon: Activity },
+          { id: "live", label: "Live Classroom", icon: Video },
+          { id: "course-analytics", label: "Course Analytics", icon: BarChart3 },
+          { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
+        ];
+      case "school-student": // k12 student
+        return [
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "subjects", label: "Subjects", icon: BookOpen },
+          { id: "homework", label: "Homework & Assignments", icon: CheckSquare },
+          { id: "attendance", label: "Attendance", icon: Activity },
+          { id: "timetable", label: "Class Timetable", icon: Calendar },
+          { id: "report-card", label: "Report Card", icon: Award },
+          { id: "ai-tutor", label: "AI Tutor", icon: BrainCircuit },
           { id: "messages", label: "Messages", icon: Mail },
-          { id: "profile", label: "Profile", icon: User },
+          { id: "certificates", label: "Certificates", icon: ShieldCheck },
+        ];
+      default: // uni student
+        return [
+          { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+          { id: "courses", label: "Course Catalog", icon: BookOpen },
+          { id: "my-courses", label: "My Courses", icon: BookOpen },
+          { id: "assignments", label: "Assignments & Quizzes", icon: CheckSquare },
+          { id: "attendance", label: "Attendance", icon: Activity },
+          { id: "exam-calendar", label: "Exam Calendar", icon: Calendar },
+          { id: "grades-gpa", label: "Grades & GPA", icon: Award },
+          { id: "ai-tutor", label: "AI Tutor", icon: BrainCircuit },
+          { id: "messages", label: "Messages", icon: Mail },
+          { id: "certificates", label: "Certificates", icon: ShieldCheck },
+          { id: "live", label: "Live Classroom", icon: Video },
+          { id: "progress-analytics", label: "Progress Analytics", icon: BarChart3 },
         ];
     }
   };

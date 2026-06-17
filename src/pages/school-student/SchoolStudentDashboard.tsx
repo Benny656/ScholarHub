@@ -76,7 +76,9 @@ interface BadgeItem {
 export function SchoolStudentDashboard() {
   const { user } = useAuth();
 
-  if (user && (user.role !== 'student' || user.gradeLevel !== 'k12')) {
+  const isK12Student = user?.role === 'student' && user?.gradeLevel?.toLowerCase().startsWith('k12');
+
+  if (user && !isK12Student) {
     return <Navigate to={getDashboardPath(user)} replace />;
   }
 
@@ -230,7 +232,7 @@ export function SchoolStudentDashboard() {
         {
           id: 'newbie',
           title: 'First Step',
-          description: 'Unlock by creating an account',
+          description: 'Created account',
           icon: '🌱',
           earned: true,
           color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
@@ -238,23 +240,23 @@ export function SchoolStudentDashboard() {
         {
           id: 'streak-3',
           title: 'Class Regular',
-          description: 'Keep a daily streak of 3+ days',
+          description: '3+ Days Streak',
           icon: '🔥',
           earned: stats.streak >= 3,
           color: 'bg-orange-500/10 text-orange-400 border-orange-500/20'
         },
         {
           id: 'level-5',
-          title: 'Super Learner',
-          description: 'Reach Level 5 to unlock',
+          title: 'Super Kid',
+          description: 'Reach Level 5',
           icon: '⚡',
           earned: stats.level >= 5,
           color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
         },
         {
           id: 'xp-1000',
-          title: 'Star Scholar',
-          description: 'Earn more than 1,000 Total XP',
+          title: 'Star Kid',
+          description: 'Earn 1000+ XP',
           icon: '🏆',
           earned: stats.xp >= 1000,
           color: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
@@ -276,9 +278,15 @@ export function SchoolStudentDashboard() {
 
   const getGreetingMessage = () => {
     const hours = new Date().getHours();
-    if (hours < 12) return 'Good Morning';
-    if (hours < 17) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hours < 12) return 'Good Morning ☀️';
+    if (hours < 17) return 'Good Afternoon 🌤️';
+    return 'Good Evening 🌙';
+  };
+
+  const bounceTransition = {
+    type: "spring",
+    stiffness: 450,
+    damping: 12
   };
 
   if (loading) {
@@ -292,300 +300,312 @@ export function SchoolStudentDashboard() {
 
   if (error) {
     return (
-      <GlassCard tint="red" className="max-w-md mx-auto my-12 text-center p-8">
+      <GlassCard tint="red" className="max-w-md mx-auto my-12 text-center p-8 border-4 border-red-500/40 rounded-3xl">
         <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Failed to Load Dashboard</h3>
-        <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">{error}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{error}</p>
         <Button variant="primary" onClick={loadDashboardData} icon={<RefreshCw size={14} />}>Retry</Button>
       </GlassCard>
     );
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto pb-12 font-sans space-y-8">
+    <div className="max-w-[1200px] mx-auto pb-12 font-sans space-y-8 select-none">
       
-      {/* Gamification Welcome Banner */}
+      {/* Funky Rainbow Welcome Banner */}
       <motion.div 
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative bg-gradient-to-r from-purple-600 to-indigo-500 rounded-3xl p-6 sm:p-8 md:p-10 text-white overflow-hidden shadow-xl"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={bounceTransition}
+        className="relative bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-500 rounded-[36px] p-6 sm:p-8 md:p-10 text-white overflow-hidden shadow-2xl border-4 border-white dark:border-neutral-800"
       >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute top-0 right-0 w-80 h-80 bg-yellow-300 opacity-20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3 animate-pulse"></div>
         
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight font-serif">
+            <motion.h1 
+              initial={{ y: -10 }}
+              animate={{ y: 0 }}
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight font-serif text-yellow-300 drop-shadow"
+            >
               {getGreetingMessage()}, {firstName}! 🎒
-            </h1>
-            <p className="text-base sm:text-lg text-white/95 font-medium max-w-md leading-relaxed">
-              Keep up the amazing work! You are leveling up fast. Let's check out your timetable for today.
+            </motion.h1>
+            <p className="text-base sm:text-lg text-white/95 font-semibold max-w-md leading-relaxed">
+              Welcome to your cool classroom space! You are doing awesome. Ready to learn something fun today? 🚀
             </p>
           </div>
 
           <div className="flex flex-wrap gap-4 md:justify-end">
             
             {/* Streak */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex items-center gap-4 hover:bg-white/20 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 shrink-0">
-                <Flame className="w-6 h-6 text-white" />
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: -2 }}
+              transition={bounceTransition}
+              className="bg-white/20 backdrop-blur-md rounded-3xl p-4 border-2 border-orange-400 flex items-center gap-4 cursor-default shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                <Flame className="w-7 h-7 text-white" />
               </div>
               <div>
-                <p className="text-white/70 text-xs font-bold uppercase tracking-wider">Day Streak</p>
-                <p className="text-2xl font-bold">{gamifiedStats.streak} <span className="text-sm font-medium text-white/80">Days</span></p>
+                <p className="text-white/80 text-[10px] font-black uppercase tracking-widest">Fire Streak</p>
+                <p className="text-2xl font-black text-yellow-300">{gamifiedStats.streak} <span className="text-sm font-medium text-white/85">Days</span></p>
               </div>
-            </div>
+            </motion.div>
 
             {/* XP */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex items-center gap-4 hover:bg-white/20 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 shrink-0">
-                <Star className="w-6 h-6 text-white" />
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: 2 }}
+              transition={bounceTransition}
+              className="bg-white/20 backdrop-blur-md rounded-3xl p-4 border-2 border-yellow-300 flex items-center gap-4 cursor-default shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg shrink-0 animate-bounce">
+                <Star className="w-7 h-7 text-white" />
               </div>
               <div>
-                <p className="text-white/70 text-xs font-bold uppercase tracking-wider">Total XP</p>
-                <p className="text-2xl font-bold">{gamifiedStats.xp}</p>
+                <p className="text-white/80 text-[10px] font-black uppercase tracking-widest">Learner XP</p>
+                <p className="text-2xl font-black text-yellow-300">{gamifiedStats.xp}</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Level */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex items-center gap-4 hover:bg-white/20 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 shrink-0">
-                <Trophy className="w-6 h-6 text-white" />
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: -1 }}
+              transition={bounceTransition}
+              className="bg-white/20 backdrop-blur-md rounded-3xl p-4 border-2 border-cyan-300 flex items-center gap-4 cursor-default shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                <Trophy className="w-7 h-7 text-white" />
               </div>
               <div>
-                <p className="text-white/70 text-xs font-bold uppercase tracking-wider">Level</p>
-                <p className="text-2xl font-bold">{gamifiedStats.level}</p>
+                <p className="text-white/80 text-[10px] font-black uppercase tracking-widest">Rank Level</p>
+                <p className="text-2xl font-black text-yellow-300">{gamifiedStats.level}</p>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
       </motion.div>
 
-      {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Bento-box Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         
-        {/* Left Columns (Timetable & Homework) */}
-        <div className="lg:col-span-2 space-y-8">
+        {/* Left Columns (Daily Timetable & Pending Homework) */}
+        <div className="lg:col-span-2 space-y-6 md:space-y-8">
           
-          {/* TIMETABLE / DAILY CLASS SCHEDULE */}
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-500" />
-                Daily Timetable / Class Schedule
+          {/* DAILY TIMETABLE CARD */}
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className="border-4 border-dashed border-blue-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 tracking-tight">
+                <span className="text-2xl">📅</span> Daily Class Timetable
               </h2>
-              <Link to="/calendar" className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline">Full Calendar →</Link>
             </div>
             
-            <GlassCard padding="p-0">
-              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {timetable.length === 0 ? (
-                  <div className="p-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                    No classes scheduled for today. Rest up or work on your homework! 😴
-                  </div>
-                ) : (
-                  timetable.map(cls => (
-                    <div key={cls.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-850/20 transition-colors">
+            <div className="space-y-4">
+              {timetable.length === 0 ? (
+                <div className="p-8 text-center text-sm font-semibold text-neutral-500 dark:text-neutral-400 bg-blue-50/50 dark:bg-neutral-950/20 rounded-2xl border-2 border-dashed border-blue-200">
+                  No classes scheduled for today! Time to play or read a book! 🎨🧩
+                </div>
+              ) : (
+                timetable.map(cls => (
+                  <motion.div 
+                    key={cls.id} 
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="p-4 bg-blue-500/5 dark:bg-neutral-800/30 rounded-2xl border-2 border-blue-400/20 hover:border-blue-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-205"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex flex-col items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5 animate-pulse" />
+                        <span className="text-[8px] font-black uppercase mt-0.5">Today</span>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-extrabold text-neutral-900 dark:text-white leading-tight">{cls.title}</h4>
+                        <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-1">
+                          Subject: {cls.courses?.title || 'General'} • Teacher: {cls.courses?.users?.name || 'Instructor'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 justify-between sm:justify-end">
+                      <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 bg-blue-100/60 dark:bg-blue-900/30 px-3 py-1 rounded-xl border border-blue-400/20">
+                        {new Date(cls.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      <Link to={`/classroom/${cls.courses?.id || cls.id}`}>
+                        <motion.button 
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2 rounded-xl text-xs font-black shadow-md shadow-blue-500/20 active:scale-95 transition-all"
+                        >
+                          Join Live 🎥
+                        </motion.button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </motion.section>
+
+          {/* HOMEWORK CARD */}
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.1 }}
+            className="border-4 border-dashed border-yellow-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 tracking-tight">
+                <span className="text-2xl">📝</span> Homework Board
+              </h2>
+            </div>
+            
+            <div className="space-y-4">
+              {homeworkList.length === 0 ? (
+                <div className="p-8 text-center text-sm font-semibold text-neutral-500 dark:text-neutral-400 bg-yellow-50/50 dark:bg-neutral-950/20 rounded-2xl border-2 border-dashed border-yellow-200">
+                  No homework left! You are a super scholar! 🏆🌟
+                </div>
+              ) : (
+                homeworkList.map(hw => {
+                  const isOverdue = new Date(hw.due_date) < new Date();
+                  return (
+                    <motion.div 
+                      key={hw.id}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      className="p-4 bg-yellow-500/5 dark:bg-neutral-800/30 rounded-2xl border-2 border-yellow-400/20 hover:border-yellow-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-205"
+                    >
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex flex-col items-center justify-center shrink-0">
-                          <Clock className="w-4 h-4" />
-                          <span className="text-[9px] font-bold mt-0.5">Today</span>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverdue ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                          <CheckCircle2 size={20} className="animate-bounce" />
                         </div>
                         <div>
-                          <h4 className="text-sm font-bold text-neutral-900 dark:text-white leading-tight">{cls.title}</h4>
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                            Classroom: {cls.courses?.title || 'Subject Group'} • Teacher: {cls.courses?.users?.name || 'Instructor'}
-                          </p>
+                          <h4 className="text-sm font-extrabold text-neutral-900 dark:text-white leading-tight">{hw.title}</h4>
+                          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mt-1">Subject: {hw.courses?.title || 'Class'}</p>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-3 justify-between sm:justify-end">
-                        <span className="text-xs font-bold text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 px-2.5 py-1 rounded-xl">
-                          {new Date(cls.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <div className="flex items-center gap-4 justify-between sm:justify-end">
+                        <span className={`text-xs font-extrabold px-3 py-1 rounded-xl border ${isOverdue ? 'bg-red-100 text-red-600 border-red-200' : 'bg-yellow-100/60 text-yellow-600 border-yellow-400/20'}`}>
+                          Due: {new Date(hw.due_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                         </span>
-                        <Link to={`/classroom/${cls.courses?.id || cls.id}`}>
-                          <button className="bg-gradient-to-r from-purple-600 to-indigo-500 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow hover:opacity-90 active:scale-95 transition-all">
-                            Join Live
-                          </button>
+                        <Link to={`/assignments/${hw.id}`}>
+                          <motion.button 
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-5 py-2 rounded-xl text-xs font-black shadow-md shadow-yellow-400/20 transition-all"
+                          >
+                            Solve! ✏️
+                          </motion.button>
                         </Link>
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </GlassCard>
-          </motion.section>
-
-          {/* HOMEWORK (PENDING ASSIGNMENTS) */}
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-amber-500" />
-                My Homework
-              </h2>
-              <Link to="/assignments" className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline">All Homework →</Link>
+                    </motion.div>
+                  );
+                })
+              )}
             </div>
-            
-            <GlassCard padding="p-0">
-              <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {homeworkList.length === 0 ? (
-                  <div className="p-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                    No homework due! Excellent job keeping up! 🌟
-                  </div>
-                ) : (
-                  homeworkList.map(hw => {
-                    const isOverdue = new Date(hw.due_date) < new Date();
-                    return (
-                      <div key={hw.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-850/20 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverdue ? 'bg-red-500/10 text-red-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                            <CheckCircle2 size={18} />
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white leading-tight">{hw.title}</h4>
-                            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Subject: {hw.courses?.title || 'Classroom'}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-4 justify-between sm:justify-end">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg ${isOverdue ? 'bg-red-500/10 text-red-500' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-slate-300'}`}>
-                            Due: {new Date(hw.due_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                          </span>
-                          <Link to={`/assignments/${hw.id}`}>
-                            <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-103 active:scale-97 shadow">
-                              Solve
-                            </button>
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </GlassCard>
           </motion.section>
 
         </div>
 
-        {/* Right Columns (Attendance, Badges, Quick Access) */}
-        <div className="space-y-8">
+        {/* Right Columns (Attendance, Badges, AI Tutor) */}
+        <div className="space-y-6 md:space-y-8">
           
-          {/* MY ATTENDANCE */}
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <GlassCard className="flex items-center gap-6">
-              <div className="relative w-20 h-20 shrink-0">
-                <svg className="w-full h-full" viewBox="0 0 36 36">
-                  <path
-                    className="text-neutral-200 dark:text-neutral-700"
-                    strokeWidth="3.5"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <motion.path
-                    className="text-emerald-500"
-                    strokeWidth="3.5"
-                    strokeDasharray={`${attendancePercent}, 100`}
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="none"
-                    initial={{ strokeDasharray: "0, 100" }}
-                    animate={{ strokeDasharray: `${attendancePercent}, 100` }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-bold text-neutral-900 dark:text-white">{attendancePercent}%</span>
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-neutral-900 dark:text-neutral-50 text-sm mb-1">My Attendance</h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-normal">
-                  {attendancePercent >= 90 ? 'Outstanding class presence! Keep it up!' : 'Try to join all scheduled live classrooms.'}
-                </p>
-              </div>
-            </GlassCard>
-          </motion.section>
-
-          {/* PROGRESS BADGES / ACHIEVEMENTS */}
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <GlassCard>
-              <h3 className="font-bold text-neutral-900 dark:text-neutral-50 text-sm mb-4 flex items-center gap-2">
-                <Medal className="w-5 h-5 text-yellow-500" />
-                Achievements & Badges
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-3">
-                {badges.map(badge => (
-                  <div 
-                    key={badge.id}
-                    className={`p-3 rounded-xl border flex flex-col items-center text-center transition-all ${
-                      badge.earned 
-                        ? badge.color
-                        : 'bg-neutral-100/50 dark:bg-neutral-900/40 text-neutral-400 border-neutral-200 dark:border-neutral-800 opacity-50'
-                    }`}
-                  >
-                    <span className="text-2xl mb-1.5">{badge.icon}</span>
-                    <span className="text-xs font-bold truncate max-w-full leading-tight">{badge.title}</span>
-                    <span className="text-[9px] text-neutral-500 dark:text-slate-400 mt-0.5 line-clamp-2">{badge.description}</span>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
-          </motion.section>
-
-          {/* GAMIFIED QUICK ACTIONS */}
+          {/* MY ATTENDANCE CIRCLE */}
           <motion.section 
-            initial={{ opacity: 0, y: 10 }} 
+            initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.3 }}
-            className="space-y-3"
+            className="border-4 border-dashed border-emerald-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative text-center"
           >
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Quick Actions</h3>
-              <Button variant="ghost" size="sm" onClick={loadDashboardData} icon={<RefreshCw size={11} />} className="text-[10px]" />
+            <h3 className="font-extrabold text-neutral-900 dark:text-neutral-50 text-sm mb-4">My Attendance</h3>
+            <div className="relative w-28 h-28 mx-auto mb-4">
+              <svg className="w-full h-full" viewBox="0 0 36 36">
+                <path
+                  className="text-neutral-100 dark:text-neutral-850"
+                  strokeWidth="4"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <motion.path
+                  className="text-emerald-500"
+                  strokeWidth="4"
+                  strokeDasharray={`${attendancePercent}, 100`}
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  initial={{ strokeDasharray: "0, 100" }}
+                  animate={{ strokeDasharray: `${attendancePercent}, 100` }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-black text-neutral-900 dark:text-white leading-none">{attendancePercent}%</span>
+                <span className="text-[10px] font-bold text-emerald-500 mt-1">
+                  {attendancePercent >= 90 ? '😊 Awesome!' : attendancePercent >= 75 ? '🙂 Nice!' : '😢 Uh oh!'}
+                </span>
+              </div>
             </div>
+            <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 leading-normal">
+              {attendancePercent >= 90 ? 'Outstanding class presence! Keep shining!' : 'Try to join all scheduled live classrooms.'}
+            </p>
+          </motion.section>
 
-            <div className="grid grid-cols-1 gap-2">
-              
-              {timetable[0] && (
-                <Link to={`/classroom/${timetable[0].courses?.id || timetable[0].id}`}>
-                  <button className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-purple-600 to-indigo-500 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl shadow transition-all text-left">
-                    <Video size={16} />
-                    <div>
-                      <p className="text-xs font-bold">Join Next Class</p>
-                      <p className="text-[10px] text-white/80 line-clamp-1">{timetable[0].title}</p>
-                    </div>
-                  </button>
-                </Link>
-              )}
-
-              {enrollments[0] && (
-                <Link to={`/learn/${enrollments[0].courses?.id}/l1`}>
-                  <button className="w-full flex items-center gap-3 p-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:scale-[1.02] active:scale-[0.98] rounded-xl shadow transition-all text-left">
-                    <PlayCircle size={16} />
-                    <div>
-                      <p className="text-xs font-bold">Continue Lessons</p>
-                      <p className="text-[10px] opacity-80 line-clamp-1">{enrollments[0].courses?.title}</p>
-                    </div>
-                  </button>
-                </Link>
-              )}
-
-              {homeworkList[0] && (
-                <Link to={`/assignments/${homeworkList[0].id}`}>
-                  <button className="w-full flex items-center gap-3 p-3 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:scale-[1.02] active:scale-[0.98] text-neutral-800 dark:text-neutral-200 rounded-xl shadow transition-all text-left">
-                    <FileText size={16} className="text-amber-500" />
-                    <div>
-                      <p className="text-xs font-bold">Solve Homework</p>
-                      <p className="text-[10px] text-neutral-500 dark:text-slate-400 line-clamp-1">{homeworkList[0].title}</p>
-                    </div>
-                  </button>
-                </Link>
-              )}
-
+          {/* BADGES & PROGRESS */}
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.15 }}
+            className="border-4 border-dashed border-purple-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg"
+          >
+            <h3 className="font-extrabold text-neutral-900 dark:text-neutral-50 text-sm mb-4 flex items-center gap-2 justify-center sm:justify-start">
+              🏆 Badges & Trophies
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {badges.map(badge => (
+                <motion.div 
+                  key={badge.id}
+                  whileHover={{ scale: 1.1, rotate: badge.earned ? [0, -5, 5, 0] : 0 }}
+                  className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all ${
+                    badge.earned 
+                      ? badge.color + ' border-purple-400/30'
+                      : 'bg-neutral-100/50 dark:bg-neutral-950/20 text-neutral-400 border-neutral-200 dark:border-neutral-850 opacity-50'
+                  }`}
+                >
+                  <span className="text-3xl mb-1.5">{badge.icon}</span>
+                  <span className="text-xs font-extrabold truncate max-w-full leading-tight">{badge.title}</span>
+                  <span className="text-[9px] font-semibold text-neutral-500 dark:text-slate-400 mt-0.5 line-clamp-1">{badge.description}</span>
+                </motion.div>
+              ))}
             </div>
+          </motion.section>
+
+          {/* FRIENDLY AI TUTOR COMPANION */}
+          <motion.section 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.25 }}
+            whileHover={{ scale: 1.03 }}
+            className="p-5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[32px] text-white shadow-xl relative overflow-hidden text-center border-4 border-white dark:border-neutral-800"
+          >
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-yellow-300/10 via-transparent to-transparent pointer-events-none"></div>
+            <div className="text-4xl mb-2 animate-bounce">🤖</div>
+            <h4 className="text-base font-black text-yellow-300">Need Homework Help?</h4>
+            <p className="text-xs font-semibold text-white/90 mt-1 max-w-xs mx-auto leading-relaxed">
+              "Hi! I'm your AI Buddy. Click here and let's solve your hard homework questions together!"
+            </p>
+            <Link to="/ai-tutor">
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="mt-4 bg-white text-purple-700 px-5 py-2 rounded-2xl text-xs font-black shadow-lg shadow-purple-950/20"
+              >
+                Chat with AI Tutor ✨
+              </motion.button>
+            </Link>
           </motion.section>
 
         </div>

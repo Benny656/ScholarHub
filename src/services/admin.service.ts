@@ -261,8 +261,8 @@ export async function getAnalyticsData() {
       { data: courses }
     ] = await Promise.all([
       supabase.from('users').select('*', { count: 'exact', head: true }),
-      supabase.from('users').select('*', { count: 'exact', head: true }).eq('grade_level', 'k12'),
-      supabase.from('users').select('*', { count: 'exact', head: true }).neq('grade_level', 'k12'),
+      supabase.from('users').select('*', { count: 'exact', head: true }).ilike('grade_level', 'k12%'),
+      supabase.from('users').select('*', { count: 'exact', head: true }).not('grade_level', 'ilike', 'k12%'),
       supabase.from('enrollments').select('progress'),
       supabase.from('attendance').select('status'),
       supabase.from('live_sessions').select('*'),

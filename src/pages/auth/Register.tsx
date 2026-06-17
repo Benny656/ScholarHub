@@ -11,6 +11,7 @@ import { getDashboardPath } from '../../services/auth.service';
 
 export function Register() {
   const [role, setRole] = useState<'student' | 'teacher'>('student');
+  const [track, setTrack] = useState<'k12' | 'college' | null>(null);
   const [step, setStep] = useState(1);
   const [emailConfirmationSent, setEmailConfirmationSent] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
@@ -51,17 +52,28 @@ export function Register() {
     if (!form.password) e.password = 'Password is required';
     else if (form.password.length < 8) e.password = 'Minimum 8 characters';
     if (form.password !== form.confirm) e.confirm = 'Passwords do not match';
+    if (!track) e.track = 'Please select a category';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const validateFinalStep = () => {
     const e: Record<string, string> = {};
-    if (role === 'student') {
-      if (!form.institution.trim()) e.institution = 'Institution is required';
-    } else if (role === 'teacher') {
-      if (!form.department.trim()) e.department = 'Department is required';
+    
+    if (!form.institution.trim()) {
+      e.institution = track === 'k12' ? 'School name is required' : 'University/College name is required';
     }
+    
+    if (!form.gradeLevel) {
+      e.gradeLevel = track === 'k12' ? 'Grade level is required' : 'Semester/Year is required';
+    }
+
+    if (track === 'college') {
+      if (!form.department.trim()) {
+        e.department = 'Department / Major is required';
+      }
+    }
+    
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -83,15 +95,19 @@ export function Register() {
     if (!validateFinalStep()) return;
     setIsLoading(true);
     try {
+      const dbGradeLevel = track === 'k12' 
+        ? `k12: ${form.gradeLevel}` 
+        : `college: ${form.gradeLevel}`;
+
       await register({
         email: form.email,
         password: form.password,
         name: form.name,
         role: role as UserRole,
-        institution: role === 'student' ? form.institution : undefined,
+        institution: form.institution,
         studentId: role === 'student' ? form.studentId : undefined,
-        gradeLevel: role === 'student' ? form.gradeLevel : undefined,
-        department: role === 'teacher' ? form.department : undefined,
+        gradeLevel: dbGradeLevel,
+        department: track === 'college' ? form.department : undefined,
         expertise: role === 'teacher' ? form.expertise : undefined,
       });
       // If we reach here, registration succeeded and a session was returned.
@@ -158,20 +174,53 @@ export function Register() {
 
   return (
     <AuthLayout title="Create your account" subtitle="Join 12,000+ learners on ScholarHub">
-      {/* Role selection only on step 1 */}
+      {/* Role selection and sub-role selection on step 1 */}
       {step === 1 && (
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {(['student', 'teacher'] as const).map(r => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRole(r)}
-              className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 text-[#6D5DFC]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#6D5DFC]/30'}`}
-            >
-              {r === 'student' ? <GraduationCap size={18} /> : <BookOpen size={18} />}
-              <span className="text-sm font-semibold capitalize">{r}</span>
-            </button>
-          ))}
+        <div className="space-y-4 mb-6">
+          <div className="grid grid-cols-2 gap-3">
+            {(['student', 'teacher'] as const).map(r => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => {
+                  setRole(r);
+                  setTrack(null);
+                  setForm(p => ({ ...p, gradeLevel: '', department: '' }));
+                }}
+                className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 text-[#6D5DFC]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#6D5DFC]/30'}`}
+              >
+                {r === 'student' ? <GraduationCap size={18} /> : <BookOpen size={18} />}
+                <span className="text-sm font-semibold capitalize">{r}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Select Category *</label>
+            <div className="grid grid-cols-2 gap-3">
+              {(['k12', 'college'] as const).map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => {
+                    setTrack(t);
+                    setForm(p => ({ ...p, gradeLevel: '', department: '' }));
+                    setErrors(p => {
+                      const copy = { ...p };
+                      delete copy.track;
+                      return copy;
+                    });
+                  }}
+                  className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border transition-all ${track === t ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 text-[#6D5DFC]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#6D5DFC]/30'}`}
+                >
+                  <span className="text-sm font-semibold">
+                    {t === 'k12' ? 'K-12 School' : 'College / University'}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {errors.track && <p className="text-xs text-error mt-1">{errors.track}</p>}
+          </div>
         </div>
       )}
 
@@ -239,21 +288,83 @@ export function Register() {
                 <input type="text" value={form.studentId} onChange={e => update('studentId', e.target.value)} placeholder="STU-2024-XXX" className={inputClass('studentId')} style={inputStyle} />
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-on-surface mb-1.5">Grade Level <span className="text-on-surface-variant">(optional)</span></label>
-              <div className="relative">
-                <BookOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                <input type="text" value={form.gradeLevel} onChange={e => update('gradeLevel', e.target.value)} placeholder="e.g. Grade 12, Undergraduate" className={inputClass('gradeLevel')} style={inputStyle} />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-on-surface mb-1.5">Institution *</label>
-              <div className="relative">
-                <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="School / University / College name" className={inputClass('institution')} style={inputStyle} />
-              </div>
-              {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
-            </div>
+            {track === 'k12' ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">School Name *</label>
+                  <div className="relative">
+                    <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                    <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="e.g. Green Valley High School" className={inputClass('institution')} style={inputStyle} />
+                  </div>
+                  {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">Grade / Class Level *</label>
+                  <div className="relative">
+                    <BookOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <select
+                      value={form.gradeLevel}
+                      onChange={e => update('gradeLevel', e.target.value)}
+                      className={`${inputClass('gradeLevel')} bg-surface pl-10`}
+                      style={inputStyle}
+                    >
+                      <option value="" className="bg-surface text-on-surface-variant">Select Grade Level</option>
+                      {Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`).map(g => (
+                        <option key={g} value={g} className="bg-surface text-on-surface">{g}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.gradeLevel && <p className="text-xs text-error mt-1">{errors.gradeLevel}</p>}
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">University / College Name *</label>
+                  <div className="relative">
+                    <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                    <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="e.g. Stanford University" className={inputClass('institution')} style={inputStyle} />
+                  </div>
+                  {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">Department / Major *</label>
+                  <div className="relative">
+                    <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                    <input type="text" value={form.department} onChange={e => update('department', e.target.value)} placeholder="e.g. Computer Science Engineering" className={inputClass('department')} style={inputStyle} />
+                  </div>
+                  {errors.department && <p className="text-xs text-error mt-1">{errors.department}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">Semester / Year *</label>
+                  <div className="relative">
+                    <BookOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <select
+                      value={form.gradeLevel}
+                      onChange={e => update('gradeLevel', e.target.value)}
+                      className={`${inputClass('gradeLevel')} bg-surface pl-10`}
+                      style={inputStyle}
+                    >
+                      <option value="" className="bg-surface text-on-surface-variant">Select Semester / Year</option>
+                      {[
+                        'Year 1, Semester 1',
+                        'Year 1, Semester 2',
+                        'Year 2, Semester 1',
+                        'Year 2, Semester 2',
+                        'Year 3, Semester 1',
+                        'Year 3, Semester 2',
+                        'Year 4, Semester 1',
+                        'Year 4, Semester 2',
+                        'Graduate / Postgrad',
+                      ].map(sem => (
+                        <option key={sem} value={sem} className="bg-surface text-on-surface">{sem}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.gradeLevel && <p className="text-xs text-error mt-1">{errors.gradeLevel}</p>}
+                </div>
+              </>
+            )}
             <div className="flex gap-3 pt-2">
               <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 ← Back
@@ -267,8 +378,45 @@ export function Register() {
 
         {step === 2 && role === 'teacher' && (
           <motion.form key="step-final" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} onSubmit={handleSubmit} className="space-y-4">
-            {role === 'teacher' && (
+            {track === 'k12' ? (
               <>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">School Name *</label>
+                  <div className="relative">
+                    <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                    <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="e.g. Green Valley High School" className={inputClass('institution')} style={inputStyle} />
+                  </div>
+                  {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">Grade / Class Level *</label>
+                  <div className="relative">
+                    <BookOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <select
+                      value={form.gradeLevel}
+                      onChange={e => update('gradeLevel', e.target.value)}
+                      className={`${inputClass('gradeLevel')} bg-surface pl-10`}
+                      style={inputStyle}
+                    >
+                      <option value="" className="bg-surface text-on-surface-variant">Select Grade Level</option>
+                      {Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`).map(g => (
+                        <option key={g} value={g} className="bg-surface text-on-surface">{g}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.gradeLevel && <p className="text-xs text-error mt-1">{errors.gradeLevel}</p>}
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">University / College Name *</label>
+                  <div className="relative">
+                    <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                    <input type="text" value={form.institution} onChange={e => update('institution', e.target.value)} placeholder="e.g. Stanford University" className={inputClass('institution')} style={inputStyle} />
+                  </div>
+                  {errors.institution && <p className="text-xs text-error mt-1">{errors.institution}</p>}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-on-surface mb-1.5">Department *</label>
                   <div className="relative">
@@ -278,14 +426,42 @@ export function Register() {
                   {errors.department && <p className="text-xs text-error mt-1">{errors.department}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-on-surface mb-1.5">Expertise <span className="text-on-surface-variant">(optional)</span></label>
+                  <label className="block text-sm font-medium text-on-surface mb-1.5">Semester / Year *</label>
                   <div className="relative">
-                    <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                    <input type="text" value={form.expertise} onChange={e => update('expertise', e.target.value)} placeholder="e.g. Machine Learning, Web Dev" className={inputClass('expertise')} style={inputStyle} />
+                    <BookOpen size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <select
+                      value={form.gradeLevel}
+                      onChange={e => update('gradeLevel', e.target.value)}
+                      className={`${inputClass('gradeLevel')} bg-surface pl-10`}
+                      style={inputStyle}
+                    >
+                      <option value="" className="bg-surface text-on-surface-variant">Select Semester / Year</option>
+                      {[
+                        'Year 1, Semester 1',
+                        'Year 1, Semester 2',
+                        'Year 2, Semester 1',
+                        'Year 2, Semester 2',
+                        'Year 3, Semester 1',
+                        'Year 3, Semester 2',
+                        'Year 4, Semester 1',
+                        'Year 4, Semester 2',
+                        'Graduate / Postgrad',
+                      ].map(sem => (
+                        <option key={sem} value={sem} className="bg-surface text-on-surface">{sem}</option>
+                      ))}
+                    </select>
                   </div>
+                  {errors.gradeLevel && <p className="text-xs text-error mt-1">{errors.gradeLevel}</p>}
                 </div>
               </>
             )}
+            <div>
+              <label className="block text-sm font-medium text-on-surface mb-1.5">Expertise <span className="text-on-surface-variant">(optional)</span></label>
+              <div className="relative">
+                <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                <input type="text" value={form.expertise} onChange={e => update('expertise', e.target.value)} placeholder="e.g. Machine Learning, Web Dev" className={inputClass('expertise')} style={inputStyle} />
+              </div>
+            </div>
 
             <div className="flex gap-3 pt-2">
               <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>

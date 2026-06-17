@@ -144,7 +144,7 @@ export function UsersPage() {
     }
 
     if (cohortFilter !== 'all') {
-      const isK12 = u.grade_level === 'k12' || u.user_type === 'k12';
+      const isK12 = u.grade_level?.toLowerCase().startsWith('k12') || u.user_type === 'k12';
       if (cohortFilter === 'k12' && !isK12) return false;
       if (cohortFilter === 'college' && isK12) return false;
     }
@@ -284,7 +284,7 @@ export function UsersPage() {
                   paginatedUsers.map((u) => {
                     const isSuspended = u.status === 'suspended';
                     const isSelf = u.id === currentUser?.id;
-                    const isK12 = u.grade_level === 'k12' || u.user_type === 'k12';
+                    const isK12 = u.grade_level?.toLowerCase().startsWith('k12') || u.user_type === 'k12';
 
                     return (
                       <tr key={u.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/10 transition-colors">

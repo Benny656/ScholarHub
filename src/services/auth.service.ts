@@ -84,8 +84,9 @@ function mapProfileToUser(
   authUser: NonNullable<Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user']>,
   profile: Profile
 ): User {
+  const isK12Profile = profile.grade_level?.toLowerCase().startsWith('k12') ?? false;
   const teacherTrack: TeacherTrack | undefined = profile.role === 'teacher'
-    ? profile.grade_level === 'k12' ? 'k12' : 'college'
+    ? isK12Profile ? 'k12' : 'college'
     : undefined;
 
   return {
@@ -116,13 +117,20 @@ export function getDashboardPath(user: (Pick<User, 'role' | 'teacherTrack' | 'gr
   if (user.role === 'admin') return '/admin/dashboard';
   
   if (user.role === 'teacher') {
-    const track = 'teacherTrack' in user && user.teacherTrack ? user.teacherTrack : (user as Pick<Profile, 'grade_level'>).grade_level === 'k12' ? 'k12' : 'college';
+    const track = 'teacherTrack' in user && user.teacherTrack 
+      ? user.teacherTrack 
+      : (user as Pick<Profile, 'grade_level'>).grade_level?.toLowerCase().startsWith('k12') 
+        ? 'k12' 
+        : 'college';
     return track === 'k12' ? '/k12-teacher/dashboard' : '/teacher/dashboard';
   }
   
   // Student
-  const gradeLevel = 'gradeLevel' in user && user.gradeLevel ? user.gradeLevel : (user as Pick<Profile, 'grade_level'>).grade_level === 'k12' ? 'k12' : 'college';
-  return gradeLevel === 'k12' ? '/school-student/dashboard' : '/unistudents/dashboard';
+  const gradeLevel = 'gradeLevel' in user && user.gradeLevel 
+    ? user.gradeLevel 
+    : (user as Pick<Profile, 'grade_level'>).grade_level;
+  const isK12 = gradeLevel?.toLowerCase().startsWith('k12');
+  return isK12 ? '/school-student/dashboard' : '/unistudents/dashboard';
 }
 
 export const authService = {

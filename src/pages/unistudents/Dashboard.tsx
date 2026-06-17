@@ -84,7 +84,8 @@ interface ActivityItem {
 export function StudentDashboard() {
   const { user } = useAuth();
 
-  if (user && (user.role !== 'student' || user.gradeLevel === 'k12')) {
+  const isK12 = user?.role === 'student' && user?.gradeLevel?.toLowerCase().startsWith('k12');
+  if (user && (user.role !== 'student' || isK12)) {
     return <Navigate to={getDashboardPath(user)} replace />;
   }
 
@@ -369,7 +370,7 @@ export function StudentDashboard() {
 
   if (error) {
     return (
-      <GlassCard tint="red" className="max-w-md mx-auto my-12 text-center p-8">
+      <GlassCard className="max-w-md mx-auto my-12 text-center p-8">
         <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Error Loading Dashboard</h3>
         <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">{error}</p>
@@ -680,6 +681,62 @@ export function StudentDashboard() {
             )}
           </div>
 
+          {/* Peer-to-Peer Messaging */}
+          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+            <div>
+              <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Peer-to-Peer</p>
+              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+                Study Groups
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                3 New Messages
+              </p>
+            </div>
+            <Link to="/messages">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2 hover:bg-neutral-100 dark:hover:bg-neutral-800">
+                <Bell size={14} />
+                <span>Open Chat</span>
+              </button>
+            </Link>
+          </div>
+
+          {/* GPA Tracking */}
+          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+            <div>
+              <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">GPA Tracker</p>
+              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+                Current GPA: 3.8
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                Top 10% of class
+              </p>
+            </div>
+            <Link to="/progress-analytics">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2 hover:bg-neutral-100 dark:hover:bg-neutral-800">
+                <Activity size={14} />
+                <span>View Analytics</span>
+              </button>
+            </Link>
+          </div>
+
+          {/* Breakout Rooms */}
+          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+            <div>
+              <p className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">Study Breakout Rooms</p>
+              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+                2 Active Rooms
+              </h4>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                Join peers in real-time
+              </p>
+            </div>
+            <Link to="/live-classroom">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-lg shadow-indigo-500/20 transition-all self-start mt-2">
+                <Video size={14} />
+                <span>Join Room</span>
+              </button>
+            </Link>
+          </div>
         </div>
       </motion.div>
 
