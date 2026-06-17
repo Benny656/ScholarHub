@@ -41,6 +41,7 @@ import { ForgotPassword, ResetPassword } from './pages/auth/ForgotPassword';
 
 // Dashboards
 import { StudentDashboard } from './pages/unistudents/Dashboard';
+import { PeerHub } from './pages/unistudents/PeerHub';
 import { SchoolStudentDashboard } from './pages/school-student/SchoolStudentDashboard';
 import { CollegeDashboard } from './pages/teacher/CollegeDashboard';
 import { K12TeacherDashboard } from './pages/teacher/K12TeacherDashboard';
@@ -69,6 +70,7 @@ import { Analytics } from './pages/analytics/Analytics';
 import { CalendarPage } from './pages/calendar/Calendar';
 import { Certificates, CertificateVerify } from './pages/certificates/Certificates';
 import { Profile } from './pages/profile/Profile';
+import { NotificationsSettings } from './pages/settings/Notifications';
 import { PricingPage } from './pages/pricing/PricingPage';
 import { AdminLogin } from './pages/admin-panel/AdminLogin';
 import { AdminGuard } from './components/admin/AdminGuard';
@@ -157,6 +159,7 @@ function AppRoutes() {
 
         {/* ─── Dashboards ─── */}
         <Route path="/unistudents/dashboard" element={<ProtectedRoute><DashboardWrapper><StudentDashboard /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/unistudents/peer-hub" element={<ProtectedRoute><DashboardWrapper><PeerHub /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/school-student/dashboard" element={<ProtectedRoute><DashboardWrapper><SchoolStudentDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><CollegeDashboard /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/k12-teacher/dashboard" element={<ProtectedRoute><DashboardWrapper><K12TeacherDashboard /></DashboardWrapper></ProtectedRoute>} />
@@ -190,6 +193,7 @@ function AppRoutes() {
         <Route path="/certificates" element={<ProtectedRoute><DashboardWrapper><Certificates /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/verify/:certId" element={<ProtectedRoute><DashboardWrapper><CertificateVerify /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><DashboardWrapper><Profile /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/settings/notifications" element={<ProtectedRoute><DashboardWrapper><NotificationsSettings /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/pricing" element={<PageWrapper><PricingPage /></PageWrapper>} />
 
         {/* ─── Role-specific Placeholder Routes ─── */}

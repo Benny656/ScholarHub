@@ -11,6 +11,8 @@ import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { GlassCard, Badge, Button, ProgressBar } from '../../components/ui/index';
 import toast from 'react-hot-toast';
+import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
+import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
 
 interface StudentData {
   id: string;
@@ -482,44 +484,13 @@ export function K12TeacherDashboard() {
         <div className="space-y-6 lg:space-y-8">
           
           {/* Today's Schedule */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <GlassCard>
-              <div className="flex items-center justify-between mb-4 border-b border-neutral-100 dark:border-neutral-800 pb-2">
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <Calendar size={16} className="text-brand-primary" /> Today's Live Sessions
-                </h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">{upcomingClasses.length} Scheduled</span>
-              </div>
+          <div className="h-[350px]">
+            <ScheduleWidget theme="funky" />
+          </div>
 
-              {upcomingClasses.length === 0 ? (
-                <div className="py-6 text-center text-xs text-neutral-500">
-                  No classes scheduled for today.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {upcomingClasses.map(cls => {
-                    const courseObj = courses.find(c => c.id === cls.course_id);
-                    return (
-                      <div key={cls.id} className="p-3 bg-neutral-50/50 dark:bg-neutral-850/20 border border-neutral-150 dark:border-neutral-800 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors flex justify-between items-center gap-2">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-bold text-brand-primary uppercase tracking-wide">
-                            {new Date(cls.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                          <h4 className="text-xs font-bold text-neutral-900 dark:text-white truncate mt-0.5">{cls.title}</h4>
-                          <p className="text-[9px] text-neutral-500 truncate">{courseObj?.title || 'Subject'}</p>
-                        </div>
-                        <Link to={`/classroom/${courseObj?.id || 'general'}`} className="shrink-0">
-                          <button className="p-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:scale-105 active:scale-95 transition-transform" title="Join class">
-                            <Video size={13} />
-                          </button>
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </GlassCard>
-          </motion.div>
+          <div className="h-[350px]">
+            <AnnouncementsWidget theme="funky" />
+          </div>
 
           {/* Behavior Tracking Summary Widget */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>

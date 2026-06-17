@@ -21,6 +21,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { GlassCard, Button, ProgressBar } from '../../components/ui/index';
+import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
+import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
 
 interface DbCourse {
   id: string;
@@ -393,61 +395,9 @@ export function SchoolStudentDashboard() {
         <div className="lg:col-span-2 space-y-6 md:space-y-8">
           
           {/* DAILY TIMETABLE CARD */}
-          <motion.section 
-            initial={{ opacity: 0, y: 15 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            className="border-4 border-dashed border-blue-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative overflow-hidden"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 tracking-tight">
-                <span className="text-2xl">📅</span> Daily Class Timetable
-              </h2>
-            </div>
-            
-            <div className="space-y-4">
-              {timetable.length === 0 ? (
-                <div className="p-8 text-center text-sm font-semibold text-neutral-500 dark:text-neutral-400 bg-blue-50/50 dark:bg-neutral-950/20 rounded-2xl border-2 border-dashed border-blue-200">
-                  No classes scheduled for today! Time to play or read a book! 🎨🧩
-                </div>
-              ) : (
-                timetable.map(cls => (
-                  <motion.div 
-                    key={cls.id} 
-                    whileHover={{ scale: 1.02, x: 5 }}
-                    className="p-4 bg-blue-500/5 dark:bg-neutral-800/30 rounded-2xl border-2 border-blue-400/20 hover:border-blue-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-205"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex flex-col items-center justify-center shrink-0">
-                        <Clock className="w-5 h-5 animate-pulse" />
-                        <span className="text-[8px] font-black uppercase mt-0.5">Today</span>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-extrabold text-neutral-900 dark:text-white leading-tight">{cls.title}</h4>
-                        <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-1">
-                          Subject: {cls.courses?.title || 'General'} • Teacher: {cls.courses?.users?.name || 'Instructor'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3 justify-between sm:justify-end">
-                      <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 bg-blue-100/60 dark:bg-blue-900/30 px-3 py-1 rounded-xl border border-blue-400/20">
-                        {new Date(cls.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      <Link to={`/classroom/${cls.courses?.id || cls.id}`}>
-                        <motion.button 
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2 rounded-xl text-xs font-black shadow-md shadow-blue-500/20 active:scale-95 transition-all"
-                        >
-                          Join Live 🎥
-                        </motion.button>
-                      </Link>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </motion.section>
+          <div className="h-[350px]">
+            <ScheduleWidget theme="funky" />
+          </div>
 
           {/* HOMEWORK CARD */}
           <motion.section 
@@ -506,6 +456,11 @@ export function SchoolStudentDashboard() {
               )}
             </div>
           </motion.section>
+
+          {/* ANNOUNCEMENTS CARD */}
+          <div className="h-[350px]">
+            <AnnouncementsWidget theme="funky" />
+          </div>
 
         </div>
 

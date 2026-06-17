@@ -8,6 +8,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { GlassCard, PageHeader, Badge, Button } from '../../components/ui/index';
+import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
+import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -135,7 +137,7 @@ export function CollegeDashboard() {
             </Button>
           </Link>
           <Link to="/classroom/general">
-            <Button variant="outline" className="gap-2 text-xs">
+            <Button variant="secondary" className="gap-2 text-xs">
               <Video size={14} /> Start Office Hours
             </Button>
           </Link>
@@ -214,45 +216,13 @@ export function CollegeDashboard() {
         </div>
 
         <div className="space-y-6">
-          <motion.div variants={itemVariants}>
-            <GlassCard>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Upcoming Classes</h3>
-                <Link to="/calendar" className="text-xs font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400 flex items-center gap-1 transition-colors">
-                  Schedule <ArrowRight size={14} />
-                </Link>
-              </div>
+          <div className="h-[350px]">
+            <ScheduleWidget theme="sleek" />
+          </div>
 
-              {upcomingClasses.length === 0 ? (
-                <div className="py-6 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
-                  <p className="text-xs text-neutral-500">No upcoming live classes scheduled.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {upcomingClasses.map(cls => {
-                    const course = courses.find(c => c.id === cls.course_id);
-                    return (
-                      <div key={cls.id} className="p-3 rounded-xl border border-neutral-200 dark:border-neutral-800/80 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40 transition-colors">
-                        <p className="text-xs font-bold text-purple-600 dark:text-purple-400 mb-1">
-                          {new Date(cls.scheduled_at).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                        <p className="text-sm font-semibold text-neutral-900 dark:text-white mb-0.5 line-clamp-1">{cls.title}</p>
-                        <p className="text-[10px] text-neutral-500 line-clamp-1">{course?.title || 'Unknown Course'}</p>
-                        
-                        <div className="mt-3">
-                          <Link to={`/classroom/${course?.id || 'general'}`}>
-                            <button className="w-full py-1.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold rounded-lg hover:scale-102 transition-transform">
-                              Join Room
-                            </button>
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </GlassCard>
-          </motion.div>
+          <div className="h-[350px]">
+            <AnnouncementsWidget theme="sleek" />
+          </div>
         </div>
       </motion.div>
     </div>

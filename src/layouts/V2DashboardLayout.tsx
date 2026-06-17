@@ -25,6 +25,7 @@ import {
   Volume2
 } from 'lucide-react';
 import { getDashboardPath } from '../services/auth.service';
+import { useNotifications } from '../services/notification.service';
 
 export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -148,6 +149,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
         return [
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
           { id: "courses", label: "Course Catalog", icon: BookOpen },
+          { id: "peer-hub", label: "Peer Hub", icon: Users },
           { id: "my-courses", label: "My Courses", icon: BookOpen },
           { id: "assignments", label: "Assignments & Quizzes", icon: CheckSquare },
           { id: "attendance", label: "Attendance", icon: Activity },
@@ -162,8 +164,8 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Mock notifications
-  const unreadNotificationsCount = 2;
+  // Real notifications
+  const { unreadCount: unreadNotificationsCount } = useNotifications(user?.id);
 
   return (
     <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-300 w-full">

@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getSystemStats, getAdminLogs, getUsersList } from '../../services/admin.service';
 import { ProctoringDashboard } from '../../components/features/ProctoringDashboard';
 import { BlockchainVerification } from '../../components/features/BlockchainVerification';
+import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
 
 export function AdminDashboard() {
   const { user } = useAuth();
@@ -217,6 +218,10 @@ export function AdminDashboard() {
             {/* Right Sidebar Area (1 Column) */}
             <div className="space-y-6 lg:space-y-8">
               
+              <div className="h-[350px]">
+                <AnnouncementsWidget theme="sleek" />
+              </div>
+
               {/* Platform Health and Alerts */}
               <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
                 <div className="px-5 py-4 border-b border-neutral-150 dark:border-neutral-850 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-900/50">

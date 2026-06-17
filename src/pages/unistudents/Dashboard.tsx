@@ -23,6 +23,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { GlassCard, Button, ProgressBar } from '../../components/ui/index';
+import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
+import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
 
 interface DbCourse {
   id: string;
@@ -411,6 +413,10 @@ export function StudentDashboard() {
         {/* Left Side: Operations */}
         <div className="lg:col-span-2 space-y-6 lg:space-y-8">
           
+          <div className="h-[350px]">
+            <ScheduleWidget theme="sleek" />
+          </div>
+          
           {/* ─── SECTION 2: UPCOMING CLASSES ─── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <GlassCard padding="p-0">
@@ -500,6 +506,9 @@ export function StudentDashboard() {
             </GlassCard>
           </motion.div>
 
+          <div className="h-[350px]">
+            <AnnouncementsWidget theme="sleek" />
+          </div>
         </div>
 
         {/* Right Side: Snapshots & Activity */}
