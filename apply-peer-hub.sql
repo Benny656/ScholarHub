@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.study_groups (
   description text,
   is_private boolean DEFAULT false,
   join_code text,
-  creator_id uuid references public.users(id) ON DELETE CASCADE,
+  creator_id uuid references public.profiles(id) ON DELETE CASCADE,
   created_at timestamptz DEFAULT now()
 );
 
@@ -25,7 +25,7 @@ CREATE POLICY "Creators can delete study groups" ON public.study_groups FOR DELE
 CREATE TABLE IF NOT EXISTS public.group_messages (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   group_id uuid references public.study_groups(id) ON DELETE CASCADE,
-  sender_id uuid references public.users(id) ON DELETE CASCADE,
+  sender_id uuid references public.profiles(id) ON DELETE CASCADE,
   content text NOT NULL,
   created_at timestamptz DEFAULT now()
 );
