@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { GlassCard, Button } from '../ui';
 import { Send, Users, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
-import anime from 'animejs/lib/anime.es.js';
+import { createTimeline, createScope, stagger } from 'animejs';
 
 interface Message {
   id: string;
@@ -45,9 +45,9 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
     // Setup Realtime Subscription
     const channel = supabase
       .channel(`room:${groupId}`)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
         table: 'group_messages',
         filter: `group_id=eq.${groupId}`
       }, () => {
@@ -63,23 +63,22 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
   useEffect(() => {
     // Scroll to bottom
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    
+
     // Anime.js bounce logic based on user's orientation requirement
     if (messages.length > 0 && chatContainerRef.current) {
       const isPortrait = window.matchMedia('(orientation: portrait)').matches;
-      
+
       const newBubbles = chatContainerRef.current.querySelectorAll('.chat-bubble-bounce:not(.animated)');
       if (newBubbles.length > 0) {
         newBubbles.forEach(b => b.classList.add('animated'));
-        
-        anime.timeline().add({
-          targets: newBubbles,
+
+        createTimeline().add(newBubbles, {
           translateY: isPortrait ? [0, 0] : [-15, 0],
           translateX: isPortrait ? [-15, 0] : [0, 0],
           opacity: [0, 1],
           duration: 400,
           easing: 'easeOutElastic(1, .8)',
-          delay: anime.stagger(50)
+          delay: stagger(50)
         });
       }
     }
@@ -88,7 +87,7 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user) return;
-    
+
     setLoading(true);
     const { error } = await supabase
       .from('group_messages')
@@ -120,7 +119,7 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
         </div>
       </div>
 
-      <div 
+      <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar min-h-[300px]"
       >
@@ -133,8 +132,8 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
           messages.map((msg) => {
             const isMe = msg.sender_id === user?.id;
             return (
-              <div 
-                key={msg.id} 
+              <div
+                key={msg.id}
                 className={`flex flex-col chat-bubble-bounce opacity-0 ${isMe ? 'items-end' : 'items-start'}`}
               >
                 {!isMe && (
@@ -142,12 +141,11 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
                     {msg.profiles?.full_name || 'Anonymous'}
                   </span>
                 )}
-                <div 
-                  className={`px-4 py-2 rounded-2xl max-w-[80%] shadow-sm ${
-                    isMe 
-                      ? 'bg-brand-primary text-white rounded-br-sm' 
-                      : 'bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-bl-sm border border-neutral-100 dark:border-neutral-700'
-                  }`}
+                <div
+                  className={`px-4 py-2 rounded-2xl max-w-[80%] shadow-sm ${isMe
+                    ? 'bg-brand-primary text-white rounded-br-sm'
+                    : 'bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-bl-sm border border-neutral-100 dark:border-neutral-700'
+                    }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                 </div>
