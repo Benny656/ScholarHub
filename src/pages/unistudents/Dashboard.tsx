@@ -91,7 +91,7 @@ interface ActivityItem {
 export function StudentDashboard() {
   const { user } = useAuth();
 
-  const [profileRole, setProfileRole] = useState<string | null>(null);
+  const [profileInstitution, setProfileInstitution] = useState<string | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
 
   useEffect(() => {
@@ -103,12 +103,12 @@ export function StudentDashboard() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('role')
+          .select('institution')
           .eq('id', user.id)
           .single();
         
         if (!error && data) {
-          setProfileRole(data.role);
+          setProfileInstitution(data.institution);
         }
       } finally {
         setIsProfileLoading(false);
@@ -117,7 +117,7 @@ export function StudentDashboard() {
     fetchProfile();
   }, [user]);
 
-  const isK12 = profileRole === 'k12_student' || (user?.role === 'student' && user?.gradeLevel?.toLowerCase().startsWith('k12'));
+  const isK12 = profileInstitution === 'k12';
 
   if (isProfileLoading) {
     return (

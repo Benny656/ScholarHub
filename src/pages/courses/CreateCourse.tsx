@@ -10,7 +10,7 @@ export function CreateCourse() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [profileRole, setProfileRole] = useState<string | null>(null);
+  const [profileInstitution, setProfileInstitution] = useState<string | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
 
   // Form State
@@ -20,8 +20,8 @@ export function CreateCourse() {
   const [targetYear, setTargetYear] = useState('1st Year');
   const [gradeLevel, setGradeLevel] = useState('Grade 9');
 
-  const isK12 = profileRole === 'k12_teacher';
-  const isUni = profileRole === 'college_teacher' || profileRole === 'teacher';
+  const isK12 = profileInstitution === 'k12';
+  const isUni = profileInstitution === 'uni';
 
   useEffect(() => {
     async function fetchProfile() {
@@ -32,12 +32,12 @@ export function CreateCourse() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('role')
+          .select('institution')
           .eq('id', user.id)
           .single();
         
         if (!error && data) {
-          setProfileRole(data.role);
+          setProfileInstitution(data.institution);
         }
       } finally {
         setIsProfileLoading(false);
@@ -202,7 +202,7 @@ export function CreateCourse() {
             </>
           )}
 
-          {(!isK12 && !isUni && profileRole === 'admin') && (
+          {(!isK12 && !isUni && user?.role === 'admin') && (
             <div className="p-4 rounded-xl bg-blue-50 text-blue-700 border border-blue-200">
               Admin View: Admins can manage courses via the main Admin Dashboard instead.
             </div>

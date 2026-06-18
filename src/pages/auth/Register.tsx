@@ -104,7 +104,7 @@ export function Register() {
         password: form.password,
         name: form.name,
         role: role as UserRole,
-        institution: form.institution,
+        institution: track === 'k12' ? 'k12' : 'uni',
         studentId: role === 'student' ? form.studentId : undefined,
         gradeLevel: dbGradeLevel,
         department: track === 'college' ? form.department : undefined,

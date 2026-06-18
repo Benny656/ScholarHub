@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Search, Star, Users, Clock, BookOpen, Plus } from 'lucide-react';
+import { Search, Star, Users, Clock, BookOpen, Plus, RefreshCw } from 'lucide-react';
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
 import { Badge, ProgressBar, PageHeader, Button, Select } from '../../components/ui/index';
@@ -298,6 +298,7 @@ export function CourseCatalog() {
   const { user } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isK12User, setIsK12User] = useState(false);
   
   // Search parameters and debounce state
@@ -317,29 +318,37 @@ export function CourseCatalog() {
     return () => clearTimeout(handler);
   }, [searchVal]);
 
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) {
+        setIsProfileLoading(false);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('institution')
+          .eq('id', user.id)
+          .single();
+        
+        if (!error && data) {
+          setIsK12User(data.institution === 'k12');
+        }
+      } finally {
+        setIsProfileLoading(false);
+      }
+    }
+    fetchProfile();
+  }, [user]);
+
   // Load courses and enrollments on filters/search update
   useEffect(() => {
     setLoading(true);
     
     async function fetchCourses() {
+      if (isProfileLoading) return;
       try {
-        let isK12 = false;
-        if (user) {
-           const { data: profile } = await supabase
-             .from('profiles')
-             .select('role')
-             .eq('id', user.id)
-             .single();
-           
-           if (profile) {
-             const role = profile.role as string;
-             if (role === 'k12_teacher' || role === 'k12_student' || (user.gradeLevel && user.gradeLevel.toLowerCase().startsWith('k12')) || user.teacherTrack === 'k12') {
-               isK12 = true;
-             }
-           }
-        }
-        setIsK12User(isK12);
-        const institutionFilter = isK12 ? 'k12' : 'uni';
+        const institutionFilter = isK12User ? 'k12' : 'uni';
 
         let query = supabase
           .from('courses')
@@ -371,7 +380,7 @@ export function CourseCatalog() {
     }
 
     fetchCourses();
-  }, [debouncedSearch, category, user]);
+  }, [debouncedSearch, category, user, isK12User, isProfileLoading]);
 
   const handleEnroll = (courseId: string) => {
     if (!user) {
@@ -398,6 +407,15 @@ export function CourseCatalog() {
   const isEnrolled = (courseId: string) => {
     return enrolledCourses.some(e => e.course_id === courseId);
   };
+
+  if (isProfileLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <RefreshCw className="animate-spin text-brand-primary" size={32} />
+        <p className="text-sm text-neutral-500">Verifying workspace...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
