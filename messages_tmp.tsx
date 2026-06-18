@@ -1,33 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Search, Bell, Users, Megaphone, Pin, Paperclip, Smile, MoreVertical, CheckCheck, Circle, FileText } from 'lucide-react';
+import { Send, Search, Bell, Users, Megaphone, Pin, Paperclip, Smile, MoreVertical, CheckCheck, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { messagesService } from '../../services/messages.service';
 import { socketService } from '../../services/socket.service';
-import { io, Socket } from 'socket.io-client';
-import { GlassCard, Badge, Avatar, SearchInput } from '../../components/ui/index';
+import { GlassCard, Avatar, SearchInput } from '../../components/ui/index';
 import type { Message, Conversation } from '../../types';
-
-const CONVERSATIONS = [
-  { id: 'dm1', name: 'Dr. Sarah Chen', role: 'teacher', lastMsg: 'Great submission! I left some feedback.', time: '2m', unread: 2, online: true },
-  { id: 'dm2', name: 'Prof. Raj Patel', role: 'teacher', lastMsg: 'The ML assignment deadline has been extended.', time: '1h', unread: 0, online: false },
-  { id: 'grp1', name: 'Web Dev — Study Group', role: 'group', lastMsg: 'Alex: Did anyone finish the last project?', time: '30m', unread: 5, online: true, members: 14 },
-  { id: 'grp2', name: 'React Advanced — Q&A', role: 'group', lastMsg: 'Sarah: Good question Jordan! ...', time: '2h', unread: 0, online: false, members: 247 },
-];
-
-const ANNOUNCEMENTS = [
-  { id: 'a1', title: 'Platform Maintenance Notice', body: 'ScholarHub will undergo scheduled maintenance on Sunday, June 22 from 2-4 AM UTC. Expect brief downtime.', from: 'System Admin', time: '2 days ago', pinned: true },
-  { id: 'a2', title: 'New AI Features Released!', body: 'The AI Assignment Checker now supports longer submissions and has 40% better feedback quality. Try it out!', from: 'Dr. Sarah Chen', time: '3 days ago', pinned: false },
-  { id: 'a3', title: 'Summer Course Registration Open', body: 'Registration for Summer 2024 courses is now open. Enroll early to secure your spot in limited-capacity workshops.', from: 'Registrar', time: '1 week ago', pinned: false },
-];
-
-const NOTIFICATIONS = [
-  { id: 'n1', msg: 'Your assignment "React Architecture" was graded: A', time: '10 min ago', type: 'grade', read: false },
-  { id: 'n2', msg: 'Live class starts in 15 minutes — Advanced React Patterns', time: '30 min ago', type: 'class', read: false },
-  { id: 'n3', msg: 'New announcement from Dr. Sarah Chen', time: '2 hours ago', type: 'announcement', read: true },
-  { id: 'n4', msg: 'Assignment deadline tomorrow: Algorithm Challenge Set', time: '1 day ago', type: 'deadline', read: true },
-  { id: 'n5', msg: 'You earned a new badge: "7-Day Streak" 🔥', time: '2 days ago', type: 'achievement', read: true },
-];
 
 export function Messages() {
   const { user } = useAuth();
@@ -37,13 +15,14 @@ export function Messages() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState('');
   const [search, setSearch] = useState('');
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [isUploading, setIsUploading] = useState(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socket = socketService.getSocket();
 
   useEffect(() => {
     if (!user) return;
@@ -55,79 +34,71 @@ export function Messages() {
     });
 
     // Connect socket and listen for online status and messages
-    const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
-    setSocket(newSocket);
+    socketService.connect(user.id);
     
-    newSocket.emit('set-online', { userId: user.id });
+    if (socket) {
+      socket.emit('set-online', { userId: user.id });
 
-    newSocket.on('user-online', ({ userId }: { userId: string }) => {
-      setOnlineUsers(prev => new Set(prev).add(userId));
-    });
-
-    newSocket.on('user-offline', ({ userId }: { userId: string }) => {
-      setOnlineUsers(prev => {
-        const next = new Set(prev);
-        next.delete(userId);
-        return next;
+      socket.on('user-online', ({ userId }) => {
+        setOnlineUsers(prev => new Set(prev).add(userId));
       });
-    });
 
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [user]);
-
-  useEffect(() => {
-    if (!socket || !user) return;
-
-    const handleMessage = ({ conversationId, message }: { conversationId: string; message: Message }) => {
-      if (conversationId === activeConv) {
-        setMessages(prev => [...prev, message]);
-        if (message.senderId !== user.id) {
-          socket.emit('chat-read', { conversationId, messageId: message.id, userId: user.id });
-          messagesService.markAsRead(message.id);
-        }
-      } else {
-        setConversations(prev => prev.map(c => 
-          c.id === conversationId ? { ...c, unreadCount: c.unreadCount + 1, lastMessage: message } : c
-        ));
-      }
-    };
-
-    const handleRead = ({ conversationId, messageId, userId }: { conversationId: string; messageId: string; userId: string }) => {
-      if (conversationId === activeConv && userId !== user.id) {
-        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isRead: true } : m));
-      }
-    };
-
-    const handleTyping = ({ conversationId, userId }: { conversationId: string; userId: string }) => {
-      if (conversationId === activeConv && userId !== user.id) {
-        setTypingUsers(prev => new Set(prev).add(userId));
-      }
-    };
-
-    const handleStopTyping = ({ conversationId, userId }: { conversationId: string; userId: string }) => {
-      if (conversationId === activeConv && userId !== user.id) {
-        setTypingUsers(prev => {
+      socket.on('user-offline', ({ userId }) => {
+        setOnlineUsers(prev => {
           const next = new Set(prev);
           next.delete(userId);
           return next;
         });
-      }
-    };
+      });
 
-    socket.on('chat-message', handleMessage);
-    socket.on('chat-read', handleRead);
-    socket.on('chat-typing', handleTyping);
-    socket.on('chat-stop-typing', handleStopTyping);
+      socket.on('chat-message', ({ conversationId, message }) => {
+        if (conversationId === activeConv) {
+          setMessages(prev => [...prev, message]);
+          if (message.senderId !== user.id) {
+            socket.emit('chat-read', { conversationId, messageId: message.id, userId: user.id });
+            messagesService.markAsRead(message.id);
+          }
+        } else {
+          setConversations(prev => prev.map(c => 
+            c.id === conversationId ? { ...c, unreadCount: c.unreadCount + 1, lastMessage: message } : c
+          ));
+        }
+      });
+
+      socket.on('chat-read', ({ conversationId, messageId, userId }) => {
+        if (conversationId === activeConv && userId !== user.id) {
+          setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isRead: true } : m));
+        }
+      });
+
+      socket.on('chat-typing', ({ conversationId, userId }) => {
+        if (conversationId === activeConv && userId !== user.id) {
+          setTypingUsers(prev => new Set(prev).add(userId));
+        }
+      });
+
+      socket.on('chat-stop-typing', ({ conversationId, userId }) => {
+        if (conversationId === activeConv && userId !== user.id) {
+          setTypingUsers(prev => {
+            const next = new Set(prev);
+            next.delete(userId);
+            return next;
+          });
+        }
+      });
+    }
 
     return () => {
-      socket.off('chat-message', handleMessage);
-      socket.off('chat-read', handleRead);
-      socket.off('chat-typing', handleTyping);
-      socket.off('chat-stop-typing', handleStopTyping);
+      if (socket) {
+        socket.off('user-online');
+        socket.off('user-offline');
+        socket.off('chat-message');
+        socket.off('chat-read');
+        socket.off('chat-typing');
+        socket.off('chat-stop-typing');
+      }
     };
-  }, [socket, activeConv, user]);
+  }, [user, activeConv, socket]);
 
   useEffect(() => {
     if (!activeConv || !socket) return;
@@ -216,18 +187,8 @@ export function Messages() {
   };
 
   const activeConvData = conversations.find(c => c.id === activeConv);
-  
-  // Map conversation type to the expected UI properties to fix typing issues
-  const uiConvs = conversations.map(c => ({
-    ...c,
-    name: c.name || c.participants.find(p => p.id !== user?.id)?.name || 'Unknown',
-    time: c.lastMessage?.timestamp ? new Date(c.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-    lastMsg: c.lastMessage?.content || '',
-    unread: c.unreadCount || 0,
-    online: c.participants.some(p => p.id !== user?.id && onlineUsers.has(p.id))
-  }));
-  
-  const filteredConvs = uiConvs.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.participants?.some(p => p.name.toLowerCase().includes(search.toLowerCase())));
+  const filteredConvs = conversations.filter(c => c.name?.toLowerCase().includes(search.toLowerCase()) || c.participants.some(p => p.name.toLowerCase().includes(search.toLowerCase())));
+  const displayConvs = filteredConvs.filter(c => tab === 'messages' ? c.type !== 'group' && c.type !== 'course' : c.type === 'group' || c.type === 'course');
 
   return (
     <div className="space-y-6">
@@ -237,8 +198,8 @@ export function Messages() {
           {/* Tabs */}
           <div className="grid grid-cols-4 p-2 border-b border-outline-variant/10">
             {[
-              { id: 'messages', icon: <Send size={15} />, badge: 2 },
-              { id: 'groups', icon: <Users size={15} />, badge: 5 },
+              { id: 'messages', icon: <Send size={15} />, badge: conversations.filter(c => c.type === 'direct').reduce((acc, c) => acc + c.unreadCount, 0) },
+              { id: 'groups', icon: <Users size={15} />, badge: conversations.filter(c => c.type !== 'direct').reduce((acc, c) => acc + c.unreadCount, 0) },
               { id: 'announcements', icon: <Megaphone size={15} />, badge: 0 },
               { id: 'notifications', icon: <Bell size={15} />, badge: notifications.filter(n => !n.read).length },
             ].map(t => (
@@ -255,49 +216,42 @@ export function Messages() {
 
           {/* List */}
           <div className="flex-1 overflow-y-auto">
-            {(tab === 'messages' || tab === 'groups') && filteredConvs.filter(c => tab === 'messages' ? c.type !== 'group' && c.type !== 'course' : c.type === 'group' || c.type === 'course').map(conv => (
-              <motion.button key={conv.id} onClick={() => setActiveConv(conv.id)}
-                whileHover={{ x: 2 }}
-                className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-all border-l-2 ${activeConv === conv.id ? 'border-[#EC4899] bg-[#EC4899]/10' : 'border-transparent hover:bg-on-surface/5'}`}>
-                <div className="flex-shrink-0">
-                  <Avatar name={conv.name} size="md" online={conv.online} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className={`text-sm font-semibold truncate ${activeConv === conv.id ? 'text-[#EC4899]' : 'text-on-surface'}`}>{conv.name}</span>
-                    <span className="text-xs text-outline flex-shrink-0">{conv.time}</span>
-                  </div>
-                  <p className="text-xs text-on-surface-variant truncate">{conv.lastMsg}</p>
-                </div>
-                {conv.unread > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-[#EC4899] text-white text-xs flex items-center justify-center flex-shrink-0">{conv.unread}</span>
-                )}
-              </motion.button>
-            ))}
+            {(tab === 'messages' || tab === 'groups') && (
+              displayConvs.length > 0 ? displayConvs.map(conv => {
+                const otherParticipant = conv.participants.find(p => p.id !== user?.id) || conv.participants[0];
+                const displayName = conv.name || otherParticipant.name;
+                const isOnline = onlineUsers.has(otherParticipant.id);
+                
+                return (
+                  <motion.button key={conv.id} onClick={() => setActiveConv(conv.id)}
+                    whileHover={{ x: 2 }}
+                    className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-all border-l-2 ${activeConv === conv.id ? 'border-[#EC4899] bg-[#EC4899]/10' : 'border-transparent hover:bg-on-surface/5'}`}>
+                    <div className="flex-shrink-0">
+                      <Avatar name={displayName} src={otherParticipant.avatar} size="md" online={isOnline} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className={`text-sm font-semibold truncate ${activeConv === conv.id ? 'text-[#EC4899]' : 'text-on-surface'}`}>{displayName}</span>
+                        <span className="text-xs text-outline flex-shrink-0">
+                          {conv.lastMessage?.timestamp ? new Date(conv.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
+                      </div>
+                      <p className="text-xs text-on-surface-variant truncate">
+                        {conv.lastMessage?.type === 'image' ? '≡ƒû╝∩╕Å Photo' : conv.lastMessage?.type === 'file' ? '≡ƒôÄ File attachment' : conv.lastMessage?.content || 'No messages yet'}
+                      </p>
+                    </div>
+                    {conv.unreadCount > 0 && (
+                      <span className="w-5 h-5 rounded-full bg-[#EC4899] text-white text-xs flex items-center justify-center flex-shrink-0">{conv.unreadCount}</span>
+                    )}
+                  </motion.button>
+                );
+              }) : (
+                <div className="p-4 text-center text-sm text-on-surface-variant">No conversations found</div>
+              )
+            )}
 
-            {tab === 'announcements' && ANNOUNCEMENTS.map(ann => (
-              <div key={ann.id} className="px-4 py-3 border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors cursor-pointer">
-                <div className="flex items-start justify-between mb-1">
-                  <p className="text-sm font-semibold text-on-surface leading-tight">{ann.title}</p>
-                  {ann.pinned && <Pin size={12} className="text-amber-400 flex-shrink-0 ml-2" />}
-                </div>
-                <p className="text-xs text-on-surface-variant line-clamp-2 mb-1">{ann.body}</p>
-                <p className="text-xs text-outline">{ann.from} · {ann.time}</p>
-              </div>
-            ))}
-
-            {tab === 'notifications' && notifications.map((n, i) => (
-              <div key={n.id} onClick={() => setNotifications(prev => prev.map((x, j) => j === i ? { ...x, read: true } : x))}
-                className={`px-4 py-3 border-b border-outline-variant/10 cursor-pointer transition-all hover:bg-on-surface/5 ${!n.read ? 'bg-[#EC4899]/5' : ''}`}>
-                <div className="flex items-start gap-2.5">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${!n.read ? 'bg-[#EC4899]' : 'bg-transparent'}`} />
-                  <div>
-                    <p className={`text-sm ${!n.read ? 'text-on-surface font-medium' : 'text-on-surface-variant'}`}>{n.msg}</p>
-                    <p className="text-xs text-outline mt-0.5">{n.time}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {tab === 'announcements' && <div className="p-4 text-center text-sm text-on-surface-variant">No announcements</div>}
+            {tab === 'notifications' && <div className="p-4 text-center text-sm text-on-surface-variant">No new notifications</div>}
           </div>
         </div>
 
@@ -307,11 +261,20 @@ export function Messages() {
             <>
               {/* Chat header */}
               <div className="flex items-center gap-3 px-5 py-4 border-b border-outline-variant/10" style={{ background: 'var(--surface-container-low)' }}>
-                <Avatar name={uiConvs.find(c => c.id === activeConv)?.name || 'Unknown'} size="md" online={uiConvs.find(c => c.id === activeConv)?.online} />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-on-surface">{uiConvs.find(c => c.id === activeConv)?.name}</p>
-                  <p className="text-xs text-on-surface-variant">{uiConvs.find(c => c.id === activeConv)?.online ? 'Online' : 'Offline'}</p>
-                </div>
+                {(() => {
+                   const otherParticipant = activeConvData.participants.find(p => p.id !== user?.id) || activeConvData.participants[0];
+                   const displayName = activeConvData.name || otherParticipant.name;
+                   const isOnline = onlineUsers.has(otherParticipant.id);
+                   return (
+                     <>
+                        <Avatar name={displayName} src={otherParticipant.avatar} size="md" online={isOnline} />
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-on-surface">{displayName}</p>
+                          <p className="text-xs text-on-surface-variant">{isOnline ? 'Online' : 'Offline'}</p>
+                        </div>
+                     </>
+                   )
+                })()}
                 <div className="flex items-center gap-2">
                   <button className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"><Search size={16} /></button>
                   <button className="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5 transition-all"><MoreVertical size={16} /></button>
@@ -321,13 +284,13 @@ export function Messages() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--outline-variant) transparent' }}>
                 {messages.map((msg, i) => {
-                  const isMe = msg.senderId === user?.id || msg.senderId === 'u1';
+                  const isMe = msg.senderId === user?.id;
                   const showAvatar = !isMe && (i === 0 || messages[i - 1]?.senderId !== msg.senderId);
                   
                   return (
                     <motion.div key={msg.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       className={`flex items-end gap-2.5 ${isMe ? 'flex-row-reverse' : ''}`}>
-                      {!isMe && <div className="flex-shrink-0">{showAvatar ? <Avatar name={msg.senderName} size="sm" /> : <div className="w-7" />}</div>}
+                      {!isMe && <div className="flex-shrink-0">{showAvatar ? <Avatar name={msg.senderName} src={msg.senderAvatar} size="sm" /> : <div className="w-7" />}</div>}
                       <div className={`max-w-xs lg:max-w-md ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
                         {showAvatar && !isMe && <p className="text-xs text-on-surface-variant mb-1 ml-1">{msg.senderName}</p>}
                         

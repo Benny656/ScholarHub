@@ -69,9 +69,46 @@ const io = new Server(server, {
 // Key: roomId, Value: Map of socketId -> { userId, userName, role }
 const activeRoomParticipants = new Map<string, Map<string, { userId: string, userName: string, role: string }>>();
 
+// Track online users for messaging app
+// Key: userId, Value: socketId
+const onlineUsers = new Map<string, string>();
+
 // Socket.IO Connection Handler
 io.on('connection', (socket) => {
   console.log(`Socket connected: ${socket.id}`);
+
+  // ---- MESSAGING APP SOCKETS ----
+  socket.on('set-online', ({ userId }) => {
+    onlineUsers.set(userId, socket.id);
+    socket.data = { ...socket.data, userId };
+    io.emit('user-online', { userId });
+  });
+
+  socket.on('join-chat', ({ conversationId }) => {
+    socket.join(`chat_${conversationId}`);
+    console.log(`[Socket] User ${socket.data?.userId} joined chat_${conversationId}`);
+  });
+
+  socket.on('leave-chat', ({ conversationId }) => {
+    socket.leave(`chat_${conversationId}`);
+  });
+
+  socket.on('chat-typing', ({ conversationId, userId }) => {
+    socket.to(`chat_${conversationId}`).emit('chat-typing', { conversationId, userId });
+  });
+
+  socket.on('chat-stop-typing', ({ conversationId, userId }) => {
+    socket.to(`chat_${conversationId}`).emit('chat-stop-typing', { conversationId, userId });
+  });
+
+  socket.on('chat-message', ({ conversationId, message }) => {
+    io.to(`chat_${conversationId}`).emit('chat-message', { conversationId, message });
+  });
+
+  socket.on('chat-read', ({ conversationId, messageId, userId }) => {
+    io.to(`chat_${conversationId}`).emit('chat-read', { conversationId, messageId, userId });
+  });
+  // -------------------------------
 
   // Join a classroom room
   socket.on('join-room', (roomId) => {
@@ -150,6 +187,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnecting', () => {
+    // Handle global messaging online status
+    const userId = socket.data?.userId;
+    if (userId && onlineUsers.get(userId) === socket.id) {
+      onlineUsers.delete(userId);
+      io.emit('user-offline', { userId });
+    }
+
     // Check all rooms the socket was in before disconnecting
     for (const roomId of socket.rooms) {
       if (activeRoomParticipants.has(roomId)) {

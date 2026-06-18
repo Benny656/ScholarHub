@@ -186,6 +186,8 @@ create table if not exists public.messages (
   receiver_id uuid references public.users(id),
   course_id uuid,
   content text,
+  file_url text,
+  message_type text CHECK (message_type IN ('text', 'image', 'file')) DEFAULT 'text',
   is_read boolean DEFAULT false,
   sent_at timestamptz DEFAULT now()
 );

@@ -153,6 +153,7 @@ export interface Message {
   timestamp: string;
   isRead: boolean;
   type: 'text' | 'file' | 'image';
+  fileUrl?: string;
 }
 
 export interface Conversation {
