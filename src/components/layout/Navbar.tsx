@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Search, Bell, Sun, Moon, CalendarDays } from "lucide-react";
+import { Search, Sun, Moon, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Role } from "../../lib/mockData";
+import { NotificationDropdown } from "./NotificationDropdown";
 
 interface NavbarProps {
   activeRole: Role;
@@ -16,8 +17,6 @@ export default function Navbar({
   activeRole,
   theme,
   toggleTheme,
-  onOpenNotifications,
-  notificationCount,
   onHomeClick,
 }: NavbarProps) {
   const [timeStr, setTimeStr] = useState<string>("");
@@ -90,17 +89,7 @@ export default function Navbar({
         </button>
 
         {/* Notification Bell Badge */}
-        <button
-          onClick={onOpenNotifications}
-          className="w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-200 hover:bg-neutral-50 relative dark:border-neutral-800 dark:hover:bg-neutral-800 transition-all duration-200"
-        >
-          <Bell className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
-          {notificationCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-[10px] text-white font-bold rounded-full flex items-center justify-center shadow-sm">
-              {notificationCount}
-            </span>
-          )}
-        </button>
+        <NotificationDropdown />
 
         {/* Platform Indicator */}
         <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-neutral-500 bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 px-3 py-1.5 rounded-lg border border-neutral-200/40 dark:border-neutral-800">

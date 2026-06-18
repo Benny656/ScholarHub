@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 import { getSystemStats, getAdminLogs, getUsersList } from '../../services/admin.service';
 import { ProctoringDashboard } from '../../components/features/ProctoringDashboard';
 import { BlockchainVerification } from '../../components/features/BlockchainVerification';
@@ -21,6 +22,7 @@ export function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
+  const [activeLiveSessions, setActiveLiveSessions] = useState<any[]>([]);
 
   const loadDashboardData = async () => {
     try {
@@ -28,7 +30,29 @@ export function AdminDashboard() {
       const [statsData, usersData, logsData] = await Promise.all([
         getSystemStats(),
         getUsersList(),
-        getAdminLogs()
+        getAdminLogs(),
+        supabase
+          .from('live_sessions')
+          .select(`
+            id,
+            course_id,
+            teacher_id,
+            meeting_room_id,
+            status,
+            started_at,
+            courses (
+              id,
+              title
+            ),
+            users:teacher_id (
+              full_name
+            )
+          `)
+          .eq('status', 'LIVE')
+          .then(({ data, error }) => {
+            if (!error) setActiveLiveSessions(data || []);
+            return data || [];
+          })
       ]);
       setStats(statsData);
       setRecentUsers((usersData || []).slice(0, 5));
@@ -172,6 +196,34 @@ export function AdminDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Left Workspace Area (2 Columns) */}
             <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+              
+              {/* Active Live Sessions */}
+              {activeLiveSessions.length > 0 && (
+                <motion.div variants={itemVariants} className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800/50 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-5 py-4 border-b border-red-200 dark:border-red-800/50 flex items-center justify-between bg-red-100/30 dark:bg-red-900/30">
+                    <h3 className="text-xs font-bold text-red-900 dark:text-red-200 uppercase tracking-wider flex items-center gap-2">
+                      <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />
+                      Active Live Classes
+                    </h3>
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/50 px-2 py-0.5 rounded">{activeLiveSessions.length} live</span>
+                  </div>
+                  <div className="divide-y divide-red-100 dark:divide-red-800/30">
+                    {activeLiveSessions.map((session) => (
+                      <div key={session.id} className="p-4 flex items-center justify-between gap-3 hover:bg-red-100/20 dark:hover:bg-red-900/10 transition-colors">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{session.courses?.title}</p>
+                          <p className="text-[10px] text-neutral-600 dark:text-neutral-400 mt-0.5">Teacher: {session.users?.full_name || 'Teacher'} • Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
+                        </div>
+                        <Link to={`/classroom/${session.course_id}`} className="flex-shrink-0">
+                          <button className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-colors whitespace-nowrap">
+                            Join
+                          </button>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
               
               {/* Recent Signups list */}
               <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">

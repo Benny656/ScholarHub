@@ -46,6 +46,7 @@ export function K12TeacherDashboard() {
   const [courses, setCourses] = useState<any[]>([]);
   const [totalStudents, setTotalStudents] = useState(0);
   const [upcomingClasses, setUpcomingClasses] = useState<any[]>([]);
+  const [currentLiveSessions, setCurrentLiveSessions] = useState<any[]>([]);
   const [assignmentsToGrade, setAssignmentsToGrade] = useState(0);
   const [attendanceRate, setAttendanceRate] = useState(100);
 
@@ -100,6 +101,28 @@ export function K12TeacherDashboard() {
           if (classesError) throw classesError;
           setUpcomingClasses(classesData || []);
         } catch(e) { console.error("Dashboard Fetch Error Details (live_classes):", e); }
+
+        try {
+          const { data: liveSessionsData, error: liveError } = await supabase
+            .from('live_sessions')
+            .select(`
+              id,
+              course_id,
+              teacher_id,
+              meeting_room_id,
+              status,
+              started_at,
+              courses (
+                id,
+                title
+              )
+            `)
+            .in('course_id', courseIds)
+            .eq('status', 'LIVE');
+
+          if (liveError) throw liveError;
+          setCurrentLiveSessions(liveSessionsData || []);
+        } catch(e) { console.error("Dashboard Fetch Error Details (live_sessions):", e); }
 
         let assignmentIds = [];
         try {
@@ -219,6 +242,7 @@ export function K12TeacherDashboard() {
       } else {
         setTotalStudents(0);
         setUpcomingClasses([]);
+        setCurrentLiveSessions([]);
         setAssignmentsToGrade(0);
         setAttendanceRate(100);
         setStudents([]);
@@ -369,6 +393,42 @@ export function K12TeacherDashboard() {
         {/* LEFT TWO COLUMNS */}
         <div className="lg:col-span-2 space-y-6 lg:space-y-8">
           
+          {/* Current Live Sessions */}
+          {currentLiveSessions.length > 0 && (
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+                  Live Classes Now
+                </h3>
+              </div>
+
+              <div className="grid gap-3">
+                {currentLiveSessions.map(session => (
+                  <Link key={session.id} to={`/classroom/${session.course_id}`} className="group block">
+                    <div className="p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800/50 rounded-2xl hover:from-red-500/15 hover:to-orange-500/15 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center font-bold text-lg shrink-0 animate-pulse">
+                          🔴
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-red-600 transition-colors">{session.courses?.title}</h4>
+                          <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
+                        </div>
+                      </div>
+                      <button className="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-colors">Join Now</button>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {/* Active Courses / Subjects Summary */}
           <motion.div 
             variants={containerVariants}

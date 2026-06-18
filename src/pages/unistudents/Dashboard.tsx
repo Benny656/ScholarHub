@@ -158,47 +158,36 @@ export function StudentDashboard() {
         console.error("Dashboard Fetch Error Details (enrollments):", e);
       }
 
-      // 2. Fetch Upcoming Classes
-      let classes = [];
-      let todayClassesCount = 0;
+      // 2. Fetch Active Live Classes
+      let activeLiveClasses = [];
       if (enrolledCourseIds.length > 0) {
         try {
-          const { data: classesData, error: classesError } = await supabase
-            .from('live_classes')
+          const { data: liveClassesData, error: liveError } = await supabase
+            .from('live_sessions')
             .select(`
               id, 
-              title, 
-              scheduled_at, 
-              room_id, 
+              course_id,
+              meeting_room_id, 
               status,
+              started_at,
               courses (
                 id, 
                 title,
                 users (
-                  name
+                  full_name
                 )
               )
             `)
             .in('course_id', enrolledCourseIds)
-            .gte('scheduled_at', new Date().toISOString())
-            .order('scheduled_at', { ascending: true })
-            .limit(3);
+            .eq('status', 'LIVE');
 
-          if (classesError) throw classesError;
-          classes = (classesData || []);
-          
-          const startOfToday = new Date();
-          startOfToday.setHours(0, 0, 0, 0);
-          const endOfToday = new Date();
-          endOfToday.setHours(23, 59, 59, 999);
-          
-          todayClassesCount = classes.filter(c => {
-            const schedDate = new Date(c.scheduled_at);
-            return schedDate >= startOfToday && schedDate <= endOfToday;
-          }).length;
-        } catch(e) { console.error("Dashboard Fetch Error Details (live_classes):", e); }
+          if (liveError) throw liveError;
+          activeLiveClasses = (liveClassesData || []);
+        } catch(e) { console.error("Dashboard Fetch Error Details (live_sessions):", e); }
       }
-      setUpcomingClasses(classes);
+      setUpcomingClasses(activeLiveClasses);
+
+      // 3. Fetch Upcoming Classes (Scheduled)
 
       // 3. Fetch Assignments and Submissions
       let pending = [];
@@ -430,40 +419,44 @@ export function StudentDashboard() {
             <ScheduleWidget theme="sleek" />
           </div>
           
-          {/* ─── SECTION 2: UPCOMING CLASSES ─── */}
+          {/* ─── SECTION 2: ACTIVE LIVE CLASSES ─── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <GlassCard padding="p-0">
               <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                  <Video size={16} className="text-red-500" />
-                  Upcoming Classes
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    <Video size={16} className="text-red-500" />
+                  </div>
+                  Live Classes Now
                 </h3>
-                <span className="text-[10px] bg-red-500/10 text-red-500 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Next 3</span>
+                <span className="text-[10px] bg-red-500/10 text-red-500 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
               </div>
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {upcomingClasses.length === 0 ? (
                   <div className="p-6 text-center text-neutral-500 dark:text-neutral-400 text-sm">
-                    No classes scheduled. Complete your readings in active courses.
+                    No live classes right now. Check back later!
                   </div>
                 ) : (
                   upcomingClasses.map(cls => (
-                    <div key={cls.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                    <div key={cls.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors bg-red-50/50 dark:bg-red-900/10">
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{cls.title}</h4>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Course: {cls.courses?.title || 'LMS Classroom'}</p>
+                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{cls.courses?.title || 'Live Class'}</h4>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Teacher: {cls.courses?.users?.full_name || 'Teacher'}</p>
                       </div>
-                      <div className="flex items-center gap-4 shrink-0">
+                      <div className="flex items-center gap-3 shrink-0">
                         <div className="text-right">
-                          <p className="text-xs font-semibold text-neutral-900 dark:text-neutral-200">
-                            {new Date(cls.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          <p className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 bg-red-600 dark:bg-red-400 rounded-full animate-pulse" />
+                            LIVE NOW
                           </p>
-                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
-                            {new Date(cls.scheduled_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                            Started {Math.floor((Date.now() - new Date(cls.started_at).getTime()) / 60000)}m ago
                           </p>
                         </div>
-                        <Link to={`/classroom/${cls.courses?.id || cls.id}`}>
-                          <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 hover:scale-105 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-500/20 transition-all">
-                            Join Class
+                        <Link to={`/classroom/${cls.course_id}`}>
+                          <button className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-500 hover:scale-105 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-500/20 transition-all">
+                            Join Now
                           </button>
                         </Link>
                       </div>

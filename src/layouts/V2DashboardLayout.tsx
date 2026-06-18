@@ -199,12 +199,11 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
         />
 
         {/* Desktop top navbar header */}
-        <Navbar
-          activeRole={activeRole as any}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          notificationCount={unreadNotificationsCount}
-          onOpenNotifications={() => setNotificationsOpen(!notificationsOpen)}
+        <Navbar 
+          activeRole={activeRole} 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+          onHomeClick={handleLogoClick}
         />
 
         {/* Dynamic scroll main panel area */}

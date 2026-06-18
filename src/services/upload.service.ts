@@ -1,4 +1,4 @@
-import { apiClient } from '../lib/apiClient';
+import { supabase } from '../lib/supabase';
 
 export interface UploadResult {
   url: string;
@@ -20,51 +20,44 @@ export const uploadService = {
     folder: string = 'general',
     onProgress?: (progress: UploadProgress) => void
   ): Promise<UploadResult> {
-    console.log('[UploadService] Uploading file to backend:', file.name, 'Folder:', folder);
+    console.log('[UploadService] Uploading file to Supabase:', file.name, 'Folder:', folder);
+
+    // Default bucket based on folder prefix
+    let bucket = 'general';
+    if (folder.startsWith('assignments')) bucket = 'assignments';
+    if (folder.startsWith('submissions')) bucket = 'submissions';
+    if (folder.startsWith('avatars')) bucket = 'avatars';
+    if (folder.startsWith('courses')) bucket = 'courses';
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
 
     onProgress?.({ loaded: 0, total: file.size, percentage: 0 });
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', folder);
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
 
-    const token = await (await import('../lib/supabase')).supabase.auth.getSession().then(({ data }) => data.session?.access_token);
+    if (error) {
+      console.error('Supabase upload error:', error);
+      throw error;
+    }
 
-    return new Promise<UploadResult>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      xhr.open('POST', `${apiUrl}/upload`);
-      
-      if (token) {
-        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-      }
+    onProgress?.({ loaded: file.size, total: file.size, percentage: 100 });
 
-      xhr.upload.onprogress = (event: any) => {
-        if (event.lengthComputable) {
-          const percentage = Math.round((event.loaded / event.total) * 100);
-          onProgress?.({ loaded: event.loaded, total: event.total, percentage });
-        }
-      };
+    const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
 
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            const result = JSON.parse(xhr.responseText);
-            resolve(result);
-          } catch (e) {
-            reject(new Error('Invalid response JSON'));
-          }
-        } else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
-        }
-      };
-
-      xhr.onerror = () => {
-        reject(new Error('Network error during upload'));
-      };
-
-      xhr.send(formData);
-    });
+    return {
+      url: publicUrlData.publicUrl,
+      key: filePath,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    };
   },
 
   async uploadAvatar(file: File, userId: string): Promise<UploadResult> {
@@ -79,9 +72,10 @@ export const uploadService = {
     return this.uploadFile(file, `courses/${courseId}/materials`);
   },
 
-  async deleteFile(key: string): Promise<void> {
-    console.log('[UploadService] Deleting file via backend:', key);
-    await apiClient.delete(`/upload/${encodeURIComponent(key)}`);
+  async deleteFile(key: string, bucket: string = 'general'): Promise<void> {
+    console.log('[UploadService] Deleting file from Supabase:', key);
+    const { error } = await supabase.storage.from(bucket).remove([key]);
+    if (error) throw error;
   },
 
   getFileIcon(type: string): string {

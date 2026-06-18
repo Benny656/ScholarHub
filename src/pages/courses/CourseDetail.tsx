@@ -11,6 +11,11 @@ import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { GlassCard, Badge, PageHeader, Button, ProgressBar } from '../../components/ui/index';
 import { certificatesService } from '../../services/certificates.service';
+import { TeacherGradebook } from '../../components/assignments/TeacherGradebook';
+import { BulkAttendance } from '../../components/attendance/BulkAttendance';
+import { AIQuizGenerator } from '../../components/courses/AIQuizGenerator';
+import { CourseAITutor } from '../../components/courses/CourseAITutor';
+import { InsightsDashboard } from '../../components/courses/InsightsDashboard';
 import toast from 'react-hot-toast';
 
 const LEVEL_COLORS = { Beginner: 'emerald', Intermediate: 'blue', Advanced: 'red' } as const;
@@ -529,6 +534,7 @@ export function CourseDetail() {
         { id: 'overview', label: 'Overview' },
         { id: 'content', label: 'Lessons' },
         { id: 'assignments', label: 'Assignments' },
+        { id: 'gradebook', label: 'Gradebook' },
         { id: 'attendance', label: 'Attendance' },
         { id: 'live', label: 'Live Classes' },
         { id: 'students', label: 'Student Management' },
@@ -962,6 +968,7 @@ export function CourseDetail() {
                 {/* Teacher Add Assignment panel */}
                 {user?.role === 'teacher' && (
                   <div className="space-y-4">
+                    <AIQuizGenerator courseId={id} onSuccess={loadAssignments} />
                     <GlassCard>
                       <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Add Evaluation Assignment</h4>
                       
@@ -1023,6 +1030,13 @@ export function CourseDetail() {
               </motion.div>
             )}
 
+            {/* GRADEBOOK TAB (Teacher Only) */}
+            {activeTab === 'gradebook' && user?.role === 'teacher' && (
+              <motion.div key="gradebook" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <TeacherGradebook courseId={id} />
+              </motion.div>
+            )}
+
             {/* ATTENDANCE TAB */}
             {activeTab === 'attendance' && (
               <motion.div key="attendance" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1065,31 +1079,34 @@ export function CourseDetail() {
                   )}
 
                   {user?.role === 'teacher' && (
-                    <GlassCard tint="purple">
-                      <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Teacher Panel: QR Session Generator</h4>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
-                        Launch a new attendance class check. Students scanning the generated code will register as present.
-                      </p>
-                      {qrCodeData ? (
-                        <div className="text-center p-4 bg-white rounded-xl max-w-[200px] mx-auto border border-neutral-200">
-                          <div className="w-36 h-36 bg-neutral-950 flex flex-wrap gap-1 p-2 rounded mx-auto">
-                            {Array.from({ length: 36 }).map((_, i) => (
-                              <div key={i} className="w-5 h-5 rounded-sm" style={{ background: Math.random() > 0.4 ? 'white' : 'black' }} />
-                            ))}
+                    <div className="space-y-6">
+                      <BulkAttendance courseId={id} />
+                      <GlassCard tint="purple">
+                        <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Teacher Panel: QR Session Generator</h4>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
+                          Launch a new attendance class check. Students scanning the generated code will register as present.
+                        </p>
+                        {qrCodeData ? (
+                          <div className="text-center p-4 bg-white rounded-xl max-w-[200px] mx-auto border border-neutral-200">
+                            <div className="w-36 h-36 bg-neutral-950 flex flex-wrap gap-1 p-2 rounded mx-auto">
+                              {Array.from({ length: 36 }).map((_, i) => (
+                                <div key={i} className="w-5 h-5 rounded-sm" style={{ background: Math.random() > 0.4 ? 'white' : 'black' }} />
+                              ))}
+                            </div>
+                            <p className="text-[9px] text-neutral-500 font-mono mt-2 truncate">{qrCodeData}</p>
                           </div>
-                          <p className="text-[9px] text-neutral-500 font-mono mt-2 truncate">{qrCodeData}</p>
-                        </div>
-                      ) : (
-                        <button 
-                          onClick={handleGenerateQR}
-                          disabled={generatingQR}
-                          className="py-2.5 px-4 bg-purple-600 text-white rounded-xl text-xs font-bold transition-all hover:scale-102"
-                        >
-                          <QrCode size={14} className="inline mr-1" />
-                          <span>{generatingQR ? 'Generating...' : 'Generate Attendance QR'}</span>
-                        </button>
-                      )}
-                    </GlassCard>
+                        ) : (
+                          <button 
+                            onClick={handleGenerateQR}
+                            disabled={generatingQR}
+                            className="py-2.5 px-4 bg-purple-600 text-white rounded-xl text-xs font-bold transition-all hover:scale-102"
+                          >
+                            <QrCode size={14} className="inline mr-1" />
+                            <span>{generatingQR ? 'Generating...' : 'Generate Attendance QR'}</span>
+                          </button>
+                        )}
+                      </GlassCard>
+                    </div>
                   )}
                 </div>
 
@@ -1232,6 +1249,13 @@ export function CourseDetail() {
                     </GlassCard>
                   </div>
                 )}
+              </motion.div>
+            )}
+
+            {/* ANALYTICS TAB (Teacher Only) */}
+            {activeTab === 'analytics' && user?.role === 'teacher' && (
+              <motion.div key="analytics" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <InsightsDashboard courseId={id} />
               </motion.div>
             )}
 

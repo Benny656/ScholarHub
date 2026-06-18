@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import { GlassCard, Badge, PageHeader, Button, SectionHeader, ProgressBar, SearchInput, Select, SkeletonCard } from '../../components/ui/index';
 import type { Assignment } from '../../types';
 import toast from 'react-hot-toast';
+import { AssignmentManager } from '../../components/assignments/AssignmentManager';
 
 const STATUS_CONFIG = {
   pending: { color: 'amber', label: 'Pending' },
@@ -46,6 +47,10 @@ export function Assignments() {
     });
 
   const counts = { all: assignments.length, pending: assignments.filter(a => a.status === 'pending').length, submitted: assignments.filter(a => a.status === 'submitted').length, graded: assignments.filter(a => a.status === 'graded').length, overdue: assignments.filter(a => a.status === 'overdue').length };
+
+  if (user?.role === 'teacher') {
+    return <AssignmentManager />;
+  }
 
   return (
     <div className="space-y-6">
@@ -137,8 +142,8 @@ export function AssignmentDetail() {
 
   useEffect(() => {
     if (!id) return;
-    assignmentsService.getAssignmentById(id).then(a => { setAssignment(a); setSubmitted(a.status === 'submitted' || a.status === 'graded'); setLoading(false); });
-  }, [id]);
+    assignmentsService.getAssignmentById(id, user?.id).then(a => { setAssignment(a); setSubmitted(a.status === 'submitted' || a.status === 'graded'); setLoading(false); });
+  }, [id, user]);
 
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();

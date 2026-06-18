@@ -394,7 +394,7 @@ create policy "Admin full access on admin_logs" on public.admin_logs for all usi
 -- ───────────────────────────────────────────────────────────────────
 create table if not exists public.live_sessions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  classroom_id uuid references public.courses(id) ON DELETE CASCADE,
+  course_id uuid references public.courses(id) ON DELETE CASCADE,
   teacher_id uuid references public.users(id),
   meeting_room_id text not null,
   meeting_url text,
@@ -437,12 +437,12 @@ create policy "Admin full access on recordings" on public.recordings for all usi
 
 create policy "Users read live_sessions for enrolled courses" on public.live_sessions
   for select using (exists (
-    select 1 from public.enrollments where course_id = live_sessions.classroom_id and student_id = auth.uid()
+    select 1 from public.enrollments where course_id = live_sessions.course_id and student_id = auth.uid()
   ) or teacher_id = auth.uid());
 
 create policy "Teachers manage live_sessions for owned courses" on public.live_sessions
   for all using (exists (
-    select 1 from public.courses where id = classroom_id and teacher_id = auth.uid()
+    select 1 from public.courses where id = course_id and teacher_id = auth.uid()
   ));
 
 create policy "Users manage session_participants if part of session" on public.session_participants

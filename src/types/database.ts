@@ -182,6 +182,13 @@ export type PaymentRow = {
   created_at: string;
 };
 
+export type CourseSettingRow = {
+  course_id: string;
+  ai_tutor_enabled: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 // Standalone flat Insert types
 export type ProfileInsert = Partial<Omit<ProfileRow, 'created_at'>> & { id: string };
 export type UserInsert = Partial<Omit<UserRow, 'created_at'>> & { id: string };
@@ -198,6 +205,7 @@ export type MessageInsert = Partial<Omit<MessageRow, 'id' | 'sent_at'>>;
 export type CertificateInsert = Partial<Omit<CertificateRow, 'id' | 'issued_at'>>;
 export type NotificationInsert = Partial<Omit<NotificationRow, 'id' | 'created_at'>>;
 export type PaymentInsert = Partial<Omit<PaymentRow, 'id' | 'created_at'>>;
+export type CourseSettingInsert = Partial<Omit<CourseSettingRow, 'created_at' | 'updated_at'>>;
 
 // Standalone flat Update types
 export type ProfileUpdate = Partial<ProfileRow>;
@@ -215,6 +223,7 @@ export type MessageUpdate = Partial<MessageRow>;
 export type CertificateUpdate = Partial<CertificateRow>;
 export type NotificationUpdate = Partial<NotificationRow>;
 export type PaymentUpdate = Partial<PaymentRow>;
+export type CourseSettingUpdate = Partial<CourseSettingRow>;
 
 export type AdminLogRow = {
   id: string;
@@ -253,6 +262,20 @@ export type Database = {
             columns: ["instructor_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      course_settings: {
+        Row: CourseSettingRow;
+        Insert: CourseSettingInsert;
+        Update: CourseSettingUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "course_settings_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: true;
+            referencedRelation: "courses";
             referencedColumns: ["id"];
           }
         ];
