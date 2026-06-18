@@ -110,10 +110,9 @@ export default function Sidebar({
   const menuItems = getSidebarItems();
 
   return (
-    <aside className="w-72 border-r border-neutral-200/80 bg-white p-6 flex flex-col justify-between shrink-0 dark:bg-neutral-900 dark:border-neutral-800 transition-colors duration-200">
-      <div className="space-y-8">
-        
-        {/* Brand Header */}
+    <aside className="h-screen w-72 border-r border-neutral-200/80 bg-white p-6 flex flex-col shrink-0 dark:bg-neutral-900 dark:border-neutral-800 transition-colors duration-200">
+      {/* Brand Header */}
+      <div className="shrink-0 mb-8">
         <button 
           onClick={onLogoClick}
           className="flex items-center gap-3 text-left w-full hover:opacity-80 active:scale-98 transition-all group"
@@ -134,10 +133,11 @@ export default function Sidebar({
             </p>
           </div>
         </button>
+      </div>
 
-        {/* Dynamic Navigation Menu */}
-        <nav className="space-y-1">
-          {menuItems.map((item) => {
+      {/* Dynamic Navigation Menu */}
+      <nav className="space-y-1 flex-1 overflow-y-auto pr-2 mb-6 scrollbar-thin scrollbar-thumb-neutral-200 dark:scrollbar-thumb-neutral-800">
+        {menuItems.map((item) => {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
             return (
@@ -163,10 +163,9 @@ export default function Sidebar({
             );
           })}
         </nav>
-      </div>
 
       {/* Footer Options */}
-      <div className="space-y-5 pt-6 border-t border-neutral-200/60 dark:border-neutral-800">
+      <div className="space-y-5 pt-6 border-t border-neutral-200/60 dark:border-neutral-800 shrink-0">
         
         {/* Helper Links */}
         <div className="space-y-3">
