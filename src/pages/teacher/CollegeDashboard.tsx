@@ -39,53 +39,47 @@ export function CollegeDashboard() {
       setError(null);
       try {
         // Fetch courses for this teacher
-        const { data: coursesData, error: coursesError } = await supabase
-          .from('courses')
-          .select('*')
-          .eq('teacher_id', user.id);
-          
-        if (coursesError) throw coursesError;
-        setCourses(coursesData || []);
+        let coursesData: any[] = [];
+        try {
+          const { data, error } = await supabase.from('courses').select('*').eq('teacher_id', user.id);
+          if (error) throw error;
+          coursesData = data || [];
+        } catch(e) {
+          console.error("Dashboard Fetch Error Details:", e);
+        }
+        setCourses(coursesData);
 
-        const courseIds = (coursesData || []).map(c => c.id);
+        const courseIds = coursesData.map((c: any) => c.id);
 
         if (courseIds.length > 0) {
           // Fetch enrolled students count
-          const { count: studentsCount } = await supabase
-            .from('enrollments')
-            .select('*', { count: 'exact', head: true })
-            .in('course_id', courseIds);
-          setTotalStudents(studentsCount || 0);
+          try {
+            const { count, error } = await supabase.from('enrollments').select('*', { count: 'exact', head: true }).in('course_id', courseIds);
+            if (error) throw error;
+            setTotalStudents(count || 0);
+          } catch(e) { console.error("Dashboard Fetch Error Details:", e); }
 
           // Fetch upcoming live classes
-          const { data: classesData } = await supabase
-            .from('live_classes')
-            .select('*')
-            .in('course_id', courseIds)
-            .gte('scheduled_at', new Date().toISOString())
-            .order('scheduled_at', { ascending: true })
-            .limit(5);
-          setUpcomingClasses(classesData || []);
+          try {
+            const { data, error } = await supabase.from('live_classes').select('*').in('course_id', courseIds).gte('scheduled_at', new Date().toISOString()).order('scheduled_at', { ascending: true }).limit(5);
+            if (error) throw error;
+            setUpcomingClasses(data || []);
+          } catch(e) { console.error("Dashboard Fetch Error Details:", e); }
 
           // Fetch pending assignment submissions (grade is null)
-          const { data: assignmentsData } = await supabase
-            .from('assignments')
-            .select('id')
-            .in('course_id', courseIds);
-            
-          const assignmentIds = (assignmentsData || []).map(a => a.id);
-          
-          if (assignmentIds.length > 0) {
-            const { count: pendingGrades } = await supabase
-              .from('submissions')
-              .select('*', { count: 'exact', head: true })
-              .in('assignment_id', assignmentIds)
-              .is('grade', null);
-            setAssignmentsToGrade(pendingGrades || 0);
-          }
+          try {
+            const { data: assignmentsData, error: assignmentsError } = await supabase.from('assignments').select('id').in('course_id', courseIds);
+            if (assignmentsError) throw assignmentsError;
+            const assignmentIds = (assignmentsData || []).map((a: any) => a.id);
+            if (assignmentIds.length > 0) {
+              const { count, error } = await supabase.from('submissions').select('*', { count: 'exact', head: true }).in('assignment_id', assignmentIds).is('grade', null);
+              if (error) throw error;
+              setAssignmentsToGrade(count || 0);
+            }
+          } catch(e) { console.error("Dashboard Fetch Error Details:", e); }
         }
       } catch (err: any) {
-        console.error('Failed to load college dashboard data:', err);
+        console.error("Dashboard Fetch Error Details:", err);
         setError('Failed to load dashboard data. Please try again.');
       } finally {
         setLoading(false);

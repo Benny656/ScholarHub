@@ -117,163 +117,176 @@ export function StudentDashboard() {
 
     try {
       // 1. Fetch Enrollments
-      const { data: enrollmentsData, error: enrollError } = await supabase
-        .from('enrollments')
-        .select(`
-          progress, 
-          enrolled_at, 
-          courses (
-            id, 
-            title, 
-            description, 
-            category, 
-            level, 
-            duration_hours, 
-            total_lessons, 
-            teacher_id,
-            users (
-              name,
-              avatar_url
-            )
-          )
-        `)
-        .eq('student_id', user.id);
-
-      if (enrollError) throw enrollError;
-      const validEnrollments = (enrollmentsData || []) as any[] as EnrollmentWithCourse[];
-      setEnrollments(validEnrollments);
-
-      const enrolledCourseIds = validEnrollments
-        .map(e => e.courses?.id)
-        .filter((id): id is string => !!id);
-
-      // Average progress calculation
-      const avgProgress = validEnrollments.length > 0
-        ? Math.round(validEnrollments.reduce((sum, e) => sum + Number(e.progress), 0) / validEnrollments.length)
-        : 0;
-
-      // 2. Fetch Upcoming Classes if enrolled in any courses
-      let classes: LiveClass[] = [];
-      let todayClassesCount = 0;
-      if (enrolledCourseIds.length > 0) {
-        const { data: classesData, error: classesError } = await supabase
-          .from('live_classes')
+      let validEnrollments = [];
+      let enrolledCourseIds = [];
+      let avgProgress = 0;
+      try {
+        const { data: enrollmentsData, error: enrollError } = await supabase
+          .from('enrollments')
           .select(`
-            id, 
-            title, 
-            scheduled_at, 
-            room_id, 
-            status,
+            progress, 
+            enrolled_at, 
             courses (
               id, 
-              title,
+              title, 
+              description, 
+              category, 
+              level, 
+              duration_hours, 
+              total_lessons, 
+              teacher_id,
               users (
-                name
+                name,
+                avatar_url
               )
             )
           `)
-          .in('course_id', enrolledCourseIds)
-          .gte('scheduled_at', new Date().toISOString())
-          .order('scheduled_at', { ascending: true })
-          .limit(3);
+          .eq('student_id', user.id);
 
-        if (classesError) throw classesError;
-        classes = (classesData || []) as any[] as LiveClass[];
-        
-        // Count classes scheduled for today
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
-        const endOfToday = new Date();
-        endOfToday.setHours(23, 59, 59, 999);
-        
-        todayClassesCount = classes.filter(c => {
-          const schedDate = new Date(c.scheduled_at);
-          return schedDate >= startOfToday && schedDate <= endOfToday;
-        }).length;
+        if (enrollError) throw enrollError;
+        validEnrollments = (enrollmentsData || []);
+        setEnrollments(validEnrollments);
+
+        enrolledCourseIds = validEnrollments
+          .map(e => e.courses?.id)
+          .filter(id => !!id);
+
+        avgProgress = validEnrollments.length > 0
+          ? Math.round(validEnrollments.reduce((sum, e) => sum + Number(e.progress), 0) / validEnrollments.length)
+          : 0;
+      } catch (e) {
+        console.error("Dashboard Fetch Error Details (enrollments):", e);
+      }
+
+      // 2. Fetch Upcoming Classes
+      let classes = [];
+      let todayClassesCount = 0;
+      if (enrolledCourseIds.length > 0) {
+        try {
+          const { data: classesData, error: classesError } = await supabase
+            .from('live_classes')
+            .select(`
+              id, 
+              title, 
+              scheduled_at, 
+              room_id, 
+              status,
+              courses (
+                id, 
+                title,
+                users (
+                  name
+                )
+              )
+            `)
+            .in('course_id', enrolledCourseIds)
+            .gte('scheduled_at', new Date().toISOString())
+            .order('scheduled_at', { ascending: true })
+            .limit(3);
+
+          if (classesError) throw classesError;
+          classes = (classesData || []);
+          
+          const startOfToday = new Date();
+          startOfToday.setHours(0, 0, 0, 0);
+          const endOfToday = new Date();
+          endOfToday.setHours(23, 59, 59, 999);
+          
+          todayClassesCount = classes.filter(c => {
+            const schedDate = new Date(c.scheduled_at);
+            return schedDate >= startOfToday && schedDate <= endOfToday;
+          }).length;
+        } catch(e) { console.error("Dashboard Fetch Error Details (live_classes):", e); }
       }
       setUpcomingClasses(classes);
 
-      // 3. Fetch Assignments and Submissions to filter Pending Assignments
-      let pending: PendingAssignment[] = [];
-      let submissionsList: any[] = [];
-      
+      // 3. Fetch Assignments and Submissions
+      let pending = [];
+      let submissionsList = [];
       if (enrolledCourseIds.length > 0) {
-        const { data: assignmentsData, error: assignmentsError } = await supabase
-          .from('assignments')
-          .select(`
-            id, 
-            title, 
-            due_date, 
-            max_grade, 
-            course_id,
-            courses (
-              title
-            )
-          `)
-          .in('course_id', enrolledCourseIds)
-          .order('due_date', { ascending: true });
+        try {
+          const { data: assignmentsData, error: assignmentsError } = await supabase
+            .from('assignments')
+            .select(`
+              id, 
+              title, 
+              due_date, 
+              max_grade, 
+              course_id,
+              courses (
+                title
+              )
+            `)
+            .in('course_id', enrolledCourseIds)
+            .order('due_date', { ascending: true });
 
-        if (assignmentsError) throw assignmentsError;
+          if (assignmentsError) throw assignmentsError;
 
-        const { data: submissionsData, error: submissionsError } = await supabase
-          .from('submissions')
-          .select('assignment_id, submitted_at, grade')
-          .eq('student_id', user.id);
+          const { data: submissionsData, error: submissionsError } = await supabase
+            .from('submissions')
+            .select('assignment_id, submitted_at, grade')
+            .eq('student_id', user.id);
 
-        if (submissionsError) throw submissionsError;
-        submissionsList = submissionsData || [];
+          if (submissionsError) throw submissionsError;
+          submissionsList = submissionsData || [];
 
-        const submittedIds = new Set(submissionsList.map(s => s.assignment_id));
-        pending = ((assignmentsData || []) as any[] as PendingAssignment[])
-          .filter(a => !submittedIds.has(a.id))
-          .slice(0, 5);
+          const submittedIds = new Set(submissionsList.map(s => s.assignment_id));
+          pending = (assignmentsData || [])
+            .filter(a => !submittedIds.has(a.id))
+            .slice(0, 5);
+        } catch(e) { console.error("Dashboard Fetch Error Details (assignments):", e); }
       }
       setPendingAssignments(pending);
 
       // 4. Fetch Attendance and calculate percentage
-      let attendanceList: any[] = [];
+      let attendanceList = [];
       if (enrolledCourseIds.length > 0) {
-        const { data: attendanceData, error: attendanceError } = await supabase
-          .from('attendance')
-          .select(`
-            id, 
-            date, 
-            status, 
-            marked_at,
-            courses (
-              title
-            )
-          `)
-          .eq('student_id', user.id);
+        try {
+          const { data: attendanceData, error: attendanceError } = await supabase
+            .from('attendance')
+            .select(`
+              id, 
+              date, 
+              status, 
+              marked_at,
+              courses (
+                title
+              )
+            `)
+            .eq('student_id', user.id);
 
-        if (attendanceError) throw attendanceError;
-        attendanceList = attendanceData || [];
-        
-        const totalClasses = attendanceList.length;
-        const presentClasses = attendanceList.filter(a => a.status === 'present' || a.status === 'late').length;
-        setAttendancePercentage(totalClasses > 0 ? Math.round((presentClasses / totalClasses) * 100) : 100);
+          if (attendanceError) throw attendanceError;
+          attendanceList = attendanceData || [];
+          
+          const totalClasses = attendanceList.length;
+          const presentClasses = attendanceList.filter(a => a.status === 'present' || a.status === 'late').length;
+          setAttendancePercentage(totalClasses > 0 ? Math.round((presentClasses / totalClasses) * 100) : 100);
+        } catch(e) { console.error("Dashboard Fetch Error Details (attendance):", e); }
       } else {
         setAttendancePercentage(100);
       }
 
       // 5. Fetch Certificates
-      const { data: certificatesData, error: certError } = await supabase
-        .from('certificates')
-        .select(`
-          id, 
-          issued_at,
-          courses (
-            title
-          )
-        `)
-        .eq('student_id', user.id)
-        .order('issued_at', { ascending: false })
-        .limit(5);
-      
-      const certsList = certificatesData || [];
+      let certsList = [];
+      try {
+        const { data: certificatesData, error: certError } = await supabase
+          .from('certificates')
+          .select(`
+            id, 
+            issued_at,
+            courses (
+              title
+            )
+          `)
+          .eq('student_id', user.id)
+          .order('issued_at', { ascending: false })
+          .limit(5);
+        if (certError) throw certError;
+        certsList = certificatesData || [];
+      } catch(e) { console.error("Dashboard Fetch Error Details (certificates):", e); }
 
       // 6. Build Recent Activity Feed (up to 5 items)
-      const activities: ActivityItem[] = [];
+      const activities = [];
 
       // Add enrollments to activity
       validEnrollments.forEach((e, i) => {
@@ -296,7 +309,7 @@ export function StudentDashboard() {
           activities.push({
             id: `sub-${i}-${s.assignment_id}`,
             type: 'submission',
-            title: `Submitted assignment: ${s.assignments?.title || 'Assignment Details'}`,
+            title: `Submitted assignment`,
             timestamp: s.submitted_at,
             badgeText: s.grade !== null && s.grade !== undefined ? `Graded: ${s.grade}` : 'Submitted',
             badgeVariant: s.grade !== null && s.grade !== undefined ? 'emerald' : 'purple',
@@ -314,7 +327,7 @@ export function StudentDashboard() {
             title: `Marked ${a.status} in course "${a.courses?.title || 'Class'}"`,
             timestamp: a.marked_at,
             badgeText: a.status.toUpperCase(),
-            badgeVariant: a.status === 'present' ? 'emerald' : a.status === 'late' ? 'amber' : 'amber',
+            badgeVariant: a.status === 'present' ? 'emerald' : (a.status === 'late' ? 'amber' : 'amber'),
             icon: Clock
           });
         }
@@ -349,8 +362,8 @@ export function StudentDashboard() {
         averageProgress: avgProgress
       });
 
-    } catch (err: any) {
-      console.error('[Dashboard.tsx] Error loading student dashboard:', err);
+    } catch (err) {
+      console.error("Dashboard Fetch Error Details:", err);
       setError(err.message || 'Failed to load dashboard data. Please try again.');
     } finally {
       setLoading(false);
