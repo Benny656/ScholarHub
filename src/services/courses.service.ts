@@ -6,7 +6,7 @@ function mapDBCourseToFrontend(dbCourse: any): Course {
     title: dbCourse.title || 'Untitled Course',
     description: dbCourse.description || '',
     instructor: dbCourse.users?.name || 'Unknown Instructor',
-    instructorId: dbCourse.teacher_id || '',
+    instructorId: dbCourse.instructor_id || '',
     instructorAvatar: dbCourse.users?.avatar_url || '',
     category: dbCourse.category || 'General',
     level: dbCourse.level || 'Beginner',

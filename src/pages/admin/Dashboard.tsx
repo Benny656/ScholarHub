@@ -36,7 +36,7 @@ export function AdminDashboard() {
           .select(`
             id,
             course_id,
-            teacher_id,
+            host_id,
             meeting_room_id,
             status,
             started_at,
@@ -44,7 +44,7 @@ export function AdminDashboard() {
               id,
               title
             ),
-            users:teacher_id (
+            users:host_id (
               full_name
             )
           `)

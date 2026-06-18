@@ -66,7 +66,7 @@ export function CourseManagementForm() {
         description,
         category,
         learning_outcomes: validOutcomes,
-        teacher_id: user.id
+        instructor_id: user.id
       } as any);
 
       if (error) throw error;

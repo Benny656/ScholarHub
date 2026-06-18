@@ -30,7 +30,7 @@ interface DbCourse {
   description: string;
   category: string;
   level: string;
-  teacher_id: string;
+  instructor_id: string;
   users: {
     name: string;
   } | null;
@@ -138,8 +138,8 @@ export function SchoolStudentDashboard() {
               description,
               category,
               level,
-              teacher_id,
-              profiles:teacher_id (
+              instructor_id,
+              profiles:instructor_id (
                 full_name
               )
             )
@@ -169,7 +169,7 @@ export function SchoolStudentDashboard() {
               courses (
                 id, 
                 title,
-                profiles:teacher_id (
+                profiles:instructor_id (
                   full_name
                 )
               )

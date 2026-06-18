@@ -103,7 +103,7 @@ export const analyticsService = {
     const { data, error } = await supabase
       .from('courses')
       .select('total_students, rating')
-      .eq('teacher_id', teacherId) as any;
+      .eq('instructor_id', teacherId) as any;
 
     if (error) throw error;
 

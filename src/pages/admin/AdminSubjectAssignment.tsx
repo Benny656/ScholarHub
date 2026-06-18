@@ -51,8 +51,7 @@ export function AdminSubjectAssignment() {
     try {
       const payload = {
         title,
-        teacher_id: selectedTeacherId,
-        instructor_id: selectedTeacherId, // Some old tables use instructor_id
+        instructor_id: selectedTeacherId,
         grade_level: gradeLevel,
         institution_type: 'k12',
       };

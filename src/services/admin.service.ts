@@ -146,7 +146,7 @@ export async function getCoursesList() {
       .from('courses')
       .select(`
         *,
-        users:teacher_id (
+        users:instructor_id (
           name,
           email
         )

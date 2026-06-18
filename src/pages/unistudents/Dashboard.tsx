@@ -34,7 +34,7 @@ interface DbCourse {
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   duration_hours: number;
   total_lessons: number;
-  teacher_id: string;
+  instructor_id: string;
   users: {
     name?: string;
     full_name?: string;
@@ -175,7 +175,7 @@ export function StudentDashboard() {
               level, 
               duration_hours, 
               total_lessons, 
-              teacher_id,
+              instructor_id,
               users (
                 name,
                 avatar_url

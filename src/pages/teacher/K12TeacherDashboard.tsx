@@ -70,7 +70,7 @@ export function K12TeacherDashboard() {
         const { data: coursesData, error: coursesError } = await supabase
           .from('courses')
           .select('*')
-          .eq('teacher_id', user.id)
+          .eq('instructor_id', user.id)
           .eq('institution_type', 'k12');
 
         if (coursesError) throw coursesError;

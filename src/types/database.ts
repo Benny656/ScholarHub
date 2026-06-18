@@ -52,7 +52,6 @@ export type CourseRow = {
   category?: string | null;
   level?: string | null;
   thumbnail_url?: string | null;
-  teacher_id?: string | null;
   rating?: number;
   total_students?: number;
   total_lessons?: number;

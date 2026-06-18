@@ -55,7 +55,7 @@ interface JitsiMeetOptions {
 interface CourseRecord {
   id: string;
   title: string | null;
-  teacher_id: string | null;
+  instructor_id: string | null;
 }
 
 interface ProfileRecord {
@@ -265,7 +265,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
 
     const { data: courseData, error: courseError } = await supabase
       .from('courses')
-      .select('id,title,teacher_id')
+      .select('id,title,instructor_id')
       .eq('id', isCourseId(courseId) ? courseId : '00000000-0000-0000-0000-000000000000')
       .maybeSingle();
 
@@ -280,7 +280,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       setCourse(courseData as CourseRecord);
     }
 
-    if (resolvedRole === 'admin' || (courseData as CourseRecord)?.teacher_id === user.id) {
+    if (resolvedRole === 'admin' || (courseData as CourseRecord)?.instructor_id === user.id) {
       await loadActiveSessions();
       setViewState('ready');
       setMessage('');
@@ -630,7 +630,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   };
 
   const headerTitle = course?.title || selectedSession?.courses?.title || 'Live Classroom';
-  const canStartCourseSession = Boolean(courseId && course && canModerate && (isAdmin || course.teacher_id === user?.id));
+  const canStartCourseSession = Boolean(courseId && course && canModerate && (isAdmin || course.instructor_id === user?.id));
   const statusText = joined
     ? jitsiReady
       ? 'Connected'

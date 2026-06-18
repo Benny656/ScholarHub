@@ -42,7 +42,7 @@ export function CollegeDashboard() {
         // Fetch courses for this teacher
         let coursesData: any[] = [];
         try {
-          const { data, error } = await supabase.from('courses').select('*').eq('teacher_id', user.id);
+          const { data, error } = await supabase.from('courses').select('*').eq('instructor_id', user.id);
           if (error) throw error;
           coursesData = data || [];
         } catch(e) {
