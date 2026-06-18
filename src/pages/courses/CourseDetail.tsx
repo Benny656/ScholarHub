@@ -441,7 +441,7 @@ export function CourseDetail() {
         date: new Date().toISOString().split('T')[0],
         status: 'present',
         marked_at: new Date().toISOString()
-      });
+      } as any);
 
       if (error) throw error;
       toast.success('Attendance marked! Present ✅');
@@ -561,7 +561,7 @@ export function CourseDetail() {
               
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
-                  <Badge variant={(LEVEL_COLORS as Record<string, 'emerald'|'blue'|'none'|'purple'>)[course.level] || 'blue'}>{course.level}</Badge>
+                  <Badge variant={(LEVEL_COLORS as Record<string, 'purple' | 'blue' | 'emerald' | 'amber' | 'red' | 'slate'>)[course.level] || 'blue'}>{course.level}</Badge>
                   <Badge variant="purple">{course.category}</Badge>
                   {isEnrolled && <Badge variant="emerald">Enrolled</Badge>}
                 </div>
