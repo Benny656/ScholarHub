@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Download, Share2, QrCode, CheckCircle, Sparkles, Lock, Eye } from 'lucide-react';
+import { Award, Download, Share2, QrCode, CheckCircle, Sparkles, Lock, Eye, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { certificatesService } from '../../services/certificates.service';
+import { supabase } from '../../lib/supabase';
 import { GlassCard, Badge, PageHeader, Button } from '../../components/ui/index';
 import type { Certificate } from '../../types';
 import toast from 'react-hot-toast';
