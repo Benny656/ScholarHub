@@ -98,6 +98,7 @@ import { Messages } from './pages/messages/Messages';
 import { Analytics } from './pages/analytics/Analytics';
 import { CalendarPage } from './pages/calendar/Calendar';
 import { Certificates, CertificateVerify } from './pages/certificates/Certificates';
+import { IssueCertificate } from './components/IssueCertificate';
 import { Profile } from './pages/profile/Profile';
 import { NotificationsSettings } from './pages/settings/Notifications';
 import { PricingPage } from './pages/pricing/PricingPage';
@@ -223,6 +224,8 @@ function AppRoutes() {
         <Route path="/calendar" element={<ProtectedRoute><DashboardWrapper><CalendarPage /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/certificates" element={<ProtectedRoute><DashboardWrapper><Certificates /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/verify/:certId" element={<ProtectedRoute><DashboardWrapper><CertificateVerify /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/issue-certificates" element={<ProtectedRoute><DashboardWrapper><IssueCertificate /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/verify-certificates" element={<ProtectedRoute><DashboardWrapper><CertificateVerify /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><DashboardWrapper><Profile /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/help" element={<ProtectedRoute><DashboardWrapper><HelpCenter /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/settings/notifications" element={<ProtectedRoute><DashboardWrapper><NotificationsSettings /></DashboardWrapper></ProtectedRoute>} />

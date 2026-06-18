@@ -50,20 +50,24 @@ export default function Sidebar({
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
           { id: "users", label: "User Management", icon: Users },
           { id: "subject-assignment", label: "Subject Assignment", icon: BookOpen },
-          { id: "platform-analytics", label: "Platform Analytics", icon: BarChart3 },
+          { id: "analytics", label: "Platform Analytics", icon: BarChart3 },
           { id: "revenue-analytics", label: "Revenue Analytics", icon: CreditCard },
           { id: "system-settings", label: "System Settings", icon: Settings },
+          { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
+          { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
         ];
       case "k12-teacher":
         return [
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
           { id: "my-classes", label: "My Classes", icon: Users },
-          { id: "daily-attendance", label: "Daily Attendance", icon: Activity },
+          { id: "attendance", label: "Daily Attendance", icon: Activity },
           { id: "assignments-grading", label: "Assignments & Grading", icon: CheckSquare },
           { id: "report-cards", label: "Report Cards", icon: Award },
           { id: "timetable", label: "Timetable", icon: Calendar },
           { id: "parent-communication", label: "Parent Communication", icon: Mail },
           { id: "announcements", label: "Announcements", icon: Volume2 },
+          { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
+          { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
         ];
       case "teacher": // uni teacher
         return [
@@ -72,10 +76,11 @@ export default function Sidebar({
           { id: "student-roster", label: "Student Roster", icon: Users },
           { id: "question-banks", label: "Assignments & Question Banks", icon: CheckSquare },
           { id: "exam-scheduling", label: "Exam Scheduling", icon: Calendar },
-          { id: "session-attendance", label: "Session Attendance", icon: Activity },
+          { id: "attendance", label: "Session Attendance", icon: Activity },
           { id: "live", label: "Live Classroom", icon: Video },
-          { id: "course-analytics", label: "Course Analytics", icon: BarChart3 },
+          { id: "analytics", label: "Course Analytics", icon: BarChart3 },
           { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
+          { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
         ];
       case "school-student": // k12 student
         return [
