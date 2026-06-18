@@ -14,8 +14,9 @@ export function CustomCursor() {
 
     const onMove = (e: MouseEvent) => {
       if (cursorRef.current) {
-        // Translate cursor wrapper so bottom-left of the 48x48px wrapper is at the mouse position
-        cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY - 48}px)`;
+        // Translate cursor wrapper so the actual pen tip hits the mouse position exactly
+        // Wrapper is 56x56px (w-14 h-14). Offset slightly (e.g. -4px X, +4px Y) to align visual tip.
+        cursorRef.current.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 52}px)`;
       }
       setIsVisible(true);
     };
@@ -53,7 +54,7 @@ export function CustomCursor() {
   return (
     <div
       ref={cursorRef}
-      className="pointer-events-none fixed top-0 left-0 z-[99999] w-12 h-12"
+      className="pointer-events-none fixed top-0 left-0 z-[99999] w-14 h-14"
       style={{
         opacity: isVisible ? 1 : 0,
         transition: 'opacity 0.2s',

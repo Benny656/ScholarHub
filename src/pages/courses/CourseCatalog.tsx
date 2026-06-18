@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Badge, ProgressBar, PageHeader, Button, Select } from '../../components/ui/index';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
+import { supabase } from '../../lib/supabase';
 
 const LEVEL_COLORS = { Beginner: 'emerald', Intermediate: 'blue', Advanced: 'red' } as const;
 
@@ -130,7 +131,7 @@ const cardVariants = {
 
 // Immersive Glassmorphism Card with 3D Mouse Tilt & Border cursor glow tracking
 function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
-  course: Course; _index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
+  course: any; _index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -149,6 +150,8 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
     cardRef.current.style.setProperty('--mouse-x', `${x}px`);
     cardRef.current.style.setProperty('--mouse-y', `${y}px`);
   };
+
+  const isK12 = course.institution_type === 'k12';
 
   return (
     <motion.div
@@ -185,10 +188,7 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
 
       {/* Thumbnail with Geometric SVGs and category gradient */}
       <div className="h-40 relative flex-shrink-0 overflow-hidden">
-        <GeometricThumbnail category={course.category} />
-        <div className="absolute top-3 left-3">
-          <Badge variant={LEVEL_COLORS[course.level]}>{course.level}</Badge>
-        </div>
+        <GeometricThumbnail category={course.category || 'General'} />
         {enrolled && (
           <div className="absolute top-3 right-3">
             <Badge variant="emerald">Enrolled</Badge>
@@ -198,28 +198,30 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1 relative z-10">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1.5">{course.category}</span>
-        <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
-          {course.title}
-        </h3>
-        <p className="text-xs text-on-surface-variant mb-4 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-          {course.description}
-        </p>
-
-        {/* Rating */}
-        <div className="flex items-center gap-1 mb-4">
-          {[1,2,3,4,5].map(s => (
-            <Star key={s} size={11} fill={s <= Math.floor(course.rating) ? '#F59E0B' : 'none'} className="text-amber-400" />
-          ))}
-          <span className="text-xs text-amber-400 ml-1 font-semibold">{course.rating.toFixed(1)}</span>
-        </div>
-
-        {/* Metas */}
-        <div className="flex items-center gap-3 text-xs text-on-surface-variant mb-4 border-t border-outline-variant/15 pt-3">
-          <span className="flex items-center gap-1"><Users size={11} /> {course.enrolled.toLocaleString()}</span>
-          <span className="flex items-center gap-1"><BookOpen size={11} /> {course.lessons} lessons</span>
-          <span className="flex items-center gap-1"><Clock size={11} /> {course.duration}</span>
-        </div>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1.5">{course.category || 'General'}</span>
+        
+        {isK12 ? (
+          <>
+             <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+               {course.title}
+             </h3>
+             <p className="text-xs text-on-surface-variant mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+               Grade Level: {course.grade_level || 'N/A'}
+             </p>
+          </>
+        ) : (
+          <>
+             <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+               {course.title}
+             </h3>
+             <p className="text-xs text-on-surface-variant mb-4 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+               {course.description || 'No description provided.'}
+             </p>
+             <p className="text-xs text-on-surface-variant mb-4 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+               Target Year: {course.target_year || 'N/A'}
+             </p>
+          </>
+        )}
 
         {/* Progress Bar for Enrolled Students */}
         {enrolled && (
@@ -234,30 +236,35 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
 
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/15">
           <div>
-            <p className="text-lg font-bold text-on-surface">₹{course.price}</p>
-            <p className="text-[10px] text-on-surface-variant">{course.instructor}</p>
+             {!isK12 && (
+               <p className="text-lg font-bold text-on-surface">
+                 {Number(course.price) > 0 ? `₹${course.price}` : 'Free'}
+               </p>
+             )}
           </div>
           
-          {enrolled ? (
-            <Link to={`/learn/${course.id}/l1`}>
-              <button className="px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-lg hover:scale-105 active:scale-95 duration-200" style={{ background: 'linear-gradient(135deg, #d8bcea, #8B5CF6)' }}>
-                Continue Learning
-              </button>
-            </Link>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link to={`/courses/${course.id}`}>
-                <button className="px-3.5 py-2 rounded-xl text-xs font-semibold text-on-surface-variant border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface transition-all">
-                  Details
+          <div className="flex items-center gap-2">
+            {enrolled ? (
+              <Link to={`/learn/${course.id}/l1`}>
+                <button className="px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-lg hover:scale-105 active:scale-95 duration-200" style={{ background: 'linear-gradient(135deg, #d8bcea, #8B5CF6)' }}>
+                  Continue Learning
                 </button>
               </Link>
-              {onEnroll && (
-                <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
-                  Enroll
-                </button>
-              )}
-            </div>
-          )}
+            ) : (
+              <>
+                <Link to={`/courses/${course.id}`}>
+                  <button className="px-3.5 py-2 rounded-xl text-xs font-semibold text-on-surface-variant border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface transition-all">
+                    Details
+                  </button>
+                </Link>
+                {onEnroll && (
+                  <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
+                    Enroll
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -289,7 +296,7 @@ function CourseSkeleton() {
 
 export function CourseCatalog() {
   const { user } = useAuth();
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Search parameters and debounce state
@@ -297,8 +304,6 @@ export function CourseCatalog() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   
   const [category, setCategory] = useState('All');
-  const [level, setLevel] = useState('All');
-  const [sortBy, setSortBy] = useState('popular');
   const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
 
   const categories = coursesService.getCategories();
@@ -314,29 +319,51 @@ export function CourseCatalog() {
   // Load courses and enrollments on filters/search update
   useEffect(() => {
     setLoading(true);
-    const filters = {
-      category: category !== 'All' ? category : undefined,
-      level: level !== 'All' ? level : undefined,
-      search: debouncedSearch || undefined,
-    };
     
-    Promise.all([
-      coursesService.getCourses(filters),
-      user ? coursesService.getEnrolledCourses(user.id) : Promise.resolve([]),
-    ]).then(([data, enrolled]) => {
-      setCourses(data);
-      setEnrolledCourses(enrolled);
-      setLoading(false);
-    });
-  }, [debouncedSearch, category, level, user]);
+    async function fetchCourses() {
+      try {
+        let isK12 = false;
+        if (user) {
+           const isK12Student = user.role === 'student' && user.gradeLevel?.toLowerCase().startsWith('k12');
+           const isK12Teacher = user.role === 'teacher' && (user.teacherTrack === 'k12' || user.gradeLevel?.toLowerCase().startsWith('k12'));
+           if (isK12Student || isK12Teacher) {
+             isK12 = true;
+           }
+        }
+        const institutionFilter = isK12 ? 'k12' : 'uni';
 
-  const sorted = [...courses].sort((a, b) => {
-    if (sortBy === 'popular') return b.enrolled - a.enrolled;
-    if (sortBy === 'rating') return b.rating - a.rating;
-    if (sortBy === 'price-low') return a.price - b.price;
-    if (sortBy === 'price-high') return b.price - a.price;
-    return 0;
-  });
+        let query = supabase
+          .from('courses')
+          .select('id, title, description, price, target_year, grade_level, institution_type, category, instructor_id')
+          .eq('institution_type', institutionFilter);
+
+        if (category !== 'All') {
+          query = query.eq('category', category);
+        }
+        if (debouncedSearch) {
+          query = query.ilike('title', `%${debouncedSearch}%`);
+        }
+
+        const [coursesRes, enrolledRes] = await Promise.all([
+          query,
+          user ? supabase.from('enrollments').select('*').eq('student_id', user.id) : Promise.resolve({ data: [] })
+        ]);
+
+        if (coursesRes.data) {
+          setCourses(coursesRes.data);
+        }
+        if (enrolledRes.data) {
+          setEnrolledCourses(enrolledRes.data);
+        }
+      } catch (err) {
+        console.error('Error fetching courses:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCourses();
+  }, [debouncedSearch, category, user]);
 
   const handleEnroll = (courseId: string) => {
     if (!user) {
@@ -346,7 +373,9 @@ export function CourseCatalog() {
     coursesService.enrollCourse(courseId, user.id).then(() => {
       toast.success('Successfully enrolled in course! 🎉', { icon: '🎓' });
       // Reload enrolled courses list
-      coursesService.getEnrolledCourses(user.id).then(setEnrolledCourses);
+      supabase.from('enrollments').select('*').eq('student_id', user.id).then(res => {
+         if (res.data) setEnrolledCourses(res.data);
+      });
     }).catch(err => {
       toast.error('Enrollment failed, please try again.');
       console.error(err);
@@ -354,12 +383,12 @@ export function CourseCatalog() {
   };
 
   const getProgress = (courseId: string) => {
-    const found = enrolledCourses.find(e => e.course.id === courseId);
-    return found ? found.enrollment.progress : 0;
+    const found = enrolledCourses.find(e => e.course_id === courseId);
+    return found ? Number(found.progress) || 0 : 0;
   };
 
   const isEnrolled = (courseId: string) => {
-    return enrolledCourses.some(e => e.course.id === courseId);
+    return enrolledCourses.some(e => e.course_id === courseId);
   };
 
   return (
@@ -415,29 +444,6 @@ export function CourseCatalog() {
               ))}
             </div>
           </div>
-          
-          <div className="flex items-center gap-2 ml-auto">
-            <Select
-              options={[
-                { value: 'All', label: 'All Levels' },
-                { value: 'Beginner', label: 'Beginner' },
-                { value: 'Intermediate', label: 'Intermediate' },
-                { value: 'Advanced', label: 'Advanced' },
-              ]}
-              value={level}
-              onChange={e => setLevel(e.target.value)}
-            />
-            <Select
-              options={[
-                { value: 'popular', label: 'Most Popular' },
-                { value: 'rating', label: 'Highest Rated' },
-                { value: 'price-low', label: 'Price: Low to High' },
-                { value: 'price-high', label: 'Price: High to Low' },
-              ]}
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-            />
-          </div>
         </div>
 
         {/* Catalog Grid */}
@@ -445,10 +451,10 @@ export function CourseCatalog() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[1,2,3,4,5,6,7,8].map(i => <CourseSkeleton key={i} />)}
           </div>
-        ) : sorted.length === 0 ? (
+        ) : courses.length === 0 ? (
           <div className="text-center py-24 glass rounded-3xl border border-white/5 max-w-lg mx-auto">
             <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No courses found</h3>
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No courses available yet</h3>
             <p className="text-sm text-neutral-500 dark:text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
           </div>
         ) : (
@@ -465,7 +471,7 @@ export function CourseCatalog() {
             animate="show"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
-            {sorted.map((course, i) => (
+            {courses.map((course, i) => (
               <CourseCard
                 key={course.id}
                 course={course}
