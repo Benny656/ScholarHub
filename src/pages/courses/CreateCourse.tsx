@@ -1,305 +1,217 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Check, BookOpen, FileText, Target, Rocket, Plus, X, Upload, Sparkles } from 'lucide-react';
-import { coursesService } from '../../services/courses.service';
-import { aiService } from '../../services/ai.service';
-import { GlassCard, Button, Input, Select, PageHeader } from '../../components/ui/index';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
+import { Button, GlassCard, Select } from '../../components/ui/index';
+import { Save, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-const STEPS = [
-  { id: 1, label: 'Details', icon: <BookOpen size={16} /> },
-  { id: 2, label: 'Materials', icon: <FileText size={16} /> },
-  { id: 3, label: 'Outcomes', icon: <Target size={16} /> },
-  { id: 4, label: 'Publish', icon: <Rocket size={16} /> },
-];
+import { useNavigate } from 'react-router-dom';
 
 export function CreateCourse() {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [saving, setSaving] = useState(false);
-  const [generatingQuiz, setGeneratingQuiz] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [profileRole, setProfileRole] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    title: '', description: '', category: 'Web Development', level: 'Beginner', price: '', duration: '',
-    objectives: [''], requirements: [''], outcomes: [''],
-    sections: [{ title: 'Introduction', lessons: [{ title: 'Welcome', type: 'video' }] }],
-  });
+  // Form State
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState<number | string>(0);
+  const [targetYear, setTargetYear] = useState('1st Year');
+  const [gradeLevel, setGradeLevel] = useState('Grade 9');
 
-  const update = (field: string, val: unknown) => setForm(p => ({ ...p, [field]: val }));
+  const isK12 = profileRole === 'k12_teacher';
+  const isUni = profileRole === 'college_teacher' || profileRole === 'teacher';
 
-  const addListItem = (field: 'objectives' | 'requirements' | 'outcomes') =>
-    update(field, [...form[field], '']);
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      if (!error && data) {
+        setProfileRole(data.role);
+      }
+    }
+    fetchProfile();
+  }, [user]);
 
-  const updateListItem = (field: 'objectives' | 'requirements' | 'outcomes', idx: number, val: string) => {
-    const arr = [...form[field]]; arr[idx] = val; update(field, arr);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error('You must be logged in.');
+      return;
+    }
+    if (!title.trim()) {
+      toast.error('Title/Subject Name is required.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const institution_type = isK12 ? 'k12' : 'uni';
+      
+      const payload = {
+        instructor_id: user.id,
+        institution_type,
+        title,
+        description: isK12 ? null : description,
+        price: isK12 ? null : Number(price),
+        target_year: isK12 ? null : targetYear,
+        grade_level: isK12 ? gradeLevel : null,
+      };
+
+      const { error } = await supabase
+        .from('courses')
+        .insert(payload);
+
+      if (error) throw error;
+
+      toast.success('Course created successfully! 🚀');
+      navigate('/courses'); // Redirect to courses list
+    } catch (error: any) {
+      console.error('Course Creation Error:', error);
+      toast.error(error.message || 'Failed to create course.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeListItem = (field: 'objectives' | 'requirements' | 'outcomes', idx: number) =>
-    update(field, form[field].filter((_, i) => i !== idx));
-
-  const handlePublish = async () => {
-    setSaving(true);
-    await coursesService.createCourse({ ...form, isPublished: true } as any);
-    setSaving(false);
-    toast.success('Course published successfully! 🚀');
-    navigate('/courses');
-  };
-
-  const handleSaveDraft = async () => {
-    setSaving(true);
-    await coursesService.createCourse({ ...form, isPublished: false } as any);
-    setSaving(false);
-    toast.success('Draft saved');
-  };
-
-  const handleGenerateQuiz = async () => {
-    setGeneratingQuiz(true);
-    await aiService.generateQuiz(form.title, form.level, 5);
-    setGeneratingQuiz(false);
-    toast.success('AI Quiz generated! 🤖', { icon: '✨' });
-  };
-
-  const inputStyle = { fontFamily: 'Inter, sans-serif' };
+  if (!profileRole) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <RefreshCw className="animate-spin text-brand-primary" size={32} />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Create New Course"
-        subtitle="Build and publish your course"
-        breadcrumb={[{ label: 'Courses', href: '/courses' }, { label: 'Create' }]}
-      />
+    <div className="max-w-3xl mx-auto py-8 px-4">
+      <GlassCard className="p-6 md:p-8">
+        <div className="mb-8 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white font-serif">
+            {isK12 ? 'Create K-12 Subject' : 'Create University Course'}
+          </h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            {isK12 ? 'Add a new subject for your students.' : 'Set up a new college course offering.'}
+          </p>
+        </div>
 
-      <div className="p-6 max-w-4xl mx-auto">
-        {/* Step indicator */}
-        <div className="flex items-center gap-0 mb-8 overflow-x-auto pb-2">
-          {STEPS.map((s, i) => (
-            <div key={s.id} className="flex items-center flex-shrink-0">
-              <button
-                onClick={() => step > s.id && setStep(s.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
-                  step === s.id ? 'text-white' :
-                  step > s.id ? 'text-emerald-400 hover:bg-white/5' :
-                  'text-slate-500'
-                }`}
-                style={step === s.id ? { background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' } : {}}
-              >
-                {step > s.id ? <Check size={16} className="text-emerald-400" /> : s.icon}
-                <span className="text-sm font-semibold hidden sm:block">{s.label}</span>
-              </button>
-              {i < STEPS.length - 1 && (
-                <div className={`w-8 h-px mx-1 ${step > s.id ? 'bg-emerald-400/50' : 'bg-white/10'}`} />
-              )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {isK12 && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Subject Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Mathematics, Science"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                />
+              </div>
+
+              <div>
+                <Select
+                  label="Grade Level"
+                  value={gradeLevel}
+                  onChange={(e) => setGradeLevel(e.target.value)}
+                  options={[
+                    { value: 'Grade 1', label: '1st Grade' },
+                    { value: 'Grade 2', label: '2nd Grade' },
+                    { value: 'Grade 3', label: '3rd Grade' },
+                    { value: 'Grade 4', label: '4th Grade' },
+                    { value: 'Grade 5', label: '5th Grade' },
+                    { value: 'Grade 6', label: '6th Grade' },
+                    { value: 'Grade 7', label: '7th Grade' },
+                    { value: 'Grade 8', label: '8th Grade' },
+                    { value: 'Grade 9', label: '9th Grade' },
+                    { value: 'Grade 10', label: '10th Grade' },
+                    { value: 'Grade 11', label: '11th Grade' },
+                    { value: 'Grade 12', label: '12th Grade' },
+                  ]}
+                />
+              </div>
+            </>
+          )}
+
+          {isUni && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Intro to Computer Science"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  placeholder="Comprehensive overview of the course..."
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50 resize-y"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <Select
+                  label="Target Year"
+                  value={targetYear}
+                  onChange={(e) => setTargetYear(e.target.value)}
+                  options={[
+                    { value: '1st Year', label: '1st Year' },
+                    { value: '2nd Year', label: '2nd Year' },
+                    { value: '3rd Year', label: '3rd Year' },
+                    { value: '4th Year', label: '4th Year' },
+                    { value: 'Postgraduate', label: 'Postgraduate' },
+                  ]}
+                />
+
+                <div>
+                  <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Price ($)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {(!isK12 && !isUni && profileRole === 'admin') && (
+            <div className="p-4 rounded-xl bg-blue-50 text-blue-700 border border-blue-200">
+              Admin View: Admins can manage courses via the main Admin Dashboard instead.
             </div>
-          ))}
-        </div>
-
-        <AnimatePresence mode="wait">
-          {/* Step 1: Details */}
-          {step === 1 && (
-            <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <GlassCard>
-                <h2 className="text-lg font-bold text-neutral-900 dark:text-white mb-5" style={{ fontFamily: 'Geist, sans-serif' }}>Course Details</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title *</label>
-                    <input type="text" value={form.title} onChange={e => update('title', e.target.value)} placeholder="e.g. Complete React Development Bootcamp" className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-white/10 focus:border-purple-500/60 bg-neutral-100/50 dark:bg-white/5 text-neutral-900 dark:text-white text-sm outline-none" style={inputStyle} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">Description *</label>
-                    <textarea value={form.description} onChange={e => update('description', e.target.value)} rows={4} placeholder="Describe what students will learn..." className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-white/10 focus:border-purple-500/60 bg-neutral-100/50 dark:bg-white/5 text-neutral-900 dark:text-white text-sm outline-none resize-none" style={inputStyle} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Select label="Category" value={form.category} onChange={e => update('category', e.target.value)}
-                      options={['Web Development','AI & ML','Design','Computer Science','Cloud & DevOps','Security'].map(c => ({ value: c, label: c }))} />
-                    <Select label="Level" value={form.level} onChange={e => update('level', e.target.value)}
-                      options={[{ value: 'Beginner', label: 'Beginner' }, { value: 'Intermediate', label: 'Intermediate' }, { value: 'Advanced', label: 'Advanced' }]} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input label="Price (₹)" type="number" value={form.price} onChange={e => update('price', e.target.value)} placeholder="0 for free" />
-                    <Input label="Duration (e.g. 24h 30m)" value={form.duration} onChange={e => update('duration', e.target.value)} placeholder="e.g. 24h 30m" />
-                  </div>
-                </div>
-              </GlassCard>
-            </motion.div>
           )}
 
-          {/* Step 2: Materials */}
-          {step === 2 && (
-            <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <GlassCard>
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-lg font-bold text-neutral-900 dark:text-white" style={{ fontFamily: 'Geist, sans-serif' }}>Course Curriculum</h2>
-                  <div className="flex items-center gap-2">
-                    <Button variant="secondary" icon={<Sparkles size={14} />} size="sm" onClick={handleGenerateQuiz} loading={generatingQuiz}>
-                      AI Quiz
-                    </Button>
-                    <Button variant="primary" size="sm" icon={<Plus size={14} />}
-                      onClick={() => update('sections', [...form.sections, { title: 'New Section', lessons: [] }])}>
-                      Section
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  {form.sections.map((sec, si) => (
-                    <div key={si} className="rounded-xl border border-neutral-200 dark:border-white/8 overflow-hidden bg-neutral-50/50 dark:bg-white/3">
-                      <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-200 dark:border-white/5">
-                        <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-300 text-xs font-bold flex items-center justify-center">{si + 1}</div>
-                        <input
-                          value={sec.title}
-                          onChange={e => {
-                            const s = [...form.sections]; s[si] = { ...s[si], title: e.target.value };
-                            update('sections', s);
-                          }}
-                          className="flex-1 bg-transparent text-sm font-semibold text-neutral-900 dark:text-white outline-none placeholder-slate-500"
-                          placeholder="Section title..."
-                        />
-                        <button onClick={() => update('sections', form.sections.filter((_, i) => i !== si))} className="text-slate-500 hover:text-red-500 transition-colors">
-                          <X size={14} />
-                        </button>
-                      </div>
-                      <div className="p-3 space-y-2">
-                        {sec.lessons.map((les, li) => (
-                          <div key={li} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-neutral-100/50 dark:bg-white/5">
-                            <select
-                              value={les.type}
-                              onChange={e => {
-                                const s = [...form.sections]; s[si].lessons[li] = { ...les, type: e.target.value };
-                                update('sections', s);
-                              }}
-                              className="text-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-lg px-2 py-1 text-neutral-700 dark:text-slate-300 outline-none"
-                            >
-                              {['video','pdf','quiz','assignment'].map(t => <option key={t} value={t} className="bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">{t}</option>)}
-                            </select>
-                            <input
-                              value={les.title}
-                              onChange={e => {
-                                const s = [...form.sections]; s[si].lessons[li] = { ...les, title: e.target.value };
-                                update('sections', s);
-                              }}
-                              className="flex-1 bg-transparent text-sm text-neutral-900 dark:text-slate-300 outline-none placeholder-slate-500"
-                              placeholder="Lesson title..."
-                            />
-                            <button onClick={() => {
-                              const s = [...form.sections]; s[si].lessons = s[si].lessons.filter((_, i) => i !== li);
-                              update('sections', s);
-                            }} className="text-slate-600 hover:text-red-400 transition-colors"><X size={13} /></button>
-                          </div>
-                        ))}
-                        <button
-                          onClick={() => {
-                            const s = [...form.sections]; s[si].lessons.push({ title: '', type: 'video' });
-                            update('sections', s);
-                          }}
-                          className="flex items-center gap-2 text-xs text-purple-400 hover:text-purple-300 transition-colors px-3 py-1.5"
-                        >
-                          <Plus size={13} /> Add Lesson
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Upload area */}
-                <div className="mt-4 rounded-xl border-2 border-dashed border-neutral-200 dark:border-white/15 hover:border-purple-500/30 p-8 text-center cursor-pointer transition-all hover:bg-neutral-50 dark:hover:bg-white/3">
-                  <Upload size={24} className="text-slate-500 mx-auto mb-2" />
-                  <p className="text-sm text-neutral-500 dark:text-slate-400">Drag & drop course materials or <span className="text-purple-400">browse files</span></p>
-                  <p className="text-xs text-neutral-400 dark:text-slate-500 mt-1">PDF, Video, PPT — up to 500MB</p>
-                </div>
-              </GlassCard>
-            </motion.div>
-          )}
-
-          {/* Step 3: Outcomes */}
-          {step === 3 && (
-            <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <GlassCard>
-                <h2 className="text-lg font-bold text-neutral-900 dark:text-white mb-5" style={{ fontFamily: 'Geist, sans-serif' }}>Learning Outcomes</h2>
-                {([
-                  { field: 'outcomes' as const, label: 'What students will learn', placeholder: 'e.g. Build full-stack web apps', color: 'emerald' },
-                  { field: 'requirements' as const, label: 'Requirements / Prerequisites', placeholder: 'e.g. Basic JavaScript knowledge', color: 'blue' },
-                  { field: 'objectives' as const, label: 'Course Objectives', placeholder: 'e.g. Master React ecosystem', color: 'purple' },
-                ] as const).map(({ field, label, placeholder, color }) => (
-                  <div key={field} className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300" style={{ fontFamily: 'Inter, sans-serif' }}>{label}</label>
-                      <button onClick={() => addListItem(field)} className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"><Plus size={13} /> Add</button>
-                    </div>
-                    <div className="space-y-2">
-                      {form[field].map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${color === 'emerald' ? 'bg-emerald-400' : color === 'blue' ? 'bg-blue-400' : 'bg-purple-400'}`} />
-                          <input
-                            value={item}
-                            onChange={e => updateListItem(field, idx, e.target.value)}
-                            placeholder={placeholder}
-                            className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-white/10 focus:border-purple-500/60 bg-neutral-100/50 dark:bg-white/5 text-neutral-900 dark:text-white text-sm outline-none"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          />
-                          {form[field].length > 1 && (
-                            <button onClick={() => removeListItem(field, idx)} className="text-slate-600 hover:text-red-400 transition-colors"><X size={14} /></button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </GlassCard>
-            </motion.div>
-          )}
-
-          {/* Step 4: Publish */}
-          {step === 4 && (
-            <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <GlassCard tint="purple">
-                <div className="text-center py-4">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', damping: 12 }}
-                    className="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-purple-500/30"
-                  >
-                    <Rocket size={36} className="text-white" />
-                  </motion.div>
-                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Geist, sans-serif' }}>Ready to Launch?</h2>
-                  <p className="text-neutral-500 dark:text-slate-400 mb-8 max-w-md mx-auto text-sm">
-                    Your course <strong className="text-neutral-900 dark:text-white">"{form.title || 'Untitled Course'}"</strong> is ready to go live. Students will be able to enroll immediately.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto mb-6 text-left">
-                    {[
-                      { label: 'Category', val: form.category },
-                      { label: 'Level', val: form.level },
-                      { label: 'Price', val: form.price ? `₹${form.price}` : 'Free' },
-                      { label: 'Sections', val: form.sections.length },
-                    ].map(item => (
-                      <div key={item.label} className="p-3 rounded-xl bg-neutral-100/50 dark:bg-white/5">
-                        <p className="text-xs text-slate-500 mb-0.5">{item.label}</p>
-                        <p className="text-sm font-semibold text-neutral-900 dark:text-white">{item.val}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button variant="secondary" onClick={handleSaveDraft} loading={saving}>Save as Draft</Button>
-                    <Button variant="primary" onClick={handlePublish} loading={saving} icon={<Rocket size={16} />}>Publish Course</Button>
-                  </div>
-                </div>
-              </GlassCard>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-6">
-          <Button variant="ghost" onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}>
-            ← Back
-          </Button>
-          {step < 4 && (
-            <Button variant="primary" onClick={() => setStep(Math.min(4, step + 1))}>
-              Continue →
+          <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800 flex justify-end">
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={loading || (!isK12 && !isUni)}
+              icon={loading ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
+              className="w-full sm:w-auto px-8"
+            >
+              {loading ? 'Creating...' : 'Create Course'}
             </Button>
-          )}
-        </div>
-      </div>
+          </div>
+        </form>
+      </GlassCard>
     </div>
   );
 }
