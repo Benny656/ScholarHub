@@ -54,7 +54,7 @@ app.use('/api', apiRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
-  res.json({ status: 'UP', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'OK', message: 'Scholarhub Backend is awake!', timestamp: new Date().toISOString() });
 });
 
 // Configure Socket.IO
