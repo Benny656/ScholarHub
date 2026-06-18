@@ -99,7 +99,7 @@ export const certificateController = {
 
       if (error) {
         console.error("Supabase Insert Error:", error);
-        // We will not throw here to ensure the user gets the generated URL even if the DB schema is missing
+        throw new Error(error.message);
       }
 
       res.status(200).json({ 
@@ -111,7 +111,7 @@ export const certificateController = {
 
     } catch (error: any) {
       console.error("Minting Error:", error);
-      res.status(500).json({ success: false, error: error.message });
+      res.status(500).json({ success: false, error: error.message || "Database insert failed" });
     }
   }
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Sparkles, Download, ExternalLink } from 'lucide-react';
+import { Award, Sparkles, Download, ExternalLink, AlertTriangle } from 'lucide-react';
 import { Button, GlassCard } from './ui';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,7 @@ export function IssueCertificate() {
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ certificateUrl: string; txHash: string } | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const populateDemoData = () => {
     setFormData({
@@ -30,6 +31,7 @@ export function IssueCertificate() {
     e.preventDefault();
     setLoading(true);
     setResult(null);
+    setErrorMsg(null);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -52,6 +54,7 @@ export function IssueCertificate() {
       toast.success('Certificate successfully minted!');
     } catch (err: any) {
       toast.error(err.message || 'Error minting certificate');
+      setErrorMsg(err.message || 'Error minting certificate');
     } finally {
       setLoading(false);
     }
@@ -146,6 +149,15 @@ export function IssueCertificate() {
               </a>
             )}
           </div>
+        </motion.div>
+      )}
+
+      {errorMsg && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 p-4 rounded-xl border border-red-500/30 bg-red-500/10">
+          <h3 className="text-sm font-bold text-red-500 mb-2 flex items-center gap-2">
+            <AlertTriangle size={16} /> Minting Failed
+          </h3>
+          <p className="text-sm text-red-500/80">{errorMsg}</p>
         </motion.div>
       )}
     </GlassCard>
