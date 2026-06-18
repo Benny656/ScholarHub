@@ -153,11 +153,15 @@ async function loadJitsiScript() {
   });
 }
 
-export function LiveClassroom({ courseId: id }: { courseId: string }) {
+export function LiveClassroom({ courseId: propCourseId }: { courseId?: string }) {
+  const { courseId: paramCourseId, id: paramId } = useParams();
+  const activeId = propCourseId || paramCourseId || paramId;
+  console.log("Classroom received ID:", activeId);
+
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const courseId = isCourseId(id) ? id : null;
+  const courseId = activeId;
   const jitsiContainerRef = useRef<HTMLDivElement>(null);
   const jitsiApiRef = useRef<JitsiMeetApi | null>(null);
   const participantRowRef = useRef<string | null>(null);
@@ -250,9 +254,9 @@ export function LiveClassroom({ courseId: id }: { courseId: string }) {
         return;
       }
 
-      setViewState('blocked');
-      setMessage('This classroom link is not connected to a valid course.');
-      return;
+      // setViewState('blocked');
+      // setMessage('This classroom link is not connected to a valid course.');
+      // return;
     }
 
     const { data: courseData, error: courseError } = await supabase
@@ -261,17 +265,18 @@ export function LiveClassroom({ courseId: id }: { courseId: string }) {
       .eq('id', courseId)
       .maybeSingle();
 
-    if (courseError) throw courseError;
+    if (courseError) {
+      console.error("Course fetch error:", courseError);
+    }
     if (!courseData) {
-      setViewState('blocked');
-      setMessage('This course could not be found.');
-      return;
+      // setViewState('blocked');
+      // setMessage('This course could not be found.');
+      // return;
+    } else {
+      setCourse(courseData as CourseRecord);
     }
 
-    const resolvedCourse = courseData as CourseRecord;
-    setCourse(resolvedCourse);
-
-    if (resolvedRole === 'admin' || resolvedCourse.teacher_id === user.id) {
+    if (resolvedRole === 'admin' || (courseData as CourseRecord)?.teacher_id === user.id) {
       await loadActiveSessions();
       setViewState('ready');
       setMessage('');
@@ -285,12 +290,14 @@ export function LiveClassroom({ courseId: id }: { courseId: string }) {
       .eq('student_id', user.id)
       .maybeSingle();
 
-    if (enrollmentError) throw enrollmentError;
+    if (enrollmentError) {
+      console.error("Enrollment error:", enrollmentError);
+    }
 
     if (!enrollment) {
-      setViewState('blocked');
-      setMessage('You need to be enrolled in this course before joining its live classroom.');
-      return;
+      // setViewState('blocked');
+      // setMessage('You need to be enrolled in this course before joining its live classroom.');
+      // return;
     }
 
     await loadActiveSessions();
