@@ -298,6 +298,7 @@ export function CourseCatalog() {
   const { user } = useAuth();
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isK12User, setIsK12User] = useState(false);
   
   // Search parameters and debounce state
   const [searchVal, setSearchVal] = useState('');
@@ -337,6 +338,7 @@ export function CourseCatalog() {
              }
            }
         }
+        setIsK12User(isK12);
         const institutionFilter = isK12 ? 'k12' : 'uni';
 
         let query = supabase
@@ -400,12 +402,12 @@ export function CourseCatalog() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Course Catalog"
-        subtitle={`${courses.length} courses available`}
-        breadcrumb={[{ label: 'Home' }, { label: 'Courses' }]}
+        title={isK12User ? "Subject Catalog" : "Course Catalog"}
+        subtitle={`${courses.length} ${isK12User ? "subjects" : "courses"} available`}
+        breadcrumb={[{ label: 'Home' }, { label: isK12User ? 'Subjects' : 'Courses' }]}
         action={user?.role !== 'student' ? (
           <Link to="/courses/create">
-            <Button variant="primary" icon={<Plus size={16} />}>Create Course</Button>
+            <Button variant="primary" icon={<Plus size={16} />}>Create {isK12User ? "Subject" : "Course"}</Button>
           </Link>
         ) : undefined}
       />
@@ -419,7 +421,7 @@ export function CourseCatalog() {
               type="text"
               value={searchVal}
               onChange={e => setSearchVal(e.target.value)}
-              placeholder="Search courses, titles, categories..."
+              placeholder={`Search ${isK12User ? "subjects" : "courses"}, titles, categories...`}
               className="pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/30 text-on-surface text-sm outline-none focus:border-purple-500/60 placeholder-on-surface-variant/50 w-full transition-all bg-neutral-100/50 dark:bg-white/5"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             />
@@ -460,7 +462,7 @@ export function CourseCatalog() {
         ) : courses.length === 0 ? (
           <div className="text-center py-24 glass rounded-3xl border border-white/5 max-w-lg mx-auto">
             <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No courses available yet</h3>
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No {isK12User ? "subjects" : "courses"} available yet</h3>
             <p className="text-sm text-neutral-500 dark:text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
           </div>
         ) : (

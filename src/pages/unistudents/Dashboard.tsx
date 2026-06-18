@@ -36,8 +36,9 @@ interface DbCourse {
   total_lessons: number;
   teacher_id: string;
   users: {
-    name: string;
-    avatar_url: string;
+    name?: string;
+    full_name?: string;
+    avatar_url?: string;
   } | null;
 }
 
@@ -49,15 +50,19 @@ interface EnrollmentWithCourse {
 
 interface LiveClass {
   id: string;
-  title: string;
-  scheduled_at: string;
-  room_id: string;
+  course_id?: string;
+  title?: string;
+  scheduled_at?: string;
+  started_at?: string;
+  room_id?: string;
+  meeting_room_id?: string;
   status: string;
   courses: {
     id: string;
     title: string;
     users: {
-      name: string;
+      name?: string;
+      full_name?: string;
     } | null;
   } | null;
 }
@@ -87,7 +92,7 @@ export function StudentDashboard() {
   const { user } = useAuth();
 
   const isK12 = user?.role === 'student' && user?.gradeLevel?.toLowerCase().startsWith('k12');
-  if (user && (user.role !== 'student' || isK12)) {
+  if (user && user.role !== 'student') {
     return <Navigate to={getDashboardPath(user)} replace />;
   }
 
@@ -117,8 +122,8 @@ export function StudentDashboard() {
 
     try {
       // 1. Fetch Enrollments
-      let validEnrollments = [];
-      let enrolledCourseIds = [];
+      let validEnrollments: EnrollmentWithCourse[] = [];
+      let enrolledCourseIds: string[] = [];
       let avgProgress = 0;
       try {
         const { data: enrollmentsData, error: enrollError } = await supabase
@@ -149,7 +154,7 @@ export function StudentDashboard() {
 
         enrolledCourseIds = validEnrollments
           .map(e => e.courses?.id)
-          .filter(id => !!id);
+          .filter((id): id is string => !!id);
 
         avgProgress = validEnrollments.length > 0
           ? Math.round(validEnrollments.reduce((sum, e) => sum + Number(e.progress), 0) / validEnrollments.length)
@@ -159,7 +164,7 @@ export function StudentDashboard() {
       }
 
       // 2. Fetch Active Live Classes
-      let activeLiveClasses = [];
+      let activeLiveClasses: LiveClass[] = [];
       if (enrolledCourseIds.length > 0) {
         try {
           const { data: liveClassesData, error: liveError } = await supabase
@@ -187,11 +192,9 @@ export function StudentDashboard() {
       }
       setUpcomingClasses(activeLiveClasses);
 
-      // 3. Fetch Upcoming Classes (Scheduled)
-
       // 3. Fetch Assignments and Submissions
-      let pending = [];
-      let submissionsList = [];
+      let pending: PendingAssignment[] = [];
+      let submissionsList: any[] = [];
       if (enrolledCourseIds.length > 0) {
         try {
           const { data: assignmentsData, error: assignmentsError } = await supabase
@@ -220,7 +223,7 @@ export function StudentDashboard() {
           submissionsList = submissionsData || [];
 
           const submittedIds = new Set(submissionsList.map(s => s.assignment_id));
-          pending = (assignmentsData || [])
+          pending = (assignmentsData as unknown as PendingAssignment[] || [])
             .filter(a => !submittedIds.has(a.id))
             .slice(0, 5);
         } catch(e) { console.error("Dashboard Fetch Error Details (assignments):", e); }
@@ -228,7 +231,7 @@ export function StudentDashboard() {
       setPendingAssignments(pending);
 
       // 4. Fetch Attendance and calculate percentage
-      let attendanceList = [];
+      let attendanceList: any[] = [];
       if (enrolledCourseIds.length > 0) {
         try {
           const { data: attendanceData, error: attendanceError } = await supabase
@@ -256,7 +259,7 @@ export function StudentDashboard() {
       }
 
       // 5. Fetch Certificates
-      let certsList = [];
+      let certsList: any[] = [];
       try {
         const { data: certificatesData, error: certError } = await supabase
           .from('certificates')
@@ -274,10 +277,9 @@ export function StudentDashboard() {
         certsList = certificatesData || [];
       } catch(e) { console.error("Dashboard Fetch Error Details (certificates):", e); }
 
-      // 6. Build Recent Activity Feed (up to 5 items)
-      const activities = [];
-
-      // Add enrollments to activity
+      // 6. Build Activity Timeline
+      const activities: ActivityItem[] = [];
+      
       validEnrollments.forEach((e, i) => {
         if (e.enrolled_at) {
           activities.push({
@@ -346,12 +348,12 @@ export function StudentDashboard() {
 
       // Save Daily Summary stats
       setStats({
-        classesCountToday: todayClassesCount,
+        classesCountToday: activeLiveClasses.length,
         pendingAssignmentsCount: pending.length,
         averageProgress: avgProgress
       });
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Dashboard Fetch Error Details:", err);
       setError(err.message || 'Failed to load dashboard data. Please try again.');
     } finally {
@@ -397,7 +399,7 @@ export function StudentDashboard() {
             Welcome back, {firstName}
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
-            Here is your daily summary: You have <span className="font-semibold text-brand-primary">{stats.classesCountToday} live classes</span> scheduled today, <span className="font-semibold text-brand-primary">{stats.pendingAssignmentsCount} pending assignments</span>, and your average course progress is <span className="font-semibold text-brand-primary">{stats.averageProgress}%</span>.
+            Here is your daily summary: You have <span className="font-semibold text-brand-primary">{stats.classesCountToday} live classes</span> scheduled today, <span className="font-semibold text-brand-primary">{stats.pendingAssignmentsCount} pending assignments</span>, and your average {isK12 ? "subject" : "course"} progress is <span className="font-semibold text-brand-primary">{stats.averageProgress}%</span>.
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -451,7 +453,7 @@ export function StudentDashboard() {
                             LIVE NOW
                           </p>
                           <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                            Started {Math.floor((Date.now() - new Date(cls.started_at).getTime()) / 60000)}m ago
+                            Started {Math.floor((Date.now() - new Date(cls.started_at || new Date().toISOString()).getTime()) / 60000)}m ago
                           </p>
                         </div>
                         <Link to={`/classroom/${cls.course_id}`}>
@@ -531,13 +533,13 @@ export function StudentDashboard() {
               <div className="space-y-4">
                 {enrollments.length === 0 ? (
                   <div className="text-center py-4 text-neutral-500 dark:text-neutral-400 text-xs">
-                    Not enrolled in any active courses. Visit the catalog to start!
+                    Not enrolled in any active {isK12 ? "subjects" : "courses"}. Visit the catalog to start!
                   </div>
                 ) : (
                   enrollments.map((e, idx) => (
                     <div key={idx} className="space-y-1">
                       <div className="flex justify-between text-xs font-medium">
-                        <span className="text-neutral-800 dark:text-neutral-300 truncate max-w-[180px]">{e.courses?.title || 'Unknown Course'}</span>
+                        <span className="text-neutral-800 dark:text-neutral-300 truncate max-w-[180px]">{e.courses?.title || `Unknown ${isK12 ? "Subject" : "Course"}`}</span>
                         <span className="text-brand-primary font-semibold">{e.progress}%</span>
                       </div>
                       <ProgressBar value={e.progress} color="purple" size="sm" />
