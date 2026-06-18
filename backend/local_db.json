@@ -98,8 +98,8 @@
       "course_id": "general",
       "class_id": "sess_0elbyew",
       "date": "2026-06-14",
-      "status": "partial",
-      "marked_at": "2026-06-14T16:21:35.019Z"
+      "status": "present",
+      "marked_at": "2026-06-14T18:06:26.652Z"
     }
   ],
   "messages": [],
@@ -133,9 +133,10 @@
       "teacher_id": "da7eb000-0000-0000-0000-000000000001",
       "meeting_room_id": "classroom_general_1781452685340",
       "meeting_url": "https://meet.jit.si/classroom_general_1781452685340",
-      "status": "LIVE",
+      "status": "ENDED",
       "started_at": "2026-06-14T15:58:05.749Z",
-      "created_at": "2026-06-14T15:58:05.749Z"
+      "created_at": "2026-06-14T15:58:05.749Z",
+      "ended_at": "2026-06-14T18:06:24.372Z"
     }
   ],
   "session_participants": [
@@ -175,7 +176,16 @@
       "session_id": "sess_0elbyew",
       "user_id": "da7eb000-0000-0000-0000-000000000001",
       "role": "teacher",
-      "joined_at": "2026-06-14T16:30:29.007Z"
+      "joined_at": "2026-06-14T16:30:29.007Z",
+      "left_at": "2026-06-14T16:43:41.829Z"
+    },
+    {
+      "id": "part_atjadhc",
+      "session_id": "sess_0elbyew",
+      "user_id": "da7eb000-0000-0000-0000-000000000001",
+      "role": "teacher",
+      "joined_at": "2026-06-14T18:04:55.689Z",
+      "left_at": "2026-06-14T18:06:25.435Z"
     }
   ],
   "recordings": [
@@ -192,6 +202,13 @@
       "recording_url": "https://meet.jit.si/rec/classroom_general_1781452004729.mp4",
       "duration": 25,
       "created_at": "2026-06-14T15:47:11.801Z"
+    },
+    {
+      "id": "rec_eexyzkk",
+      "session_id": "sess_0elbyew",
+      "recording_url": "https://meet.jit.si/rec/classroom_general_1781452685340.mp4",
+      "duration": 7698,
+      "created_at": "2026-06-14T18:06:24.997Z"
     }
   ]
 }

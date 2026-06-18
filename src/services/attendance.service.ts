@@ -2,18 +2,7 @@ import type { AttendanceRecord, AttendanceSummary } from '../types';
 import { apiClient } from '../lib/apiClient';
 import { supabase } from '../lib/supabase';
 
-const generateCalendarData = () => {
-  const data: { date: string; count: number }[] = [];
-  for (let i = 0; i < 90; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    data.push({
-      date: d.toISOString().split('T')[0],
-      count: Math.random() > 0.3 ? Math.floor(Math.random() * 4) + 1 : 0,
-    });
-  }
-  return data;
-};
+
 
 export const attendanceService = {
   async markAttendance(courseId: string, classId: string, status: 'present' | 'absent' | 'late'): Promise<any> {
@@ -44,23 +33,23 @@ export const attendanceService = {
       markedBy: row.qr_code ? 'qr' : 'manual',
     }));
 
-    const total = records.length || 45;
-    const present = records.filter(r => r.status === 'present').length || 38;
-    const absent = records.filter(r => r.status === 'absent').length || 4;
-    const late = records.filter(r => r.status === 'late').length || 3;
+    const total = records.length;
+    const present = records.filter(r => r.status === 'present').length;
+    const absent = records.filter(r => r.status === 'absent').length;
+    const late = records.filter(r => r.status === 'late').length;
 
     const summary: AttendanceSummary = {
       total,
       present,
       absent,
       late,
-      percentage: Math.round((present / total) * 100),
+      percentage: total > 0 ? Math.round((present / total) * 100) : 0,
     };
 
     return {
       records,
       summary,
-      calendarData: generateCalendarData(),
+      calendarData: [],
     };
   },
 

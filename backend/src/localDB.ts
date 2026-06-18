@@ -293,5 +293,38 @@ export const localDB = {
       return db.attendance[idx];
     }
     return null;
+  },
+
+  // Messages
+  getMessages(): any[] {
+    return readDB().messages || [];
+  },
+  getMessagesByConversation(senderId: string, receiverId: string): any[] {
+    const msgs = readDB().messages || [];
+    return msgs.filter(m => 
+      (m.sender_id === senderId && m.receiver_id === receiverId) ||
+      (m.sender_id === receiverId && m.receiver_id === senderId)
+    );
+  },
+  getCourseMessages(courseId: string): any[] {
+    return (readDB().messages || []).filter(m => m.course_id === courseId);
+  },
+  addMessage(message: any) {
+    const db = readDB();
+    if (!db.messages) db.messages = [];
+    db.messages.push(message);
+    writeDB(db);
+    return message;
+  },
+  updateMessageRead(messageId: string) {
+    const db = readDB();
+    if (!db.messages) db.messages = [];
+    const idx = db.messages.findIndex(m => m.id === messageId);
+    if (idx >= 0) {
+      db.messages[idx].is_read = true;
+      writeDB(db);
+      return db.messages[idx];
+    }
+    return null;
   }
 };

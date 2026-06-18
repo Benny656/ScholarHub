@@ -21,7 +21,9 @@ export const messagesService = {
     receiverIdOrConversationId: string,
     contentOrSenderId: string,
     maybeContent?: string,
-    courseId?: string
+    courseId?: string,
+    fileUrl?: string,
+    messageType?: 'text' | 'image' | 'file'
   ): Promise<Message> {
     console.log('[MessagesService] Sending message via backend');
     
@@ -40,7 +42,9 @@ export const messagesService = {
     return apiClient.post<Message>('/messages', {
       receiverId,
       content,
-      courseId
+      courseId,
+      fileUrl,
+      messageType
     });
   },
 
