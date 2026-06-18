@@ -118,6 +118,12 @@ export function AdminDashboard() {
             <BookOpen size={13} /> Manage Courses
           </Link>
           <Link 
+            to="/admin/subject-assignment" 
+            className="flex items-center gap-2 px-3.5 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-950 dark:text-neutral-100 rounded-lg text-xs font-semibold transition-all border border-transparent dark:border-neutral-700"
+          >
+            <BookOpen size={13} /> Subject Assignment
+          </Link>
+          <Link 
             to="/admin/settings" 
             className="flex items-center gap-2 px-3.5 py-2 bg-brand-primary text-neutral-900 dark:text-neutral-100 hover:bg-brand-primary/95 rounded-lg text-xs font-bold transition-all shadow-sm"
           >
@@ -164,10 +170,11 @@ export function AdminDashboard() {
           </div>
 
           {/* Quick Nav Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {[
               { title: 'User Directory', desc: 'Audit accounts & assign roles', to: '/admin/users', icon: Users },
               { title: 'Course Catalog', desc: 'Publish, Feature or Archive courses', to: '/admin/courses', icon: BookOpen },
+              { title: 'Subject Assignment', desc: 'Create & assign K-12 subjects to teachers', to: '/admin/subject-assignment', icon: BookOpen },
               { title: 'Telemetry Analytics', desc: 'Aggregated attendance & completion metrics', to: '/admin/analytics', icon: BarChart3 },
               { title: 'System Settings', desc: 'SMTP, announcements & maintenance mode', to: '/admin/settings', icon: Settings },
             ].map((card, idx) => (

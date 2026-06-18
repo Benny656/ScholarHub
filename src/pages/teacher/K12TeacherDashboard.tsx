@@ -65,7 +65,7 @@ export function K12TeacherDashboard() {
 
     try {
       let validCourses = [];
-      let courseIds = [];
+      let courseIds: any[] = [];
       try {
         const { data: coursesData, error: coursesError } = await supabase
           .from('courses')
@@ -125,7 +125,7 @@ export function K12TeacherDashboard() {
           setCurrentLiveSessions(liveSessionsData || []);
         } catch(e) { console.error("Dashboard Fetch Error Details (live_sessions):", e); }
 
-        let assignmentIds = [];
+        let assignmentIds: any[] = [];
         try {
           const { data: assignmentsData, error: assignmentsError } = await supabase
             .from('assignments')
@@ -172,9 +172,9 @@ export function K12TeacherDashboard() {
                 id,
                 title
               ),
-              profiles:student_id (
+              users:student_id (
                 id,
-                full_name,
+                name,
                 email,
                 avatar_url,
                 xp,
@@ -188,13 +188,13 @@ export function K12TeacherDashboard() {
 
           const uniqueStudentsMap = new Map();
           (enrollsWithProfiles || []).forEach((item) => {
-            const u = item.profiles;
+            const u = item.users;
             if (u && !uniqueStudentsMap.has(u.id)) {
               const basePoints = 100 + (Number(u.streak || 0) * 2) + (Number(u.level || 1) * 3);
               const rate = 85 + (u.xp % 15);
               uniqueStudentsMap.set(u.id, {
                 id: u.id,
-                name: u.full_name || 'Anonymous Student',
+                name: u.name || 'Anonymous Student',
                 email: u.email || '',
                 avatar_url: u.avatar_url || null,
                 xp: Number(u.xp || 0),
@@ -212,7 +212,7 @@ export function K12TeacherDashboard() {
           if (studentList.length > 0) {
             const alertConfig = studentList.map((s, idx) => {
               const types = ['leave', 'meeting', 'academic'];
-              const type = types[idx % 3];
+              const type = types[idx % 3] as 'leave' | 'meeting' | 'academic';
               const messages = {
                 leave: `Requested absence approval for ${s.name.split(' ')[0]} tomorrow due to medical checkup.`,
                 meeting: `Checking if we can schedule a call regarding ${s.name.split(' ')[0]}'s class behavior.`,

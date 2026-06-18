@@ -76,6 +76,17 @@ function LiveClassroomWrapper() {
 
   return <LiveClassroom courseId={courseId} />;
 }
+
+function MyClassesWrapper() {
+  const { user } = useAuth();
+  const isK12Teacher = user?.role === 'teacher' && (user.teacherTrack === 'k12' || user.gradeLevel?.toLowerCase().startsWith('k12'));
+
+  if (isK12Teacher) {
+    return <K12TeacherDashboard />;
+  }
+
+  return <ComingSoonPlaceholder title="My Classes" />;
+}
 import { CoursePlayer } from './pages/lms/CoursePlayer';
 
 // Assignments
@@ -225,7 +236,7 @@ function AppRoutes() {
         <Route path="/exam-calendar" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Exam Calendar" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/grades-gpa" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Grades & GPA" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/progress-analytics" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Progress Analytics" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/my-classes" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="My Classes" /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/my-classes" element={<ProtectedRoute><DashboardWrapper><MyClassesWrapper /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/daily-attendance" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Daily Attendance" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/assignments-grading" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Assignments & Grading" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/report-cards" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Report Cards" /></DashboardWrapper></ProtectedRoute>} />

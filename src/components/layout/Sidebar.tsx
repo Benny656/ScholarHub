@@ -49,6 +49,7 @@ export default function Sidebar({
         return [
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
           { id: "users", label: "User Management", icon: Users },
+          { id: "subject-assignment", label: "Subject Assignment", icon: BookOpen },
           { id: "course-approvals", label: "Course Approvals", icon: CheckSquare },
           { id: "platform-analytics", label: "Platform Analytics", icon: BarChart3 },
           { id: "revenue-analytics", label: "Revenue Analytics", icon: CreditCard },

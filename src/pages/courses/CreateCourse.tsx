@@ -103,7 +103,7 @@ export function CreateCourse() {
           <p className="text-neutral-600 dark:text-neutral-400">
             K-12 Teachers cannot manually create subjects. Subjects must be assigned by an Administrator.
           </p>
-          <Button variant="outline" className="mt-6" onClick={() => navigate('/k12-teacher/dashboard')}>
+          <Button variant="secondary" className="mt-6" onClick={() => navigate('/k12-teacher/dashboard')}>
             Return to Dashboard
           </Button>
         </GlassCard>

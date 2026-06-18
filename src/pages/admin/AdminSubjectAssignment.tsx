@@ -55,6 +55,7 @@ export function AdminSubjectAssignment() {
         instructor_id: selectedTeacherId, // Some old tables use instructor_id
         grade_level: gradeLevel,
         institution_type: 'k12',
+        is_published: true,
       };
 
       const { error } = await supabase
