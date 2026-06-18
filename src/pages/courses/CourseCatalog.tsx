@@ -331,7 +331,7 @@ export function CourseCatalog() {
              .single();
            
            if (profile) {
-             const role = profile.role;
+             const role = profile.role as string;
              if (role === 'k12_teacher' || role === 'k12_student' || (user.gradeLevel && user.gradeLevel.toLowerCase().startsWith('k12')) || user.teacherTrack === 'k12') {
                isK12 = true;
              }
