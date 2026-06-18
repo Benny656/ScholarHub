@@ -58,6 +58,23 @@ import { CourseDetail } from './pages/courses/CourseDetail';
 
 // Classroom & LMS
 import { LiveClassroom } from './pages/classroom/LiveClassroom';
+import { useParams } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+
+function LiveClassroomWrapper() {
+  const { courseId } = useParams<{ courseId: string }>();
+
+  if (!courseId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full min-h-[60vh] bg-neutral-50 dark:bg-neutral-950">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-500 mb-4" />
+        <p className="text-neutral-500 dark:text-neutral-400 font-medium">Resolving classroom session details...</p>
+      </div>
+    );
+  }
+
+  return <LiveClassroom courseId={courseId} />;
+}
 import { CoursePlayer } from './pages/lms/CoursePlayer';
 
 // Assignments
@@ -175,7 +192,7 @@ function AppRoutes() {
         <Route path="/courses/:id" element={<ProtectedRoute><DashboardWrapper><CourseDetail /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── Live Classroom ─── */}
-        <Route path="/classroom/:id" element={<ProtectedRoute><DashboardWrapper><LiveClassroom /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/classroom/:courseId" element={<ProtectedRoute><DashboardWrapper><LiveClassroomWrapper /></DashboardWrapper></ProtectedRoute>} />
 
         {/* ─── LMS Course Player ─── */}
         <Route path="/learn/:courseId/:lessonId" element={<ProtectedRoute><DashboardWrapper><CoursePlayer /></DashboardWrapper></ProtectedRoute>} />

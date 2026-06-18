@@ -153,8 +153,7 @@ async function loadJitsiScript() {
   });
 }
 
-export function LiveClassroom() {
-  const { id } = useParams<{ id: string }>();
+export function LiveClassroom({ courseId: id }: { courseId: string }) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
