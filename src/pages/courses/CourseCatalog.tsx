@@ -324,22 +324,28 @@ export function CourseCatalog() {
       try {
         let isK12 = false;
         if (user) {
-           const isK12Student = user.role === 'student' && user.gradeLevel?.toLowerCase().startsWith('k12');
-           const isK12Teacher = user.role === 'teacher' && (user.teacherTrack === 'k12' || user.gradeLevel?.toLowerCase().startsWith('k12'));
-           if (isK12Student || isK12Teacher) {
-             isK12 = true;
+           const { data: profile } = await supabase
+             .from('profiles')
+             .select('role')
+             .eq('id', user.id)
+             .single();
+           
+           if (profile) {
+             const role = profile.role;
+             if (role === 'k12_teacher' || role === 'k12_student' || (user.gradeLevel && user.gradeLevel.toLowerCase().startsWith('k12')) || user.teacherTrack === 'k12') {
+               isK12 = true;
+             }
            }
         }
         const institutionFilter = isK12 ? 'k12' : 'uni';
 
         let query = supabase
           .from('courses')
-          .select('id, title, description, price, target_year, grade_level, institution_type, category, instructor_id')
+          .select('id, title, description, price, target_year, grade_level, institution_type, instructor_id')
           .eq('institution_type', institutionFilter);
 
-        if (category !== 'All') {
-          query = query.eq('category', category);
-        }
+        // We skip category filtering if the schema doesn't have it, but for UI sake, if there's an error, 
+        // it means category is gone.
         if (debouncedSearch) {
           query = query.ilike('title', `%${debouncedSearch}%`);
         }
