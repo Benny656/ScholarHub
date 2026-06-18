@@ -1041,72 +1041,56 @@ export function CourseDetail() {
             {activeTab === 'attendance' && (
               <motion.div key="attendance" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                {/* Stats & Scan */}
+                {/* Stats & Controls */}
                 <div className="lg:col-span-2 space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <GlassCard>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Marked Classes</p>
-                      <p className="text-2xl font-bold">{attendanceRecords.length}</p>
-                    </GlassCard>
-                    <GlassCard>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">{user?.role === 'teacher' ? 'Present Submissions' : 'Present Rate'}</p>
-                      <p className="text-2xl font-bold text-emerald-400">
-                        {user?.role === 'teacher' 
-                          ? attendanceRecords.filter(r => r.status === 'present').length
-                          : attendanceRecords.length > 0 
-                            ? `${Math.round((attendanceRecords.filter(r => r.status === 'present').length / attendanceRecords.length) * 100)}%`
-                            : '100%'
-                        }
-                      </p>
-                    </GlassCard>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {user?.role === 'teacher' ? (
+                      <>
+                        <GlassCard>
+                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mb-1 font-semibold uppercase tracking-wider">Total Students</p>
+                          <p className="text-2xl font-bold">{enrolledStudents.length}</p>
+                        </GlassCard>
+                        <GlassCard>
+                          <p className="text-[10px] text-emerald-500 dark:text-emerald-400 mb-1 font-semibold uppercase tracking-wider">Present</p>
+                          <p className="text-2xl font-bold text-emerald-500">{attendanceRecords.filter(r => r.status === 'present').length}</p>
+                        </GlassCard>
+                        <GlassCard>
+                          <p className="text-[10px] text-amber-500 dark:text-amber-400 mb-1 font-semibold uppercase tracking-wider">Late</p>
+                          <p className="text-2xl font-bold text-amber-500">{attendanceRecords.filter(r => r.status === 'late').length}</p>
+                        </GlassCard>
+                        <GlassCard>
+                          <p className="text-[10px] text-red-500 dark:text-red-400 mb-1 font-semibold uppercase tracking-wider">Absent</p>
+                          <p className="text-2xl font-bold text-red-500">{attendanceRecords.filter(r => r.status === 'absent').length}</p>
+                        </GlassCard>
+                      </>
+                    ) : (
+                      <>
+                        <GlassCard>
+                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mb-1 font-semibold uppercase tracking-wider">Present %</p>
+                          <p className="text-2xl font-bold text-brand-primary">
+                            {attendanceRecords.length > 0 
+                              ? `${Math.round((attendanceRecords.filter(r => r.status === 'present').length / attendanceRecords.length) * 100)}%`
+                              : '0%'}
+                          </p>
+                        </GlassCard>
+                        <GlassCard>
+                          <p className="text-[10px] text-emerald-500 dark:text-emerald-400 mb-1 font-semibold uppercase tracking-wider">Present Days</p>
+                          <p className="text-2xl font-bold text-emerald-500">{attendanceRecords.filter(r => r.status === 'present').length}</p>
+                        </GlassCard>
+                        <GlassCard>
+                          <p className="text-[10px] text-amber-500 dark:text-amber-400 mb-1 font-semibold uppercase tracking-wider">Late Days</p>
+                          <p className="text-2xl font-bold text-amber-500">{attendanceRecords.filter(r => r.status === 'late').length}</p>
+                        </GlassCard>
+                        <GlassCard>
+                          <p className="text-[10px] text-red-500 dark:text-red-400 mb-1 font-semibold uppercase tracking-wider">Absent Days</p>
+                          <p className="text-2xl font-bold text-red-500">{attendanceRecords.filter(r => r.status === 'absent').length}</p>
+                        </GlassCard>
+                      </>
+                    )}
                   </div>
 
-                  {isEnrolled && user?.role === 'student' && (
-                    <GlassCard tint="blue">
-                      <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Mark My Attendance</h4>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
-                        If today's live class session is active, scan the teacher's QR code or simulate scanner click to register your presence.
-                      </p>
-                      <button 
-                        onClick={handleMarkAttendance}
-                        disabled={scanning}
-                        className="py-2.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-500 text-white rounded-xl text-xs font-bold hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5"
-                      >
-                        <Scan size={14} />
-                        <span>{scanning ? 'Registering...' : 'Simulate QR Scan'}</span>
-                      </button>
-                    </GlassCard>
-                  )}
-
                   {user?.role === 'teacher' && (
-                    <div className="space-y-6">
-                      <BulkAttendance courseId={id!} />
-                      <GlassCard tint="purple">
-                        <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Teacher Panel: QR Session Generator</h4>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
-                          Launch a new attendance class check. Students scanning the generated code will register as present.
-                        </p>
-                        {qrCodeData ? (
-                          <div className="text-center p-4 bg-white rounded-xl max-w-[200px] mx-auto border border-neutral-200">
-                            <div className="w-36 h-36 bg-neutral-950 flex flex-wrap gap-1 p-2 rounded mx-auto">
-                              {Array.from({ length: 36 }).map((_, i) => (
-                                <div key={i} className="w-5 h-5 rounded-sm" style={{ background: Math.random() > 0.4 ? 'white' : 'black' }} />
-                              ))}
-                            </div>
-                            <p className="text-[9px] text-neutral-500 font-mono mt-2 truncate">{qrCodeData}</p>
-                          </div>
-                        ) : (
-                          <button 
-                            onClick={handleGenerateQR}
-                            disabled={generatingQR}
-                            className="py-2.5 px-4 bg-purple-600 text-white rounded-xl text-xs font-bold transition-all hover:scale-102"
-                          >
-                            <QrCode size={14} className="inline mr-1" />
-                            <span>{generatingQR ? 'Generating...' : 'Generate Attendance QR'}</span>
-                          </button>
-                        )}
-                      </GlassCard>
-                    </div>
+                    <BulkAttendance courseId={id!} />
                   )}
                 </div>
 
@@ -1128,7 +1112,13 @@ export function CourseDetail() {
                                 {new Date(rec.marked_at || rec.date).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                               </p>
                             </div>
-                            <span className="font-bold text-emerald-500 uppercase tracking-wider text-[10px]">Present</span>
+                            <span className={`font-bold uppercase tracking-wider text-[10px] ${
+                              rec.status === 'present' ? 'text-emerald-500' :
+                              rec.status === 'late' ? 'text-amber-500' :
+                              rec.status === 'absent' ? 'text-red-500' : 'text-neutral-500'
+                            }`}>
+                              {rec.status || 'unknown'}
+                            </span>
                           </div>
                         ))
                       )}
@@ -1460,45 +1450,7 @@ export function CourseDetail() {
               </motion.div>
             )}
 
-            {/* ANALYTICS TAB (Teacher Only) */}
-            {activeTab === 'analytics' && user?.role === 'teacher' && (
-              <motion.div key="analytics" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Subject Classroom Performance</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <GlassCard>
-                    <p className="text-xs text-neutral-550 mb-1 uppercase font-semibold">Average Progress Rate</p>
-                    <p className="text-3xl font-black text-neutral-950 dark:text-white">
-                      {enrolledStudents.length > 0 
-                        ? `${Math.round(enrolledStudents.reduce((acc, curr) => acc + Number(curr.progress), 0) / enrolledStudents.length)}%`
-                        : '0%'
-                      }
-                    </p>
-                  </GlassCard>
 
-                  <GlassCard>
-                    <p className="text-xs text-neutral-550 mb-1 uppercase font-semibold">Total Submissions Received</p>
-                    <p className="text-3xl font-black text-neutral-955 dark:text-white">
-                      {submissions.length}
-                    </p>
-                  </GlassCard>
-
-                  <GlassCard>
-                    <p className="text-xs text-neutral-550 mb-1 uppercase font-semibold">Graded Submissions</p>
-                    <p className="text-3xl font-black text-emerald-500">
-                      {submissions.filter(s => s.grade !== null).length} / {submissions.length}
-                    </p>
-                  </GlassCard>
-                </div>
-
-                <GlassCard>
-                  <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Class Performance Registry Summary</h4>
-                  <p className="text-xs text-neutral-500 leading-relaxed">
-                    Verify lessons completions, attendance logs, and grader progress checks directly across your dashboard workspaces or under the corresponding tabs.
-                  </p>
-                </GlassCard>
-              </motion.div>
-            )}
 
           </AnimatePresence>
         </div>

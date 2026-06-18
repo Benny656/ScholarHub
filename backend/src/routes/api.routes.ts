@@ -16,6 +16,8 @@ import { attendanceController } from '../controllers/attendance.controller.js';
 import { messageController } from '../controllers/message.controller.js';
 import { notificationController } from '../controllers/notification.controller.js';
 import { liveController } from '../controllers/live.controller.js';
+import { certificateController } from '../controllers/certificate.controller.js';
+import { verifyController } from '../controllers/verify.controller.js';
 
 const router = Router();
 const upload = multer();
@@ -23,6 +25,10 @@ const upload = multer();
 // --- Public Auth Routes ---
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
+
+// --- Public Certificates (Demo) ---
+router.post('/certificates/mint', certificateController.mintCertificate);
+router.post('/verify/analyze-vision', upload.single('file'), verifyController.analyzeVision);
 
 // Apply authentication middleware to remaining api routes
 router.use(authMiddleware);
@@ -114,5 +120,7 @@ router.put('/messages/:id/read', messageController.markRead);
 router.get('/notifications', notificationController.getNotifications);
 router.put('/notifications/:id/read', notificationController.markRead);
 router.put('/notifications/read-all', notificationController.markAllRead);
+
+
 
 export default router;

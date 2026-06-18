@@ -104,6 +104,7 @@ import { PricingPage } from './pages/pricing/PricingPage';
 import { AdminLogin } from './pages/admin-panel/AdminLogin';
 import { AdminGuard } from './components/admin/AdminGuard';
 import { ComingSoonPlaceholder } from './components/ComingSoonPlaceholder';
+import { HelpCenter } from './pages/help/HelpCenter';
 
 // ─── Page animation wrapper ────────────────────────────────────────────────────
 function PageWrapper({ children }: { children: React.ReactNode }) {
@@ -223,6 +224,7 @@ function AppRoutes() {
         <Route path="/certificates" element={<ProtectedRoute><DashboardWrapper><Certificates /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/verify/:certId" element={<ProtectedRoute><DashboardWrapper><CertificateVerify /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><DashboardWrapper><Profile /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/help" element={<ProtectedRoute><DashboardWrapper><HelpCenter /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/settings/notifications" element={<ProtectedRoute><DashboardWrapper><NotificationsSettings /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/pricing" element={<PageWrapper><PricingPage /></PageWrapper>} />
 
@@ -251,8 +253,8 @@ function AppRoutes() {
         <Route path="/issue-certificates" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Issue Certificates" /></DashboardWrapper></ProtectedRoute>} />
         
         {/* Admin Specific Sub-Routes */}
-        <Route path="/admin/course-approvals" element={<ProtectedRoute><DashboardWrapper><AdminGuard><ComingSoonPlaceholder title="Course Approvals" /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/admin/platform-analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><ComingSoonPlaceholder title="Platform Analytics" /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/course-approvals" element={<Navigate to="/admin/courses" replace />} />
+        <Route path="/admin/platform-analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AnalyticsPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/revenue-analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><ComingSoonPlaceholder title="Revenue Analytics" /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/system-settings" element={<ProtectedRoute><DashboardWrapper><AdminGuard><ComingSoonPlaceholder title="System Settings" /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
 

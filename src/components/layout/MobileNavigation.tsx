@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GraduationCap, Menu, X, Bell, Moon, Sun, ArrowRight, User, ChevronRight } from "lucide-react";
+import { GraduationCap, Menu, X, Bell, Moon, Sun, ArrowRight, User, ChevronRight, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MobileNavigationProps {
@@ -151,6 +151,13 @@ export default function MobileNavigation({
 
               {/* Bottom utilities */}
               <div className="space-y-4 pt-6 border-t border-neutral-100 dark:border-neutral-800">
+                <button
+                  onClick={() => handleTabClick('help')}
+                  className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-neutral-500 transition hover:bg-neutral-50 hover:text-brand-primary dark:text-neutral-400 dark:hover:bg-neutral-800"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                  <span>Help Center</span>
+                </button>
                 
                 {/* Theme switch bar */}
                 <div className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-neutral-850 rounded-xl">

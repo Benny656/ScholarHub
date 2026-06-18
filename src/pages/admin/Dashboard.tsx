@@ -12,6 +12,7 @@ import { getSystemStats, getAdminLogs, getUsersList } from '../../services/admin
 import { ProctoringDashboard } from '../../components/features/ProctoringDashboard';
 import { BlockchainVerification } from '../../components/features/BlockchainVerification';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
+import { IssueCertificate } from '../../components/IssueCertificate';
 
 export function AdminDashboard() {
   const { user } = useAuth();
@@ -270,6 +271,10 @@ export function AdminDashboard() {
 
               <motion.div variants={itemVariants}>
                 <BlockchainVerification role="admin" />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <IssueCertificate />
               </motion.div>
 
             </div>

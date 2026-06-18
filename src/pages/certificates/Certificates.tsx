@@ -138,11 +138,28 @@ export function Certificates() {
   const handleGenerate = async () => {
     if (!user) return;
     setGenerating(true);
-    const cert = await certificatesService.generateCertificate(user.id, 'c1');
-    setGenerating(false);
-    setCertificates(p => [cert, ...p]);
-    toast.success('Certificate generated! 🎓');
-    setViewed(cert);
+    try {
+      // Mock course details for the demo
+      const courseId = 'c1';
+      const courseName = 'Full-Stack Web Development';
+      const institutionType = user.role === 'school-student' ? 'k12' : 'uni';
+      
+      const cert = await certificatesService.generateCertificate(
+        user.id,
+        courseId,
+        user.name || 'Demo Student',
+        courseName,
+        institutionType
+      );
+      
+      setCertificates(p => [cert, ...p]);
+      toast.success('Certificate minted on blockchain! 🎓');
+      setViewed(cert);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to mint certificate');
+    } finally {
+      setGenerating(false);
+    }
   };
 
   // Mock certificates if empty
@@ -191,52 +208,213 @@ export function Certificates() {
 
 // Certificate Verification Page (public)
 export function CertificateVerify() {
-  const { certId } = useParams<{ certId: string }>();
-  const [cert, setCert] = useState<Certificate | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [file, setFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [cryptoResult, setCryptoResult] = useState<{ authentic: boolean; hash?: string; certData?: any } | null>(null);
+  const [visionResult, setVisionResult] = useState<{ studentName: string; courseName: string; date: string } | null>(null);
 
-  useEffect(() => {
-    if (!certId) return;
-    certificatesService.verifyCertificate(certId).then(c => { setCert(c); setLoading(false); }).catch(() => setLoading(false));
-  }, [certId]);
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const processFile = async (selectedFile: File) => {
+    setFile(selectedFile);
+    setIsVerifying(true);
+    setCryptoResult(null);
+    setVisionResult(null);
+
+    try {
+      // 1. Local Cryptographic Hash via Web Crypto API
+      const buffer = await selectedFile.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      // Query Supabase for this hash
+      const { data: certMatch, error } = await supabase
+        .from('certificates')
+        .select('*')
+        .eq('certificate_hash', hashHex)
+        .single();
+      
+      if (certMatch) {
+        setCryptoResult({ authentic: true, hash: hashHex, certData: certMatch });
+      } else {
+        setCryptoResult({ authentic: false, hash: hashHex });
+      }
+
+      // 2. Gemini Vision Parsing Layer
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const visionRes = await fetch(`${API_URL}/api/verify/analyze-vision`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (visionRes.ok) {
+        const parsed = await visionRes.json();
+        setVisionResult(parsed);
+      }
+
+    } catch (err) {
+      console.error('Verification error:', err);
+      toast.error('An error occurred during verification.');
+      if (!cryptoResult) setCryptoResult({ authentic: false });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      processFile(e.target.files[0]);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--color-bg)' }}>
-      {loading ? (
-        <div className="text-on-surface-variant">Verifying certificate...</div>
-      ) : cert ? (
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md text-center">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#D97706] to-blue-500 flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-[#D97706]/30">
-            <CheckCircle size={40} className="text-on-surface" />
-          </div>
-          <h1 className="text-2xl font-bold text-on-surface mb-2" style={{ fontFamily: 'Geist, sans-serif' }}>Certificate Verified ✓</h1>
-          <p className="text-on-surface-variant mb-6">This certificate has been verified as authentic</p>
-          <GlassCard tint="emerald">
-            <div className="space-y-3 text-left">
-              {[
-                { label: 'Student', value: cert.studentName },
-                { label: 'Course', value: cert.courseTitle },
-                { label: 'Instructor', value: cert.instructorName },
-                { label: 'Grade', value: cert.grade },
-                { label: 'Issued', value: new Date(cert.issueDate).toLocaleDateString() },
-                { label: 'Certificate ID', value: cert.verificationCode },
-              ].map(({ label, value }) => (
-                <div key={label} className="flex items-center justify-between">
-                  <span className="text-xs text-on-surface-variant">{label}</span>
-                  <span className="text-sm font-medium text-on-surface">{value}</span>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-        </motion.div>
-      ) : (
+    <div className="min-h-screen p-6 md:p-12 font-sans" style={{ background: 'var(--color-bg)' }}>
+      <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
-          <div className="text-6xl mb-4">❌</div>
-          <h2 className="text-xl font-bold text-on-surface mb-2">Certificate Not Found</h2>
-          <p className="text-on-surface-variant">ID: <span className="font-mono">{certId}</span></p>
+          <h1 className="text-3xl font-bold text-on-surface mb-2 tracking-tight">Certificate Verification Gateway</h1>
+          <p className="text-on-surface-variant max-w-xl mx-auto">Upload a certificate document to cryptographically verify its authenticity on the Polygon blockchain and parse its contents via Gemini Vision.</p>
         </div>
-      )}
+
+        {/* Upload Zone */}
+        <div 
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`relative border-2 border-dashed rounded-3xl p-12 text-center transition-all ${
+            isDragging 
+              ? 'border-brand-primary bg-brand-primary/5' 
+              : 'border-outline-variant/30 bg-on-surface/5 hover:border-brand-primary/50 hover:bg-on-surface/10'
+          }`}
+        >
+          <input 
+            type="file" 
+            accept="image/*,application/pdf"
+            onChange={handleFileChange}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-on-surface/10 flex items-center justify-center text-on-surface-variant">
+              <Download size={28} />
+            </div>
+            <div>
+              <p className="text-lg font-bold text-on-surface">Drag & Drop Certificate Here</p>
+              <p className="text-sm text-on-surface-variant mt-1">Supports PDF, PNG, JPG</p>
+            </div>
+            <Button variant="secondary" className="mt-2 relative z-10 pointer-events-none">Select File</Button>
+          </div>
+        </div>
+
+        {/* Verification Loading State */}
+        {isVerifying && (
+          <div className="flex flex-col items-center justify-center p-12 gap-4">
+            <div className="w-10 h-10 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-on-surface-variant font-medium animate-pulse">Running cryptographic hash & Gemini Vision analysis...</p>
+          </div>
+        )}
+
+        {/* Results Panel */}
+        {!isVerifying && cryptoResult && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Cryptographic Result */}
+            <GlassCard className="p-6 relative overflow-hidden">
+              {cryptoResult.authentic ? (
+                <>
+                  <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <CheckCircle size={100} className="text-emerald-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-emerald-500 flex items-center gap-2 mb-2">
+                    <CheckCircle size={20} /> Authentic Credentials Verified
+                  </h3>
+                  <p className="text-sm text-on-surface-variant mb-4">This document's SHA-256 hash perfectly matches a locked record on the Polygon Blockchain.</p>
+                  
+                  <div className="space-y-3 mt-6">
+                    <div className="text-xs">
+                      <p className="text-on-surface-variant mb-1 uppercase tracking-wider font-bold">SHA-256 Hash</p>
+                      <p className="font-mono bg-on-surface/5 p-2 rounded-lg text-emerald-600 dark:text-emerald-400 break-all">{cryptoResult.hash}</p>
+                    </div>
+                    {cryptoResult.certData?.blockchain_tx_hash && (
+                      <div className="pt-2">
+                        <a href={`https://amoy.polygonscan.com/tx/${cryptoResult.certData.blockchain_tx_hash}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-brand-primary hover:underline">
+                          View on Polygonscan <ExternalLink size={12} />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <AlertTriangle size={100} className="text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-red-500 flex items-center gap-2 mb-2">
+                    <AlertTriangle size={20} /> Verification Failed
+                  </h3>
+                  <p className="text-sm text-on-surface-variant mb-4">Invalid or Altered Certificate File. The hash does not match any official records in our ledger.</p>
+                  <div className="text-xs mt-6">
+                    <p className="text-on-surface-variant mb-1 uppercase tracking-wider font-bold">Computed Hash</p>
+                    <p className="font-mono bg-red-500/10 text-red-600 dark:text-red-400 p-2 rounded-lg break-all">{cryptoResult.hash}</p>
+                  </div>
+                </>
+              )}
+            </GlassCard>
+
+            {/* Gemini Vision Parsing */}
+            <GlassCard className="p-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <Sparkles size={100} className="text-[#EC4899]" />
+              </div>
+              <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-2">
+                <Sparkles size={18} className="text-[#EC4899]" /> Scanned Document Details
+              </h3>
+              <p className="text-sm text-on-surface-variant mb-6">Metrics extracted via Gemini Vision.</p>
+              
+              {visionResult ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Student Name</span>
+                    <span className="text-sm font-semibold text-on-surface">{visionResult.studentName || 'Not found'}</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Course Name</span>
+                    <span className="text-sm font-semibold text-on-surface">{visionResult.courseName || 'Not found'}</span>
+                  </div>
+                  <div className="flex items-center justify-between pb-1">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Issue Date</span>
+                    <span className="text-sm font-semibold text-on-surface">{visionResult.date || 'Not found'}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-8 text-center text-sm text-on-surface-variant">
+                  No visual data could be extracted.
+                </div>
+              )}
+            </GlassCard>
+
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

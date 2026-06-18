@@ -69,6 +69,11 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   const handleSetActiveTab = (tabId: string) => {
+    if (tabId === 'help') {
+      navigate('/help');
+      return;
+    }
+
     // If it's admin role, navigate within /admin/...
     if (user.role === 'admin') {
       navigate(`/admin/${tabId}`);
@@ -78,8 +83,6 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
     // If it's a generic settings or help link, navigate to common route or handle it
     if (tabId === 'settings') {
       navigate('/profile');
-    } else if (tabId === 'help') {
-      navigate('/messages');
     } else if (tabId === 'live') {
       navigate('/classroom/general');
     } else {
@@ -107,7 +110,6 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
           { id: "users", label: "User Management", icon: Users },
           { id: "subject-assignment", label: "Subject Assignment", icon: BookOpen },
-          { id: "course-approvals", label: "Course Approvals", icon: CheckSquare },
           { id: "platform-analytics", label: "Platform Analytics", icon: BarChart3 },
           { id: "revenue-analytics", label: "Revenue Analytics", icon: CreditCard },
           { id: "system-settings", label: "System Settings", icon: Settings },

@@ -136,10 +136,12 @@ export type AttendanceRow = {
   student_id: string | null;
   course_id: string | null;
   class_id: string | null;
+  marked_by: string | null;
   date: string | null;
   status: 'present' | 'absent' | 'late' | null;
   qr_code: string | null;
   marked_at: string;
+  created_at: string;
 };
 
 export type LiveClassRow = {
@@ -210,7 +212,7 @@ export type AssignmentInsert = Partial<Omit<AssignmentRow, 'id' | 'created_at'>>
 export type SubmissionInsert = Partial<Omit<SubmissionRow, 'id' | 'submitted_at'>>;
 export type QuizInsert = Partial<Omit<QuizRow, 'id' | 'created_at'>>;
 export type QuizResultInsert = Partial<Omit<QuizResultRow, 'id' | 'completed_at'>>;
-export type AttendanceInsert = Partial<Omit<AttendanceRow, 'id' | 'marked_at'>>;
+export type AttendanceInsert = Partial<Omit<AttendanceRow, 'id' | 'marked_at' | 'created_at'>>;
 export type LiveClassInsert = Partial<Omit<LiveClassRow, 'id' | 'created_at'>>;
 export type MessageInsert = Partial<Omit<MessageRow, 'id' | 'sent_at'>>;
 export type CertificateInsert = Partial<Omit<CertificateRow, 'id' | 'issued_at'>>;

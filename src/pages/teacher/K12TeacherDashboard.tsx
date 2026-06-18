@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
 import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
 import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
+import { IssueCertificate } from '../../components/IssueCertificate';
 
 interface StudentData {
   id: string;
@@ -550,6 +551,10 @@ const containerVariants = {
         {/* RIGHT ONE COLUMN (K-12 SPECIFIC WIDGETS) */}
         <div className="space-y-6 lg:space-y-8">
           
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <IssueCertificate />
+          </motion.div>
+
           {/* Today's Schedule */}
           <div className="h-[350px]">
             <ScheduleWidget theme="funky" />

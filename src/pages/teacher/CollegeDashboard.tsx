@@ -10,6 +10,7 @@ import { supabase } from '../../lib/supabase';
 import { GlassCard, PageHeader, Badge, Button } from '../../components/ui/index';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
 import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
+import { IssueCertificate } from '../../components/IssueCertificate';
 
 import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
 
@@ -270,6 +271,10 @@ export function CollegeDashboard() {
         </div>
 
         <div className="space-y-6">
+          <motion.div variants={itemVariants}>
+            <IssueCertificate />
+          </motion.div>
+
           <div className="h-[350px]">
             <ScheduleWidget theme="sleek" />
           </div>

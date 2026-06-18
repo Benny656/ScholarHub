@@ -24,15 +24,15 @@ const generateCalendarData = (records: any[]) => {
 };
 
 export const attendanceService = {
-  async markAttendance(courseId: string, studentId: string, status: 'present' | 'absent' | 'late', classId?: string): Promise<any> {
-    const { data, error } = await supabase.from('attendance').insert({
+  async markAttendance(courseId: string, studentId: string, status: 'present' | 'absent' | 'late', markedBy?: string, date = new Date().toISOString().split('T')[0]): Promise<any> {
+    const { data, error } = await supabase.from('attendance').upsert({
       course_id: courseId,
       student_id: studentId,
-      class_id: classId || null,
       status,
-      date: new Date().toISOString().split('T')[0],
+      date,
+      marked_by: markedBy || null,
       marked_at: new Date().toISOString()
-    } as any).select().single();
+    } as any, { onConflict: 'course_id,student_id,date' }).select().single();
 
     if (error) throw error;
     return data;
@@ -68,7 +68,7 @@ export const attendanceService = {
       present,
       absent,
       late,
-      percentage: total > 0 ? Math.round((present / total) * 100) : 100,
+      percentage: total > 0 ? Math.round(((present + late) / total) * 100) : 0,
     };
 
     return {
@@ -136,7 +136,7 @@ export const attendanceService = {
         studentStats[r.student_id] = { present: 0, total: 0, name: r.users?.name || 'Unknown' };
       }
       studentStats[r.student_id].total++;
-      if (r.status === 'present') studentStats[r.student_id].present++;
+      if (r.status === 'present' || r.status === 'late') studentStats[r.student_id].present++;
     });
 
     return Object.values(studentStats).map(s => ({
