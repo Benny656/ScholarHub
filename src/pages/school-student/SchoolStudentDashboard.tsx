@@ -108,129 +108,134 @@ export function SchoolStudentDashboard() {
     setError(null);
 
     try {
-      // 1. Fetch user gamification stats directly from public.users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('xp, level, streak')
-        .eq('id', user.id)
-        .single();
+      let stats = { streak: 0, xp: 0, level: 1 };
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('profiles')
+          .select('xp, level, streak')
+          .eq('id', user.id)
+          .single();
 
-      if (userError) throw userError;
-      
-      const stats = {
-        streak: Number(userData?.streak || 0),
-        xp: Number(userData?.xp || 0),
-        level: Number(userData?.level || 1)
-      };
+        if (userError) throw userError;
+        stats = {
+          streak: Number(userData?.streak || 0),
+          xp: Number(userData?.xp || 0),
+          level: Number(userData?.level || 1)
+        };
+      } catch(e) { console.error("Dashboard Fetch Error Details (profiles):", e); }
       setGamifiedStats(stats);
 
-      // 2. Fetch Enrollments
-      const { data: enrollmentsData, error: enrollError } = await supabase
-        .from('enrollments')
-        .select(`
-          progress,
-          courses (
-            id,
-            title,
-            description,
-            category,
-            level,
-            teacher_id,
-            users (
-              name
-            )
-          )
-        `)
-        .eq('student_id', user.id);
-
-      if (enrollError) throw enrollError;
-      const validEnrollments = (enrollmentsData || []) as any[] as EnrollmentWithCourse[];
-      setEnrollments(validEnrollments);
-
-      const enrolledCourseIds = validEnrollments
-        .map(e => e.courses?.id)
-        .filter((id): id is string => !!id);
-
-      // 3. Fetch Timetable / Daily Class Schedule
-      let schedule: LiveClass[] = [];
-      if (enrolledCourseIds.length > 0) {
-        // Fetch classes happening today or in the future
-        const { data: classesData, error: classesError } = await supabase
-          .from('live_classes')
+      let validEnrollments = [];
+      let enrolledCourseIds = [];
+      try {
+        const { data: enrollmentsData, error: enrollError } = await supabase
+          .from('enrollments')
           .select(`
-            id, 
-            title, 
-            scheduled_at, 
-            room_id, 
-            status,
+            progress,
             courses (
-              id, 
+              id,
               title,
-              users (
-                name
+              description,
+              category,
+              level,
+              teacher_id,
+              profiles:teacher_id (
+                full_name
               )
             )
           `)
-          .in('course_id', enrolledCourseIds)
-          .gte('scheduled_at', new Date().toISOString())
-          .order('scheduled_at', { ascending: true })
-          .limit(5);
+          .eq('student_id', user.id);
 
-        if (classesError) throw classesError;
-        schedule = (classesData || []) as any[] as LiveClass[];
+        if (enrollError) throw enrollError;
+        validEnrollments = (enrollmentsData || []);
+        setEnrollments(validEnrollments);
+
+        enrolledCourseIds = validEnrollments
+          .map(e => e.courses?.id)
+          .filter(id => !!id);
+      } catch(e) { console.error("Dashboard Fetch Error Details (enrollments):", e); }
+
+      let schedule = [];
+      if (enrolledCourseIds.length > 0) {
+        try {
+          const { data: classesData, error: classesError } = await supabase
+            .from('live_classes')
+            .select(`
+              id, 
+              title, 
+              scheduled_at, 
+              room_id, 
+              status,
+              courses (
+                id, 
+                title,
+                profiles:teacher_id (
+                  full_name
+                )
+              )
+            `)
+            .in('course_id', enrolledCourseIds)
+            .gte('scheduled_at', new Date().toISOString())
+            .order('scheduled_at', { ascending: true })
+            .limit(5);
+
+          if (classesError) throw classesError;
+          schedule = (classesData || []);
+        } catch(e) { console.error("Dashboard Fetch Error Details (live_classes):", e); }
       }
       setTimetable(schedule);
 
-      // 4. Fetch Homework (Pending Assignments)
-      let homework: HomeworkItem[] = [];
+      let homework = [];
       if (enrolledCourseIds.length > 0) {
-        const { data: assignmentsData, error: assignmentsError } = await supabase
-          .from('assignments')
-          .select(`
-            id, 
-            title, 
-            due_date, 
-            course_id,
-            courses (
-              title
-            )
-          `)
-          .in('course_id', enrolledCourseIds)
-          .order('due_date', { ascending: true });
+        try {
+          const { data: assignmentsData, error: assignmentsError } = await supabase
+            .from('assignments')
+            .select(`
+              id, 
+              title, 
+              due_date, 
+              course_id,
+              courses (
+                title
+              )
+            `)
+            .in('course_id', enrolledCourseIds)
+            .order('due_date', { ascending: true });
 
-        if (assignmentsError) throw assignmentsError;
+          if (assignmentsError) throw assignmentsError;
 
-        const { data: submissionsData, error: submissionsError } = await supabase
-          .from('submissions')
-          .select('assignment_id')
-          .eq('student_id', user.id);
+          const { data: submissionsData, error: submissionsError } = await supabase
+            .from('submissions')
+            .select('assignment_id')
+            .eq('student_id', user.id);
 
-        if (submissionsError) throw submissionsError;
-        const submittedIds = new Set((submissionsData || []).map(s => s.assignment_id));
+          if (submissionsError) throw submissionsError;
+          const submittedIds = new Set((submissionsData || []).map(s => s.assignment_id));
 
-        homework = ((assignmentsData || []) as any[] as HomeworkItem[])
-          .filter(a => !submittedIds.has(a.id))
-          .slice(0, 5);
+          homework = (assignmentsData || [])
+            .filter(a => !submittedIds.has(a.id))
+            .slice(0, 5);
+        } catch(e) { console.error("Dashboard Fetch Error Details (assignments):", e); }
       }
       setHomeworkList(homework);
 
-      // 5. Fetch Attendance
       if (enrolledCourseIds.length > 0) {
-        const { data: attendanceData, error: attendanceError } = await supabase
-          .from('attendance')
-          .select('id, status')
-          .eq('student_id', user.id);
+        try {
+          const { data: attendanceData, error: attendanceError } = await supabase
+            .from('attendance')
+            .select('id, status')
+            .eq('student_id', user.id);
 
-        if (attendanceError) throw attendanceError;
-        const total = attendanceData?.length || 0;
-        const present = (attendanceData || []).filter(a => a.status === 'present' || a.status === 'late').length;
-        setAttendancePercent(total > 0 ? Math.round((present / total) * 100) : 100);
+          if (attendanceError) throw attendanceError;
+          const total = attendanceData?.length || 0;
+          const present = (attendanceData || []).filter(a => a.status === 'present' || a.status === 'late').length;
+          setAttendancePercent(total > 0 ? Math.round((present / total) * 100) : 100);
+        } catch(e) { console.error("Dashboard Fetch Error Details (attendance):", e); }
       } else {
         setAttendancePercent(100);
       }
 
-      // 6. Generate Gamification Badges dynamically
-      const badgesConfig: BadgeItem[] = [
+      const badgesConfig = [
         {
           id: 'newbie',
           title: 'First Step',
@@ -266,8 +271,8 @@ export function SchoolStudentDashboard() {
       ];
       setBadges(badgesConfig);
 
-    } catch (err: any) {
-      console.error('[SchoolStudentDashboard] Error loading data:', err);
+    } catch (err) {
+      console.error("Dashboard Fetch Error Details:", err);
       setError(err.message || 'Failed to load school dashboard data.');
     } finally {
       setLoading(false);

@@ -63,151 +63,158 @@ export function K12TeacherDashboard() {
     setError(null);
 
     try {
-      // 1. Fetch courses owned by this K-12 teacher
-      const { data: coursesData, error: coursesError } = await supabase
-        .from('courses')
-        .select('*')
-        .eq('teacher_id', user.id);
+      let validCourses = [];
+      let courseIds = [];
+      try {
+        const { data: coursesData, error: coursesError } = await supabase
+          .from('courses')
+          .select('*')
+          .eq('teacher_id', user.id);
 
-      if (coursesError) throw coursesError;
-      const validCourses = coursesData || [];
-      setCourses(validCourses);
-
-      const courseIds = validCourses.map(c => c.id);
+        if (coursesError) throw coursesError;
+        validCourses = coursesData || [];
+        setCourses(validCourses);
+        courseIds = validCourses.map(c => c.id);
+      } catch(e) { console.error("Dashboard Fetch Error Details (courses):", e); }
 
       if (courseIds.length > 0) {
-        // 2. Fetch total student count
-        const { count: studentsCount, error: enrollCountError } = await supabase
-          .from('enrollments')
-          .select('*', { count: 'exact', head: true })
-          .in('course_id', courseIds);
+        try {
+          const { count: studentsCount, error: enrollCountError } = await supabase
+            .from('enrollments')
+            .select('*', { count: 'exact', head: true })
+            .in('course_id', courseIds);
 
-        if (enrollCountError) throw enrollCountError;
-        setTotalStudents(studentsCount || 0);
+          if (enrollCountError) throw enrollCountError;
+          setTotalStudents(studentsCount || 0);
+        } catch(e) { console.error("Dashboard Fetch Error Details (enrollments count):", e); }
 
-        // 3. Fetch upcoming live classes
-        const { data: classesData, error: classesError } = await supabase
-          .from('live_classes')
-          .select('*')
-          .in('course_id', courseIds)
-          .gte('scheduled_at', new Date().toISOString())
-          .order('scheduled_at', { ascending: true })
-          .limit(3);
+        try {
+          const { data: classesData, error: classesError } = await supabase
+            .from('live_classes')
+            .select('*')
+            .in('course_id', courseIds)
+            .gte('scheduled_at', new Date().toISOString())
+            .order('scheduled_at', { ascending: true })
+            .limit(3);
 
-        if (classesError) throw classesError;
-        setUpcomingClasses(classesData || []);
+          if (classesError) throw classesError;
+          setUpcomingClasses(classesData || []);
+        } catch(e) { console.error("Dashboard Fetch Error Details (live_classes):", e); }
 
-        // 4. Fetch assignments to grade count
-        const { data: assignmentsData, error: assignmentsError } = await supabase
-          .from('assignments')
-          .select('id')
-          .in('course_id', courseIds);
+        let assignmentIds = [];
+        try {
+          const { data: assignmentsData, error: assignmentsError } = await supabase
+            .from('assignments')
+            .select('id')
+            .in('course_id', courseIds);
 
-        if (assignmentsError) throw assignmentsError;
-        const assignmentIds = (assignmentsData || []).map(a => a.id);
+          if (assignmentsError) throw assignmentsError;
+          assignmentIds = (assignmentsData || []).map(a => a.id);
+        } catch(e) { console.error("Dashboard Fetch Error Details (assignments):", e); }
 
         if (assignmentIds.length > 0) {
-          const { count: pendingGrades, error: submissionsError } = await supabase
-            .from('submissions')
-            .select('*', { count: 'exact', head: true })
-            .in('assignment_id', assignmentIds)
-            .is('grade', null);
+          try {
+            const { count: pendingGrades, error: submissionsError } = await supabase
+              .from('submissions')
+              .select('*', { count: 'exact', head: true })
+              .in('assignment_id', assignmentIds)
+              .is('grade', null);
 
-          if (submissionsError) throw submissionsError;
-          setAssignmentsToGrade(pendingGrades || 0);
+            if (submissionsError) throw submissionsError;
+            setAssignmentsToGrade(pendingGrades || 0);
+          } catch(e) { console.error("Dashboard Fetch Error Details (submissions):", e); }
         } else {
           setAssignmentsToGrade(0);
         }
 
-        // 5. Fetch attendance and calculate attendance rate
-        const { data: attendanceData, error: attendanceError } = await supabase
-          .from('attendance')
-          .select('status')
-          .in('course_id', courseIds);
+        try {
+          const { data: attendanceData, error: attendanceError } = await supabase
+            .from('attendance')
+            .select('status')
+            .in('course_id', courseIds);
 
-        if (attendanceError) throw attendanceError;
-        const totalAtt = attendanceData?.length || 0;
-        const presentAtt = (attendanceData || []).filter(a => a.status === 'present' || a.status === 'late').length;
-        setAttendanceRate(totalAtt > 0 ? Math.round((presentAtt / totalAtt) * 100) : 95);
+          if (attendanceError) throw attendanceError;
+          const totalAtt = attendanceData?.length || 0;
+          const presentAtt = (attendanceData || []).filter(a => a.status === 'present' || a.status === 'late').length;
+          setAttendanceRate(totalAtt > 0 ? Math.round((presentAtt / totalAtt) * 100) : 95);
+        } catch(e) { console.error("Dashboard Fetch Error Details (attendance):", e); }
 
-        // 6. Fetch actual enrolled students with profile details for Homeroom & Behavior widgets
-        const { data: enrollsWithProfiles, error: profilesError } = await supabase
-          .from('enrollments')
-          .select(`
-            student_id,
-            courses (
-              id,
-              title
-            ),
-            users:student_id (
-              id,
-              name,
-              email,
-              avatar_url,
-              xp,
-              level,
-              streak
-            )
-          `)
-          .in('course_id', courseIds);
+        try {
+          const { data: enrollsWithProfiles, error: profilesError } = await supabase
+            .from('enrollments')
+            .select(`
+              student_id,
+              courses (
+                id,
+                title
+              ),
+              profiles:student_id (
+                id,
+                full_name,
+                email,
+                avatar_url,
+                xp,
+                level,
+                streak
+              )
+            `)
+            .in('course_id', courseIds);
 
-        if (profilesError) throw profilesError;
+          if (profilesError) throw profilesError;
 
-        // Map raw data to StudentData objects
-        const uniqueStudentsMap = new Map<string, StudentData>();
-        (enrollsWithProfiles || []).forEach((item: any) => {
-          const u = item.users;
-          if (u && !uniqueStudentsMap.has(u.id)) {
-            // Seed a realistic base behavior point score from their XP/Level + local offset
-            const basePoints = 100 + (Number(u.streak || 0) * 2) + (Number(u.level || 1) * 3);
-            const rate = 85 + (u.xp % 15); // seed realistic student-specific attendance rates
-            uniqueStudentsMap.set(u.id, {
-              id: u.id,
-              name: u.name || 'Anonymous Student',
-              email: u.email || '',
-              avatar_url: u.avatar_url || null,
-              xp: Number(u.xp || 0),
-              level: Number(u.level || 1),
-              streak: Number(u.streak || 0),
-              behaviorPoints: basePoints,
-              attendanceRate: Math.min(100, rate)
-            });
-          }
-        });
-
-        const studentList = Array.from(uniqueStudentsMap.values());
-        setStudents(studentList);
-
-        // 7. Seed parent communications dynamically if students exist
-        if (studentList.length > 0) {
-          const alertConfig: ParentAlert[] = studentList.map((s, idx) => {
-            const types: ('leave' | 'meeting' | 'academic')[] = ['leave', 'meeting', 'academic'];
-            const type = types[idx % 3];
-            const messages = {
-              leave: `Requested absence approval for ${s.name.split(' ')[0]} tomorrow due to medical checkup.`,
-              meeting: `Checking if we can schedule a call regarding ${s.name.split(' ')[0]}'s class behavior.`,
-              academic: `Inquiring about homework extensions and additional study guides for ${s.name.split(' ')[0]}.`
-            };
-            
-            const lastNames = ['Sharma', 'Verma', 'Singh', 'Kapoor', 'Gupta', 'Patel', 'Das', 'Roy'];
-            const parentLastName = s.name.split(' ').pop() || lastNames[idx % lastNames.length];
-            const parentPrefixes = ['Mr.', 'Mrs.', 'Dr.'];
-            const parentName = `${parentPrefixes[idx % 3]} ${parentLastName}`;
-
-            return {
-              id: `alert-${s.id}`,
-              studentName: s.name,
-              parentName,
-              message: messages[type],
-              time: `${idx + 1}h ago`,
-              type,
-              isRead: false
-            };
+          const uniqueStudentsMap = new Map();
+          (enrollsWithProfiles || []).forEach((item) => {
+            const u = item.profiles;
+            if (u && !uniqueStudentsMap.has(u.id)) {
+              const basePoints = 100 + (Number(u.streak || 0) * 2) + (Number(u.level || 1) * 3);
+              const rate = 85 + (u.xp % 15);
+              uniqueStudentsMap.set(u.id, {
+                id: u.id,
+                name: u.full_name || 'Anonymous Student',
+                email: u.email || '',
+                avatar_url: u.avatar_url || null,
+                xp: Number(u.xp || 0),
+                level: Number(u.level || 1),
+                streak: Number(u.streak || 0),
+                behaviorPoints: basePoints,
+                attendanceRate: Math.min(100, rate)
+              });
+            }
           });
-          setParentAlerts(alertConfig);
-        } else {
-          setParentAlerts([]);
-        }
+
+          const studentList = Array.from(uniqueStudentsMap.values());
+          setStudents(studentList);
+
+          if (studentList.length > 0) {
+            const alertConfig = studentList.map((s, idx) => {
+              const types = ['leave', 'meeting', 'academic'];
+              const type = types[idx % 3];
+              const messages = {
+                leave: `Requested absence approval for ${s.name.split(' ')[0]} tomorrow due to medical checkup.`,
+                meeting: `Checking if we can schedule a call regarding ${s.name.split(' ')[0]}'s class behavior.`,
+                academic: `Inquiring about homework extensions and additional study guides for ${s.name.split(' ')[0]}.`
+              };
+              
+              const lastNames = ['Sharma', 'Verma', 'Singh', 'Kapoor', 'Gupta', 'Patel', 'Das', 'Roy'];
+              const parentLastName = s.name.split(' ').pop() || lastNames[idx % lastNames.length];
+              const parentPrefixes = ['Mr.', 'Mrs.', 'Dr.'];
+              const parentName = `${parentPrefixes[idx % 3]} ${parentLastName}`;
+
+              return {
+                id: `alert-${s.id}`,
+                studentName: s.name,
+                parentName,
+                message: messages[type],
+                time: `${idx + 1}h ago`,
+                type,
+                isRead: false
+              };
+            });
+            setParentAlerts(alertConfig);
+          } else {
+            setParentAlerts([]);
+          }
+        } catch(e) { console.error("Dashboard Fetch Error Details (enrollments/profiles):", e); }
 
       } else {
         setTotalStudents(0);
@@ -218,8 +225,8 @@ export function K12TeacherDashboard() {
         setParentAlerts([]);
       }
 
-    } catch (err: any) {
-      console.error('[K12TeacherDashboard] Fetch error:', err);
+    } catch (err) {
+      console.error("Dashboard Fetch Error Details:", err);
       setError('Failed to load classroom details. Please try again.');
     } finally {
       setLoading(false);
