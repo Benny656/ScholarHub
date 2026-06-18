@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
+import { AdminAnnouncementSender } from '../../components/admin/AdminAnnouncementSender';
 import { Users, GraduationCap, School, CheckCircle, Video, Activity, FileText, ArrowRight, TrendingUp, AlertTriangle, RefreshCw } from 'lucide-react';
 import { GlassCard, SkeletonCard, Button } from '../../components/ui/index';
 import toast from 'react-hot-toast';
@@ -356,6 +357,13 @@ export function AnalyticsPage() {
           </motion.div>
 
         </div>
+
+        {/* Global Announcement Broadcasting */}
+        <motion.div variants={itemVariants} className="mt-8">
+          <div className="max-w-2xl">
+            <AdminAnnouncementSender />
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );
