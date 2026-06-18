@@ -74,7 +74,7 @@ export function CollegeDashboard() {
               .select(`
                 id,
                 course_id,
-                teacher_id,
+                host_id,
                 meeting_room_id,
                 status,
                 started_at,

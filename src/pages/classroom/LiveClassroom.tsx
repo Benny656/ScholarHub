@@ -70,7 +70,7 @@ interface ProfileRecord {
 interface LiveSession {
   id: string;
   course_id: string;
-  teacher_id: string | null;
+  host_id: string | null;
   meeting_room_id: string;
   meeting_url: string | null;
   status: SessionStatus;
@@ -560,7 +560,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
         .from('live_sessions')
         .insert({
           course_id: isCourseId(courseId) ? courseId : null,
-          teacher_id: user.id,
+          host_id: user.id,
           meeting_room_id: roomName,
           meeting_url: `https://meet.jit.si/${roomName}`,
           status: 'LIVE',
