@@ -142,7 +142,7 @@ export function CourseManagementForm() {
                     type="text"
                     value={outcome}
                     onChange={(e) => handleOutcomeChange(index, e.target.value)}
-                    placeholder={\`Outcome \${index + 1}\`}
+                    placeholder={`Outcome ${index + 1}`}
                     className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white focus:outline-none focus:border-brand-primary transition-colors text-sm"
                   />
                 </div>

@@ -14,6 +14,7 @@ import { certificatesService } from '../../services/certificates.service';
 import toast from 'react-hot-toast';
 
 const LEVEL_COLORS = { Beginner: 'emerald', Intermediate: 'blue', Advanced: 'red' } as const;
+const courseDetailDb = supabase as any;
 
 export function CourseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +34,7 @@ export function CourseDetail() {
   const [assignments, setAssignments] = useState<any[]>([]);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [liveClasses, setLiveClasses] = useState<any[]>([]);
+  const [activeLiveSession, setActiveLiveSession] = useState<any | null>(null);
   const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
   const [certificate, setCertificate] = useState<any>(null);
   const [enrolledStudents, setEnrolledStudents] = useState<any[]>([]);
@@ -161,6 +163,16 @@ export function CourseDetail() {
         .order('scheduled_at', { ascending: true });
       setLiveClasses(liveData || []);
 
+      const { data: liveSessionData } = await courseDetailDb
+        .from('live_sessions')
+        .select('*')
+        .eq('classroom_id', id)
+        .eq('status', 'LIVE')
+        .order('started_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      setActiveLiveSession(liveSessionData || null);
+
       // 7. Fetch attendance (Teacher gets all, Student gets own)
       let attData: any[] = [];
       if (isTeacher) {
@@ -221,6 +233,39 @@ export function CourseDetail() {
 
   useEffect(() => {
     loadCourseData();
+  }, [id, user]);
+
+  useEffect(() => {
+    if (!id || !user) return;
+
+    const channel = supabase
+      .channel(`course-live-session-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'live_sessions',
+          filter: `classroom_id=eq.${id}`,
+        },
+        async () => {
+          const { data } = await courseDetailDb
+            .from('live_sessions')
+            .select('*')
+            .eq('classroom_id', id)
+            .eq('status', 'LIVE')
+            .order('started_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          setActiveLiveSession(data || null);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [id, user]);
 
   const handleEnroll = async () => {
@@ -1083,6 +1128,41 @@ export function CourseDetail() {
                 
                 {/* Scheduled list */}
                 <div className="lg:col-span-2 space-y-4">
+                  <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                    activeLiveSession
+                      ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20'
+                      : 'bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-850'
+                  }`}>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`w-2.5 h-2.5 rounded-full ${activeLiveSession ? 'bg-red-500 animate-pulse' : 'bg-neutral-350 dark:bg-neutral-650'}`} />
+                        <h3 className="text-sm font-black text-neutral-900 dark:text-white">
+                          {activeLiveSession ? 'Live Now' : user?.role === 'teacher' ? 'Live Classroom Ready' : 'No Live Class Active'}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-neutral-600 dark:text-neutral-350">
+                        {activeLiveSession
+                          ? `Started ${new Date(activeLiveSession.started_at || activeLiveSession.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                          : user?.role === 'teacher'
+                            ? 'Start the course room when you are ready to teach.'
+                            : 'This area updates automatically when your teacher starts class.'}
+                      </p>
+                    </div>
+                    {(isEnrolled || user?.role === 'teacher' || user?.role === 'admin') ? (
+                      <Link to={`/classroom/${id}`}>
+                        <button className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow ${
+                          activeLiveSession
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                            : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        }`}>
+                          {activeLiveSession ? 'Join Class' : user?.role === 'teacher' ? 'Start Live Class' : 'Open Classroom'}
+                        </button>
+                      </Link>
+                    ) : (
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">Join Locked</span>
+                    )}
+                  </div>
+
                   <h3 className="text-base font-bold text-neutral-900 dark:text-white">Scheduled Live Sessions</h3>
                   <div className="divide-y divide-neutral-100 dark:divide-neutral-800 border border-neutral-200 dark:border-neutral-850 rounded-2xl overflow-hidden bg-white dark:bg-neutral-900">
                     {liveClasses.length === 0 ? (
