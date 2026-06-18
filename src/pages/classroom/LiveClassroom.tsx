@@ -69,7 +69,7 @@ interface ProfileRecord {
 
 interface LiveSession {
   id: string;
-  classroom_id: string;
+  course_id: string;
   teacher_id: string | null;
   meeting_room_id: string;
   meeting_url: string | null;
@@ -208,12 +208,12 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   const loadActiveSessions = useCallback(async () => {
     let query = supabase
       .from('live_sessions')
-      .select('*, courses:classroom_id(title)')
+      .select('*, courses:course_id(title)')
       .eq('status', 'LIVE')
       .order('started_at', { ascending: false });
 
     if (courseId) {
-      query = query.eq('classroom_id', courseId);
+      query = query.eq('course_id', courseId);
     }
 
     const { data, error } = await query;
@@ -262,7 +262,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
     const { data: courseData, error: courseError } = await supabase
       .from('courses')
       .select('id,title,teacher_id')
-      .eq('id', courseId)
+      .eq('id', courseId || '')
       .maybeSingle();
 
     if (courseError) {
@@ -286,7 +286,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
       .select('id')
-      .eq('course_id', courseId)
+      .eq('course_id', courseId || '')
       .eq('student_id', user.id)
       .maybeSingle();
 
@@ -325,7 +325,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
           event: '*',
           schema: 'public',
           table: 'live_sessions',
-          ...(courseId ? { filter: `classroom_id=eq.${courseId}` } : {}),
+          ...(courseId ? { filter: `course_id=eq.${courseId}` } : {}),
         },
         () => {
           loadActiveSessions().catch((error) => {
@@ -427,7 +427,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
         await loadJitsiScript();
         if (!mounted || !window.JitsiMeetExternalAPI || !jitsiContainerRef.current) return;
 
-        const roomName = selectedSession.meeting_room_id || getRoomName(selectedSession.classroom_id);
+        const roomName = selectedSession.meeting_room_id || getRoomName(selectedSession.course_id);
         const api = new window.JitsiMeetExternalAPI('meet.jit.si', {
           roomName,
           width: '100%',
@@ -535,7 +535,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       const { data: existing, error: existingError } = await supabase
         .from('live_sessions')
         .select('*')
-        .eq('classroom_id', courseId)
+        .eq('course_id', courseId)
         .eq('status', 'LIVE')
         .maybeSingle();
 
@@ -553,7 +553,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       const { data, error } = await classroomDb
         .from('live_sessions')
         .insert({
-          classroom_id: courseId,
+          course_id: courseId,
           teacher_id: user.id,
           meeting_room_id: roomName,
           meeting_url: `https://meet.jit.si/${roomName}`,
@@ -616,7 +616,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
     if (!selectedSession) return;
 
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/classroom/${selectedSession.classroom_id}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/classroom/${selectedSession.course_id}`);
       toast.success('Join link copied.');
     } catch {
       toast.error('Unable to copy join link.');
@@ -837,7 +837,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
                 ) : (
                   adminSessions.map((session) => (
                     <div key={session.id} className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-3">
-                      <p className="text-xs font-bold text-neutral-950 dark:text-white truncate">{session.courses?.title || session.classroom_id}</p>
+                      <p className="text-xs font-bold text-neutral-950 dark:text-white truncate">{session.courses?.title || session.course_id}</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           onClick={() => joinSession(session)}
