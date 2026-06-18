@@ -44,8 +44,8 @@ export function InsightsDashboard({ courseId }: InsightsDashboardProps) {
         .select('id, max_grade')
         .eq('course_id', courseId);
         
-      const assignmentIds = (assignments || []).map(a => a.id);
-      const courseSubmissions = (submissions || []).filter(s => assignmentIds.includes(s.assignment_id));
+      const assignmentIds = (assignments || []).map(a => a.id).filter((id): id is string => !!id);
+      const courseSubmissions = (submissions || []).filter(s => s.assignment_id && assignmentIds.includes(s.assignment_id));
       
       let totalGradePercentage = 0;
       courseSubmissions.forEach(sub => {
@@ -107,11 +107,11 @@ export function InsightsDashboard({ courseId }: InsightsDashboardProps) {
           <p className="text-xs text-blue-200 mb-1">Enrolled Students</p>
           <p className="text-3xl font-bold text-white">{stats.totalStudents}</p>
         </GlassCard>
-        <GlassCard tint={stats.avgGrade >= 70 ? 'emerald' : 'amber'}>
+        <GlassCard tint={stats.avgGrade >= 70 ? 'emerald' : 'purple'}>
           <p className="text-xs text-white/70 mb-1">Class Average Grade</p>
           <p className="text-3xl font-bold text-white">{stats.avgGrade}%</p>
         </GlassCard>
-        <GlassCard tint={stats.attendanceRate >= 80 ? 'emerald' : 'red'}>
+        <GlassCard tint={stats.attendanceRate >= 80 ? 'emerald' : 'blue'}>
           <p className="text-xs text-white/70 mb-1">Average Attendance</p>
           <p className="text-3xl font-bold text-white">{stats.attendanceRate}%</p>
         </GlassCard>

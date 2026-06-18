@@ -19,11 +19,11 @@ export function NotificationsSettings() {
   useEffect(() => {
     async function loadPrefs() {
       if (!user) return;
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from('profiles')
-        .select('notification_preferences')
+        .select('notification_preferences' as any)
         .eq('id', user.id)
-        .single();
+        .single() as any);
       
       if (!error && data?.notification_preferences) {
         setPreferences({
@@ -45,7 +45,7 @@ export function NotificationsSettings() {
     setSaving(true);
     const { error } = await supabase
       .from('profiles')
-      .update({ notification_preferences: preferences })
+      .update({ notification_preferences: preferences } as any)
       .eq('id', user.id);
       
     setSaving(false);

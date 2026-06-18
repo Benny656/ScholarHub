@@ -160,9 +160,8 @@ export const assignmentsService = {
         .insert({
           assignment_id: assignmentId,
           student_id: userId,
-          file_url: fileUrl,
-          submitted_at: new Date().toISOString()
-        })
+          file_url: fileUrl
+        } as any)
         .select()
         .single();
       if (error) throw error;
@@ -226,9 +225,8 @@ export const assignmentsService = {
         quiz_id: quizId,
         student_id: userId,
         score,
-        answers,
-        completed_at: new Date().toISOString()
-      });
+        answers
+      } as any);
     }
 
     return { score, total, results };

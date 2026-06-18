@@ -32,7 +32,7 @@ export const attendanceService = {
       status,
       date: new Date().toISOString().split('T')[0],
       marked_at: new Date().toISOString()
-    }).select().single();
+    } as any).select().single();
 
     if (error) throw error;
     return data;
@@ -54,7 +54,8 @@ export const attendanceService = {
       courseName: row.courses?.title,
       date: row.date,
       status: row.status as any,
-      markedBy: row.qr_code ? 'qr' : 'manual',
+      markedBy: (row.qr_code ? 'qr' : 'manual') as 'qr' | 'manual' | 'auto',
+      studentName: row.users?.name || 'Student',
     }));
 
     const total = records.length;
@@ -118,7 +119,7 @@ export const attendanceService = {
       status: 'present',
       qr_code: qrData,
       marked_at: new Date().toISOString()
-    }).select().single();
+    } as any).select().single();
 
     if (error) throw error;
     return data;

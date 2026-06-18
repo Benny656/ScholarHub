@@ -62,7 +62,7 @@ export function AIQuizGenerator({ courseId, onSuccess }: AIQuizGeneratorProps) {
           due_date: new Date(Date.now() + 7 * 86400000).toISOString(),
           max_grade: generatedQuiz.max_score,
           assignment_type: 'quiz'
-        })
+        } as any)
         .select()
         .single();
         
@@ -79,7 +79,7 @@ export function AIQuizGenerator({ courseId, onSuccess }: AIQuizGeneratorProps) {
       
       await supabase
         .from('assignments')
-        .update({ file_url: `quiz-json:${payload}` })
+        .update({ file_url: `quiz-json:${payload}` } as any)
         .eq('id', assignmentData.id);
 
       toast.success('Quiz saved to Assignments!');

@@ -21,7 +21,7 @@ export function AdminAnnouncementSender() {
       const { error } = await supabase.rpc('broadcast_announcement' as any, {
         announce_title: title.trim(),
         announce_message: message.trim()
-      });
+      } as any);
 
       if (error) throw error;
 

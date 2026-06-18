@@ -30,7 +30,7 @@ export function CourseDetail() {
   const [enrolling, setEnrolling] = useState(false);
   
   // Tab Navigation state
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'assignments' | 'attendance' | 'live' | 'progress' | 'certificates' | 'students' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'assignments' | 'attendance' | 'live' | 'progress' | 'certificates' | 'students' | 'analytics' | 'gradebook'>('overview');
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollmentProgress, setEnrollmentProgress] = useState(0);
 
@@ -517,7 +517,7 @@ export function CourseDetail() {
 
   if (!course) {
     return (
-      <GlassCard tint="red" className="max-w-md mx-auto my-12 text-center p-8">
+      <GlassCard className="max-w-md mx-auto my-12 text-center p-8 bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800">
         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2 font-serif">Course Not Found</h3>
         <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">This course is not in the system registry.</p>
@@ -561,7 +561,7 @@ export function CourseDetail() {
               
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
-                  <Badge variant={LEVEL_COLORS[course.level] || 'blue'}>{course.level}</Badge>
+                  <Badge variant={(LEVEL_COLORS as Record<string, 'emerald'|'blue'|'none'|'purple'>)[course.level] || 'blue'}>{course.level}</Badge>
                   <Badge variant="purple">{course.category}</Badge>
                   {isEnrolled && <Badge variant="emerald">Enrolled</Badge>}
                 </div>
@@ -968,7 +968,7 @@ export function CourseDetail() {
                 {/* Teacher Add Assignment panel */}
                 {user?.role === 'teacher' && (
                   <div className="space-y-4">
-                    <AIQuizGenerator courseId={id} onSuccess={loadAssignments} />
+                    <AIQuizGenerator courseId={id!} onSuccess={loadCourseData} />
                     <GlassCard>
                       <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Add Evaluation Assignment</h4>
                       
@@ -1033,7 +1033,7 @@ export function CourseDetail() {
             {/* GRADEBOOK TAB (Teacher Only) */}
             {activeTab === 'gradebook' && user?.role === 'teacher' && (
               <motion.div key="gradebook" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                <TeacherGradebook courseId={id} />
+                <TeacherGradebook courseId={id!} />
               </motion.div>
             )}
 
@@ -1080,7 +1080,7 @@ export function CourseDetail() {
 
                   {user?.role === 'teacher' && (
                     <div className="space-y-6">
-                      <BulkAttendance courseId={id} />
+                      <BulkAttendance courseId={id!} />
                       <GlassCard tint="purple">
                         <h4 className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Teacher Panel: QR Session Generator</h4>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
@@ -1255,7 +1255,7 @@ export function CourseDetail() {
             {/* ANALYTICS TAB (Teacher Only) */}
             {activeTab === 'analytics' && user?.role === 'teacher' && (
               <motion.div key="analytics" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                <InsightsDashboard courseId={id} />
+                <InsightsDashboard courseId={id!} />
               </motion.div>
             )}
 

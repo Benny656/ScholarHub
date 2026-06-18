@@ -33,7 +33,7 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
       // Pre-fill all as present by default
       const initialState: Record<string, 'present' | 'absent' | 'late'> = {};
       st.forEach(s => {
-        initialState[s.id] = 'present';
+        if (s && s.id) initialState[s.id] = 'present';
       });
       setAttendanceState(initialState);
     } catch (err) {
@@ -71,7 +71,7 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
         .eq('date', date)
         .in('student_id', students.map(s => s.id));
 
-      const { error } = await supabase.from('attendance').insert(recordsToInsert);
+      const { error } = await supabase.from('attendance').insert(recordsToInsert as any);
       
       if (error) throw error;
       toast.success('Bulk attendance saved successfully! ✅');

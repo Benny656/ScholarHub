@@ -111,7 +111,7 @@ export function SchoolStudentDashboard() {
       let stats = { streak: 0, xp: 0, level: 1 };
       try {
         const { data: userData, error: userError } = await supabase
-          .from('profiles')
+          .from('users')
           .select('xp, level, streak')
           .eq('id', user.id)
           .single();
@@ -125,8 +125,8 @@ export function SchoolStudentDashboard() {
       } catch(e) { console.error("Dashboard Fetch Error Details (profiles):", e); }
       setGamifiedStats(stats);
 
-      let validEnrollments = [];
-      let enrolledCourseIds = [];
+      let validEnrollments: EnrollmentWithCourse[] = [];
+      let enrolledCourseIds: string[] = [];
       try {
         const { data: enrollmentsData, error: enrollError } = await supabase
           .from('enrollments')
@@ -147,15 +147,15 @@ export function SchoolStudentDashboard() {
           .eq('student_id', user.id);
 
         if (enrollError) throw enrollError;
-        validEnrollments = (enrollmentsData || []);
+        validEnrollments = ((enrollmentsData || []) as any[]) as EnrollmentWithCourse[];
         setEnrollments(validEnrollments);
 
         enrolledCourseIds = validEnrollments
           .map(e => e.courses?.id)
-          .filter(id => !!id);
+          .filter((id): id is string => !!id);
       } catch(e) { console.error("Dashboard Fetch Error Details (enrollments):", e); }
 
-      let schedule = [];
+      let schedule: LiveClass[] = [];
       if (enrolledCourseIds.length > 0) {
         try {
           const { data: classesData, error: classesError } = await supabase
@@ -180,12 +180,12 @@ export function SchoolStudentDashboard() {
             .limit(5);
 
           if (classesError) throw classesError;
-          schedule = (classesData || []);
+          schedule = ((classesData || []) as any[]) as LiveClass[];
         } catch(e) { console.error("Dashboard Fetch Error Details (live_classes):", e); }
       }
       setTimetable(schedule);
 
-      let homework = [];
+      let homework: HomeworkItem[] = [];
       if (enrolledCourseIds.length > 0) {
         try {
           const { data: assignmentsData, error: assignmentsError } = await supabase
@@ -212,9 +212,9 @@ export function SchoolStudentDashboard() {
           if (submissionsError) throw submissionsError;
           const submittedIds = new Set((submissionsData || []).map(s => s.assignment_id));
 
-          homework = (assignmentsData || [])
+          homework = (((assignmentsData || [])
             .filter(a => !submittedIds.has(a.id))
-            .slice(0, 5);
+            .slice(0, 5)) as any[]) as HomeworkItem[];
         } catch(e) { console.error("Dashboard Fetch Error Details (assignments):", e); }
       }
       setHomeworkList(homework);
@@ -271,9 +271,9 @@ export function SchoolStudentDashboard() {
       ];
       setBadges(badgesConfig);
 
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Dashboard Fetch Error Details:", err);
-      setError(err.message || 'Failed to load school dashboard data.');
+      setError((err as Error).message || 'Failed to load school dashboard data.');
     } finally {
       setLoading(false);
     }
@@ -291,7 +291,7 @@ export function SchoolStudentDashboard() {
   };
 
   const bounceTransition = {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 450,
     damping: 12
   };
@@ -307,7 +307,7 @@ export function SchoolStudentDashboard() {
 
   if (error) {
     return (
-      <GlassCard tint="red" className="max-w-md mx-auto my-12 text-center p-8 border-4 border-red-500/40 rounded-3xl">
+      <GlassCard className="max-w-md mx-auto my-12 text-center p-8 border-4 border-red-500/40 rounded-3xl bg-red-50 dark:bg-red-950/20">
         <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Failed to Load Dashboard</h3>
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{error}</p>

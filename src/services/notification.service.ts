@@ -32,11 +32,11 @@ export async function sendNotification(
 ) {
   try {
     // 1. Fetch user's notification preferences
-    const { data: profileData, error: profileError } = await supabase
+    const { data: profileData, error: profileError } = await (supabase
       .from('profiles')
-      .select('notification_preferences')
+      .select('notification_preferences' as any)
       .eq('id', userId)
-      .single();
+      .single() as any);
 
     if (profileError) {
       console.warn('Failed to fetch notification preferences for user', userId, profileError);

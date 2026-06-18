@@ -154,7 +154,7 @@ export async function getCoursesList() {
       .order('created_at', { ascending: false });
     if (error) throw error;
 
-    return (data || []).map(c => ({
+    return (data || []).map((c: any) => ({
       ...c,
       users: c.users || { name: 'Teacher', email: 'teacher@scholarhub.io' }
     }));
