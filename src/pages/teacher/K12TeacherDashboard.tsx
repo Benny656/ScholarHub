@@ -12,6 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { GlassCard, Badge, Button, ProgressBar } from '../../components/ui/index';
 import toast from 'react-hot-toast';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
+import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
 import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
 
 interface StudentData {
@@ -49,6 +50,7 @@ export function K12TeacherDashboard() {
   const [currentLiveSessions, setCurrentLiveSessions] = useState<any[]>([]);
   const [assignmentsToGrade, setAssignmentsToGrade] = useState(0);
   const [attendanceRate, setAttendanceRate] = useState(100);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   // K-12 specific states driven by real students enrolled in the teacher's classes
   const [students, setStudents] = useState<StudentData[]>([]);
@@ -319,7 +321,7 @@ export function K12TeacherDashboard() {
     );
   }
 
-  const containerVariants = {
+const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
   };
@@ -449,7 +451,7 @@ export function K12TeacherDashboard() {
             ) : (
               <div className="grid gap-3">
                 {courses.map(course => (
-                  <Link key={course.id} to={`/courses/${course.id}`} className="group block">
+                  <button key={course.id} onClick={() => setSelectedCourse(course)} className="group block text-left w-full">
                     <div className="p-4 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800/80 rounded-2xl hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-all flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-lg shrink-0">
@@ -462,7 +464,7 @@ export function K12TeacherDashboard() {
                       </div>
                       <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-brand-primary transition-colors" />
                     </div>
-                  </Link>
+                  </button>
                 ))}
               </div>
             )}
@@ -716,6 +718,13 @@ export function K12TeacherDashboard() {
         )}
       </AnimatePresence>
 
+      {selectedCourse && (
+        <CourseInfoModal 
+          course={selectedCourse} 
+          isOpen={!!selectedCourse} 
+          onClose={() => setSelectedCourse(null)} 
+        />
+      )}
     </div>
   );
 }

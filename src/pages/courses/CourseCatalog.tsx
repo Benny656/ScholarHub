@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Search, Star, Users, Clock, BookOpen, Plus, RefreshCw } from 'lucide-react';
+import { Search, Star, Users, Clock, BookOpen, Plus, RefreshCw, X } from 'lucide-react';
 import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
 import { Badge, ProgressBar, PageHeader, Button, Select } from '../../components/ui/index';
+import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
@@ -130,8 +131,8 @@ const cardVariants = {
 };
 
 // Immersive Glassmorphism Card with 3D Mouse Tilt & Border cursor glow tracking
-function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
-  course: any; _index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number;
+function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDetails }: {
+  course: any; _index: number; enrolled?: boolean; onEnroll?: (id: string) => void; progress?: number; onViewDetails?: (course: any) => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -252,11 +253,9 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0 }: {
               </Link>
             ) : (
               <>
-                <Link to={`/courses/${course.id}`}>
-                  <button className="px-3.5 py-2 rounded-xl text-xs font-semibold text-on-surface-variant border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface transition-all">
-                    Details
-                  </button>
-                </Link>
+                <button onClick={() => onViewDetails && onViewDetails(course)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-on-surface-variant border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface transition-all">
+                  Details
+                </button>
                 {onEnroll && (
                   <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
                     Enroll
@@ -300,6 +299,7 @@ export function CourseCatalog() {
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isK12User, setIsK12User] = useState(false);
+  const [selectedCourseForModal, setSelectedCourseForModal] = useState<any | null>(null);
   
   // Search parameters and debounce state
   const [searchVal, setSearchVal] = useState('');
@@ -505,11 +505,20 @@ export function CourseCatalog() {
                 enrolled={isEnrolled(course.id)}
                 progress={getProgress(course.id)}
                 onEnroll={user?.role === 'student' ? handleEnroll : undefined}
+                onViewDetails={(c) => setSelectedCourseForModal(c)}
               />
             ))}
           </motion.div>
         )}
       </div>
+
+      {selectedCourseForModal && (
+        <CourseInfoModal 
+          course={selectedCourseForModal} 
+          isOpen={!!selectedCourseForModal} 
+          onClose={() => setSelectedCourseForModal(null)} 
+        />
+      )}
     </div>
   );
 }

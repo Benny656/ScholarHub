@@ -60,6 +60,18 @@ export type CourseRow = {
   is_published?: boolean;
 };
 
+export type CourseDetailsRow = {
+  id: string;
+  course_id: string;
+  course_description: string | null;
+  course_objectives: string | null;
+  course_duration: string | null;
+  course_level: string | null;
+  course_thumbnail: string | null;
+  prerequisites: string | null;
+  created_at: string;
+};
+
 export type EnrollmentRow = {
   id: string;
   student_id: string | null;

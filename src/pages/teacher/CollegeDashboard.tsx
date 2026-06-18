@@ -11,6 +11,8 @@ import { GlassCard, PageHeader, Badge, Button } from '../../components/ui/index'
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
 import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
 
+import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
@@ -32,6 +34,7 @@ export function CollegeDashboard() {
   const [currentLiveSessions, setCurrentLiveSessions] = useState<any[]>([]);
   const [assignmentsToGrade, setAssignmentsToGrade] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -245,7 +248,7 @@ export function CollegeDashboard() {
               ) : (
                 <div className="grid gap-3">
                   {courses.slice(0, 5).map(course => (
-                    <Link key={course.id} to={`/courses/${course.id}`} className="group">
+                    <button key={course.id} onClick={() => setSelectedCourse(course)} className="group text-left w-full">
                       <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-200 dark:border-neutral-800/80 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40 transition-colors">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xl shrink-0">
@@ -258,7 +261,7 @@ export function CollegeDashboard() {
                         </div>
                         <ChevronRightIcon className="w-5 h-5 text-neutral-400 group-hover:text-purple-600 transition-colors" />
                       </div>
-                    </Link>
+                    </button>
                   ))}
                 </div>
               )}
@@ -276,6 +279,14 @@ export function CollegeDashboard() {
           </div>
         </div>
       </motion.div>
+
+      {selectedCourse && (
+        <CourseInfoModal 
+          course={selectedCourse} 
+          isOpen={!!selectedCourse} 
+          onClose={() => setSelectedCourse(null)} 
+        />
+      )}
     </div>
   );
 }
