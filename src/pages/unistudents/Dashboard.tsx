@@ -91,7 +91,43 @@ interface ActivityItem {
 export function StudentDashboard() {
   const { user } = useAuth();
 
-  const isK12 = user?.role === 'student' && user?.gradeLevel?.toLowerCase().startsWith('k12');
+  const [profileRole, setProfileRole] = useState<string | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) {
+        setIsProfileLoading(false);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        
+        if (!error && data) {
+          setProfileRole(data.role);
+        }
+      } finally {
+        setIsProfileLoading(false);
+      }
+    }
+    fetchProfile();
+  }, [user]);
+
+  const isK12 = profileRole === 'k12_student' || (user?.role === 'student' && user?.gradeLevel?.toLowerCase().startsWith('k12'));
+
+  if (isProfileLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
+        <p className="text-sm text-neutral-500">Verifying workspace...</p>
+      </div>
+    );
+  }
+
   if (user && user.role !== 'student') {
     return <Navigate to={getDashboardPath(user)} replace />;
   }

@@ -11,6 +11,7 @@ export function CreateCourse() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profileRole, setProfileRole] = useState<string | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -24,15 +25,22 @@ export function CreateCourse() {
 
   useEffect(() => {
     async function fetchProfile() {
-      if (!user) return;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-      
-      if (!error && data) {
-        setProfileRole(data.role);
+      if (!user) {
+        setIsProfileLoading(false);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        
+        if (!error && data) {
+          setProfileRole(data.role);
+        }
+      } finally {
+        setIsProfileLoading(false);
       }
     }
     fetchProfile();
@@ -80,10 +88,11 @@ export function CreateCourse() {
     }
   };
 
-  if (!profileRole) {
+  if (isProfileLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="animate-spin text-brand-primary" size={32} />
+        <p className="text-sm text-neutral-500">Verifying workspace...</p>
       </div>
     );
   }

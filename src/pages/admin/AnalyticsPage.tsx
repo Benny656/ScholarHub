@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
-import { Users, GraduationCap, School, CheckCircle, Video, Activity, FileText, ArrowRight, TrendingUp } from 'lucide-react';
-import { GlassCard, SkeletonCard } from '../../components/ui/index';
+import { Users, GraduationCap, School, CheckCircle, Video, Activity, FileText, ArrowRight, TrendingUp, AlertTriangle, RefreshCw } from 'lucide-react';
+import { GlassCard, SkeletonCard, Button } from '../../components/ui/index';
 import toast from 'react-hot-toast';
 
 export function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<any>(null);
   const [popularCourses, setPopularCourses] = useState<any[]>([]);
   const [activityLog, setActivityLog] = useState<any[]>([]);
@@ -17,6 +18,7 @@ export function AnalyticsPage() {
 
   const loadDashboardData = async () => {
     setLoading(true);
+    setError(null);
     try {
       // Fetch Real Exact Counts
       const [
@@ -113,9 +115,9 @@ export function AnalyticsPage() {
         ]);
       }
 
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to load real-time analytics. Showing cached data.');
+    } catch (err: any) {
+      console.error("Supabase Fetch Error:", err);
+      setError(err.message || 'Failed to load admin metrics');
     } finally {
       setLoading(false);
     }
@@ -134,11 +136,24 @@ export function AnalyticsPage() {
   if (loading) {
     return (
       <div className="max-w-[1400px] mx-auto p-8 space-y-8">
-        <SkeletonCard className="h-40" />
+        <div className="h-40"><SkeletonCard /></div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <SkeletonCard className="lg:col-span-2 h-96" />
-          <SkeletonCard className="h-96" />
+          <div className="lg:col-span-2 h-96"><SkeletonCard /></div>
+          <div className="h-96"><SkeletonCard /></div>
         </div>
+      </div>
+    );
+  }
+
+  if (error || !metrics) {
+    return (
+      <div className="max-w-[1400px] mx-auto p-8 mt-12 text-center">
+        <GlassCard className="inline-block p-8 border-4 border-red-500/30 rounded-3xl max-w-lg w-full bg-red-500/5 dark:bg-red-900/10">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">Error Loading Dashboard</h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">{error || 'Failed to load admin metrics'}</p>
+          <Button variant="primary" onClick={loadDashboardData} icon={<RefreshCw size={14} />}>Retry Fetch</Button>
+        </GlassCard>
       </div>
     );
   }
