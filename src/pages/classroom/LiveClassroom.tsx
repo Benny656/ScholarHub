@@ -213,7 +213,11 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       .order('started_at', { ascending: false });
 
     if (courseId) {
-      query = query.eq('course_id', courseId);
+      if (isCourseId(courseId)) {
+        query = query.eq('course_id', courseId);
+      } else {
+        query = query.is('course_id', null);
+      }
     }
 
     const { data, error } = await query;
@@ -262,7 +266,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
     const { data: courseData, error: courseError } = await supabase
       .from('courses')
       .select('id,title,teacher_id')
-      .eq('id', courseId || '')
+      .eq('id', isCourseId(courseId) ? courseId : '00000000-0000-0000-0000-000000000000')
       .maybeSingle();
 
     if (courseError) {
@@ -286,7 +290,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
       .select('id')
-      .eq('course_id', courseId || '')
+      .eq('course_id', isCourseId(courseId) ? courseId : '00000000-0000-0000-0000-000000000000')
       .eq('student_id', user.id)
       .maybeSingle();
 
@@ -325,7 +329,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
           event: '*',
           schema: 'public',
           table: 'live_sessions',
-          ...(courseId ? { filter: `course_id=eq.${courseId}` } : {}),
+          ...(isCourseId(courseId) ? { filter: `course_id=eq.${courseId}` } : courseId === 'general' ? { filter: 'course_id=is.null' } : {}),
         },
         () => {
           loadActiveSessions().catch((error) => {
@@ -527,17 +531,19 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   }, [canModerate, displayName, disposeJitsi, joined, leaveClassroom, loadParticipants, profile?.email, selectedSession, user?.email, user?.id]);
 
   const startClass = async () => {
-    if (!courseId || !user || !course) return;
+    if (!courseId || !user || (isCourseId(courseId) && !course)) return;
     setBusyAction('start');
     setMessage('Starting session');
 
     try {
-      const { data: existing, error: existingError } = await supabase
-        .from('live_sessions')
-        .select('*')
-        .eq('course_id', courseId)
-        .eq('status', 'LIVE')
-        .maybeSingle();
+      let checkQuery = supabase.from('live_sessions').select('*').eq('status', 'LIVE');
+      if (isCourseId(courseId)) {
+        checkQuery = checkQuery.eq('course_id', courseId);
+      } else {
+        checkQuery = checkQuery.is('course_id', null);
+      }
+      
+      const { data: existing, error: existingError } = await checkQuery.maybeSingle();
 
       if (existingError) throw existingError;
 
@@ -553,7 +559,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       const { data, error } = await classroomDb
         .from('live_sessions')
         .insert({
-          course_id: courseId,
+          course_id: isCourseId(courseId) ? courseId : null,
           teacher_id: user.id,
           meeting_room_id: roomName,
           meeting_url: `https://meet.jit.si/${roomName}`,

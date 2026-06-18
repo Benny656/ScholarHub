@@ -77,7 +77,7 @@ export function NotificationDropdown() {
       .eq('is_read', false);
   };
 
-  const getIcon = (type: string) => {
+  const getIcon = (type: string | null) => {
     switch (type) {
       case 'assignment': return <BookOpen size={16} className="text-blue-500" />;
       case 'live_class': return <Video size={16} className="text-red-500" />;
