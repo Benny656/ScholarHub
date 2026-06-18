@@ -17,10 +17,13 @@ const queryClient = new QueryClient({
 // Layout
 import { V2DashboardLayout } from './layouts/V2DashboardLayout';
 
-// Landing page
 import { LandingPage } from './pages/landing/LandingPage';
 
-// Other shared components
+import { StudentRoster } from './pages/teacher/StudentRoster';
+import { AssignmentsQuestionBanks } from './pages/teacher/AssignmentsQuestionBanks';
+import { ExamScheduling } from './pages/teacher/ExamScheduling';
+
+// Components
 import { NotFound } from './components/NotFound';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { FloatingElements3D } from './components/FloatingElements3D';
@@ -178,7 +181,6 @@ function AppRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* ─── Landing ─── */}
         <Route path="/" element={<AuthRedirector><LandingPage /></AuthRedirector>} />
 
         {/* ─── Auth ─── */}
@@ -220,7 +222,7 @@ function AppRoutes() {
         {/* ─── Other screens ─── */}
         <Route path="/attendance" element={<ProtectedRoute><DashboardWrapper><Attendance /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><DashboardWrapper><Messages /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute><DashboardWrapper><Analytics /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Analytics" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/calendar" element={<ProtectedRoute><DashboardWrapper><CalendarPage /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/certificates" element={<ProtectedRoute><DashboardWrapper><Certificates /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/verify/:certId" element={<ProtectedRoute><DashboardWrapper><CertificateVerify /></DashboardWrapper></ProtectedRoute>} />
@@ -248,10 +250,9 @@ function AppRoutes() {
         <Route path="/parent-communication" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Parent Communication" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/announcements" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Announcements" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/course-management" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Course Management" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/student-roster" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Student Roster" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/question-banks" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Question Banks" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/exam-scheduling" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Exam Scheduling" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/session-attendance" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Session Attendance" /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/student-roster" element={<ProtectedRoute><DashboardWrapper><StudentRoster /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/question-banks" element={<ProtectedRoute><DashboardWrapper><AssignmentsQuestionBanks /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/exam-scheduling" element={<ProtectedRoute><DashboardWrapper><ExamScheduling /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/course-analytics" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Course Analytics" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/issue-certificates" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Issue Certificates" /></DashboardWrapper></ProtectedRoute>} />
         
