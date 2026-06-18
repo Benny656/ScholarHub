@@ -423,7 +423,7 @@ export function CourseCatalog() {
         title={isK12User ? "Subject Catalog" : "Course Catalog"}
         subtitle={`${courses.length} ${isK12User ? "subjects" : "courses"} available`}
         breadcrumb={[{ label: 'Home' }, { label: isK12User ? 'Subjects' : 'Courses' }]}
-        action={user?.role !== 'student' ? (
+        action={(user?.role !== 'student' && !isK12User) ? (
           <Link to="/courses/create">
             <Button variant="primary" icon={<Plus size={16} />}>Create {isK12User ? "Subject" : "Course"}</Button>
           </Link>

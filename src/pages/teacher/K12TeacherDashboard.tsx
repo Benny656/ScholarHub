@@ -70,7 +70,8 @@ export function K12TeacherDashboard() {
         const { data: coursesData, error: coursesError } = await supabase
           .from('courses')
           .select('*')
-          .eq('teacher_id', user.id);
+          .eq('teacher_id', user.id)
+          .eq('institution_type', 'k12');
 
         if (coursesError) throw coursesError;
         validCourses = coursesData || [];
@@ -347,11 +348,7 @@ export function K12TeacherDashboard() {
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          <Link to="/courses/create">
-            <Button variant="primary" className="gap-2 text-xs">
-              <Plus size={14} /> New Subject Course
-            </Button>
-          </Link>
+
           <Link to="/classroom/general">
             <Button variant="secondary" className="gap-2 text-xs">
               <Video size={14} /> Start Virtual Class
@@ -444,9 +441,10 @@ export function K12TeacherDashboard() {
             </div>
 
             {courses.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-neutral-250 dark:border-neutral-800 rounded-2xl bg-white dark:bg-neutral-900">
-                <p className="text-sm text-neutral-500">No active classrooms registered yet.</p>
-                <Link to="/courses/create" className="text-xs text-brand-primary font-bold hover:underline mt-2 inline-block">Create one now</Link>
+              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 text-center mt-6 text-neutral-500">
+                <BookOpen className="w-10 h-10 mx-auto text-neutral-300 dark:text-neutral-600 mb-3" />
+                <p className="font-semibold text-neutral-600 dark:text-neutral-400">No subjects assigned yet.</p>
+                <p className="text-sm mt-1">Subjects assigned by the administrator will appear here.</p>
               </div>
             ) : (
               <div className="grid gap-3">

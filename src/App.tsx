@@ -50,6 +50,7 @@ import { UsersPage } from './pages/admin/UsersPage';
 import { CoursesPage } from './pages/admin/CoursesPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
+import { AdminSubjectAssignment } from './pages/admin/AdminSubjectAssignment';
 
 // Courses
 import { CourseCatalog } from './pages/courses/CourseCatalog';
@@ -183,6 +184,7 @@ function AppRoutes() {
         <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AdminDashboard /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute><DashboardWrapper><AdminGuard><UsersPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/courses" element={<ProtectedRoute><DashboardWrapper><AdminGuard><CoursesPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/subject-assignment" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AdminSubjectAssignment /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AnalyticsPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute><DashboardWrapper><AdminGuard><SettingsPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
 

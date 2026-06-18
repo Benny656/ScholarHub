@@ -60,16 +60,14 @@ export function CreateCourse() {
     setLoading(true);
 
     try {
-      const institution_type = isK12 ? 'k12' : 'uni';
-      
       const payload = {
         instructor_id: user.id,
-        institution_type,
+        institution_type: 'uni',
         title,
-        description: isK12 ? null : description,
-        price: isK12 ? null : Number(price),
-        target_year: isK12 ? null : targetYear,
-        grade_level: isK12 ? gradeLevel : null,
+        description,
+        price: Number(price),
+        target_year: targetYear,
+        grade_level: null,
       };
 
       const { error } = await supabase
@@ -97,110 +95,84 @@ export function CreateCourse() {
     );
   }
 
+  if (isK12) {
+    return (
+      <div className="max-w-3xl mx-auto py-12 px-4 text-center">
+        <GlassCard className="p-8">
+          <h1 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h1>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            K-12 Teachers cannot manually create subjects. Subjects must be assigned by an Administrator.
+          </p>
+          <Button variant="outline" className="mt-6" onClick={() => navigate('/k12-teacher/dashboard')}>
+            Return to Dashboard
+          </Button>
+        </GlassCard>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       <GlassCard className="p-6 md:p-8">
         <div className="mb-8 border-b border-neutral-200 dark:border-neutral-800 pb-4">
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white font-serif">
-            {isK12 ? 'Create K-12 Subject' : 'Create University Course'}
+            Create University Course
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-            {isK12 ? 'Add a new subject for your students.' : 'Set up a new college course offering.'}
+            Set up a new college course offering.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {isK12 && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Subject Name <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Mathematics, Science"
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Intro to Computer Science"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+            />
+          </div>
 
-              <div>
-                <Select
-                  label="Grade Level"
-                  value={gradeLevel}
-                  onChange={(e) => setGradeLevel(e.target.value)}
-                  options={[
-                    { value: 'Grade 1', label: '1st Grade' },
-                    { value: 'Grade 2', label: '2nd Grade' },
-                    { value: 'Grade 3', label: '3rd Grade' },
-                    { value: 'Grade 4', label: '4th Grade' },
-                    { value: 'Grade 5', label: '5th Grade' },
-                    { value: 'Grade 6', label: '6th Grade' },
-                    { value: 'Grade 7', label: '7th Grade' },
-                    { value: 'Grade 8', label: '8th Grade' },
-                    { value: 'Grade 9', label: '9th Grade' },
-                    { value: 'Grade 10', label: '10th Grade' },
-                    { value: 'Grade 11', label: '11th Grade' },
-                    { value: 'Grade 12', label: '12th Grade' },
-                  ]}
-                />
-              </div>
-            </>
-          )}
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              placeholder="Comprehensive overview of the course..."
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50 resize-y"
+            />
+          </div>
 
-          {isUni && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Intro to Computer Science"
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-                />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <Select
+              label="Target Year"
+              value={targetYear}
+              onChange={(e) => setTargetYear(e.target.value)}
+              options={[
+                { value: '1st Year', label: '1st Year' },
+                { value: '2nd Year', label: '2nd Year' },
+                { value: '3rd Year', label: '3rd Year' },
+                { value: '4th Year', label: '4th Year' },
+                { value: 'Postgraduate', label: 'Postgraduate' },
+              ]}
+            />
 
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                  placeholder="Comprehensive overview of the course..."
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50 resize-y"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <Select
-                  label="Target Year"
-                  value={targetYear}
-                  onChange={(e) => setTargetYear(e.target.value)}
-                  options={[
-                    { value: '1st Year', label: '1st Year' },
-                    { value: '2nd Year', label: '2nd Year' },
-                    { value: '3rd Year', label: '3rd Year' },
-                    { value: '4th Year', label: '4th Year' },
-                    { value: 'Postgraduate', label: 'Postgraduate' },
-                  ]}
-                />
-
-                <div>
-                  <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Price ($)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-                  />
-                </div>
-              </div>
-            </>
-          )}
+            <div>
+              <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Price ($)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              />
+            </div>
+          </div>
 
           {(!isK12 && !isUni && user?.role === 'admin') && (
             <div className="p-4 rounded-xl bg-blue-50 text-blue-700 border border-blue-200">
@@ -212,7 +184,7 @@ export function CreateCourse() {
             <Button
               type="submit"
               variant="primary"
-              disabled={loading || (!isK12 && !isUni)}
+              disabled={loading || !isUni}
               icon={loading ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
               className="w-full sm:w-auto px-8"
             >

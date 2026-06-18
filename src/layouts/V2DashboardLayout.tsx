@@ -53,7 +53,8 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
     badge: user.role === 'teacher' ? (isK12Teacher ? 'K-12 TEACHER' : 'COLLEGE TEACHER') :
            user.role === 'student' ? (isK12Student ? 'SCHOOL STUDENT' : 'UNIVERSITY STUDENT') : 'ADMIN',
     avatar: user.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name),
-    roleType: user.role
+    roleType: user.role,
+    description: ''
   };
 
   // Derive active tab from location pathname
@@ -105,6 +106,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
         return [
           { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
           { id: "users", label: "User Management", icon: Users },
+          { id: "subject-assignment", label: "Subject Assignment", icon: BookOpen },
           { id: "course-approvals", label: "Course Approvals", icon: CheckSquare },
           { id: "platform-analytics", label: "Platform Analytics", icon: BarChart3 },
           { id: "revenue-analytics", label: "Revenue Analytics", icon: CreditCard },
@@ -200,10 +202,12 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
 
         {/* Desktop top navbar header */}
         <Navbar 
-          activeRole={activeRole} 
+          activeRole={activeRole as any} 
           theme={theme} 
           toggleTheme={toggleTheme} 
           onHomeClick={handleLogoClick}
+          onOpenNotifications={() => setNotificationsOpen(!notificationsOpen)}
+          notificationCount={unreadNotificationsCount}
         />
 
         {/* Dynamic scroll main panel area */}
