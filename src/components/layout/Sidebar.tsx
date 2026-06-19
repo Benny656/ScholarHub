@@ -14,13 +14,11 @@ import {
   HelpCircle, 
   BrainCircuit, 
   ShieldCheck, 
-  CreditCard,
   History,
   Activity,
   ChevronRight,
   User,
   Award,
-  Volume2
 } from "lucide-react";
 import { Role, allRoles } from "../../lib/mockData";
 
@@ -51,8 +49,6 @@ export default function Sidebar({
           { id: "users", label: "User Management", icon: Users },
           { id: "subject-assignment", label: "Subject Assignment", icon: BookOpen },
           { id: "analytics", label: "Platform Analytics", icon: BarChart3 },
-          { id: "revenue-analytics", label: "Revenue Analytics", icon: CreditCard },
-          { id: "system-settings", label: "System Settings", icon: Settings },
           { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
           { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
         ];
@@ -64,8 +60,6 @@ export default function Sidebar({
           { id: "assignments-grading", label: "Assignments & Grading", icon: CheckSquare },
           { id: "report-cards", label: "Report Cards", icon: Award },
           { id: "timetable", label: "Timetable", icon: Calendar },
-          { id: "parent-communication", label: "Parent Communication", icon: Mail },
-          { id: "announcements", label: "Announcements", icon: Volume2 },
           { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
           { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
         ];
@@ -78,7 +72,6 @@ export default function Sidebar({
           { id: "exam-scheduling", label: "Exam Scheduling", icon: Calendar },
           { id: "attendance", label: "Session Attendance", icon: Activity },
           { id: "live", label: "Live Classroom", icon: Video },
-          { id: "analytics", label: "Course Analytics", icon: BarChart3 },
           { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
           { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
         ];
@@ -90,7 +83,6 @@ export default function Sidebar({
           { id: "attendance", label: "Attendance", icon: Activity },
           { id: "timetable", label: "Class Timetable", icon: Calendar },
           { id: "report-card", label: "Report Card", icon: Award },
-          { id: "ai-tutor", label: "AI Tutor", icon: BrainCircuit },
           { id: "messages", label: "Messages", icon: Mail },
           { id: "certificates", label: "Certificates", icon: ShieldCheck },
         ];
@@ -103,11 +95,9 @@ export default function Sidebar({
           { id: "attendance", label: "Attendance", icon: Activity },
           { id: "exam-calendar", label: "Exam Calendar", icon: Calendar },
           { id: "grades-gpa", label: "Grades & GPA", icon: Award },
-          { id: "ai-tutor", label: "AI Tutor", icon: BrainCircuit },
           { id: "messages", label: "Messages", icon: Mail },
           { id: "certificates", label: "Certificates", icon: ShieldCheck },
           { id: "live", label: "Live Classroom", icon: Video },
-          { id: "progress-analytics", label: "Progress Analytics", icon: BarChart3 },
         ];
     }
   };

@@ -27,17 +27,28 @@ export function AICopilot() {
   // Fetch context when opened
   useEffect(() => {
     if (isOpen && isAuthenticated && user) {
-      const fetchContext = async () => {
-        const FALLBACK_CONTEXT = 'System Context: The user is a first-year Computer Science Engineering student focusing on Artificial Intelligence and Machine Learning.';
+      const FALLBACK_CONTEXT = 'System Context: The user is a first-year Computer Science Engineering student focusing on Artificial Intelligence and Machine Learning.';
+
+      // Pre-seed with fallback immediately — chat works even if Supabase is unreachable
+      if (!context) setContext(FALLBACK_CONTEXT);
+
+      // Attempt to enrich context from Supabase in the background
+      const enrichContext = async () => {
         try {
-          // Step 1: Fetch profile
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+          // Guard: if env vars are missing, skip and keep fallback
+          if (!supabaseUrl || !supabaseKey) return;
+
+          // Step 1: Fetch profile using initialized supabase client
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('role, full_name')
             .eq('id', user.id)
             .single();
 
-          if (profileError) throw profileError;
+          if (profileError) return; // keep fallback, don't throw
 
           // Step 2: Fetch enrollment rows to get course_ids
           const { data: enrollments, error: enrollError } = await supabase
@@ -45,7 +56,7 @@ export function AICopilot() {
             .select('course_id')
             .eq('student_id', user.id);
 
-          if (enrollError) throw enrollError;
+          if (enrollError) return; // keep fallback
 
           // Step 3: Fetch course titles separately using plucked ids
           let courseNames = 'no courses';
@@ -57,19 +68,23 @@ export function AICopilot() {
                 .select('title')
                 .in('id', courseIds);
 
-              if (coursesError) throw coursesError;
-              courseNames = courses?.map((c: any) => c.title).join(', ') || 'no courses';
+              if (!coursesError && courses) {
+                courseNames = courses.map((c: any) => c.title).join(', ') || 'no courses';
+              }
             }
           }
 
-          setContext(`The user ${profile?.full_name || ''} is a ${profile?.role || 'student'} enrolled in: ${courseNames}`);
+          // Upgrade context only if we actually got real data
+          if (profile?.full_name || profile?.role) {
+            setContext(`The user ${profile?.full_name || ''} is a ${profile?.role || 'student'} enrolled in: ${courseNames}`);
+          }
         } catch (err) {
-          // Silently swallow ALL errors (400, 401, network) — demo must not break
-          console.warn('[AICopilot] Context fetch failed, using fallback:', err);
-          setContext(FALLBACK_CONTEXT);
+          // Silent — fallback context already set above, demo is not affected
+          console.warn('[AICopilot] Context enrichment failed (non-blocking):', err);
         }
       };
-      fetchContext();
+
+      enrichContext();
     }
   }, [isOpen, isAuthenticated, user]);
 
