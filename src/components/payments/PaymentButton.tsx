@@ -40,6 +40,9 @@ interface PaymentButtonProps {
 export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false);
 
+  // Absolute URL to the live Render backend — avoids 405s from the Cloudflare frontend domain
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://scholarhub-backend-bcij.onrender.com';
+
   const handlePayment = async () => {
     setLoading(true);
 
@@ -53,24 +56,13 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
         return;
       }
 
-      // 2. Get the current user's session token to authenticate the backend request
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-
-      if (!accessToken) {
-        alert('You must be logged in to make a payment.');
-        setLoading(false);
-        return;
-      }
-
-      // 3. Call backend to create a Razorpay order (route: POST /api/payments/order)
-      const response = await fetch('/api/payments/order', {
+      // 3. Call backend to create a Razorpay order
+      const response = await fetch(`${BACKEND_URL}/api/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ courseId }),
+        body: JSON.stringify({ amount: 50000 }),
       });
 
       const data = await response.json();
@@ -96,11 +88,10 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
           console.log('Razorpay Payment ID:', rzpResponse.razorpay_payment_id);
 
           try {
-            await fetch('/api/payments/verify', {
+            await fetch(`${BACKEND_URL}/api/payments/verify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
               },
               body: JSON.stringify({
                 orderId: data.order_id,
