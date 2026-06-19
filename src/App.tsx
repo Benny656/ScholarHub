@@ -29,6 +29,7 @@ import { CustomCursor } from './components/ui/CustomCursor';
 import { FloatingElements3D } from './components/FloatingElements3D';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import { AppLoading } from './components/ui/AppLoading';
+import { AICopilot } from './components/AICopilot';
 
 // Auth & Theme context
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -332,6 +333,7 @@ function AppContent() {
           <AppRoutes />
           <ThemeAwareToaster />
           <SonnerToaster position="top-right" richColors />
+          <AICopilot />
         </motion.div>
       )}
     </AnimatePresence>

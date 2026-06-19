@@ -8,8 +8,8 @@ import { dashboardController } from '../controllers/dashboard.controller.js';
 import { authController } from '../controllers/auth.controller.js';
 import { paymentController } from '../controllers/payment.controller.js';
 import { calendarController } from '../controllers/calendar.controller.js';
-import { uploadController } from '../controllers/upload.controller.js';
 import { aiController } from '../controllers/ai.controller.js';
+import { uploadController } from '../controllers/upload.controller.js';
 import { adminController } from '../controllers/admin.controller.js';
 import { assignmentController } from '../controllers/assignment.controller.js';
 import { attendanceController } from '../controllers/attendance.controller.js';
@@ -79,6 +79,10 @@ router.post('/payments/verify', paymentController.verifyPayment);
 // --- Calendar Routes ---
 router.get('/calendar/events', calendarController.getEvents);
 router.post('/calendar/events', calendarController.createEvent);
+
+// --- AI Copilot Routes ---
+router.post('/ai/chat', aiController.chat);
+
 router.delete('/calendar/events/:id', calendarController.deleteEvent);
 router.post('/calendar/sync/google', calendarController.syncGoogleCalendar);
 
