@@ -13,7 +13,7 @@ export const aiController = {
         : userMessage;
       
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
       
       const result = await model.generateContent(prompt);
       const responseText = result.response.text();
