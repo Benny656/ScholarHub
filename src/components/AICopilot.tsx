@@ -21,7 +21,7 @@ export function AICopilot() {
   const [isLoading, setIsLoading] = useState(false);
   const [context, setContext] = useState('');
   
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch context when opened
