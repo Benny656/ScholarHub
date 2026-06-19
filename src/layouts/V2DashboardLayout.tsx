@@ -19,6 +19,7 @@ import {
   Video, 
   BarChart3,
   Award,
+  Settings,
 } from 'lucide-react';
 import { getDashboardPath } from '../services/auth.service';
 import { useNotifications } from '../services/notification.service';
@@ -78,7 +79,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
 
     // If it's a generic settings or help link, navigate to common route or handle it
     if (tabId === 'settings') {
-      navigate('/profile');
+      navigate('/settings/notifications');
     } else if (tabId === 'live') {
       navigate('/classroom/general');
     } else {
@@ -109,6 +110,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
           { id: "analytics", label: "Platform Analytics", icon: BarChart3 },
           { id: "issue-certificates", label: "Issue Certificates", icon: ShieldCheck },
           { id: "verify-certificates", label: "Certificate Verification", icon: CheckSquare },
+          { id: "settings", label: "System Settings", icon: Settings },
         ];
       case "k12-teacher":
         return [
