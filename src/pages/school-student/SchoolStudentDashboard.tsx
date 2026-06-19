@@ -583,13 +583,12 @@ export function SchoolStudentDashboard() {
       </motion.div>
 
       {/* Bento-box Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
         {/* Left Columns (Daily Timetable & Pending Homework) */}
-        <div className="lg:col-span-2 space-y-6 md:space-y-8">
           
           {/* DAILY TIMETABLE CARD */}
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-2">
             <ScheduleWidget theme="funky" />
           </div>
 
@@ -598,7 +597,7 @@ export function SchoolStudentDashboard() {
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.1 }}
-            className="border-4 border-dashed border-yellow-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative overflow-hidden"
+            className="lg:col-span-2 border-4 border-dashed border-yellow-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative overflow-hidden"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 tracking-tight">
@@ -620,13 +619,13 @@ export function SchoolStudentDashboard() {
                       whileHover={{ scale: 1.02, x: 5 }}
                       className="p-4 bg-yellow-500/5 dark:bg-neutral-800/30 rounded-2xl border-2 border-yellow-400/20 hover:border-yellow-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-205"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverdue ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
                           <CheckCircle2 size={20} className="animate-bounce" />
                         </div>
-                        <div>
-                          <h4 className="text-sm font-extrabold text-neutral-900 dark:text-white leading-tight">{hw.title}</h4>
-                          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mt-1">Subject: {hw.courses?.title || 'Class'}</p>
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-extrabold text-neutral-900 dark:text-white leading-tight truncate">{hw.title}</h4>
+                          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mt-1 truncate">Subject: {hw.courses?.title || 'Class'}</p>
                         </div>
                       </div>
                       
@@ -652,20 +651,17 @@ export function SchoolStudentDashboard() {
           </motion.section>
 
           {/* ANNOUNCEMENTS CARD */}
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-2">
             <AnnouncementsWidget theme="funky" />
           </div>
 
-        </div>
-
         {/* Right Columns (Attendance, Badges, AI Tutor) */}
-        <div className="space-y-6 md:space-y-8">
           
           {/* MY ATTENDANCE CIRCLE */}
           <motion.section 
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
-            className="border-4 border-dashed border-emerald-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative text-center"
+            className="lg:col-span-1 border-4 border-dashed border-emerald-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative text-center"
           >
             <h3 className="font-extrabold text-neutral-900 dark:text-neutral-50 text-sm mb-4">My Attendance</h3>
             <div className="relative w-28 h-28 mx-auto mb-4">
@@ -707,7 +703,7 @@ export function SchoolStudentDashboard() {
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.15 }}
-            className="border-4 border-dashed border-purple-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg"
+            className="lg:col-span-1 border-4 border-dashed border-purple-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg"
           >
             <h3 className="font-extrabold text-neutral-900 dark:text-neutral-50 text-sm mb-4 flex items-center gap-2 justify-center sm:justify-start">
               🏆 Badges & Trophies
@@ -738,7 +734,7 @@ export function SchoolStudentDashboard() {
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.25 }}
             whileHover={{ scale: 1.03 }}
-            className="p-5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[32px] text-white shadow-xl relative overflow-hidden text-center border-4 border-white dark:border-neutral-800"
+            className="lg:col-span-1 p-5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[32px] text-white shadow-xl relative overflow-hidden text-center border-4 border-white dark:border-neutral-800"
           >
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-yellow-300/10 via-transparent to-transparent pointer-events-none"></div>
             <div className="text-4xl mb-2 animate-bounce">🤖</div>
@@ -756,8 +752,6 @@ export function SchoolStudentDashboard() {
               </motion.button>
             </Link>
           </motion.section>
-
-        </div>
 
       </div>
 

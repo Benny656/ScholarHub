@@ -463,17 +463,15 @@ export function StudentDashboard() {
       </motion.div>
 
       {/* Main Grid Layout for Sections 2-5 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
-        {/* Left Side: Operations */}
-        <div className="lg:col-span-2 space-y-6 lg:space-y-8">
-          
-          <div className="h-[350px]">
+        {/* Left Side: Operations */}          
+          <div className="h-[350px] lg:col-span-2">
             <ScheduleWidget theme="sleek" />
           </div>
           
           {/* ─── SECTION 2: ACTIVE LIVE CLASSES ─── */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2">
             <GlassCard padding="p-0">
               <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
@@ -521,7 +519,7 @@ export function StudentDashboard() {
           </motion.div>
 
           {/* ─── SECTION 3: PENDING ASSIGNMENTS ─── */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-2">
             <GlassCard padding="p-0">
               <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
@@ -542,7 +540,7 @@ export function StudentDashboard() {
                       <div key={asg.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{asg.title}</h4>
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Course: {asg.courses?.title || 'Unknown Course'}</p>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 truncate">Course: {asg.courses?.title || 'Unknown Course'}</p>
                         </div>
                         <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end w-full sm:w-auto">
                           <div className="text-left sm:text-right">
@@ -565,16 +563,14 @@ export function StudentDashboard() {
             </GlassCard>
           </motion.div>
 
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-2">
             <AnnouncementsWidget theme="sleek" />
           </div>
-        </div>
 
         {/* Right Side: Snapshots & Activity */}
-        <div className="space-y-6 lg:space-y-8">
-          
+        
           {/* ─── SECTION 4: LEARNING PROGRESS SNAPSHOT ─── */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="lg:col-span-1">
             <GlassCard>
               <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
                 <GraduationCap size={16} className="text-purple-500" />
@@ -602,7 +598,7 @@ export function StudentDashboard() {
           </motion.div>
 
           {/* ─── SECTION 5: RECENT ACTIVITY ─── */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1">
             <GlassCard>
               <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
                 <Activity size={16} className="text-emerald-500" />
@@ -652,8 +648,6 @@ export function StudentDashboard() {
           </motion.div>
 
         </div>
-
-      </div>
 
       {/* ─── SECTION 6: QUICK ACTIONS ─── */}
       <motion.div 

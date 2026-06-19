@@ -12,7 +12,7 @@ import { getSystemStats, getAdminLogs, getUsersList } from '../../services/admin
 import { ProctoringDashboard } from '../../components/features/ProctoringDashboard';
 import { BlockchainVerification } from '../../components/features/BlockchainVerification';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
-import { IssueCertificate } from '../../components/IssueCertificate';
+
 
 export function AdminDashboard() {
   const { user } = useAuth();
@@ -201,13 +201,11 @@ export function AdminDashboard() {
           </div>
 
           {/* Main Dashboard Layout Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-            {/* Left Workspace Area (2 Columns) */}
-            <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               
               {/* Active Live Sessions */}
               {activeLiveSessions.length > 0 && (
-                <motion.div variants={itemVariants} className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800/50 rounded-xl overflow-hidden shadow-sm">
+                <motion.div variants={itemVariants} className="lg:col-span-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800/50 rounded-xl overflow-hidden shadow-sm">
                   <div className="px-5 py-4 border-b border-red-200 dark:border-red-800/50 flex items-center justify-between bg-red-100/30 dark:bg-red-900/30">
                     <h3 className="text-xs font-bold text-red-900 dark:text-red-200 uppercase tracking-wider flex items-center gap-2">
                       <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />
@@ -234,7 +232,7 @@ export function AdminDashboard() {
               )}
               
               {/* Recent Signups list */}
-              <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+              <motion.div variants={itemVariants} className="lg:col-span-2 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
                 <div className="px-5 py-4 border-b border-neutral-150 dark:border-neutral-850 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-900/50">
                   <h3 className="text-xs font-bold text-neutral-800 dark:text-neutral-200 uppercase tracking-wider">Recent Registrations</h3>
                   <Link to="/admin/users" className="text-xs font-bold text-brand-primary hover:underline flex items-center gap-1">
@@ -265,29 +263,21 @@ export function AdminDashboard() {
               </motion.div>
 
               {/* Security & Proctoring Widgets */}
-              <motion.div variants={itemVariants}>
+              <motion.div variants={itemVariants} className="lg:col-span-2">
                 <ProctoringDashboard role="admin" />
               </motion.div>
 
-              <motion.div variants={itemVariants}>
+              <motion.div variants={itemVariants} className="lg:col-span-2">
                 <BlockchainVerification role="admin" />
               </motion.div>
 
-              <motion.div variants={itemVariants}>
-                <IssueCertificate />
-              </motion.div>
 
-            </div>
-
-            {/* Right Sidebar Area (1 Column) */}
-            <div className="space-y-6 lg:space-y-8">
-              
-              <div className="h-[350px]">
+              <div className="h-[350px] lg:col-span-1">
                 <AnnouncementsWidget theme="sleek" />
               </div>
 
               {/* Platform Health and Alerts */}
-              <motion.div variants={itemVariants} className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+              <motion.div variants={itemVariants} className="lg:col-span-1 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
                 <div className="px-5 py-4 border-b border-neutral-150 dark:border-neutral-850 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-900/50">
                   <h3 className="text-xs font-bold text-neutral-800 dark:text-neutral-200 uppercase tracking-wider">System Health Logs</h3>
                   <span className="flex h-2.5 w-2.5 relative">
@@ -299,7 +289,7 @@ export function AdminDashboard() {
                   {systemAlerts.map((alert) => (
                     <div key={alert.id} className="flex gap-2.5 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-850 border border-neutral-150 dark:border-neutral-800">
                       <Zap size={14} className="text-brand-primary mt-0.5 shrink-0" />
-                      <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-snug">{alert.message}</p>
+                      <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-snug break-words">{alert.message}</p>
                     </div>
                   ))}
                 </div>
@@ -331,7 +321,6 @@ export function AdminDashboard() {
                 </div>
               </motion.div>
 
-            </div>
           </div>
         </motion.div>
       )}

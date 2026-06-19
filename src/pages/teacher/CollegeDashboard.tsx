@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabase';
 import { GlassCard, PageHeader, Badge, Button } from '../../components/ui/index';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
 import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
-import { IssueCertificate } from '../../components/IssueCertificate';
+
 
 import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
 
@@ -195,12 +195,11 @@ export function CollegeDashboard() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        <div className="lg:col-span-2 space-y-6">
           {/* Current Live Sessions */}
           {currentLiveSessions.length > 0 && (
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="lg:col-span-2">
               <GlassCard>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -217,9 +216,9 @@ export function CollegeDashboard() {
                           <div className="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center text-lg shrink-0 animate-pulse">
                             🔴
                           </div>
-                          <div>
-                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-red-600 transition-colors">{session.courses?.title}</h4>
-                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
+                          <div className="min-w-0">
+                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-red-600 transition-colors truncate">{session.courses?.title}</h4>
+                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5 truncate">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
                           </div>
                         </div>
                         <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-colors shrink-0">Join</button>
@@ -232,7 +231,7 @@ export function CollegeDashboard() {
           )}
 
           {/* My Active Courses */}
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="lg:col-span-2">
             <GlassCard>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-base font-bold text-neutral-900 dark:text-white">My Active Courses</h3>
@@ -255,9 +254,9 @@ export function CollegeDashboard() {
                           <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xl shrink-0">
                             {course.icon || '📚'}
                           </div>
-                          <div>
-                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{course.title}</h4>
-                            <p className="text-xs text-neutral-500 mt-0.5">{course.category} • {course.level}</p>
+                          <div className="min-w-0">
+                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">{course.title}</h4>
+                            <p className="text-xs text-neutral-500 mt-0.5 truncate">{course.category} • {course.level}</p>
                           </div>
                         </div>
                         <ChevronRightIcon className="w-5 h-5 text-neutral-400 group-hover:text-purple-600 transition-colors" />
@@ -268,21 +267,13 @@ export function CollegeDashboard() {
               )}
             </GlassCard>
           </motion.div>
-        </div>
-
-        <div className="space-y-6">
-          <motion.div variants={itemVariants}>
-            <IssueCertificate />
-          </motion.div>
-
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-1">
             <ScheduleWidget theme="sleek" />
           </div>
 
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-1">
             <AnnouncementsWidget theme="sleek" />
           </div>
-        </div>
       </motion.div>
 
       {selectedCourse && (

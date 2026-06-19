@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 import { AnnouncementsWidget } from '../../components/dashboard/AnnouncementsWidget';
 import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
 import { ScheduleWidget } from '../../components/dashboard/ScheduleWidget';
-import { IssueCertificate } from '../../components/IssueCertificate';
+
 
 interface StudentData {
   id: string;
@@ -388,18 +388,16 @@ const containerVariants = {
       </motion.div>
 
       {/* ─── MAIN CONTENT GRID ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
-        {/* LEFT TWO COLUMNS */}
-        <div className="lg:col-span-2 space-y-6 lg:space-y-8">
-          
+        {/* LEFT TWO COLUMNS */}          
           {/* Current Live Sessions */}
           {currentLiveSessions.length > 0 && (
             <motion.div 
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="space-y-4"
+              className="lg:col-span-2 space-y-4"
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -434,7 +432,7 @@ const containerVariants = {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-4"
+            className="lg:col-span-2 space-y-4"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-neutral-900 dark:text-white">Active Subjects</h3>
@@ -458,9 +456,9 @@ const containerVariants = {
                         <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-lg shrink-0">
                           {course.title?.[0]?.toUpperCase() || '📚'}
                         </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-brand-primary transition-colors">{course.title}</h4>
-                          <p className="text-xs text-neutral-500 mt-1">{course.category} • {course.level || 'K-12 Class'}</p>
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-brand-primary transition-colors truncate">{course.title}</h4>
+                          <p className="text-xs text-neutral-500 mt-1 truncate">{course.category} • {course.level || 'K-12 Class'}</p>
                         </div>
                       </div>
                       <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-brand-primary transition-colors" />
@@ -472,7 +470,7 @@ const containerVariants = {
           </motion.div>
 
           {/* K-12 Homeroom Summary Widget */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2">
             <GlassCard padding="p-6">
               <div className="flex items-center justify-between mb-4 border-b border-neutral-100 dark:border-neutral-800/60 pb-3">
                 <div>
@@ -546,26 +544,17 @@ const containerVariants = {
             </GlassCard>
           </motion.div>
 
-        </div>
-
-        {/* RIGHT ONE COLUMN (K-12 SPECIFIC WIDGETS) */}
-        <div className="space-y-6 lg:space-y-8">
-          
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <IssueCertificate />
-          </motion.div>
-
           {/* Today's Schedule */}
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-1">
             <ScheduleWidget theme="funky" />
           </div>
 
-          <div className="h-[350px]">
+          <div className="h-[350px] lg:col-span-1">
             <AnnouncementsWidget theme="funky" />
           </div>
 
           {/* Behavior Tracking Summary Widget */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="lg:col-span-1">
             <GlassCard>
               <div className="flex items-center justify-between mb-4 border-b border-neutral-100 dark:border-neutral-800 pb-2">
                 <h3 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -681,12 +670,8 @@ const containerVariants = {
               )}
             </GlassCard>
           </motion.div>
-
-        </div>
-
       </div>
 
-      {/* Behavior Log Dialog Modal (Interactions helper) */}
       <AnimatePresence>
         {selectedStudent && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

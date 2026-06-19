@@ -121,6 +121,7 @@ import { Analytics } from './pages/analytics/Analytics';
 import { CalendarPage } from './pages/calendar/Calendar';
 import { Certificates, CertificateVerify } from './pages/certificates/Certificates';
 import { IssueCertificate } from './components/IssueCertificate';
+import { AdminIssueCertificate } from './pages/admin/AdminIssueCertificate';
 import { Profile } from './pages/profile/Profile';
 import { NotificationsSettings } from './pages/settings/Notifications';
 import { PricingPage } from './pages/pricing/PricingPage';
@@ -278,9 +279,11 @@ function AppRoutes() {
         <Route path="/question-banks" element={<ProtectedRoute><DashboardWrapper><AssignmentsQuestionBanks /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/exam-scheduling" element={<ProtectedRoute><DashboardWrapper><ExamScheduling /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/course-analytics" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Course Analytics" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/issue-certificates" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Issue Certificates" /></DashboardWrapper></ProtectedRoute>} />
         
+
         {/* Admin Specific Sub-Routes */}
+        <Route path="/admin/issue-certificates" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AdminIssueCertificate /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/admin/verify-certificates" element={<ProtectedRoute><DashboardWrapper><AdminGuard><CertificateVerify /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/course-approvals" element={<Navigate to="/admin/courses" replace />} />
         <Route path="/admin/platform-analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><AnalyticsPage /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
         <Route path="/admin/revenue-analytics" element={<ProtectedRoute><DashboardWrapper><AdminGuard><ComingSoonPlaceholder title="Revenue Analytics" /></AdminGuard></DashboardWrapper></ProtectedRoute>} />
