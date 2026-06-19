@@ -56,11 +56,22 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
         return;
       }
 
+      // 2. Retrieve the active session token — required by the backend's auth middleware
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) {
+        alert('Your session has expired. Please log in again to complete your purchase.');
+        setLoading(false);
+        return;
+      }
+
       // 3. Call backend to create a Razorpay order
       const response = await fetch(`${BACKEND_URL}/api/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ amount: 50000 }),
       });
