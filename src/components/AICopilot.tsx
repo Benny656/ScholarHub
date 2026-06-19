@@ -45,6 +45,8 @@ export function AICopilot() {
           setContext(`The user ${profile?.full_name || ''} is a ${profile?.role || 'student'} enrolled/teaching: ${courseNames}`);
         } catch (err) {
           console.error('Failed to fetch AI context', err);
+          // Failsafe for the demo if Supabase fails
+          setContext('System Context: The user is a first-year Computer Science Engineering student focusing on Artificial Intelligence and Machine Learning.');
         }
       };
       fetchContext();

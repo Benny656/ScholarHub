@@ -34,6 +34,9 @@ router.post('/verify/analyze-vision', upload.single('file'), verifyController.an
 router.post('/payments/order', paymentController.createOrder);
 router.post('/payments/create-order', paymentController.createOrder); // alias for forward-compat
 
+// --- AI Copilot Routes (Public for demo) ---
+router.post('/ai/chat', aiController.chat);
+
 // Apply authentication middleware to remaining api routes
 router.use(authMiddleware);
 
@@ -79,9 +82,6 @@ router.post('/payments/verify', paymentController.verifyPayment);
 // --- Calendar Routes ---
 router.get('/calendar/events', calendarController.getEvents);
 router.post('/calendar/events', calendarController.createEvent);
-
-// --- AI Copilot Routes ---
-router.post('/ai/chat', aiController.chat);
 
 router.delete('/calendar/events/:id', calendarController.deleteEvent);
 router.post('/calendar/sync/google', calendarController.syncGoogleCalendar);
