@@ -94,6 +94,21 @@ function MyClassesWrapper() {
 
   return <ComingSoonPlaceholder title="My Classes" />;
 }
+
+function TimetableRouteWrapper() {
+  const { user } = useAuth();
+  const isK12Teacher = user?.role === 'teacher' && (user.teacherTrack === 'k12' || user.gradeLevel?.toLowerCase().startsWith('k12'));
+  const isK12Student = user?.role === 'student' && user.gradeLevel?.toLowerCase().startsWith('k12');
+
+  if (isK12Teacher) {
+    return <TeacherTimetable />;
+  }
+  if (isK12Student) {
+    return <StudentTimetable />;
+  }
+
+  return <ComingSoonPlaceholder title="Timetable" />;
+}
 import { CoursePlayer } from './pages/lms/CoursePlayer';
 
 // Assignments
@@ -113,6 +128,11 @@ import { AdminLogin } from './pages/admin-panel/AdminLogin';
 import { AdminGuard } from './components/admin/AdminGuard';
 import { ComingSoonPlaceholder } from './components/ComingSoonPlaceholder';
 import { HelpCenter } from './pages/help/HelpCenter';
+import AssignmentsGrading from './pages/teacher/AssignmentsGrading';
+import ReportCards from './pages/teacher/ReportCards';
+import TeacherTimetable from './pages/teacher/TeacherTimetable';
+import StudentTimetable from './pages/school-student/StudentTimetable';
+import CourseManagement from './pages/teacher/CourseManagement';
 
 // ─── Page animation wrapper ────────────────────────────────────────────────────
 function PageWrapper({ children }: { children: React.ReactNode }) {
@@ -240,7 +260,7 @@ function AppRoutes() {
         {/* ─── Role-specific Placeholder Routes ─── */}
         <Route path="/subjects" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Subjects" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/homework" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Homework & Assignments" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/timetable" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Timetable" /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/timetable" element={<ProtectedRoute><DashboardWrapper><TimetableRouteWrapper /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/report-card" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Report Card" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/ai-tutor" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="AI Tutor" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/my-courses" element={<ProtectedRoute><DashboardWrapper><MyCourses /></DashboardWrapper></ProtectedRoute>} />
@@ -249,11 +269,11 @@ function AppRoutes() {
         <Route path="/progress-analytics" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Progress Analytics" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/my-classes" element={<ProtectedRoute><DashboardWrapper><MyClassesWrapper /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/daily-attendance" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Daily Attendance" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/assignments-grading" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Assignments & Grading" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/report-cards" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Report Cards" /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/assignments-grading" element={<ProtectedRoute><DashboardWrapper><AssignmentsGrading /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/report-cards" element={<ProtectedRoute><DashboardWrapper><ReportCards /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/parent-communication" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Parent Communication" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/announcements" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Announcements" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/course-management" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Course Management" /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/course-management" element={<ProtectedRoute><DashboardWrapper><CourseManagement /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/student-roster" element={<ProtectedRoute><DashboardWrapper><StudentRoster /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/question-banks" element={<ProtectedRoute><DashboardWrapper><AssignmentsQuestionBanks /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/exam-scheduling" element={<ProtectedRoute><DashboardWrapper><ExamScheduling /></DashboardWrapper></ProtectedRoute>} />

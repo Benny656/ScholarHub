@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import apiRoutes from './routes/api.routes.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Load environment variables
 dotenv.config();
@@ -53,34 +54,38 @@ app.use((req, res, next) => {
 app.post('/api/public-chat', async (req, res) => {
   try {
     const { messages, context } = req.body;
-    
-    // Simulate a 2-second streaming response using the context as requested for the demo failsafe
     const userMessage = messages[messages.length - 1]?.content || '';
-    
-    const hasKeys = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
-    
-    let simulatedResponse = `I see you are focused on your studies. Would you like me to generate a 25-minute Pomodoro study schedule?`;
-    if (context) {
-      simulatedResponse = `I see from your context that ${context}. How can I help you with your tasks today?`;
-    }
-    
-    if (userMessage.toLowerCase().includes('pomodoro') || userMessage.toLowerCase().includes('schedule')) {
-      simulatedResponse = `Sure! Let's start a 25-minute study block. Focus on one topic, and I'll remind you to take a 5-minute break when the time is up.`;
-    } else if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
-      simulatedResponse = `Hello there! I'm the ScholarHub AI Copilot. ${context ? `I know ${context}.` : ''} What can I assist you with today?`;
+    const prompt = context 
+      ? `System Context: ${context}\n\nUser: ${userMessage}` 
+      : userMessage;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is not defined, using simulated response");
+      let simulatedResponse = `I see you are focused on your studies. Would you like me to generate a 25-minute Pomodoro study schedule?`;
+      if (context) {
+        simulatedResponse = `I see from your context that ${context}. How can I help you with your tasks today?`;
+      }
+      return res.status(200).json({
+        role: 'assistant',
+        content: simulatedResponse
+      });
     }
 
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
     return res.status(200).json({
       role: 'assistant',
-      content: simulatedResponse
+      content: responseText
     });
-    
   } catch (error: any) {
-    console.error('[AI Copilot] Chat error:', error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
+    console.error("GEMINI CRASH in public-chat:", error);
+    return res.status(500).json({ 
+      error: error.message || 'Internal Server Error' 
+    });
   }
 });
 
