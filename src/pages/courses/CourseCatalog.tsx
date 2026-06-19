@@ -6,6 +6,7 @@ import { coursesService } from '../../services/courses.service';
 import { useAuth } from '../../context/AuthContext';
 import { Badge, ProgressBar, PageHeader, Button, Select } from '../../components/ui/index';
 import { CourseInfoModal } from '../../components/courses/CourseInfoModal';
+import { PaymentButton } from '../../components/payments/PaymentButton';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
@@ -257,9 +258,13 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDe
                   Details
                 </button>
                 {onEnroll && (
-                  <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
-                    Enroll
-                  </button>
+                  !isK12 ? (
+                    <PaymentButton courseId={course.id} onSuccess={() => onEnroll(course.id)} />
+                  ) : (
+                    <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
+                      Enroll
+                    </button>
+                  )
                 )}
               </>
             )}

@@ -89,11 +89,33 @@ interface ActivityItem {
 }
 
 export function StudentDashboard() {
+  // ════════════════════════════════════════════════════════════════════════════
+  // RULE OF HOOKS: ALL HOOKS MUST BE AT THE TOP, BEFORE ANY CONDITIONAL LOGIC
+  // ════════════════════════════════════════════════════════════════════════════
+  
   const { user } = useAuth();
 
+  // All useState hooks
   const [profileInstitution, setProfileInstitution] = useState<string | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Dashboard Data State
+  const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
+  const [upcomingClasses, setUpcomingClasses] = useState<LiveClass[]>([]);
+  const [pendingAssignments, setPendingAssignments] = useState<PendingAssignment[]>([]);
+  const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
+  const [attendancePercentage, setAttendancePercentage] = useState<number>(0);
+  
+  // Daily Summary Stats
+  const [stats, setStats] = useState({
+    classesCountToday: 0,
+    pendingAssignmentsCount: 0,
+    averageProgress: 0
+  });
 
+  // All useEffect hooks
   useEffect(() => {
     async function fetchProfile() {
       if (!user) {
@@ -116,40 +138,6 @@ export function StudentDashboard() {
     }
     fetchProfile();
   }, [user]);
-
-  const isK12 = profileInstitution === 'k12';
-
-  if (isProfileLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
-        <p className="text-sm text-neutral-500">Verifying workspace...</p>
-      </div>
-    );
-  }
-
-  if (user && user.role !== 'student') {
-    return <Navigate to={getDashboardPath(user)} replace />;
-  }
-
-  const firstName = user?.name ? user.name.split(' ')[0] : 'Student';
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // Dashboard Data State
-  const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
-  const [upcomingClasses, setUpcomingClasses] = useState<LiveClass[]>([]);
-  const [pendingAssignments, setPendingAssignments] = useState<PendingAssignment[]>([]);
-  const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
-  const [attendancePercentage, setAttendancePercentage] = useState<number>(0);
-  
-  // Daily Summary Stats
-  const [stats, setStats] = useState({
-    classesCountToday: 0,
-    pendingAssignmentsCount: 0,
-    averageProgress: 0
-  });
 
   const loadDashboardData = async () => {
     if (!user) return;
@@ -401,6 +389,29 @@ export function StudentDashboard() {
     loadDashboardData();
   }, [user]);
 
+  // ════════════════════════════════════════════════════════════════════════════
+  // DERIVED VALUES (after all hooks)
+  // ════════════════════════════════════════════════════════════════════════════
+  const isK12 = profileInstitution === 'k12';
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Student';
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // EARLY RETURNS (after all hooks but before JSX)
+  // ════════════════════════════════════════════════════════════════════════════
+  
+  if (isProfileLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
+        <p className="text-sm text-neutral-500">Verifying workspace...</p>
+      </div>
+    );
+  }
+
+  if (user && user.role !== 'student') {
+    return <Navigate to={getDashboardPath(user)} replace />;
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -420,6 +431,10 @@ export function StudentDashboard() {
       </GlassCard>
     );
   }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // MAIN JSX (after all early returns)
+  // ════════════════════════════════════════════════════════════════════════════
 
   return (
     <div className="max-w-[1200px] mx-auto pb-12 font-sans space-y-8">

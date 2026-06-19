@@ -280,7 +280,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       setCourse(courseData as CourseRecord);
     }
 
-    if (resolvedRole === 'admin' || (courseData as CourseRecord)?.instructor_id === user.id) {
+    if (isModerator(resolvedRole) || (courseData as CourseRecord)?.instructor_id === user.id) {
       await loadActiveSessions();
       setViewState('ready');
       setMessage('');
@@ -531,7 +531,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   }, [canModerate, displayName, disposeJitsi, joined, leaveClassroom, loadParticipants, profile?.email, selectedSession, user?.email, user?.id]);
 
   const startClass = async () => {
-    if (!courseId || !user || (isCourseId(courseId) && !course)) return;
+    if (!courseId || !user) return;
     setBusyAction('start');
     setMessage('Starting session');
 
@@ -630,7 +630,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   };
 
   const headerTitle = course?.title || selectedSession?.courses?.title || 'Live Classroom';
-  const canStartCourseSession = Boolean(courseId && course && canModerate && (isAdmin || course.instructor_id === user?.id));
+  const canStartCourseSession = Boolean(courseId && canModerate);
   const statusText = joined
     ? jitsiReady
       ? 'Connected'

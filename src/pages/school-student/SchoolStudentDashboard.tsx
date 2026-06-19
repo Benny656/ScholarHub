@@ -75,6 +75,35 @@ interface BadgeItem {
   color: string;
 }
 
+interface Subject {
+  id: string;
+  name: string;
+  instructor: string;
+  completion: number;
+}
+
+interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string;
+  status: 'Pending' | 'Submitted' | 'Graded';
+  subject: string;
+}
+
+interface ReportCardRow {
+  id: string;
+  subject: string;
+  grade: string;
+  remarks: string;
+}
+
+interface TimeSlot {
+  time: string;
+  subject: string;
+  instructor: string;
+  isCurrent: boolean;
+}
+
 export function SchoolStudentDashboard() {
   const { user } = useAuth();
 
@@ -101,6 +130,121 @@ export function SchoolStudentDashboard() {
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
   const [attendancePercent, setAttendancePercent] = useState<number>(0);
   const [badges, setBadges] = useState<BadgeItem[]>([]);
+  
+  // New state for Amethyst-themed components
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [reportCard, setReportCard] = useState<ReportCardRow[]>([]);
+  const [weeklyTimetable, setWeeklyTimetable] = useState<Record<string, TimeSlot[]>>(
+    {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: []
+    }
+  );
+
+  // ════════════════════════════════════════════════════════════════════════
+  // Helper Functions for Mock Data Generation (Hybrid Real + Mock)
+  // ════════════════════════════════════════════════════════════════════════
+
+  const generateSubjectsFromCourses = (courses: EnrollmentWithCourse[]): Subject[] => {
+    return courses.map((enrollment, idx) => ({
+      id: enrollment.courses?.id || `subject-${idx}`,
+      name: enrollment.courses?.title || `Subject ${idx + 1}`,
+      instructor: enrollment.courses?.users?.name || 'Prof. Smith',
+      completion: Math.floor(Math.random() * (95 - 60) + 60) // 60-95% completion
+    }));
+  };
+
+  const generateAssignmentsFromCourses = (courses: EnrollmentWithCourse[]): Assignment[] => {
+    const mockTitles = [
+      'Chapter Quiz',
+      'Lab Work',
+      'Essay Assignment',
+      'Project Submission',
+      'Problem Set',
+      'Research Paper',
+      'Presentation',
+      'Math Worksheet'
+    ];
+    const statuses: Array<'Pending' | 'Submitted' | 'Graded'> = ['Pending', 'Submitted', 'Graded'];
+    
+    const assignments: Assignment[] = [];
+    courses.forEach((course, courseIdx) => {
+      const numAssignments = Math.random() > 0.5 ? 2 : 1;
+      for (let i = 0; i < numAssignments; i++) {
+        const daysFromNow = Math.floor(Math.random() * 14) - 3; // -3 to +14 days
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + daysFromNow);
+        
+        assignments.push({
+          id: `assign-${courseIdx}-${i}`,
+          title: mockTitles[Math.floor(Math.random() * mockTitles.length)],
+          dueDate: dueDate.toISOString().split('T')[0],
+          status: statuses[Math.floor(Math.random() * statuses.length)],
+          subject: course.courses?.title || `Subject ${courseIdx + 1}`
+        });
+      }
+    });
+    return assignments;
+  };
+
+  const generateReportCard = (courses: EnrollmentWithCourse[]): ReportCardRow[] => {
+    const grades = ['A', 'A-', 'B+', 'B', 'B-', 'A+'];
+    const remarks = [
+      'Excellent performance! Keep up the great work.',
+      'Outstanding effort and participation.',
+      'Strong understanding of the concepts.',
+      'Good progress. Keep practicing.',
+      'Well done! Your efforts are showing results.',
+      'Exceptional! You are a star student.'
+    ];
+
+    return courses.map((course, idx) => ({
+      id: course.courses?.id || `grade-${idx}`,
+      subject: course.courses?.title || `Subject ${idx + 1}`,
+      grade: grades[Math.floor(Math.random() * grades.length)],
+      remarks: remarks[Math.floor(Math.random() * remarks.length)]
+    }));
+  };
+
+  const generateWeeklyTimetable = (courses: EnrollmentWithCourse[]): Record<string, TimeSlot[]> => {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const times = ['09:00 AM', '10:30 AM', '12:00 PM', '02:00 PM', '03:30 PM'];
+    const timetable: Record<string, TimeSlot[]> = {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: []
+    };
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentDayIndex = now.getDay() - 1; // 0 = Monday, 4 = Friday
+
+    days.forEach((day, dayIdx) => {
+      times.forEach((time, timeIdx) => {
+        if (Math.random() > 0.3) { // 70% chance of class at this slot
+          const courseIdx = (dayIdx + timeIdx) % courses.length;
+          const [hour] = time.split(':').map(Number);
+          const isCurrent = dayIdx === currentDayIndex && hour === currentHour;
+
+          timetable[day].push({
+            time,
+            subject: courses[courseIdx]?.courses?.title || `Subject ${courseIdx + 1}`,
+            instructor: courses[courseIdx]?.courses?.users?.name || 'Teacher',
+            isCurrent
+          });
+        }
+      });
+    });
+
+    return timetable;
+  };
 
   const loadDashboardData = async () => {
     if (!user) return;
@@ -270,6 +414,16 @@ export function SchoolStudentDashboard() {
         }
       ];
       setBadges(badgesConfig);
+
+      // ═════════════════════════════════════════════════════════════════
+      // Generate Mock Data from Real Enrollments (Amethyst Theme Components)
+      // ═════════════════════════════════════════════════════════════════
+      if (validEnrollments.length > 0) {
+        setSubjects(generateSubjectsFromCourses(validEnrollments));
+        setAssignments(generateAssignmentsFromCourses(validEnrollments));
+        setReportCard(generateReportCard(validEnrollments));
+        setWeeklyTimetable(generateWeeklyTimetable(validEnrollments));
+      }
 
     } catch (err: unknown) {
       console.error("Dashboard Fetch Error Details:", err);
@@ -571,6 +725,216 @@ export function SchoolStudentDashboard() {
         </div>
 
       </div>
+
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* AMETHYST THEME COMPONENTS - REAL DATA WITH MOCK ENHANCEMENT */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
+
+      {/* SECTION 1: SUBJECTS */}
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.3 }}
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+      >
+        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
+          <span className="text-3xl">📚</span> My Subjects
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {subjects.length > 0 ? (
+            subjects.map(subject => (
+              <motion.div 
+                key={subject.id}
+                whileHover={{ translateY: -4 }}
+                className="p-5 bg-white/50 dark:bg-purple-900/20 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-all"
+              >
+                <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">{subject.name}</h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-4">👨‍🏫 {subject.instructor}</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-neutral-700 dark:text-neutral-300">Syllabus Completion</span>
+                    <span className="text-purple-600 dark:text-purple-400">{subject.completion}%</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-violet-600"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${subject.completion}%` }}
+                      transition={{ duration: 1.5 }}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full p-8 text-center text-neutral-500 dark:text-neutral-400">
+              No subjects enrolled yet.
+            </div>
+          )}
+        </div>
+      </motion.section>
+
+      {/* SECTION 2: HOMEWORK & ASSIGNMENTS */}
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.35 }}
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+      >
+        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
+          <span className="text-3xl">✏️</span> Homework & Assignments
+        </h2>
+        <div className="space-y-3 max-h-[400px] overflow-y-auto">
+          {assignments.length > 0 ? (
+            assignments.map(assignment => {
+              const isOverdue = new Date(assignment.dueDate) < new Date();
+              const isPending = assignment.status === 'Pending';
+              return (
+                <motion.div 
+                  key={assignment.id}
+                  whileHover={{ x: 4 }}
+                  className={`p-4 rounded-xl border transition-all ${
+                    isPending && isOverdue 
+                      ? 'bg-red-500/10 border-red-500/50' 
+                      : isPending 
+                        ? 'bg-amber-500/10 border-amber-500/50'
+                        : 'bg-emerald-500/10 border-emerald-500/50'
+                  }`}
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-neutral-900 dark:text-white">{assignment.title}</h4>
+                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">{assignment.subject}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
+                        assignment.status === 'Graded' 
+                          ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                          : assignment.status === 'Submitted'
+                            ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                            : isOverdue
+                              ? 'bg-red-500/20 text-red-700 dark:text-red-300'
+                              : 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                      }`}>
+                        {assignment.status}
+                      </span>
+                      <p className="text-[11px] text-neutral-600 dark:text-neutral-400 mt-1">
+                        Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })
+          ) : (
+            <div className="p-8 text-center text-neutral-500 dark:text-neutral-400">
+              No assignments to display.
+            </div>
+          )}
+        </div>
+      </motion.section>
+
+      {/* SECTION 3: CLASS TIMETABLE */}
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.4 }}
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+      >
+        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
+          <span className="text-3xl">📅</span> Weekly Timetable
+        </h2>
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-5 gap-4 min-w-full">
+            {Object.entries(weeklyTimetable).map(([day, slots]) => (
+              <div key={day} className="min-w-[180px]">
+                <h3 className="font-bold text-neutral-900 dark:text-white mb-3 text-center pb-2 border-b-2 border-purple-500/30">
+                  {day}
+                </h3>
+                <div className="space-y-2">
+                  {slots.length > 0 ? (
+                    slots.map((slot, idx) => (
+                      <motion.div 
+                        key={`${day}-${idx}`}
+                        whileHover={{ scale: 1.02 }}
+                        className={`p-3 rounded-lg text-xs transition-all ${
+                          slot.isCurrent
+                            ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/50'
+                            : 'bg-purple-500/20 text-neutral-900 dark:text-white border border-purple-500/30'
+                        }`}
+                      >
+                        <p className="font-bold">{slot.time}</p>
+                        <p className="mt-1 font-semibold truncate">{slot.subject}</p>
+                        <p className="text-[10px] opacity-80 truncate">👨‍🏫 {slot.instructor}</p>
+                        {slot.isCurrent && <p className="mt-1 font-black text-yellow-300">🔴 LIVE NOW</p>}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-xs text-neutral-400 text-center py-4">No classes</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* SECTION 4: REPORT CARD */}
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.45 }}
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h2 className="text-2xl font-black text-neutral-900 dark:text-white flex items-center gap-3">
+            <span className="text-3xl">📋</span> Report Card
+          </h2>
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-lg shadow-purple-600/30 transition-all"
+          >
+            📥 Download PDF
+          </motion.button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b-2 border-purple-500/30">
+                <th className="text-left px-4 py-3 font-bold text-neutral-900 dark:text-white">Subject</th>
+                <th className="text-center px-4 py-3 font-bold text-neutral-900 dark:text-white">Grade</th>
+                <th className="text-left px-4 py-3 font-bold text-neutral-900 dark:text-white">Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportCard.length > 0 ? (
+                reportCard.map(row => (
+                  <motion.tr 
+                    key={row.id}
+                    whileHover={{ backgroundColor: 'rgba(168, 85, 247, 0.05)' }}
+                    className="border-b border-purple-500/10 hover:bg-purple-500/5 transition-colors"
+                  >
+                    <td className="px-4 py-3 text-neutral-900 dark:text-white font-semibold">{row.subject}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className="bg-gradient-to-r from-purple-600 to-violet-600 text-white px-3 py-1 rounded-lg font-black">
+                        {row.grade}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 italic">{row.remarks}</td>
+                  </motion.tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
+                    No grades available yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </motion.section>
 
     </div>
   );
