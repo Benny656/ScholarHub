@@ -28,25 +28,45 @@ export function AICopilot() {
   useEffect(() => {
     if (isOpen && isAuthenticated && user) {
       const fetchContext = async () => {
+        const FALLBACK_CONTEXT = 'System Context: The user is a first-year Computer Science Engineering student focusing on Artificial Intelligence and Machine Learning.';
         try {
-          const { data: profile } = await supabase
+          // Step 1: Fetch profile
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('role, full_name')
             .eq('id', user.id)
             .single();
 
-          const { data: enrollments } = await supabase
+          if (profileError) throw profileError;
+
+          // Step 2: Fetch enrollment rows to get course_ids
+          const { data: enrollments, error: enrollError } = await supabase
             .from('enrollments')
-            .select('courses(title)')
+            .select('course_id')
             .eq('student_id', user.id);
 
-          const courseNames = enrollments?.map((e: any) => e.courses?.title).join(', ') || 'no courses';
-          
-          setContext(`The user ${profile?.full_name || ''} is a ${profile?.role || 'student'} enrolled/teaching: ${courseNames}`);
+          if (enrollError) throw enrollError;
+
+          // Step 3: Fetch course titles separately using plucked ids
+          let courseNames = 'no courses';
+          if (enrollments && enrollments.length > 0) {
+            const courseIds = enrollments.map((e: any) => e.course_id).filter(Boolean);
+            if (courseIds.length > 0) {
+              const { data: courses, error: coursesError } = await supabase
+                .from('courses')
+                .select('title')
+                .in('id', courseIds);
+
+              if (coursesError) throw coursesError;
+              courseNames = courses?.map((c: any) => c.title).join(', ') || 'no courses';
+            }
+          }
+
+          setContext(`The user ${profile?.full_name || ''} is a ${profile?.role || 'student'} enrolled in: ${courseNames}`);
         } catch (err) {
-          console.error('Failed to fetch AI context', err);
-          // Failsafe for the demo if Supabase fails
-          setContext('System Context: The user is a first-year Computer Science Engineering student focusing on Artificial Intelligence and Machine Learning.');
+          // Silently swallow ALL errors (400, 401, network) — demo must not break
+          console.warn('[AICopilot] Context fetch failed, using fallback:', err);
+          setContext(FALLBACK_CONTEXT);
         }
       };
       fetchContext();
