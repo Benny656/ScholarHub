@@ -19,6 +19,7 @@ import {
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { JitsiMeeting } from '@jitsi/react-sdk';
 
 const classroomDb = supabase as any;
 
@@ -126,32 +127,7 @@ function formatDuration(startedAt?: string | null, endedAt?: string | null) {
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 }
 
-async function loadJitsiScript() {
-  if (window.JitsiMeetExternalAPI) return;
-
-  await new Promise<void>((resolve, reject) => {
-    const existing = document.getElementById(JITSI_SCRIPT_ID) as HTMLScriptElement | null;
-
-    if (existing) {
-      if (window.JitsiMeetExternalAPI) {
-        resolve();
-        return;
-      }
-
-      existing.addEventListener('load', () => resolve(), { once: true });
-      existing.addEventListener('error', () => reject(new Error('Jitsi script failed to load.')), { once: true });
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.id = JITSI_SCRIPT_ID;
-    script.src = JITSI_SCRIPT_SRC;
-    script.async = true;
-    script.addEventListener('load', () => resolve(), { once: true });
-    script.addEventListener('error', () => reject(new Error('Jitsi script failed to load.')), { once: true });
-    document.body.appendChild(script);
-  });
-}
+// Removed manual Jitsi script loader as we now use @jitsi/react-sdk
 
 export function LiveClassroom({ courseId: propCourseId }: { courseId?: string }) {
   const { courseId: paramCourseId, id: paramId } = useParams();
@@ -162,7 +138,6 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   const { user } = useAuth();
 
   const courseId = activeId;
-  const jitsiContainerRef = useRef<HTMLDivElement>(null);
   const jitsiApiRef = useRef<JitsiMeetApi | null>(null);
   const participantRowRef = useRef<string | null>(null);
 
@@ -419,116 +394,11 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   );
 
   useEffect(() => {
-    if (!joined || !selectedSession || !jitsiContainerRef.current || jitsiApiRef.current) return;
-
-    let mounted = true;
-
-    const joinMeeting = async () => {
-      setJitsiReady(false);
-      setMessage('Connecting to meeting');
-
-      try {
-        await loadJitsiScript();
-        if (!mounted || !window.JitsiMeetExternalAPI || !jitsiContainerRef.current) return;
-
-        const roomName = selectedSession.meeting_room_id || getRoomName(selectedSession.course_id);
-        const api = new window.JitsiMeetExternalAPI('meet.jit.si', {
-          roomName,
-          width: '100%',
-          height: '100%',
-          parentNode: jitsiContainerRef.current,
-          userInfo: {
-            displayName,
-            email: profile?.email || user?.email,
-          },
-          configOverwrite: {
-            prejoinPageEnabled: false,
-            disableDeepLinking: true,
-            startWithAudioMuted: !canModerate,
-            startWithVideoMuted: false,
-            disableInviteFunctions: true,
-            hideConferenceSubject: false,
-            enableWelcomePage: false,
-            readOnlyName: true,
-          },
-          interfaceConfigOverwrite: {
-            SHOW_JITSI_WATERMARK: false,
-            SHOW_WATERMARK_FOR_GUESTS: false,
-            SHOW_BRAND_WATERMARK: false,
-            SHOW_POWERED_BY: false,
-            DISPLAY_WELCOME_PAGE_CONTENT: false,
-            DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
-            MOBILE_APP_PROMO: false,
-            HIDE_INVITE_MORE_HEADER: true,
-            TOOLBAR_BUTTONS: [
-              'microphone',
-              'camera',
-              'desktop',
-              'chat',
-              'participants-pane',
-              'raisehand',
-              'tileview',
-              'settings',
-              'recording',
-              'fullscreen',
-              'hangup',
-            ],
-          },
-        });
-
-        jitsiApiRef.current = api;
-
-        api.addEventListener('videoConferenceJoined', async () => {
-          setJitsiReady(true);
-          setMessage('');
-          setParticipantCount(api.getNumberOfParticipants?.() || 1);
-
-          const { data, error } = await classroomDb
-            .from('session_participants')
-            .insert({
-              session_id: selectedSession.id,
-              user_id: user?.id,
-              role: canModerate ? 'host' : 'participant',
-            })
-            .select('id')
-            .single();
-
-          if (error) {
-            console.error('Participant tracking failed:', error);
-            return;
-          }
-
-          participantRowRef.current = data.id;
-          loadParticipants(selectedSession.id);
-        });
-
-        api.addEventListener('participantJoined', () => {
-          setParticipantCount(api.getNumberOfParticipants?.() || 0);
-        });
-
-        api.addEventListener('participantLeft', () => {
-          setParticipantCount(api.getNumberOfParticipants?.() || 0);
-        });
-
-        api.addEventListener('videoConferenceLeft', () => {
-          leaveClassroom(false);
-        });
-      } catch (error: any) {
-        console.error('Jitsi initialization failed:', error);
-        setJoined(false);
-        setJitsiReady(false);
-        setMessage(error?.message || 'Unable to connect to Jitsi Meet.');
-        toast.error('Unable to connect to the meeting.');
-      }
-    };
-
-    joinMeeting();
-
+    if (!joined || !selectedSession) return;
     return () => {
-      mounted = false;
       disposeJitsi();
     };
-  }, [canModerate, displayName, disposeJitsi, joined, leaveClassroom, loadParticipants, profile?.email, selectedSession, user?.email, user?.id]);
+  }, [joined, selectedSession, disposeJitsi]);
 
   const startClass = async () => {
     if (!courseId || !user) return;
@@ -769,14 +639,99 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
             </div>
           )}
 
-          {joined && !jitsiReady && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-neutral-950 text-white">
-              <Loader2 className="w-10 h-10 animate-spin text-purple-400 mb-4" />
-              <p className="text-sm font-semibold">{message || 'Connecting to meeting'}</p>
+          {joined && selectedSession && (
+            <div className="w-full h-full min-h-[600px] xl:h-[calc(100vh-11rem)] relative">
+              <JitsiMeeting
+                domain="meet.jit.si"
+                roomName={(selectedSession.meeting_room_id || getRoomName(selectedSession.course_id)).replace(/\s+/g, '_')}
+                spinner={() => (
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-neutral-950 text-white w-full h-full min-h-[600px]">
+                    <Loader2 className="w-10 h-10 animate-spin text-purple-400 mb-4" />
+                    <p className="text-sm font-semibold">Connecting to meeting...</p>
+                  </div>
+                )}
+                configOverwrite={{
+                  prejoinPageEnabled: false,
+                  disableDeepLinking: true,
+                  startWithAudioMuted: !canModerate,
+                  startWithVideoMuted: false,
+                  disableInviteFunctions: true,
+                  hideConferenceSubject: false,
+                  enableWelcomePage: false,
+                  readOnlyName: true,
+                }}
+                interfaceConfigOverwrite={{
+                  SHOW_JITSI_WATERMARK: false,
+                  SHOW_WATERMARK_FOR_GUESTS: false,
+                  SHOW_BRAND_WATERMARK: false,
+                  SHOW_POWERED_BY: false,
+                  DISPLAY_WELCOME_PAGE_CONTENT: false,
+                  DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
+                  MOBILE_APP_PROMO: false,
+                  HIDE_INVITE_MORE_HEADER: true,
+                  TOOLBAR_BUTTONS: [
+                    'microphone',
+                    'camera',
+                    'desktop',
+                    'chat',
+                    'participants-pane',
+                    'raisehand',
+                    'tileview',
+                    'settings',
+                    'recording',
+                    'fullscreen',
+                    'hangup',
+                  ],
+                }}
+                userInfo={{
+                  displayName,
+                  email: profile?.email || user?.email || undefined,
+                }}
+                getIFrameRef={(iframeRef) => {
+                  iframeRef.style.height = '100%';
+                  iframeRef.style.width = '100%';
+                }}
+                onApiReady={(externalApi) => {
+                  jitsiApiRef.current = externalApi as any;
+                  setJitsiReady(true);
+                  setMessage('');
+                  setParticipantCount(externalApi.getNumberOfParticipants?.() || 1);
+
+                  externalApi.addEventListener('videoConferenceJoined', async () => {
+                    const { data, error } = await classroomDb
+                      .from('session_participants')
+                      .insert({
+                        session_id: selectedSession.id,
+                        user_id: user?.id,
+                        role: canModerate ? 'host' : 'participant',
+                      })
+                      .select('id')
+                      .single();
+
+                    if (error) {
+                      console.error('Participant tracking failed:', error);
+                      return;
+                    }
+
+                    participantRowRef.current = data.id;
+                    loadParticipants(selectedSession.id);
+                  });
+
+                  externalApi.addEventListener('participantJoined', () => {
+                    setParticipantCount(externalApi.getNumberOfParticipants?.() || 0);
+                  });
+
+                  externalApi.addEventListener('participantLeft', () => {
+                    setParticipantCount(externalApi.getNumberOfParticipants?.() || 0);
+                  });
+
+                  externalApi.addEventListener('videoConferenceLeft', () => {
+                    leaveClassroom(false);
+                  });
+                }}
+              />
             </div>
           )}
-
-          <div ref={jitsiContainerRef} className="w-full h-[58vh] xl:h-[calc(100vh-11rem)]" />
         </section>
 
         <aside className="space-y-4">
