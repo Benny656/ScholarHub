@@ -30,6 +30,10 @@ router.post('/auth/login', authController.login);
 router.post('/certificates/mint', certificateController.mintCertificate);
 router.post('/verify/analyze-vision', upload.single('file'), verifyController.analyzeVision);
 
+// --- Payment Routes (Public for demo) ---
+router.post('/payments/order', paymentController.createOrder);
+router.post('/payments/create-order', paymentController.createOrder); // alias for forward-compat
+
 // Apply authentication middleware to remaining api routes
 router.use(authMiddleware);
 
@@ -67,10 +71,10 @@ router.post('/live/leave', liveController.leaveSession);
 // --- Teacher Dashboard ---
 router.get('/teacher/dashboard', roleMiddleware(['teacher', 'admin']), dashboardController.getTeacherDashboard);
 
-// --- Payment Routes ---
-router.post('/payments/order', paymentController.createOrder);
-router.post('/payments/create-order', paymentController.createOrder); // alias for forward-compat
+// --- Payment Routes (Protected) ---
 router.post('/payments/verify', paymentController.verifyPayment);
+
+
 
 // --- Calendar Routes ---
 router.get('/calendar/events', calendarController.getEvents);

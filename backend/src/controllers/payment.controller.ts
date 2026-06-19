@@ -1,15 +1,12 @@
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import { getSupabaseForUser } from '../config/supabase.js';
 import crypto from 'crypto';
 
 export const paymentController = {
-  // POST /api/payments/order  (also aliased as /api/payments/create-order)
-  async createOrder(req: AuthenticatedRequest, res: Response) {
+  async createOrder(req: Request | any, res: Response) {
     try {
-      const { courseId } = req.body;
-      const userId = req.user!.id;
-      const userClient = getSupabaseForUser(req.user!.token);
+      const { amount } = req.body;
 
       const key_id = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID;
       const key_secret = process.env.RAZORPAY_KEY_SECRET;
@@ -29,7 +26,7 @@ export const paymentController = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: 50000, // Amount in paise (500 INR)
+          amount: amount || 50000, // Amount in paise (500 INR)
           currency: 'INR',
           receipt: 'receipt_' + Date.now(),
         }),
@@ -45,22 +42,7 @@ export const paymentController = {
         });
       }
 
-      // Persist the newly created order in our payments table for admin reporting
-      const { error: dbError } = await userClient
-        .from('payments')
-        .insert({
-          user_id: userId,
-          course_id: courseId || null,
-          amount: order.amount / 100, // Store as rupees, not paise
-          currency: order.currency,
-          status: 'created',
-          razorpay_order_id: order.id,
-        });
 
-      if (dbError) {
-        // Non-fatal — the Razorpay order is still valid; log and continue
-        console.error('[Payment] DB insert failed (non-fatal):', dbError.message);
-      }
 
       // Return the fields the frontend PaymentButton expects
       return res.status(201).json({
