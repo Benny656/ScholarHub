@@ -60,6 +60,9 @@ import { AdminSubjectAssignment } from './pages/admin/AdminSubjectAssignment';
 import { CourseCatalog } from './pages/courses/CourseCatalog';
 import { CreateCourse } from './pages/courses/CreateCourse';
 import { CourseDetail } from './pages/courses/CourseDetail';
+import { MyCourses } from './pages/unistudents/MyCourses';
+import { ExamCalendar } from './pages/unistudents/ExamCalendar';
+import { GradesGPA } from './pages/unistudents/GradesGPA';
 
 // Classroom & LMS
 import { LiveClassroom } from './pages/classroom/LiveClassroom';
@@ -240,9 +243,9 @@ function AppRoutes() {
         <Route path="/timetable" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Timetable" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/report-card" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Report Card" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/ai-tutor" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="AI Tutor" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/my-courses" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="My Courses" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/exam-calendar" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Exam Calendar" /></DashboardWrapper></ProtectedRoute>} />
-        <Route path="/grades-gpa" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Grades & GPA" /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/my-courses" element={<ProtectedRoute><DashboardWrapper><MyCourses /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/exam-calendar" element={<ProtectedRoute><DashboardWrapper><ExamCalendar /></DashboardWrapper></ProtectedRoute>} />
+        <Route path="/grades-gpa" element={<ProtectedRoute><DashboardWrapper><GradesGPA /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/progress-analytics" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Progress Analytics" /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/my-classes" element={<ProtectedRoute><DashboardWrapper><MyClassesWrapper /></DashboardWrapper></ProtectedRoute>} />
         <Route path="/daily-attendance" element={<ProtectedRoute><DashboardWrapper><ComingSoonPlaceholder title="Daily Attendance" /></DashboardWrapper></ProtectedRoute>} />

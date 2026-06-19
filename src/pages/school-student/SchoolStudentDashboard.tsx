@@ -131,19 +131,62 @@ export function SchoolStudentDashboard() {
   const [attendancePercent, setAttendancePercent] = useState<number>(0);
   const [badges, setBadges] = useState<BadgeItem[]>([]);
   
-  // New state for Amethyst-themed components
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [reportCard, setReportCard] = useState<ReportCardRow[]>([]);
-  const [weeklyTimetable, setWeeklyTimetable] = useState<Record<string, TimeSlot[]>>(
-    {
-      Monday: [],
-      Tuesday: [],
-      Wednesday: [],
-      Thursday: [],
-      Friday: []
-    }
-  );
+  // ── Static hardcoded demo data – renders instantly ──────────────────────
+  const subjects: Subject[] = [
+    { id: 's1', name: 'Mathematics', instructor: 'Mr. Rajiv Sharma', completion: 82 },
+    { id: 's2', name: 'Science', instructor: 'Ms. Priya Nair', completion: 74 },
+    { id: 's3', name: 'English Literature', instructor: 'Mrs. Ananya Bose', completion: 91 },
+    { id: 's4', name: 'History & Civics', instructor: 'Mr. Suresh Menon', completion: 67 },
+    { id: 's5', name: 'Computer Science', instructor: 'Ms. Deepa Iyer', completion: 88 },
+  ];
+
+  const assignments: Assignment[] = [
+    { id: 'a1', title: 'Algebra Chapter 4 Worksheet', subject: 'Mathematics', dueDate: '2026-06-21', status: 'Pending' },
+    { id: 'a2', title: 'Biology Cell Diagram', subject: 'Science', dueDate: '2026-06-18', status: 'Submitted' },
+    { id: 'a3', title: 'Shakespeare Essay – Hamlet', subject: 'English Literature', dueDate: '2026-06-15', status: 'Submitted' },
+    { id: 'a4', title: 'World War II Timeline', subject: 'History & Civics', dueDate: '2026-06-14', status: 'Pending' },
+    { id: 'a5', title: 'Python Basics Mini Project', subject: 'Computer Science', dueDate: '2026-06-25', status: 'Pending' },
+  ];
+
+  const reportCard: ReportCardRow[] = [
+    { id: 'r1', subject: 'Mathematics', grade: 'A',  remarks: 'Exceptional problem-solving skills. Keep it up!' },
+    { id: 'r2', subject: 'Science',     grade: 'B+', remarks: 'Great curiosity and lab work. Focus on theory.' },
+    { id: 'r3', subject: 'English Literature', grade: 'A-', remarks: 'Eloquent writing style. Outstanding creativity.' },
+    { id: 'r4', subject: 'History & Civics',   grade: 'B+', remarks: 'Strong retention. Excellent class participation.' },
+    { id: 'r5', subject: 'Computer Science',   grade: 'A',  remarks: 'Natural aptitude for coding. Star performer!' },
+  ];
+
+  const STATIC_GPA = '3.72';
+
+  // Weekly timetable: time on left, subjects per column-day
+  const timeSlots = [
+    '08:00 AM – 08:45 AM',
+    '08:45 AM – 09:30 AM',
+    '09:30 AM – 10:15 AM',
+    '10:15 AM – 10:30 AM', // short break
+    '10:30 AM – 11:15 AM',
+    '11:15 AM – 12:00 PM',
+    '12:00 PM – 12:45 PM', // lunch
+    '12:45 PM – 01:30 PM',
+    '01:30 PM – 02:15 PM',
+    '02:15 PM – 03:00 PM',
+  ];
+
+  const staticTimetable: Record<string, (string | null)[]> = {
+    Monday:    ['Mathematics', 'Science', 'English Lit.', null, 'History', 'Comp. Science', null, 'Mathematics', 'Science', 'English Lit.'],
+    Tuesday:   ['Science', 'English Lit.', 'History', null, 'Mathematics', 'Comp. Science', null, 'Science', 'History', 'Mathematics'],
+    Wednesday: ['English Lit.', 'Mathematics', 'Comp. Science', null, 'Science', 'History', null, 'English Lit.', 'Comp. Science', 'Science'],
+    Thursday:  ['History', 'Comp. Science', 'Mathematics', null, 'English Lit.', 'Science', null, 'History', 'Mathematics', 'Comp. Science'],
+    Friday:    ['Comp. Science', 'History', 'Science', null, 'Mathematics', 'English Lit.', null, 'Comp. Science', 'Science', 'Mathematics'],
+  };
+
+  const subjectColors: Record<string, string> = {
+    'Mathematics':    'bg-violet-500/20 border-violet-500/40 text-violet-700 dark:text-violet-300',
+    'Science':        'bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-emerald-300',
+    'English Lit.':   'bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300',
+    'History':        'bg-amber-500/20 border-amber-500/40 text-amber-700 dark:text-amber-300',
+    'Comp. Science':  'bg-cyan-500/20 border-cyan-500/40 text-cyan-700 dark:text-cyan-300',
+  };
 
   // ════════════════════════════════════════════════════════════════════════
   // Helper Functions for Mock Data Generation (Hybrid Real + Mock)
@@ -415,15 +458,7 @@ export function SchoolStudentDashboard() {
       ];
       setBadges(badgesConfig);
 
-      // ═════════════════════════════════════════════════════════════════
-      // Generate Mock Data from Real Enrollments (Amethyst Theme Components)
-      // ═════════════════════════════════════════════════════════════════
-      if (validEnrollments.length > 0) {
-        setSubjects(generateSubjectsFromCourses(validEnrollments));
-        setAssignments(generateAssignmentsFromCourses(validEnrollments));
-        setReportCard(generateReportCard(validEnrollments));
-        setWeeklyTimetable(generateWeeklyTimetable(validEnrollments));
-      }
+      // Static demo data is initialized inline – no Supabase needed for these sections.
 
     } catch (err: unknown) {
       console.error("Dashboard Fetch Error Details:", err);
@@ -730,207 +765,278 @@ export function SchoolStudentDashboard() {
       {/* AMETHYST THEME COMPONENTS - REAL DATA WITH MOCK ENHANCEMENT */}
       {/* ════════════════════════════════════════════════════════════════════ */}
 
-      {/* SECTION 1: SUBJECTS */}
-      <motion.section 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 1: SUBJECTS                                        */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
       >
         <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
-          <span className="text-3xl">📚</span> My Subjects
+          <span className="w-9 h-9 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center text-lg shadow-md">📚</span>
+          My Subjects
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {subjects.length > 0 ? (
-            subjects.map(subject => (
-              <motion.div 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {subjects.map((subject, i) => {
+            const icons = ['➗', '🔬', '📖', '🏛️', '💻'];
+            const gradients = [
+              'from-violet-500 to-purple-600',
+              'from-emerald-500 to-teal-600',
+              'from-rose-500 to-pink-600',
+              'from-amber-500 to-orange-600',
+              'from-cyan-500 to-blue-600',
+            ];
+            const bars = [
+              'from-violet-500 to-purple-600',
+              'from-emerald-500 to-teal-500',
+              'from-rose-500 to-pink-500',
+              'from-amber-500 to-orange-500',
+              'from-cyan-500 to-blue-500',
+            ];
+            return (
+              <motion.div
                 key={subject.id}
-                whileHover={{ translateY: -4 }}
-                className="p-5 bg-white/50 dark:bg-purple-900/20 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-all"
+                whileHover={{ translateY: -6, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+                className="relative p-5 bg-white dark:bg-neutral-900/60 rounded-2xl border border-neutral-200/60 dark:border-purple-500/20 shadow-md hover:shadow-xl hover:border-purple-400/50 transition-all duration-300 flex flex-col gap-4 overflow-hidden"
               >
-                <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">{subject.name}</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-4">👨‍🏫 {subject.instructor}</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-neutral-700 dark:text-neutral-300">Syllabus Completion</span>
+                <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl opacity-10 bg-purple-500 -translate-y-6 translate-x-6" />
+                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-xl shadow-lg`}>
+                  {icons[i]}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-black text-neutral-900 dark:text-white leading-tight">{subject.name}</h3>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">👨‍🏫 {subject.instructor}</p>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[11px] font-bold">
+                    <span className="text-neutral-500 dark:text-neutral-400">Syllabus</span>
                     <span className="text-purple-600 dark:text-purple-400">{subject.completion}%</span>
                   </div>
-                  <div className="w-full h-2.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-violet-600"
+                  <div className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                    <motion.div
+                      className={`h-full bg-gradient-to-r ${bars[i]} rounded-full`}
                       initial={{ width: 0 }}
                       animate={{ width: `${subject.completion}%` }}
-                      transition={{ duration: 1.5 }}
+                      transition={{ duration: 1.2, delay: 0.3 + i * 0.1, ease: 'easeOut' }}
                     />
                   </div>
                 </div>
               </motion.div>
-            ))
-          ) : (
-            <div className="col-span-full p-8 text-center text-neutral-500 dark:text-neutral-400">
-              No subjects enrolled yet.
-            </div>
-          )}
+            );
+          })}
         </div>
       </motion.section>
 
-      {/* SECTION 2: HOMEWORK & ASSIGNMENTS */}
-      <motion.section 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 2: HOMEWORK & ASSIGNMENTS                          */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
       >
         <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
-          <span className="text-3xl">✏️</span> Homework & Assignments
-        </h2>
-        <div className="space-y-3 max-h-[400px] overflow-y-auto">
-          {assignments.length > 0 ? (
-            assignments.map(assignment => {
-              const isOverdue = new Date(assignment.dueDate) < new Date();
-              const isPending = assignment.status === 'Pending';
-              return (
-                <motion.div 
-                  key={assignment.id}
-                  whileHover={{ x: 4 }}
-                  className={`p-4 rounded-xl border transition-all ${
-                    isPending && isOverdue 
-                      ? 'bg-red-500/10 border-red-500/50' 
-                      : isPending 
-                        ? 'bg-amber-500/10 border-amber-500/50'
-                        : 'bg-emerald-500/10 border-emerald-500/50'
-                  }`}
-                >
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="flex-1">
-                      <h4 className="font-bold text-neutral-900 dark:text-white">{assignment.title}</h4>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">{assignment.subject}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
-                        assignment.status === 'Graded' 
-                          ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
-                          : assignment.status === 'Submitted'
-                            ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
-                            : isOverdue
-                              ? 'bg-red-500/20 text-red-700 dark:text-red-300'
-                              : 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                      }`}>
-                        {assignment.status}
-                      </span>
-                      <p className="text-[11px] text-neutral-600 dark:text-neutral-400 mt-1">
-                        Due: {new Date(assignment.dueDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })
-          ) : (
-            <div className="p-8 text-center text-neutral-500 dark:text-neutral-400">
-              No assignments to display.
-            </div>
-          )}
-        </div>
-      </motion.section>
-
-      {/* SECTION 3: CLASS TIMETABLE */}
-      <motion.section 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ delay: 0.4 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
-      >
-        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
-          <span className="text-3xl">📅</span> Weekly Timetable
+          <span className="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center text-lg shadow-md">✏️</span>
+          Homework &amp; Assignments
         </h2>
         <div className="overflow-x-auto">
-          <div className="grid grid-cols-5 gap-4 min-w-full">
-            {Object.entries(weeklyTimetable).map(([day, slots]) => (
-              <div key={day} className="min-w-[180px]">
-                <h3 className="font-bold text-neutral-900 dark:text-white mb-3 text-center pb-2 border-b-2 border-purple-500/30">
-                  {day}
-                </h3>
-                <div className="space-y-2">
-                  {slots.length > 0 ? (
-                    slots.map((slot, idx) => (
-                      <motion.div 
-                        key={`${day}-${idx}`}
-                        whileHover={{ scale: 1.02 }}
-                        className={`p-3 rounded-lg text-xs transition-all ${
-                          slot.isCurrent
-                            ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/50'
-                            : 'bg-purple-500/20 text-neutral-900 dark:text-white border border-purple-500/30'
-                        }`}
-                      >
-                        <p className="font-bold">{slot.time}</p>
-                        <p className="mt-1 font-semibold truncate">{slot.subject}</p>
-                        <p className="text-[10px] opacity-80 truncate">👨‍🏫 {slot.instructor}</p>
-                        {slot.isCurrent && <p className="mt-1 font-black text-yellow-300">🔴 LIVE NOW</p>}
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-xs text-neutral-400 text-center py-4">No classes</div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          <table className="w-full text-sm min-w-[540px]">
+            <thead>
+              <tr className="border-b-2 border-purple-500/20">
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Assignment</th>
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Subject</th>
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Due Date</th>
+                <th className="text-center px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-purple-500/10">
+              {assignments.map(a => {
+                const isOverdue = a.status === 'Pending' && new Date(a.dueDate) < new Date();
+                const effectiveStatus = isOverdue ? 'Overdue' : a.status;
+                const statusStyles: Record<string, string> = {
+                  Pending:   'bg-amber-100  dark:bg-amber-500/15  text-amber-700  dark:text-amber-300  border border-amber-300/50',
+                  Submitted: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-300/50',
+                  Overdue:   'bg-red-100    dark:bg-red-500/15    text-red-700    dark:text-red-300    border border-red-300/50',
+                  Graded:    'bg-blue-100   dark:bg-blue-500/15   text-blue-700   dark:text-blue-300   border border-blue-300/50',
+                };
+                const statusDots: Record<string, string> = { Pending: '🟡', Submitted: '🟢', Overdue: '🔴', Graded: '🔵' };
+                return (
+                  <motion.tr key={a.id} whileHover={{ backgroundColor: 'rgba(168,85,247,0.04)' }} className="transition-colors">
+                    <td className="px-4 py-3.5">
+                      <span className="font-semibold text-neutral-900 dark:text-white">{a.title}</span>
+                    </td>
+                    <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400">{a.subject}</td>
+                    <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400 font-mono text-xs">
+                      {new Date(a.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td className="px-4 py-3.5 text-center">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${statusStyles[effectiveStatus]}`}>
+                        {statusDots[effectiveStatus]} {effectiveStatus}
+                      </span>
+                    </td>
+                  </motion.tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </motion.section>
 
-      {/* SECTION 4: REPORT CARD */}
-      <motion.section 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ delay: 0.45 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-lg"
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 3: CLASS TIMETABLE                                */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h2 className="text-2xl font-black text-neutral-900 dark:text-white flex items-center gap-3">
-            <span className="text-3xl">📋</span> Report Card
-          </h2>
-          <motion.button 
+        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
+          <span className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-lg shadow-md">📅</span>
+          Weekly Class Timetable
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs min-w-[640px] border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th className="sticky left-0 bg-white/80 dark:bg-[#161224]/90 backdrop-blur px-4 py-3 text-left font-black text-neutral-500 dark:text-neutral-400 w-36 border-b-2 border-purple-500/20 z-10">Time</th>
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => (
+                  <th key={d} className="px-3 py-3 font-black text-neutral-700 dark:text-white text-center border-b-2 border-purple-500/20">{d}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {timeSlots.map((time, i) => {
+                const isLunch = time.startsWith('12:00');
+                const isBreak = time.startsWith('10:15');
+                if (isBreak) return (
+                  <tr key={time}>
+                    <td className="sticky left-0 bg-neutral-100/80 dark:bg-neutral-800/50 backdrop-blur px-4 py-2 text-neutral-400 font-mono z-10 border-b border-neutral-200/50 dark:border-neutral-700/50">10:15 – 10:30</td>
+                    <td colSpan={5} className="px-4 py-2 text-center text-[11px] font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100/50 dark:bg-neutral-800/30 border-b border-neutral-200/50 dark:border-neutral-700/50 tracking-widest uppercase">☕ Short Break</td>
+                  </tr>
+                );
+                if (isLunch) return (
+                  <tr key={time}>
+                    <td className="sticky left-0 bg-amber-50/80 dark:bg-amber-900/20 backdrop-blur px-4 py-3 text-amber-600 dark:text-amber-400 font-mono z-10 border-b border-amber-200/40 dark:border-amber-700/30">12:00 – 12:45</td>
+                    <td colSpan={5} className="px-4 py-3 text-center text-sm font-black text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-900/10 border-b border-amber-200/40 dark:border-amber-700/30">🍱 Lunch Break</td>
+                  </tr>
+                );
+                return (
+                  <tr key={time} className="group">
+                    <td className="sticky left-0 bg-white/80 dark:bg-[#161224]/90 backdrop-blur px-4 py-2.5 font-mono text-neutral-500 dark:text-neutral-400 z-10 border-b border-purple-500/10 whitespace-nowrap">{time}</td>
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => {
+                      const subj = staticTimetable[day][i];
+                      const color = subj ? (subjectColors[subj] || 'bg-purple-500/10 border-purple-500/30 text-purple-700 dark:text-purple-300') : '';
+                      return (
+                        <td key={day} className="px-2 py-2 border-b border-purple-500/10 text-center">
+                          {subj ? (
+                            <motion.div whileHover={{ scale: 1.05 }} className={`rounded-lg px-2 py-1.5 border font-semibold ${color}`}>
+                              {subj}
+                            </motion.div>
+                          ) : (
+                            <span className="text-neutral-300 dark:text-neutral-700">–</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </motion.section>
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 4: REPORT CARD                                     */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45 }}
+        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl font-black text-neutral-900 dark:text-white flex items-center gap-3">
+              <span className="w-9 h-9 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center text-lg shadow-md">📋</span>
+              Academic Report Card
+            </h2>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 ml-12">Term 2 — Academic Year 2025–26</p>
+          </div>
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-lg shadow-purple-600/30 transition-all"
+            className="self-start bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-5 py-2 rounded-xl font-bold text-sm shadow-lg shadow-purple-600/30 transition-all"
           >
             📥 Download PDF
           </motion.button>
         </div>
+
+        {/* GPA Banner */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mb-6 p-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-purple-600/30"
+        >
+          <div className="text-white text-center sm:text-left">
+            <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-1">Current GPA — Term 2</p>
+            <p className="text-4xl font-black text-white drop-shadow">{STATIC_GPA} <span className="text-lg font-semibold text-white/70">/ 4.00</span></p>
+          </div>
+          <div className="flex gap-4">
+            <div className="text-center bg-white/15 rounded-xl px-4 py-2">
+              <p className="text-[11px] font-bold text-white/70">Rank</p>
+              <p className="text-xl font-black text-yellow-300">#3</p>
+            </div>
+            <div className="text-center bg-white/15 rounded-xl px-4 py-2">
+              <p className="text-[11px] font-bold text-white/70">Attendance</p>
+              <p className="text-xl font-black text-emerald-300">{attendancePercent}%</p>
+            </div>
+            <div className="text-center bg-white/15 rounded-xl px-4 py-2">
+              <p className="text-[11px] font-bold text-white/70">Honours</p>
+              <p className="text-xl font-black text-pink-300">⭐ Merit</p>
+            </div>
+          </div>
+        </motion.div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-purple-500/30">
-                <th className="text-left px-4 py-3 font-bold text-neutral-900 dark:text-white">Subject</th>
-                <th className="text-center px-4 py-3 font-bold text-neutral-900 dark:text-white">Grade</th>
-                <th className="text-left px-4 py-3 font-bold text-neutral-900 dark:text-white">Remarks</th>
+              <tr className="border-b-2 border-purple-500/20">
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Subject</th>
+                <th className="text-center px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Grade</th>
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Teacher Remarks</th>
               </tr>
             </thead>
-            <tbody>
-              {reportCard.length > 0 ? (
-                reportCard.map(row => (
-                  <motion.tr 
+            <tbody className="divide-y divide-purple-500/10">
+              {reportCard.map((row, i) => {
+                const gradeColor = row.grade.startsWith('A') ? 'from-emerald-500 to-teal-500' : 'from-amber-500 to-orange-500';
+                return (
+                  <motion.tr
                     key={row.id}
-                    whileHover={{ backgroundColor: 'rgba(168, 85, 247, 0.05)' }}
-                    className="border-b border-purple-500/10 hover:bg-purple-500/5 transition-colors"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.55 + i * 0.06 }}
+                    whileHover={{ backgroundColor: 'rgba(168,85,247,0.04)' }}
+                    className="transition-colors"
                   >
-                    <td className="px-4 py-3 text-neutral-900 dark:text-white font-semibold">{row.subject}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="bg-gradient-to-r from-purple-600 to-violet-600 text-white px-3 py-1 rounded-lg font-black">
+                    <td className="px-4 py-3.5 font-semibold text-neutral-900 dark:text-white">{row.subject}</td>
+                    <td className="px-4 py-3.5 text-center">
+                      <span className={`inline-block bg-gradient-to-r ${gradeColor} text-white px-3 py-1 rounded-lg font-black text-sm shadow-sm`}>
                         {row.grade}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400 italic">{row.remarks}</td>
+                    <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400 italic text-xs leading-relaxed">
+                      💬 {row.remarks}
+                    </td>
                   </motion.tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
-                    No grades available yet.
-                  </td>
-                </tr>
-              )}
+                );
+              })}
             </tbody>
           </table>
         </div>
