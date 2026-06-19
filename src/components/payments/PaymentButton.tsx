@@ -53,24 +53,34 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
         return;
       }
 
-      // 2. Call backend to get order_id
-      const response = await fetch('/api/payments/create-order', {
+      // 2. Get the current user's session token to authenticate the backend request
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+
+      if (!accessToken) {
+        alert('You must be logged in to make a payment.');
+        setLoading(false);
+        return;
+      }
+
+      // 3. Call backend to create a Razorpay order (route: POST /api/payments/order)
+      const response = await fetch('/api/payments/order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({
-          courseId,
-        }),
+        body: JSON.stringify({ courseId }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create payment order');
-      }
 
       const data = await response.json();
 
-      // 3. Initialize Razorpay options
+      if (!response.ok) {
+        console.error('[PaymentButton] Order creation failed:', data.error);
+        throw new Error(data.error || 'Failed to create payment order');
+      }
+
+      // 4. Initialize Razorpay options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder', 
         amount: data.amount, // Set automatically from order response
@@ -81,20 +91,26 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
         theme: {
           color: '#7C3AED', // Amethyst Theme Color
         },
-        handler: async function (response: any) {
-          // 4. Handle success callback
-          console.log('Razorpay Payment ID:', response.razorpay_payment_id);
-          
+        handler: async function (rzpResponse: any) {
+          // 4. Handle success — verify on the backend so it can flip status to 'captured'
+          console.log('Razorpay Payment ID:', rzpResponse.razorpay_payment_id);
+
           try {
-            await supabase.from('payments').insert({
-              course_id: courseId || null,
-              amount: data.amount ? data.amount / 100 : 5000,
-              currency: data.currency || 'INR',
-              status: 'captured',
-              razorpay_order_id: data.order_id,
+            await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+              },
+              body: JSON.stringify({
+                orderId: data.order_id,
+                razorpayPaymentId: rzpResponse.razorpay_payment_id,
+                razorpaySignature: rzpResponse.razorpay_signature,
+                courseId,
+              }),
             });
           } catch (e) {
-            console.error('Failed to log payment to dashboard:', e);
+            console.error('[PaymentButton] Verify call failed (non-fatal):', e);
           }
 
           alert('Payment Successful! Welcome to the course.');

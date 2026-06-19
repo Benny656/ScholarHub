@@ -4,74 +4,73 @@ import { getSupabaseForUser } from '../config/supabase.js';
 import crypto from 'crypto';
 
 export const paymentController = {
-  // POST /api/payments/order
+  // POST /api/payments/order  (also aliased as /api/payments/create-order)
   async createOrder(req: AuthenticatedRequest, res: Response) {
     try {
-      const { courseId, amount } = req.body;
+      const { courseId } = req.body;
       const userId = req.user!.id;
       const userClient = getSupabaseForUser(req.user!.token);
 
-      const keyId = process.env.VITE_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
-      const keySecret = process.env.RAZORPAY_KEY_SECRET;
+      const key_id = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID;
+      const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
-      let orderId = `order_${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
-
-      if (keyId && keySecret) {
-        try {
-          const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
-          const response = await fetch('https://api.razorpay.com/v1/orders', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Basic ${auth}`
-            },
-            body: JSON.stringify({
-              amount: Math.round(amount * 100), // Razorpay expects amount in paise
-              currency: 'INR',
-              receipt: `receipt_${courseId.substring(0, 8)}`
-            })
-          });
-
-          if (response.ok) {
-            const razorpayOrder = await response.json() as any;
-            orderId = razorpayOrder.id;
-          } else {
-            console.error('Razorpay API error, falling back to mock order');
-          }
-        } catch (razorError) {
-          console.error('Error connecting to Razorpay API:', razorError);
-        }
+      if (!key_id || !key_secret) {
+        console.error('[Payment] Missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET env variables.');
+        return res.status(500).json({ error: 'Payment gateway is not configured on the server.' });
       }
 
-      // Insert record in payments table
-      const { data, error } = await userClient
+      // Use btoa() — the Web-standard Base64 encoder available in Cloudflare Workers & modern Node.
+      const basicAuth = btoa(`${key_id}:${key_secret}`);
+
+      const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${basicAuth}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 50000, // Amount in paise (500 INR)
+          currency: 'INR',
+          receipt: 'receipt_' + Date.now(),
+        }),
+      });
+
+      const order = await razorpayResponse.json() as any;
+
+      if (!razorpayResponse.ok) {
+        // Log the exact Razorpay error body for debugging
+        console.error('[Payment] Razorpay order creation failed:', JSON.stringify(order.error ?? order, null, 2));
+        return res.status(razorpayResponse.status).json({
+          error: order.error?.description || order.error || 'Failed to create Razorpay order.',
+        });
+      }
+
+      // Persist the newly created order in our payments table for admin reporting
+      const { error: dbError } = await userClient
         .from('payments')
         .insert({
           user_id: userId,
-          course_id: courseId,
-          amount,
-          currency: 'INR',
+          course_id: courseId || null,
+          amount: order.amount / 100, // Store as rupees, not paise
+          currency: order.currency,
           status: 'created',
-          razorpay_order_id: orderId
-        })
-        .select()
-        .single();
+          razorpay_order_id: order.id,
+        });
 
-      if (error) {
-        // Fallback for missing table/RLS block
-        console.error('Database write error (returning mock order):', error.message);
+      if (dbError) {
+        // Non-fatal — the Razorpay order is still valid; log and continue
+        console.error('[Payment] DB insert failed (non-fatal):', dbError.message);
       }
 
-      res.status(201).json({
-        id: orderId,
-        amount,
-        currency: 'INR',
-        receipt: data?.id || `receipt_${Math.random().toString(36).substring(2, 9)}`,
-        status: 'created'
+      // Return the fields the frontend PaymentButton expects
+      return res.status(201).json({
+        order_id: order.id,
+        amount: order.amount,
+        currency: order.currency,
       });
     } catch (error: any) {
-      console.error('createOrder error:', error);
-      res.status(500).json({ error: error.message || 'Internal Server Error' });
+      console.error('[Payment] createOrder unexpected error:', error);
+      return res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
   },
 

@@ -69,6 +69,7 @@ router.get('/teacher/dashboard', roleMiddleware(['teacher', 'admin']), dashboard
 
 // --- Payment Routes ---
 router.post('/payments/order', paymentController.createOrder);
+router.post('/payments/create-order', paymentController.createOrder); // alias for forward-compat
 router.post('/payments/verify', paymentController.verifyPayment);
 
 // --- Calendar Routes ---
