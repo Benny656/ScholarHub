@@ -90,13 +90,6 @@ router.post('/calendar/sync/google', calendarController.syncGoogleCalendar);
 router.post('/upload', upload.single('file'), uploadController.uploadFile);
 router.delete('/upload/:key', uploadController.deleteFile);
 
-// --- OpenAI AI Routes ---
-router.post('/ai/tutor', aiController.tutorChat);
-router.post('/ai/quiz/generate', aiController.generateQuiz);
-router.post('/ai/assignments/check', aiController.checkAssignment);
-router.post('/ai/recommendations', aiController.recommendCourses);
-router.post('/ai/attendance/insights', aiController.attendanceInsights);
-
 // --- Admin System Routes ---
 router.get('/admin/stats', roleMiddleware(['admin']), adminController.getStats);
 router.get('/admin/users', roleMiddleware(['admin']), adminController.getUsers);
