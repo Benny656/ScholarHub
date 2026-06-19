@@ -90,7 +90,7 @@ export function AICopilot() {
 
     try {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://scholarhub-backend-bcij.onrender.com';
-      const res = await fetch(`${BACKEND_URL}/api/ai/chat`, {
+      const res = await fetch(`${BACKEND_URL}/api/public-chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
