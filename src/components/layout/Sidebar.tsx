@@ -140,7 +140,7 @@ export default function Sidebar({
   const menuItems = getSidebarItems();
 
   return (
-    <aside className="h-screen w-72 border-r border-neutral-200/80 bg-white p-6 flex flex-col shrink-0 dark:bg-neutral-900 dark:border-neutral-800 transition-colors duration-200">
+    <aside className="h-screen w-72 border-r border-[var(--outline-variant)] bg-[var(--surface)] p-6 flex flex-col shrink-0 transition-colors duration-200">
       {/* Brand Header */}
       <div className="shrink-0 mb-8">
         <button 

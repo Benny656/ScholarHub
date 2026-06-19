@@ -4,48 +4,88 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════
+   MASTER COLOR SYSTEM — ScholarHub Brand Identity
+   Light Purple / Lavender Focus
+═══════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #f9f9ff;
-  --surface: #f9f9ff;
-  --on-surface: #181c22;
-  --on-surface-variant: #414753;
-  --primary: #005ab4;
-  --on-primary: #ffffff;
-  --primary-container: #0a73e0;
-  --secondary: #465f88;
-  --outline: #717785;
-  --outline-variant: #c1c6d5;
-  --surface-container-low: #f1f3fc;
-  --surface-container-high: #e6e8f1;
-  --surface-container-lowest: #ffffff;
-  
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-blur: blur(12px);
-  --glass-text: #181c22;
+  /* ── Page Backgrounds & Surfaces ── */
+  --background:              #F8F9FC;  /* Cool lavender-tinted off-white */
+  --surface:                 #FDFDFF;  /* Cream-lavender cards / sidebars */
+  --on-surface:              #334155;  /* Slate text — high readability */
+  --on-surface-variant:      #64748B;  /* Muted slate for secondary labels */
+
+  /* ── Brand ── */
+  --primary:                 #A78BFA;  /* Light lavender-purple */
+  --primary-hover:           #8B5CF6;  /* Deeper purple for interactions */
+  --on-primary:              #1E0A4A;  /* Dark text on primary buttons */
+  --primary-container:       #EDE9FE;  /* Soft lavender container tint */
+
+  /* ── Semantic ── */
+  --secondary:               #C4B5FD;
+  --outline:                 #94A3B8;
+  --outline-variant:         #CBD5E1;
+  --surface-container-low:   #F1F5F9;
+  --surface-container-high:  #E2E8F0;
+  --surface-container-lowest:#FFFFFF;  /* Only for floating popovers / tooltips */
+
+  /* ── Form Inputs ── */
+  --input-bg:                #F1F5F9;
+  --input-text:              #1E293B;
+  --input-border:            #CBD5E1;
+  --input-placeholder:       #94A3B8;
+
+  /* ── Glass Morphism ── */
+  --glass-bg:                rgba(253, 253, 255, 0.75);
+  --glass-border:            rgba(167, 139, 250, 0.12);
+  --glass-blur:              blur(12px);
+  --glass-text:              #334155;
+
+  /* ── Accents ── */
+  --accent-mint:             #D1FAE5;
+  --accent-peach:            #FFEDD5;
 }
 
 html.dark, .dark {
-  --background: #151315;
-  --surface: #151315;
-  --on-surface: #e7e1e4;
-  --on-surface-variant: #cdc4cd;
-  --primary: #d8bcea;
-  --on-primary: #3c284c;
-  --primary-container: #a187b2;
-  --secondary: #d0c2d6;
-  --outline: #968e97;
-  --outline-variant: #4b454d;
-  --surface-container-low: #1d1b1d;
-  --surface-container-high: #2c292c;
-  --surface-container-lowest: #0f0e10;
+  /* ── Page Backgrounds & Surfaces ── */
+  --background:              #1E1E2A;  /* Elevated soft slate-navy — NOT pitch black */
+  --surface:                 #272736;  /* Slightly lighter slate-purple for cards */
+  --on-surface:              #F8FAFC;  /* Soft off-white text */
+  --on-surface-variant:      #94A3B8;  /* Muted text for secondary labels */
 
-  --glass-bg: rgba(21, 19, 21, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: blur(12px);
-  --glass-text: #e7e1e4;
+  /* ── Brand (same hue, slightly brighter in dark) ── */
+  --primary:                 #A78BFA;
+  --primary-hover:           #C4B5FD;
+  --on-primary:              #1E0A4A;
+  --primary-container:       #3B2A6E;
+
+  /* ── Semantic ── */
+  --secondary:               #A78BFA;
+  --outline:                 #475569;
+  --outline-variant:         #334155;
+  --surface-container-low:   #1A1A27;
+  --surface-container-high:  #2F2F45;
+  --surface-container-lowest:#12121C;  /* Only for floating popovers */
+
+  /* ── Form Inputs ── */
+  --input-bg:                #14141D;  /* Distinct darker box vs page bg */
+  --input-text:              #F8FAFC;  /* Bright, fully visible text */
+  --input-border:            #475569;
+  --input-placeholder:       #64748B;
+
+  /* ── Glass Morphism ── */
+  --glass-bg:                rgba(39, 39, 54, 0.80);
+  --glass-border:            rgba(167, 139, 250, 0.15);
+  --glass-blur:              blur(12px);
+  --glass-text:              #F8FAFC;
+
+  /* ── Accents (desaturated glow — no harsh neons) ── */
+  --accent-mint:             rgba(34, 211, 238, 0.12);   /* soft cyan tint */
+  --accent-peach:            rgba(251, 113, 133, 0.12);  /* soft pink tint */
 }
 
+/* ─── Root body defaults ────────────────────────────────────────────────────── */
 body {
   background-color: var(--background);
   color: var(--on-surface);
@@ -54,7 +94,7 @@ body {
   @apply font-sans antialiased overflow-x-hidden;
 }
 
-/* Global smooth theme transitions — applies when theme class is added/removed on <html> */
+/* ─── Global smooth theme transitions ─────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -74,7 +114,7 @@ button, a, input, select, textarea {
   transition-duration: 150ms;
 }
 
-/* Custom scrollbars for dashboard widgets */
+/* ─── Custom scrollbars ─────────────────────────────────────────────────────── */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -83,19 +123,83 @@ button, a, input, select, textarea {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(140, 140, 140, 0.2);
+  background: rgba(167, 139, 250, 0.25);
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(140, 140, 140, 0.4);
+  background: rgba(167, 139, 250, 0.45);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL FORM INPUT & TEXT VISIBILITY RULES
+   CRITICAL: Ensures inputs NEVER blend into page background.
+   Applied globally so every component inherits correctly.
+═══════════════════════════════════════════════════════════ */
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
   input, button, label, textarea, select {
     @apply font-sans;
+  }
+
+  /* ── Light Mode: Light gray box, dark visible text ── */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border-color: var(--input-border);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0.5rem;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"])::placeholder,
+  textarea::placeholder {
+    color: var(--input-placeholder);
+    opacity: 1;
+  }
+
+  /* ── Focus: brand ring across all modes ── */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #A78BFA40;
+    border-color: #A78BFA;
+  }
+
+  /* ── Dark Mode overrides: distinct darker input box, bright text ── */
+  .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .dark textarea,
+  html.dark textarea,
+  .dark select,
+  html.dark select {
+    background-color: var(--input-bg);    /* = #14141D in dark */
+    color: var(--input-text);             /* = #F8FAFC in dark */
+    border-color: var(--input-border);    /* = #475569 in dark */
+  }
+
+  .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"])::placeholder,
+  html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"])::placeholder,
+  .dark textarea::placeholder,
+  html.dark textarea::placeholder {
+    color: var(--input-placeholder);      /* = #64748B in dark */
+    opacity: 1;
+  }
+
+  /* ── Dark Mode focus ring ── */
+  .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+  html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+  .dark textarea:focus,
+  html.dark textarea:focus,
+  .dark select:focus,
+  html.dark select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #A78BFA50;
+    border-color: #A78BFA;
   }
 }
 
@@ -117,18 +221,27 @@ button, a, input, select, textarea {
     color: var(--glass-text);
   }
 
+  /* Brand glow — uses new lavender primary */
   .glow-purple {
-    box-shadow: 0 0 30px rgba(216, 188, 234, 0.15);
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.18);
   }
 
   .glow-purple:hover {
-    box-shadow: 0 0 50px rgba(216, 188, 234, 0.3);
+    box-shadow: 0 0 50px rgba(167, 139, 250, 0.35);
+  }
+
+  /* Utility: brand-primary ring on focus-visible */
+  .focus-brand:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #A78BFA60;
+    border-color: #A78BFA;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    background: linear-gradient(135deg, #A78BFA 0%, #C4B5FD 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .hero-title-anim {
@@ -1494,16 +1607,16 @@ html.light .wordmark-text,
   opacity: 0.55;
 }
 
-/* AI Tutor Pulsing Glow Animation */
+/* AI Tutor Pulsing Glow Animation — updated to brand lavender */
 @keyframes tutor-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7), 0 8px 30px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7), 0 8px 30px rgba(167, 139, 250, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 15px rgba(139, 92, 246, 0), 0 8px 30px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 0 15px rgba(167, 139, 250, 0), 0 8px 30px rgba(167, 139, 250, 0.4);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0), 0 8px 30px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 0 0 rgba(167, 139, 250, 0), 0 8px 30px rgba(167, 139, 250, 0.4);
   }
 }
 

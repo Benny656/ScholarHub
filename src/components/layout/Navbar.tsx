@@ -49,7 +49,7 @@ export default function Navbar({
   }, []);
 
   return (
-    <header className="h-20 border-b border-neutral-200/80 bg-white px-8 flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 transition-colors duration-200">
+    <header className="h-20 border-b border-[var(--outline-variant)] bg-[var(--surface)] px-8 flex items-center justify-between transition-colors duration-200">
       
       {/* Search Bar - Aesthetic & Functional preview */}
       <div className="relative w-96 hidden md:block">

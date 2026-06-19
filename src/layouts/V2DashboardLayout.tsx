@@ -167,7 +167,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
   const { unreadCount: unreadNotificationsCount } = useNotifications(user?.id);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-300 w-full">
+    <div className="flex h-screen overflow-hidden bg-[var(--background)] text-[var(--on-surface)] transition-colors duration-300 w-full">
       
       {/* Desktop Left navigation Sidebar */}
       <div className="hidden md:flex">
