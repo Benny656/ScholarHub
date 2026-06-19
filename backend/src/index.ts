@@ -73,7 +73,7 @@ app.post('/api/public-chat', async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
 

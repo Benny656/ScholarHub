@@ -21,7 +21,7 @@ export const verifyController = {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
       const inlineData = {
         data: file.buffer.toString('base64'),
