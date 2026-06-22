@@ -306,17 +306,17 @@ export function K12TeacherDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="w-8.5 h-8.5 text-brand-primary animate-spin" />
-        <p className="text-sm text-neutral-500">Loading K-12 Classrooms dashboard...</p>
+        <p className="text-sm text-[#7c7c6f]">Loading K-12 Classrooms dashboard...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-md mx-auto my-12 text-center p-8 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-800/30">
+      <div className="max-w-md mx-auto my-12 text-center p-8 bg-red-500 dark:bg-red-500/10 rounded-3xl border border-red-500 dark:border-red-500/30">
         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2 font-serif">Oops!</h3>
-        <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">{error}</p>
+        <h3 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2 font-serif">Oops!</h3>
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mb-6">{error}</p>
         <Button variant="primary" onClick={loadDashboardData}>Retry</Button>
       </div>
     );
@@ -342,11 +342,11 @@ const containerVariants = {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6"
       >
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight mb-2">
             Welcome back, Teacher {lastName} 🏫
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            You are managing <span className="font-semibold text-neutral-900 dark:text-neutral-200">{courses.length} classroom subjects</span> with an average attendance of <span className="font-semibold text-neutral-900 dark:text-neutral-200">{attendanceRate}%</span>.
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f]">
+            You are managing <span className="font-semibold text-[#0e100f] dark:text-neutral-200">{courses.length} classroom subjects</span> with an average attendance of <span className="font-semibold text-[#0e100f] dark:text-neutral-200">{attendanceRate}%</span>.
           </p>
         </div>
         
@@ -368,10 +368,10 @@ const containerVariants = {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Active Classrooms', value: courses.length, icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Total Enrolled', value: totalStudents, icon: Users, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+          { label: 'Active Classrooms', value: courses.length, icon: BookOpen, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
+          { label: 'Total Enrolled', value: totalStudents, icon: Users, color: 'text-[#9d95ff]', bg: 'bg-[#9d95ff]/10' },
           { label: 'Pending Grades', value: assignmentsToGrade, icon: ClipboardList, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-          { label: 'Attendance Rate', value: `${attendanceRate}%`, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Attendance Rate', value: `${attendanceRate}%`, icon: CheckCircle2, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
         ].map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants}>
             <GlassCard className="flex items-center gap-4 p-5 h-full">
@@ -379,8 +379,8 @@ const containerVariants = {
                 <stat.icon size={24} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-1">{stat.label}</p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white leading-none">{stat.value}</p>
+                <p className="text-xs font-semibold text-[#7c7c6f] uppercase tracking-wider mb-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] leading-none">{stat.value}</p>
               </div>
             </GlassCard>
           </motion.div>
@@ -400,7 +400,7 @@ const containerVariants = {
               className="lg:col-span-2 space-y-4"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
                   <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
                   Live Classes Now
                 </h3>
@@ -409,17 +409,17 @@ const containerVariants = {
               <div className="grid gap-3">
                 {currentLiveSessions.map(session => (
                   <Link key={session.id} to={`/classroom/${session.course_id}`} className="group block">
-                    <div className="p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-800/50 rounded-2xl hover:from-red-500/15 hover:to-orange-500/15 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all flex items-center justify-between">
+                    <div className="p-4 bg-gradient-to-r from-red-500/10 to-amber-500/10 dark:from-red-500/20 dark:to-amber-500/20 border border-red-500 dark:border-red-500/50 rounded-2xl hover:from-red-500/15 hover:to-amber-500/15 dark:hover:from-red-500/30 dark:hover:to-amber-500/30 transition-all flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center font-bold text-lg shrink-0 animate-pulse">
+                        <div className="w-10 h-10 rounded-xl bg-red-500 text-[#E1DCC9] flex items-center justify-center font-bold text-lg shrink-0 animate-pulse">
                           🔴
                         </div>
                         <div>
-                          <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-red-600 transition-colors">{session.courses?.title}</h4>
-                          <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
+                          <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] group-hover:text-red-500 transition-colors">{session.courses?.title}</h4>
+                          <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-0.5">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
                         </div>
                       </div>
-                      <button className="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-colors">Join Now</button>
+                      <button className="px-4 py-2 bg-red-500 text-[#E1DCC9] rounded-xl text-xs font-bold hover:bg-red-500 transition-colors">Join Now</button>
                     </div>
                   </Link>
                 ))}
@@ -435,33 +435,33 @@ const containerVariants = {
             className="lg:col-span-2 space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-neutral-900 dark:text-white">Active Subjects</h3>
+              <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9]">Active Subjects</h3>
               <Link to="/courses" className="text-xs font-semibold text-brand-primary hover:underline flex items-center gap-1">
                 View All <ArrowRight size={14} />
               </Link>
             </div>
 
             {courses.length === 0 ? (
-              <div className="bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 text-center mt-6 text-neutral-500">
-                <BookOpen className="w-10 h-10 mx-auto text-neutral-300 dark:text-neutral-600 mb-3" />
-                <p className="font-semibold text-neutral-600 dark:text-neutral-400">No subjects assigned yet.</p>
+              <div className="bg-[#FFFCE1] dark:bg-[#412D15]/50 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] p-8 text-center mt-6 text-[#7c7c6f]">
+                <BookOpen className="w-10 h-10 mx-auto text-[#7c7c6f] dark:text-[#7c7c6f] mb-3" />
+                <p className="font-semibold text-[#7c7c6f] dark:text-[#7c7c6f]">No subjects assigned yet.</p>
                 <p className="text-sm mt-1">Subjects assigned by the administrator will appear here.</p>
               </div>
             ) : (
               <div className="grid gap-3">
                 {courses.map(course => (
                   <button key={course.id} onClick={() => setSelectedCourse(course)} className="group block text-left w-full">
-                    <div className="p-4 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800/80 rounded-2xl hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-all flex items-center justify-between">
+                    <div className="p-4 bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15]/80 rounded-2xl hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/20 transition-all flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-lg shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-[#9d95ff]/10 text-[#9d95ff] dark:text-[#9d95ff] flex items-center justify-center font-bold text-lg shrink-0">
                           {course.title?.[0]?.toUpperCase() || '📚'}
                         </div>
                         <div className="min-w-0">
-                          <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-brand-primary transition-colors truncate">{course.title}</h4>
-                          <p className="text-xs text-neutral-500 mt-1 truncate">{course.category} • {course.level || 'K-12 Class'}</p>
+                          <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] group-hover:text-brand-primary transition-colors truncate">{course.title}</h4>
+                          <p className="text-xs text-[#7c7c6f] mt-1 truncate">{course.category} • {course.level || 'K-12 Class'}</p>
                         </div>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-brand-primary transition-colors" />
+                      <ArrowRight className="w-4 h-4 text-[#7c7c6f] group-hover:text-brand-primary transition-colors" />
                     </div>
                   </button>
                 ))}
@@ -472,23 +472,23 @@ const containerVariants = {
           {/* K-12 Homeroom Summary Widget */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2">
             <GlassCard padding="p-6">
-              <div className="flex items-center justify-between mb-4 border-b border-neutral-100 dark:border-neutral-800/60 pb-3">
+              <div className="flex items-center justify-between mb-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15]/60 pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-neutral-900 dark:text-white">Homeroom Student Directory</h3>
-                  <p className="text-xs text-neutral-500 mt-0.5">Quick lookup of overall progress and engagement metrics.</p>
+                  <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9]">Homeroom Student Directory</h3>
+                  <p className="text-xs text-[#7c7c6f] mt-0.5">Quick lookup of overall progress and engagement metrics.</p>
                 </div>
                 <Badge variant="blue">Class List</Badge>
               </div>
 
               {students.length === 0 ? (
-                <div className="py-8 text-center text-xs text-neutral-500">
+                <div className="py-8 text-center text-xs text-[#7c7c6f]">
                   No students currently enrolled in your classes.
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs text-left">
                     <thead>
-                      <tr className="border-b border-neutral-100 dark:border-neutral-800 text-neutral-450">
+                      <tr className="border-b border-[#E1DCC9]/20 dark:border-[#412D15] text-neutral-450">
                         <th className="py-2 font-bold uppercase tracking-wider">Student</th>
                         <th className="py-2 font-bold uppercase tracking-wider">Attendance</th>
                         <th className="py-2 font-bold uppercase tracking-wider">Streak</th>
@@ -497,42 +497,42 @@ const containerVariants = {
                     </thead>
                     <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
                       {students.slice(0, 6).map(student => (
-                        <tr key={student.id} className="hover:bg-neutral-50/30 dark:hover:bg-neutral-800/10">
+                        <tr key={student.id} className="hover:bg-[#FFFCE1]/30 dark:hover:bg-[#412D15]/10">
                           <td className="py-3 pr-2">
                             <div className="flex items-center gap-2">
                               {student.avatar_url ? (
-                                <img src={student.avatar_url} alt={student.name} className="w-8 h-8 rounded-full object-cover border border-neutral-200" />
+                                <img src={student.avatar_url} alt={student.name} className="w-8 h-8 rounded-full object-cover border border-[#E1DCC9]/20" />
                               ) : (
                                 <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs uppercase shrink-0">
                                   {student.name[0]}
                                 </div>
                               )}
                               <div>
-                                <p className="font-bold text-neutral-900 dark:text-white">{student.name}</p>
-                                <p className="text-[10px] text-neutral-500 truncate max-w-[150px]">{student.email}</p>
+                                <p className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">{student.name}</p>
+                                <p className="text-[10px] text-[#7c7c6f] truncate max-w-[150px]">{student.email}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="py-3 font-semibold text-neutral-800 dark:text-neutral-200">
-                            <span className={student.attendanceRate >= 90 ? 'text-emerald-500' : student.attendanceRate >= 80 ? 'text-blue-500' : 'text-amber-500'}>
+                          <td className="py-3 font-semibold text-[#0e100f] dark:text-neutral-200">
+                            <span className={student.attendanceRate >= 90 ? 'text-[#00bae2]' : student.attendanceRate >= 80 ? 'text-[#00bae2]' : 'text-amber-500'}>
                               {student.attendanceRate}%
                             </span>
                           </td>
-                          <td className="py-3 text-neutral-700 dark:text-neutral-300">
+                          <td className="py-3 text-[#7c7c6f] dark:text-[#7c7c6f]">
                             {student.streak > 0 ? (
-                              <span className="flex items-center gap-1 font-bold text-orange-500">
+                              <span className="flex items-center gap-1 font-bold text-amber-500">
                                 🔥 {student.streak} days
                               </span>
                             ) : (
-                              <span className="text-neutral-400">-</span>
+                              <span className="text-[#7c7c6f]">-</span>
                             )}
                           </td>
                           <td className="py-3">
                             <div className="flex items-center gap-1.5">
-                              <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold px-1.5 py-0.5 rounded text-[10px]">
+                              <span className="bg-[#9d95ff] dark:bg-[#9d95ff]/30 text-[#9d95ff] dark:text-[#9d95ff] font-bold px-1.5 py-0.5 rounded text-[10px]">
                                 Lvl {student.level}
                               </span>
-                              <span className="text-neutral-500 text-[10px]">{student.xp} XP</span>
+                              <span className="text-[#7c7c6f] text-[10px]">{student.xp} XP</span>
                             </div>
                           </td>
                         </tr>
@@ -556,44 +556,44 @@ const containerVariants = {
           {/* Behavior Tracking Summary Widget */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="lg:col-span-1">
             <GlassCard>
-              <div className="flex items-center justify-between mb-4 border-b border-neutral-100 dark:border-neutral-800 pb-2">
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <Heart size={16} className="text-rose-500 fill-rose-500/20" /> Behavior Tracker
+              <div className="flex items-center justify-between mb-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15] pb-2">
+                <h3 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
+                  <Heart size={16} className="text-red-500 fill-red-500/20" /> Behavior Tracker
                 </h3>
                 <Badge variant="emerald">Real-time</Badge>
               </div>
 
               {students.length === 0 ? (
-                <div className="py-6 text-center text-xs text-neutral-500">
+                <div className="py-6 text-center text-xs text-[#7c7c6f]">
                   No students to monitor behavior.
                 </div>
               ) : (
                 <div className="space-y-3">
                   {students.slice(0, 5).map(student => (
-                    <div key={student.id} className="p-3 bg-neutral-50/50 dark:bg-neutral-850/20 border border-neutral-150 dark:border-neutral-800 rounded-xl flex items-center justify-between gap-3">
+                    <div key={student.id} className="p-3 bg-[#FFFCE1]/50 dark:bg-neutral-850/20 border border-neutral-150 dark:border-[#412D15] rounded-xl flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-neutral-900 dark:text-white truncate">{student.name}</p>
-                        <p className="text-[10px] text-neutral-500 mt-0.5">Points: <span className="font-semibold text-neutral-800 dark:text-neutral-200">{student.behaviorPoints}</span></p>
+                        <p className="text-xs font-bold text-[#0e100f] dark:text-[#E1DCC9] truncate">{student.name}</p>
+                        <p className="text-[10px] text-[#7c7c6f] mt-0.5">Points: <span className="font-semibold text-[#0e100f] dark:text-neutral-200">{student.behaviorPoints}</span></p>
                       </div>
                       
                       <div className="flex items-center gap-1 shrink-0">
                         <button 
                           onClick={() => handleAwardPoints(student.id, 5)}
-                          className="w-6 h-6 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold hover:bg-emerald-500/20 active:scale-90 transition-all"
+                          className="w-6 h-6 rounded bg-[#00bae2]/10 text-[#00bae2] dark:text-[#00bae2] flex items-center justify-center font-bold hover:bg-[#00bae2]/20 active:scale-90 transition-all"
                           title="Award positive points (+5)"
                         >
                           +5
                         </button>
                         <button 
                           onClick={() => handleAwardPoints(student.id, -5)}
-                          className="w-6 h-6 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold hover:bg-rose-500/20 active:scale-90 transition-all"
+                          className="w-6 h-6 rounded bg-red-500/10 text-red-500 dark:text-red-500 flex items-center justify-center font-bold hover:bg-red-500/20 active:scale-90 transition-all"
                           title="Log warning infraction (-5)"
                         >
                           -5
                         </button>
                         <button 
                           onClick={() => handleLogBehaviorNote(student)}
-                          className="w-6 h-6 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-450 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-750 active:scale-90 transition-all"
+                          className="w-6 h-6 rounded bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] dark:text-neutral-450 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-750 active:scale-90 transition-all"
                           title="Write behavior log note"
                         >
                           <Edit size={11} />
@@ -609,19 +609,19 @@ const containerVariants = {
           {/* Parent Communication Alerts Widget */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <GlassCard>
-              <div className="flex items-center justify-between mb-4 border-b border-neutral-100 dark:border-neutral-800 pb-2">
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <MessageSquare size={16} className="text-blue-500" /> Parent Communication
+              <div className="flex items-center justify-between mb-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15] pb-2">
+                <h3 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
+                  <MessageSquare size={16} className="text-[#00bae2]" /> Parent Communication
                 </h3>
                 {parentAlerts.filter(a => !a.isRead).length > 0 && (
-                  <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full">
+                  <span className="text-[9px] font-bold bg-[#00bae2] dark:bg-[#00bae2]/30 text-[#00bae2] dark:text-[#00bae2] px-2 py-0.5 rounded-full">
                     {parentAlerts.filter(a => !a.isRead).length} New
                   </span>
                 )}
               </div>
 
               {parentAlerts.length === 0 ? (
-                <div className="py-6 text-center text-xs text-neutral-500">
+                <div className="py-6 text-center text-xs text-[#7c7c6f]">
                   No parent communications logged.
                 </div>
               ) : (
@@ -631,35 +631,35 @@ const containerVariants = {
                       key={alert.id} 
                       className={`p-3 rounded-xl border transition-all text-xs flex flex-col justify-between ${
                         alert.isRead 
-                          ? 'border-neutral-150 dark:border-neutral-800/80 bg-neutral-50/20 dark:bg-neutral-900/10 opacity-70' 
-                          : 'border-blue-150 dark:border-blue-800/40 bg-blue-500/5'
+                          ? 'border-neutral-150 dark:border-[#412D15]/80 bg-[#FFFCE1]/20 dark:bg-[#412D15]/10 opacity-70' 
+                          : 'border-[#00bae2] dark:border-[#00bae2]/40 bg-[#00bae2]/5'
                       }`}
                     >
                       <div>
                         <div className="flex justify-between items-start mb-1.5">
                           <div>
-                            <span className="font-bold text-neutral-900 dark:text-white">{alert.parentName}</span>
-                            <span className="text-[10px] text-neutral-500 dark:text-neutral-450 ml-1.5">({alert.studentName}'s parent)</span>
+                            <span className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">{alert.parentName}</span>
+                            <span className="text-[10px] text-[#7c7c6f] dark:text-neutral-450 ml-1.5">({alert.studentName}'s parent)</span>
                           </div>
-                          <span className="text-[9px] text-neutral-400 shrink-0 font-medium">{alert.time}</span>
+                          <span className="text-[9px] text-[#7c7c6f] shrink-0 font-medium">{alert.time}</span>
                         </div>
-                        <p className="text-[11px] text-neutral-600 dark:text-neutral-350 leading-relaxed mb-2.5 italic">
+                        <p className="text-[11px] text-[#7c7c6f] dark:text-neutral-350 leading-relaxed mb-2.5 italic">
                           "{alert.message}"
                         </p>
                       </div>
 
-                      <div className="flex gap-2 justify-end border-t border-neutral-100 dark:border-neutral-800/40 pt-2">
+                      <div className="flex gap-2 justify-end border-t border-[#E1DCC9]/20 dark:border-[#412D15]/40 pt-2">
                         {!alert.isRead && (
                           <button 
                             onClick={() => handleMarkAlertRead(alert.id)}
-                            className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 rounded font-semibold text-[10px] transition-colors"
+                            className="px-2 py-1 bg-[#00bae2] text-[#00bae2] dark:bg-[#00bae2]/20 dark:text-[#00bae2] rounded font-semibold text-[10px] transition-colors"
                           >
                             Mark Read
                           </button>
                         )}
                         <button 
                           onClick={() => handleDismissAlert(alert.id)}
-                          className="px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 rounded font-semibold text-[10px] transition-colors"
+                          className="px-2 py-1 hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] text-[#7c7c6f] rounded font-semibold text-[10px] transition-colors"
                         >
                           Dismiss
                         </button>
@@ -680,23 +680,23 @@ const containerVariants = {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedStudent(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-[#1F150C]/60 backdrop-blur-sm"
             />
             
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 shadow-xl z-10"
+              className="relative w-full max-w-md bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-3xl p-6 shadow-xl z-10"
             >
-              <h4 className="text-base font-bold text-neutral-900 dark:text-white mb-2">Log Behavior Note</h4>
-              <p className="text-xs text-neutral-500 mb-4">Adding behavior observations to {selectedStudent.name}'s school profile registry.</p>
+              <h4 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2">Log Behavior Note</h4>
+              <p className="text-xs text-[#7c7c6f] mb-4">Adding behavior observations to {selectedStudent.name}'s school profile registry.</p>
               
               <textarea
                 value={behaviorNote}
                 onChange={e => setBehaviorNote(e.target.value)}
                 placeholder="Write observation here... (e.g. Excellent active participation in team assignments, completed maths worksheet early)"
-                className="w-full text-xs p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white outline-none focus:border-brand-primary h-28 resize-none mb-4"
+                className="w-full text-xs p-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/50 dark:bg-[#412D15]/50 text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:border-brand-primary h-28 resize-none mb-4"
               />
 
               <div className="flex gap-2">

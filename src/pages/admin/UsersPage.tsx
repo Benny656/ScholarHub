@@ -170,16 +170,16 @@ export function UsersPage() {
       {/* Hero Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight mb-2">
             User Directory
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-xl">
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] max-w-xl">
             Audit register status, update operational roles, suspend, or delete user listings.
           </p>
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-750 text-neutral-900 dark:text-neutral-100 rounded-xl text-sm font-semibold transition-all shadow-sm cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] hover:bg-neutral-200 dark:hover:bg-neutral-750 text-[#0e100f] dark:text-[#E1DCC9] rounded-xl text-sm font-semibold transition-all shadow-sm cursor-pointer"
         >
           <Download size={16} /> Export User Registry
         </button>
@@ -188,7 +188,7 @@ export function UsersPage() {
       {/* Interactive Controls & Filters */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7c7c6f] dark:text-[#7c7c6f]" />
           <input
             type="text"
             value={search}
@@ -197,7 +197,7 @@ export function UsersPage() {
               setPage(1);
             }}
             placeholder="Search by name or email..."
-            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
+            className="w-full bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl py-2.5 pl-10 pr-4 text-sm text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
           />
         </div>
 
@@ -208,7 +208,7 @@ export function UsersPage() {
               setRoleFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
+            className="w-full bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl py-2.5 px-3 text-sm text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
           >
             <option value="all">All Roles</option>
             <option value="student">Students</option>
@@ -224,7 +224,7 @@ export function UsersPage() {
               setCohortFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
+            className="w-full bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl py-2.5 px-3 text-sm text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
           >
             <option value="all">All Education Cohorts</option>
             <option value="k12">School / K-12</option>
@@ -239,7 +239,7 @@ export function UsersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl py-2.5 px-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
+            className="w-full bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl py-2.5 px-3 text-sm text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/80 transition-all"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active Only</option>
@@ -250,21 +250,21 @@ export function UsersPage() {
 
       {/* Main Table Card */}
       {loading ? (
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-16 text-center">
+        <div className="bg-[#FFFCE1] dark:bg-[#412D15] rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] p-16 text-center">
           <div className="w-10 h-10 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm text-neutral-500">Querying platform database...</p>
+          <p className="text-sm text-[#7c7c6f]">Querying platform database...</p>
         </div>
       ) : (
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-800 overflow-hidden shadow-sm"
+          className="bg-[#FFFCE1] dark:bg-[#412D15] rounded-2xl border border-[#E1DCC9]/60 dark:border-[#412D15] overflow-hidden shadow-sm"
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider">
+                <tr className="border-b border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/50 dark:bg-[#412D15]/50 text-[#7c7c6f] dark:text-[#7c7c6f] text-xs font-bold uppercase tracking-wider">
                   <th className="p-4 pl-6">User Identity</th>
                   <th className="p-4">Authorization Role</th>
                   <th className="p-4">Education Cohort</th>
@@ -276,7 +276,7 @@ export function UsersPage() {
               <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
                 {paginatedUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-12 text-center text-neutral-500">
+                    <td colSpan={6} className="p-12 text-center text-[#7c7c6f]">
                       No matching user accounts registered.
                     </td>
                   </tr>
@@ -287,16 +287,16 @@ export function UsersPage() {
                     const isK12 = u.grade_level?.toLowerCase().startsWith('k12') || u.user_type === 'k12';
 
                     return (
-                      <tr key={u.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/10 transition-colors">
+                      <tr key={u.id} className="hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/10 transition-colors">
                         <td className="p-4 pl-6">
                           <div className="flex items-center gap-3">
                             <img
                               src={u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'Scholar')}`}
                               alt=""
-                              className="w-9 h-9 rounded-full object-cover border border-neutral-200 dark:border-neutral-700 bg-neutral-100"
+                              className="w-9 h-9 rounded-full object-cover border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]"
                             />
                             <div className="flex flex-col min-w-0">
-                              <span className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5 truncate">
+                              <span className="font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-1.5 truncate">
                                 {u.name || 'Anonymous Learner'}
                                 {isSelf && (
                                   <span className="text-[9px] bg-brand-primary/10 text-brand-primary px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">
@@ -304,7 +304,7 @@ export function UsersPage() {
                                   </span>
                                 )}
                               </span>
-                              <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{u.email}</span>
+                              <span className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] truncate">{u.email}</span>
                             </div>
                           </div>
                         </td>
@@ -313,7 +313,7 @@ export function UsersPage() {
                             value={u.role || 'student'}
                             disabled={isSelf}
                             onChange={(e) => handleUserRoleChange(u.id, e.target.value as any)}
-                            className="bg-neutral-50 dark:bg-neutral-850 border border-neutral-200 dark:border-neutral-850 text-xs rounded-lg px-2.5 py-1.5 outline-none font-medium text-neutral-850 dark:text-neutral-100 focus:border-brand-primary disabled:opacity-50"
+                            className="bg-[#FFFCE1] dark:bg-neutral-850 border border-[#E1DCC9]/20 dark:border-neutral-850 text-xs rounded-lg px-2.5 py-1.5 outline-none font-medium text-neutral-850 dark:text-[#E1DCC9] focus:border-brand-primary disabled:opacity-50"
                           >
                             <option value="student">Student</option>
                             <option value="teacher">Teacher</option>
@@ -323,8 +323,8 @@ export function UsersPage() {
                         <td className="p-4">
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                             isK12 
-                              ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' 
-                              : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400'
+                              ? 'bg-[#00bae2] text-[#00bae2] dark:bg-[#00bae2]/10 dark:text-[#00bae2]' 
+                              : 'bg-[#9d95ff] text-[#9d95ff] dark:bg-[#9d95ff]/10 dark:text-[#9d95ff]'
                           }`}>
                             {isK12 ? 'K-12 School' : 'University'}
                           </span>
@@ -332,13 +332,13 @@ export function UsersPage() {
                         <td className="p-4">
                           <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${
                             isSuspended
-                              ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'
-                              : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
+                              ? 'bg-red-500 text-red-500 border-red-500 dark:bg-red-500/10 dark:text-red-500 dark:border-red-500/20'
+                              : 'bg-[#00bae2] text-[#00bae2] border-[#00bae2] dark:bg-[#00bae2]/10 dark:text-[#00bae2] dark:border-[#00bae2]/20'
                           }`}>
                             {isSuspended ? 'Suspended' : 'Active'}
                           </span>
                         </td>
-                        <td className="p-4 text-center font-mono font-bold text-neutral-700 dark:text-neutral-300">
+                        <td className="p-4 text-center font-mono font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">
                           <div className="flex items-center justify-center gap-1">
                             <Award size={12} className="text-amber-500" />
                             <span>{u.xp || 0}</span>
@@ -351,8 +351,8 @@ export function UsersPage() {
                               disabled={isSelf}
                               className={`p-1.5 rounded-lg border hover:scale-105 transition-all cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed ${
                                 isSuspended
-                                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
-                                  : 'bg-red-500/10 border-red-500/20 text-red-650 dark:text-red-400 hover:bg-red-500/20'
+                                  ? 'bg-[#00bae2]/10 border-[#00bae2]/20 text-[#00bae2] dark:text-[#00bae2] hover:bg-[#00bae2]/20'
+                                  : 'bg-red-500/10 border-red-500/20 text-red-500 dark:text-red-500 hover:bg-red-500/20'
                               }`}
                               title={isSuspended ? 'Activate User' : 'Suspend User'}
                             >
@@ -361,7 +361,7 @@ export function UsersPage() {
                             <button
                               onClick={() => handleUserDelete(u.id)}
                               disabled={isSelf}
-                              className="p-1.5 rounded-lg bg-neutral-150 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 hover:scale-105 transition-all cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed"
+                              className="p-1.5 rounded-lg bg-neutral-150 dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] text-[#7c7c6f] hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 hover:scale-105 transition-all cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed"
                               title="Delete User"
                             >
                               <Trash2 size={14} />
@@ -378,7 +378,7 @@ export function UsersPage() {
 
           {/* Pagination Footer */}
           {totalPages > 1 && (
-            <div className="flex justify-between items-center px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 text-xs text-neutral-500 font-semibold bg-neutral-50/30 dark:bg-neutral-900/25">
+            <div className="flex justify-between items-center px-6 py-4 border-t border-[#E1DCC9]/20 dark:border-[#412D15] text-xs text-[#7c7c6f] font-semibold bg-[#FFFCE1]/30 dark:bg-[#412D15]/25">
               <span>
                 Showing {(page - 1) * itemsPerPage + 1} to {Math.min(page * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} records
               </span>
@@ -386,14 +386,14 @@ export function UsersPage() {
                 <button
                   disabled={page === 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="px-3.5 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed border border-transparent dark:border-neutral-700/60"
+                  className="px-3.5 py-2 rounded-lg bg-[#FFFCE1] dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-[#412D15] text-[#0e100f] dark:text-neutral-200 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed border border-transparent dark:border-[#412D15]/60"
                 >
                   Prev
                 </button>
                 <button
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-3.5 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed border border-transparent dark:border-neutral-700/60"
+                  className="px-3.5 py-2 rounded-lg bg-[#FFFCE1] dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-[#412D15] text-[#0e100f] dark:text-neutral-200 transition-all font-semibold disabled:opacity-30 disabled:cursor-not-allowed border border-transparent dark:border-[#412D15]/60"
                 >
                   Next
                 </button>

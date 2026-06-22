@@ -54,12 +54,12 @@ export default function Navbar({
       {/* Search Bar - Aesthetic & Functional preview */}
       <div className="relative w-96 hidden md:block">
         <span className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-          <Search className="h-4.5 w-4.5 text-neutral-400" />
+          <Search className="h-4.5 w-4.5 text-[#7c7c6f]" />
         </span>
         <input
           type="search"
           placeholder="Look up subjects, quiz materials, rosters..."
-          className="w-full h-11 pl-11 pr-4 rounded-xl text-sm bg-neutral-50 border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary focus:border-brand-primary dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 transition-all duration-150"
+          className="w-full h-11 pl-11 pr-4 rounded-xl text-sm bg-[#FFFCE1] border border-[#E1DCC9]/20 focus:outline-none focus:ring-1 focus:ring-brand-primary focus:border-brand-primary dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 transition-all duration-150"
         />
       </div>
 
@@ -67,7 +67,7 @@ export default function Navbar({
       <div className="flex items-center gap-5 ml-auto">
         
         {/* Dynamic Clock Indicator */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-xs font-mono text-neutral-600 dark:text-neutral-300">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFFCE1] dark:bg-[#412D15] rounded-lg text-xs font-mono text-[#7c7c6f] dark:text-[#7c7c6f]">
           <CalendarDays className="w-3.5 h-3.5 text-brand-secondary" />
           <span>{timeStr || "12:00 PM"}</span>
         </div>
@@ -76,7 +76,7 @@ export default function Navbar({
         <button
           onClick={toggleTheme}
           aria-label="Toggle Dark Mode"
-          className="w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-200 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800 transition-all duration-200 overflow-hidden relative"
+          className="w-10 h-10 rounded-xl flex items-center justify-center border border-[#E1DCC9]/20 hover:bg-[#FFFCE1] dark:border-[#412D15] dark:hover:bg-[#412D15] transition-all duration-200 overflow-hidden relative"
         >
           <AnimatePresence mode="wait" initial={false}>
             {theme === "light" ? (
@@ -88,7 +88,7 @@ export default function Navbar({
                 transition={{ duration: 0.2 }}
                 className="absolute"
               >
-                <Moon className="w-4.5 h-4.5 text-neutral-600" />
+                <Moon className="w-4.5 h-4.5 text-[#7c7c6f]" />
               </motion.span>
             ) : (
               <motion.span
@@ -109,8 +109,8 @@ export default function Navbar({
         <NotificationDropdown />
 
         {/* Platform Indicator */}
-        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-neutral-500 bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 px-3 py-1.5 rounded-lg border border-neutral-200/40 dark:border-neutral-800">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-[#7c7c6f] bg-[#FFFCE1] dark:bg-[#412D15] dark:text-[#7c7c6f] px-3 py-1.5 rounded-lg border border-[#E1DCC9]/40 dark:border-[#412D15]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00bae2]" />
           {activeRole.badge.split("•")[0]}
         </span>
 
@@ -120,14 +120,14 @@ export default function Navbar({
             id="navbar-profile-btn"
             onClick={() => setProfileOpen(prev => !prev)}
             aria-label="Open profile menu"
-            className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 group"
+            className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-xl hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] transition-all duration-200 border border-transparent hover:border-[#E1DCC9]/20 dark:hover:border-[#412D15] group"
           >
             <img
               src={activeRole.avatar}
               alt={activeRole.name}
               className="w-8 h-8 rounded-full object-cover border-2 border-brand-primary/20 group-hover:border-brand-primary transition-all duration-200"
             />
-            <ChevronDown className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-[#7c7c6f] transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
@@ -137,29 +137,29 @@ export default function Navbar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 6, scale: 0.97 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute top-full right-0 mt-2 w-52 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl overflow-hidden z-50"
+                className="absolute top-full right-0 mt-2 w-52 bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl shadow-xl overflow-hidden z-50"
               >
                 {/* Header */}
-                <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
-                  <p className="text-xs font-bold text-neutral-800 dark:text-neutral-200 truncate">{activeRole.name}</p>
-                  <p className="text-[10px] text-neutral-400 mt-0.5 truncate">{activeRole.badge}</p>
+                <div className="px-4 py-3 border-b border-[#E1DCC9]/20 dark:border-[#412D15]">
+                  <p className="text-xs font-bold text-[#0e100f] dark:text-neutral-200 truncate">{activeRole.name}</p>
+                  <p className="text-[10px] text-[#7c7c6f] mt-0.5 truncate">{activeRole.badge}</p>
                 </div>
                 {/* View Profile */}
                 <button
                   id="navbar-profile-view-btn"
                   onClick={() => { setProfileOpen(false); navigate('/profile'); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f] hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] transition-colors"
                 >
-                  <User className="w-4 h-4 text-neutral-400" />
+                  <User className="w-4 h-4 text-[#7c7c6f]" />
                   View Profile
                 </button>
                 {/* Divider */}
-                <div className="border-t border-neutral-100 dark:border-neutral-800" />
+                <div className="border-t border-[#E1DCC9]/20 dark:border-[#412D15]" />
                 {/* Logout */}
                 <button
                   id="navbar-logout-btn"
                   onClick={async () => { setProfileOpen(false); await logout(); navigate('/login', { replace: true }); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-500 dark:text-red-500 hover:bg-red-500 dark:hover:bg-red-500/20 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Logout

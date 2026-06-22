@@ -121,7 +121,7 @@ export function AssignmentsQuestionBanks() {
 
       {assignments.length === 0 && questionBanks.length === 0 ? (
         <EmptyState 
-          icon={<CheckSquare className="w-12 h-12 text-blue-400" />}
+          icon={<CheckSquare className="w-12 h-12 text-[#00bae2]" />}
           title="No Assignments Yet"
           description="You haven't created any assignments or question banks for your courses. Get started by creating your first assignment."
           action={<Button variant="primary" icon={<Plus size={16} />}>Create Assignment</Button>}
@@ -151,20 +151,20 @@ export function AssignmentsQuestionBanks() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GlassCard className="overflow-hidden p-0 flex flex-col h-[500px]">
-              <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center bg-neutral-50/50 dark:bg-neutral-900/50 shrink-0">
-                <h3 className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-blue-500" /> Active Assignments
+              <div className="p-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15] flex justify-between items-center bg-[#FFFCE1]/50 dark:bg-[#412D15]/50 shrink-0">
+                <h3 className="font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#00bae2]" /> Active Assignments
                 </h3>
               </div>
               <div className="overflow-y-auto flex-1 custom-scrollbar">
                 {assignments.length === 0 ? (
-                  <div className="p-8 text-center text-neutral-500 flex flex-col items-center justify-center h-full">
+                  <div className="p-8 text-center text-[#7c7c6f] flex flex-col items-center justify-center h-full">
                     <FileText className="w-8 h-8 mb-2 opacity-20" />
                     <p>No assignments found.</p>
                   </div>
                 ) : (
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-neutral-50 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 text-xs uppercase font-semibold sticky top-0 z-10">
+                    <thead className="bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] dark:text-[#7c7c6f] text-xs uppercase font-semibold sticky top-0 z-10">
                       <tr>
                         <th className="px-4 py-3">Title</th>
                         <th className="px-4 py-3">Course</th>
@@ -174,14 +174,14 @@ export function AssignmentsQuestionBanks() {
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                       {assignments.map((assignment) => (
-                        <tr key={assignment.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-colors">
+                        <tr key={assignment.id} className="hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/50 transition-colors">
                           <td className="px-4 py-3">
-                            <p className="font-semibold text-neutral-900 dark:text-white truncate max-w-[150px]">{assignment.title}</p>
+                            <p className="font-semibold text-[#0e100f] dark:text-[#E1DCC9] truncate max-w-[150px]">{assignment.title}</p>
                           </td>
-                          <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
+                          <td className="px-4 py-3 text-[#7c7c6f] dark:text-[#7c7c6f]">
                             <span className="truncate max-w-[100px] block">{assignment.courseName}</span>
                           </td>
-                          <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
+                          <td className="px-4 py-3 text-[#7c7c6f] dark:text-[#7c7c6f]">
                             {new Date(assignment.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -198,21 +198,21 @@ export function AssignmentsQuestionBanks() {
             </GlassCard>
 
             <GlassCard className="overflow-hidden p-0 flex flex-col h-[500px]">
-              <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center bg-neutral-50/50 dark:bg-neutral-900/50 shrink-0">
-                <h3 className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <Database className="w-4 h-4 text-purple-500" /> Question Banks
+              <div className="p-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15] flex justify-between items-center bg-[#FFFCE1]/50 dark:bg-[#412D15]/50 shrink-0">
+                <h3 className="font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
+                  <Database className="w-4 h-4 text-[#9d95ff]" /> Question Banks
                 </h3>
               </div>
               <div className="overflow-y-auto flex-1 custom-scrollbar">
                 {questionBanks.length === 0 ? (
-                  <div className="p-8 text-center text-neutral-500 flex flex-col items-center justify-center h-full">
+                  <div className="p-8 text-center text-[#7c7c6f] flex flex-col items-center justify-center h-full">
                     <Database className="w-8 h-8 mb-2 opacity-20" />
                     <p className="mb-4">No question banks created yet.</p>
                     <Button variant="secondary" size="sm">Create Bank</Button>
                   </div>
                 ) : (
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-neutral-50 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 text-xs uppercase font-semibold sticky top-0 z-10">
+                    <thead className="bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] dark:text-[#7c7c6f] text-xs uppercase font-semibold sticky top-0 z-10">
                       <tr>
                         <th className="px-4 py-3">Bank Name</th>
                         <th className="px-4 py-3">Course</th>
@@ -221,11 +221,11 @@ export function AssignmentsQuestionBanks() {
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                       {questionBanks.map((bank) => (
-                        <tr key={bank.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-colors">
+                        <tr key={bank.id} className="hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/50 transition-colors">
                           <td className="px-4 py-3">
-                            <p className="font-semibold text-neutral-900 dark:text-white truncate max-w-[150px]">{bank.title}</p>
+                            <p className="font-semibold text-[#0e100f] dark:text-[#E1DCC9] truncate max-w-[150px]">{bank.title}</p>
                           </td>
-                          <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
+                          <td className="px-4 py-3 text-[#7c7c6f] dark:text-[#7c7c6f]">
                             <span className="truncate max-w-[120px] block">{bank.courseName}</span>
                           </td>
                           <td className="px-4 py-3 text-center">

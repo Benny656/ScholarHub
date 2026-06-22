@@ -151,7 +151,7 @@ export function StudentRoster() {
 
       {students.length === 0 ? (
         <EmptyState 
-          icon={<Users className="w-12 h-12 text-purple-400" />}
+          icon={<Users className="w-12 h-12 text-[#9d95ff]" />}
           title="No Students Enrolled"
           description="You don't have any students enrolled in your courses yet. Once students enroll, they will appear here with their attendance and grades."
         />
@@ -179,20 +179,20 @@ export function StudentRoster() {
           </div>
 
           <GlassCard className="overflow-hidden p-0">
-            <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center bg-neutral-50/50 dark:bg-neutral-900/50">
-              <h3 className="font-semibold text-neutral-900 dark:text-white">All Enrolled Students</h3>
+            <div className="p-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15] flex justify-between items-center bg-[#FFFCE1]/50 dark:bg-[#412D15]/50">
+              <h3 className="font-semibold text-[#0e100f] dark:text-[#E1DCC9]">All Enrolled Students</h3>
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7c7c6f]" />
                 <input 
                   type="text" 
                   placeholder="Search students..." 
-                  className="pl-9 pr-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
+                  className="pl-9 pr-4 py-2 bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
                 />
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-neutral-50 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 text-xs uppercase font-semibold">
+                <thead className="bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] dark:text-[#7c7c6f] text-xs uppercase font-semibold">
                   <tr>
                     <th className="px-6 py-4">Student</th>
                     <th className="px-6 py-4">Enrollment Date</th>
@@ -202,19 +202,19 @@ export function StudentRoster() {
                 </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                   {students.map((student) => (
-                    <tr key={student.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-colors">
+                    <tr key={student.id} className="hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <Avatar name={student.name} src={student.avatar} size="sm" />
                           <div>
-                            <p className="font-semibold text-neutral-900 dark:text-white">{student.name}</p>
-                            <p className="text-xs text-neutral-500">{student.email}</p>
+                            <p className="font-semibold text-[#0e100f] dark:text-[#E1DCC9]">{student.name}</p>
+                            <p className="text-xs text-[#7c7c6f]">{student.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-6 py-4 text-[#7c7c6f] dark:text-[#7c7c6f]">
                         <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-neutral-400" />
+                          <Calendar className="w-3.5 h-3.5 text-[#7c7c6f]" />
                           {new Date(student.enrolledAt).toLocaleDateString()}
                         </div>
                       </td>
@@ -229,7 +229,7 @@ export function StudentRoster() {
                             {student.grade}%
                           </Badge>
                         ) : (
-                          <span className="text-xs text-neutral-400 italic">No grades yet</span>
+                          <span className="text-xs text-[#7c7c6f] italic">No grades yet</span>
                         )}
                       </td>
                     </tr>

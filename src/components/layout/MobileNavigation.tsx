@@ -33,7 +33,7 @@ export default function MobileNavigation({
   };
 
   return (
-    <header className="md:hidden h-16 border-b border-neutral-200 bg-white dark:bg-neutral-900 dark:border-neutral-800 flex items-center justify-between px-4 z-40 sticky top-0">
+    <header className="md:hidden h-16 border-b border-[#E1DCC9]/20 bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] flex items-center justify-between px-4 z-40 sticky top-0">
       
       {/* Brand logo trigger */}
       <button 
@@ -47,7 +47,7 @@ export default function MobileNavigation({
             className="w-full h-full object-contain"
           />
         </div>
-        <span className="font-serif font-bold text-base text-neutral-900 dark:text-neutral-50 leading-none group-hover:text-brand-primary transition-colors duration-200">
+        <span className="font-serif font-bold text-base text-[#0e100f] dark:text-[#E1DCC9] leading-none group-hover:text-brand-primary transition-colors duration-200">
           Scholar Hub
         </span>
       </button>
@@ -58,11 +58,11 @@ export default function MobileNavigation({
         {/* Notification indicator */}
         <button
           onClick={onOpenNotifications}
-          className="w-8.5 h-8.5 rounded-lg flex items-center justify-center border border-neutral-150 hover:bg-neutral-50 relative dark:border-neutral-800 dark:hover:bg-neutral-800"
+          className="w-8.5 h-8.5 rounded-lg flex items-center justify-center border border-neutral-150 hover:bg-[#FFFCE1] relative dark:border-[#412D15] dark:hover:bg-[#412D15]"
         >
-          <Bell className="w-4 h-4 text-neutral-600 dark:text-neutral-300" />
+          <Bell className="w-4 h-4 text-[#7c7c6f] dark:text-[#7c7c6f]" />
           {notificationCount > 0 && (
-            <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 text-[9px] text-white font-bold rounded-full flex items-center justify-center">
+            <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 text-[9px] text-[#E1DCC9] font-bold rounded-full flex items-center justify-center">
               {notificationCount}
             </span>
           )}
@@ -71,16 +71,16 @@ export default function MobileNavigation({
         {/* Hamburger Trigger */}
         <button
           onClick={() => setDrawerOpen(true)}
-          className="w-8.5 h-8.5 rounded-lg border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800"
+          className="w-8.5 h-8.5 rounded-lg border border-[#E1DCC9]/20 flex items-center justify-center hover:bg-[#FFFCE1] dark:border-[#412D15] dark:hover:bg-[#412D15]"
         >
-          <Menu className="w-4.5 h-4.5 text-neutral-700 dark:text-neutral-200" />
+          <Menu className="w-4.5 h-4.5 text-[#7c7c6f] dark:text-neutral-200" />
         </button>
       </div>
 
       {/* Expanded Animated Drawer */}
       <AnimatePresence>
         {drawerOpen && (
-          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end">
+          <div className="fixed inset-0 z-50 bg-[#1F150C]/50 backdrop-blur-sm flex justify-end">
             
             {/* Close touch panel */}
             <div className="flex-1" onClick={() => setDrawerOpen(false)} />
@@ -91,18 +91,18 @@ export default function MobileNavigation({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="w-72 bg-white dark:bg-neutral-900 border-l border-neutral-200 dark:border-neutral-800 h-full p-6 flex flex-col justify-between"
+              className="w-72 bg-[#FFFCE1] dark:bg-[#412D15] border-l border-[#E1DCC9]/20 dark:border-[#412D15] h-full p-6 flex flex-col justify-between"
             >
               <div className="space-y-6">
                 
                 {/* Header Close triggers */}
                 <div className="flex items-center justify-between">
-                  <span className="font-serif font-bold text-sm text-neutral-900 dark:text-neutral-200">Navigation Menu</span>
+                  <span className="font-serif font-bold text-sm text-[#0e100f] dark:text-neutral-200">Navigation Menu</span>
                   <button
                     onClick={() => setDrawerOpen(false)}
-                    className="p-1.5 hover:bg-neutral-100 rounded-lg dark:hover:bg-neutral-800"
+                    className="p-1.5 hover:bg-[#FFFCE1] rounded-lg dark:hover:bg-[#412D15]"
                   >
-                    <X className="w-5 h-5 text-neutral-500" />
+                    <X className="w-5 h-5 text-[#7c7c6f]" />
                   </button>
                 </div>
 
@@ -112,18 +112,18 @@ export default function MobileNavigation({
                   tabIndex={0}
                   onClick={() => handleTabClick('settings')}
                   aria-label="View profile settings"
-                  className="p-3 bg-neutral-50 dark:bg-neutral-850 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl flex items-center gap-3 cursor-pointer group transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="p-3 bg-[#FFFCE1] dark:bg-neutral-850 hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] rounded-xl flex items-center gap-3 cursor-pointer group transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 >
                   <img
                     src={activeRole.avatar}
                     alt={activeRole.name}
-                    className="w-9 h-9 rounded-full object-cover border-2 border-brand-primary/20 bg-neutral-100 group-hover:border-brand-primary transition-all duration-200"
+                    className="w-9 h-9 rounded-full object-cover border-2 border-brand-primary/20 bg-[#FFFCE1] group-hover:border-brand-primary transition-all duration-200"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-neutral-800 dark:text-neutral-200 truncate group-hover:text-brand-primary transition-all duration-200">{activeRole.name}</p>
-                    <p className="text-[10px] text-neutral-500">{activeRole.badge}</p>
+                    <p className="text-xs font-bold text-[#0e100f] dark:text-neutral-200 truncate group-hover:text-brand-primary transition-all duration-200">{activeRole.name}</p>
+                    <p className="text-[10px] text-[#7c7c6f]">{activeRole.badge}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-neutral-400 group-hover:text-brand-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-[#7c7c6f] group-hover:text-brand-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
                 </div>
 
                 {/* Navigation lists */}
@@ -137,8 +137,8 @@ export default function MobileNavigation({
                         onClick={() => handleTabClick(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                           isActive
-                            ? "bg-neutral-100 text-brand-primary dark:bg-neutral-800 dark:text-brand-primary"
-                            : "text-neutral-500 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-850"
+                            ? "bg-[#FFFCE1] text-brand-primary dark:bg-[#412D15] dark:text-brand-primary"
+                            : "text-[#7c7c6f] hover:bg-[#FFFCE1] dark:text-[#7c7c6f] dark:hover:bg-neutral-850"
                         }`}
                       >
                         <Icon className="w-4 h-4 shrink-0 text-brand-secondary" />
@@ -150,31 +150,31 @@ export default function MobileNavigation({
               </div>
 
               {/* Bottom utilities */}
-              <div className="space-y-4 pt-6 border-t border-neutral-100 dark:border-neutral-800">
+              <div className="space-y-4 pt-6 border-t border-[#E1DCC9]/20 dark:border-[#412D15]">
                 <button
                   onClick={() => handleTabClick('help')}
-                  className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-neutral-500 transition hover:bg-neutral-50 hover:text-brand-primary dark:text-neutral-400 dark:hover:bg-neutral-800"
+                  className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#7c7c6f] transition hover:bg-[#FFFCE1] hover:text-brand-primary dark:text-[#7c7c6f] dark:hover:bg-[#412D15]"
                 >
                   <HelpCircle className="w-4 h-4" />
                   <span>Help Center</span>
                 </button>
                 
                 {/* Theme switch bar */}
-                <div className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-neutral-850 rounded-xl">
-                  <span className="text-[11px] font-bold text-neutral-500">Dark Mode</span>
+                <div className="flex items-center justify-between p-2.5 bg-[#FFFCE1] dark:bg-neutral-850 rounded-xl">
+                  <span className="text-[11px] font-bold text-[#7c7c6f]">Dark Mode</span>
                   <button
                     onClick={toggleTheme}
-                    className="p-1.5 rounded-lg bg-white dark:bg-neutral-800 shadow-sm border border-neutral-150 dark:border-neutral-700"
+                    className="p-1.5 rounded-lg bg-[#FFFCE1] dark:bg-[#412D15] shadow-sm border border-neutral-150 dark:border-[#412D15]"
                   >
                     {theme === "light" ? (
-                      <Moon className="w-4 h-4 text-neutral-600" />
+                      <Moon className="w-4 h-4 text-[#7c7c6f]" />
                     ) : (
                       <Sun className="w-4 h-4 text-amber-500" />
                     )}
                   </button>
                 </div>
 
-                <p className="text-[9px] text-center text-neutral-400">
+                <p className="text-[9px] text-center text-[#7c7c6f]">
                   ScholarHub academic platform 
                 </p>
               </div>

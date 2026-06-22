@@ -103,7 +103,7 @@ export function AdminIssueCertificate() {
             }}
             className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               templateType === 'k12'
-                ? 'bg-white dark:bg-neutral-800 text-brand-primary shadow-sm'
+                ? 'bg-[#FFFCE1] dark:bg-[#412D15] text-brand-primary shadow-sm'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
@@ -116,7 +116,7 @@ export function AdminIssueCertificate() {
             }}
             className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               templateType === 'uni'
-                ? 'bg-white dark:bg-neutral-800 text-brand-primary shadow-sm'
+                ? 'bg-[#FFFCE1] dark:bg-[#412D15] text-brand-primary shadow-sm'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
@@ -128,12 +128,12 @@ export function AdminIssueCertificate() {
       {/* Main Issue Form */}
       <GlassCard className="p-6 border border-outline-variant/20 rounded-2xl relative overflow-hidden">
         {/* Subtle background decoration based on type */}
-        <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500 ${templateType === 'k12' ? 'bg-blue-500' : 'bg-purple-500'}`} />
+        <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500 ${templateType === 'k12' ? 'bg-[#00bae2]' : 'bg-[#9d95ff]'}`} />
         
         <div className="flex items-center justify-between mb-6 relative z-10">
           <div>
             <h2 className="text-lg font-bold text-on-surface flex items-center gap-2">
-              <Award className={templateType === 'k12' ? 'text-blue-500' : 'text-purple-500'} size={20} /> 
+              <Award className={templateType === 'k12' ? 'text-[#00bae2]' : 'text-[#9d95ff]'} size={20} /> 
               Issue {templateType === 'k12' ? 'K-12' : 'University'} Certificate
             </h2>
             <p className="text-sm text-on-surface-variant mt-1">Generate and lock certificates on the Polygon blockchain.</p>
@@ -182,7 +182,7 @@ export function AdminIssueCertificate() {
                     <label className="block text-xs font-medium text-on-surface-variant mb-1">Subject UUID</label>
                     <input 
                       type="text" required
-                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-blue-500 outline-none transition-colors"
+                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-[#00bae2] outline-none transition-colors"
                       value={subjectId}
                       onChange={e => setSubjectId(e.target.value)}
                     />
@@ -191,7 +191,7 @@ export function AdminIssueCertificate() {
                     <label className="block text-xs font-medium text-on-surface-variant mb-1">Subject Name</label>
                     <input 
                       type="text" required
-                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-blue-500 outline-none transition-colors"
+                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-[#00bae2] outline-none transition-colors"
                       value={subjectName}
                       onChange={e => setSubjectName(e.target.value)}
                     />
@@ -200,7 +200,7 @@ export function AdminIssueCertificate() {
                     <label className="block text-xs font-medium text-on-surface-variant mb-1">Grade Level</label>
                     <input 
                       type="text" required
-                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-blue-500 outline-none transition-colors"
+                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-[#00bae2] outline-none transition-colors"
                       value={gradeLevel}
                       onChange={e => setGradeLevel(e.target.value)}
                       placeholder="e.g. 10th Grade"
@@ -216,7 +216,7 @@ export function AdminIssueCertificate() {
                     <label className="block text-xs font-medium text-on-surface-variant mb-1">Course UUID</label>
                     <input 
                       type="text" required
-                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-purple-500 outline-none transition-colors"
+                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-[#9d95ff] outline-none transition-colors"
                       value={courseId}
                       onChange={e => setCourseId(e.target.value)}
                     />
@@ -225,7 +225,7 @@ export function AdminIssueCertificate() {
                     <label className="block text-xs font-medium text-on-surface-variant mb-1">Course Name</label>
                     <input 
                       type="text" required
-                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-purple-500 outline-none transition-colors"
+                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-[#9d95ff] outline-none transition-colors"
                       value={courseName}
                       onChange={e => setCourseName(e.target.value)}
                     />
@@ -234,7 +234,7 @@ export function AdminIssueCertificate() {
                     <label className="block text-xs font-medium text-on-surface-variant mb-1">Degree Program</label>
                     <input 
                       type="text" required
-                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-purple-500 outline-none transition-colors"
+                      className="w-full bg-on-surface/5 border border-outline-variant/20 rounded-xl px-4 py-2 text-sm text-on-surface focus:border-[#9d95ff] outline-none transition-colors"
                       value={degreeProgram}
                       onChange={e => setDegreeProgram(e.target.value)}
                       placeholder="e.g. B.S. Computer Science"
@@ -253,18 +253,18 @@ export function AdminIssueCertificate() {
         </form>
 
         {result && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 p-4 rounded-xl border border-[#10B981]/30 bg-[#10B981]/10">
-            <h3 className="text-sm font-bold text-[#10B981] mb-2 flex items-center gap-2">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 p-4 rounded-xl border border-[#00bae2]/30 bg-[#00bae2]/10">
+            <h3 className="text-sm font-bold text-[#00bae2] mb-2 flex items-center gap-2">
               <Award size={16} /> Success!
             </h3>
             <div className="flex flex-col gap-2">
               {result.certificateUrl && (
-                <a href={result.certificateUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#EC4899] transition-colors">
+                <a href={result.certificateUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#ef4444] transition-colors">
                   <Download size={16} /> Download Generated PDF
                 </a>
               )}
               {result.txHash && (
-                <a href={`https://amoy.polygonscan.com/tx/${result.txHash}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#EC4899] transition-colors">
+                <a href={`https://amoy.polygonscan.com/tx/${result.txHash}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#ef4444] transition-colors">
                   <ExternalLink size={16} /> View Polygonscan Transaction
                 </a>
               )}

@@ -84,13 +84,13 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
   };
 
   if (loading) {
-    return <div className="animate-pulse space-y-3 p-4 bg-neutral-100 dark:bg-neutral-800 rounded-xl h-32" />;
+    return <div className="animate-pulse space-y-3 p-4 bg-[#FFFCE1] dark:bg-[#412D15] rounded-xl h-32" />;
   }
 
   if (students.length === 0) {
     return (
       <GlassCard className="text-center p-6">
-        <p className="text-neutral-500">No students enrolled to mark attendance.</p>
+        <p className="text-[#7c7c6f]">No students enrolled to mark attendance.</p>
       </GlassCard>
     );
   }
@@ -99,15 +99,15 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
     <GlassCard>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h3 className="text-base font-bold text-neutral-900 dark:text-white">Manual Bulk Attendance</h3>
-          <p className="text-xs text-neutral-500 mt-1">Mark present/absent for the entire class at once.</p>
+          <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9]">Manual Bulk Attendance</h3>
+          <p className="text-xs text-[#7c7c6f] mt-1">Mark present/absent for the entire class at once.</p>
         </div>
         <div className="flex items-center gap-2">
           <input 
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-sm outline-none text-neutral-900 dark:text-white"
+            className="px-3 py-2 rounded-lg bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] text-sm outline-none text-[#0e100f] dark:text-[#E1DCC9]"
           />
           <Button variant="primary" onClick={handleSubmit} loading={submitting}>
             Save Register
@@ -119,8 +119,8 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
         {students.map(student => {
           const status = attendanceState[student.id];
           return (
-            <div key={student.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-850 gap-3">
-              <div className="font-semibold text-sm text-neutral-900 dark:text-white line-clamp-1">
+            <div key={student.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-neutral-850 gap-3">
+              <div className="font-semibold text-sm text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 {student.name || 'Unknown Student'}
               </div>
               
@@ -129,8 +129,8 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
                   onClick={() => handleStatusChange(student.id, 'present')}
                   className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
                     status === 'present' 
-                      ? 'bg-emerald-500 text-white shadow-md' 
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                      ? 'bg-[#00bae2] text-[#E1DCC9] shadow-md' 
+                      : 'bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                 >
                   <CheckCircle size={14} /> Present
@@ -139,8 +139,8 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
                   onClick={() => handleStatusChange(student.id, 'late')}
                   className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
                     status === 'late' 
-                      ? 'bg-amber-500 text-white shadow-md' 
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                      ? 'bg-amber-500 text-[#E1DCC9] shadow-md' 
+                      : 'bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                 >
                   <Clock size={14} /> Late
@@ -149,8 +149,8 @@ export function BulkAttendance({ courseId }: { courseId: string }) {
                   onClick={() => handleStatusChange(student.id, 'absent')}
                   className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
                     status === 'absent' 
-                      ? 'bg-red-500 text-white shadow-md' 
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                      ? 'bg-red-500 text-[#E1DCC9] shadow-md' 
+                      : 'bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                 >
                   <XCircle size={14} /> Absent

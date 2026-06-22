@@ -15,7 +15,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
     <div 
       className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-bg-surface text-on-surface transition-colors duration-300" 
-      style={{ '--screen-accent': '#6D5DFC' } as React.CSSProperties}
+      style={{ '--screen-accent': '#9d95ff' } as React.CSSProperties}
     >
       <div className="absolute top-4 right-4 z-20">
         <button
@@ -33,7 +33,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
                 transition={{ duration: 0.2 }}
                 className="absolute"
               >
-                <Sun className="w-5 h-5 text-amber-400" />
+                <Sun className="w-5 h-5 text-amber-500" />
               </motion.span>
             ) : (
               <motion.span
@@ -56,12 +56,12 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         {/* Soft purple radial glow behind the registration card */}
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 dark:opacity-30 blur-3xl pointer-events-none" 
-          style={{ background: 'radial-gradient(circle, #6D5DFC 0%, #4F46E5 50%, transparent 100%)' }} 
+          style={{ background: 'radial-gradient(circle, #9d95ff 0%, #9d95ff 50%, transparent 100%)' }} 
         />
 
         {/* Ambient glows at corners */}
-        <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-15 blur-3xl" style={{ background: 'radial-gradient(circle, #6D5DFC, transparent)' }} />
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full opacity-15 blur-3xl" style={{ background: 'radial-gradient(circle, #4F46E5, transparent)' }} />
+        <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-15 blur-3xl" style={{ background: 'radial-gradient(circle, #9d95ff, transparent)' }} />
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full opacity-15 blur-3xl" style={{ background: 'radial-gradient(circle, #9d95ff, transparent)' }} />
 
         {/* Faint floating particles (gradient mesh style) */}
         {[...Array(6)].map((_, i) => (
@@ -122,7 +122,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <img src="/logo-light.png" alt="ScholarHub Logo" className="w-full h-full object-contain drop-shadow-xl block dark:hidden" />
             </div>
             <span className="text-2xl font-bold text-on-surface" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>
-              Scholar<span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #6D5DFC, #4F46E5)' }}>Hub</span>
+              Scholar<span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #9d95ff, #9d95ff)' }}>Hub</span>
             </span>
           </Link>
         </div>

@@ -233,7 +233,7 @@ export function Messages() {
     <div className="space-y-6">
       <div className="flex h-[calc(100vh-64px)] overflow-hidden">
         {/* Left sidebar */}
-        <div className="w-72 flex-shrink-0 border-r border-outline-variant/10 flex flex-col bg-neutral-100/30 dark:bg-neutral-950/40">
+        <div className="w-72 flex-shrink-0 border-r border-outline-variant/10 flex flex-col bg-[#FFFCE1]/30 dark:bg-[#1F150C]/40">
           {/* Tabs */}
           <div className="grid grid-cols-4 p-2 border-b border-outline-variant/10">
             {[
@@ -243,10 +243,10 @@ export function Messages() {
               { id: 'notifications', icon: <Bell size={15} />, badge: notifications.filter(n => !n.read).length },
             ].map(t => (
               <button key={t.id} onClick={() => setTab(t.id as any)}
-                className={`relative flex items-center justify-center p-2 rounded-xl transition-all ${tab === t.id ? 'text-[#EC4899]' : 'text-on-surface-variant hover:text-on-surface'}`}
-                style={tab === t.id ? { background: 'color-mix(in srgb, #EC4899 20%, transparent)' } : {}}>
+                className={`relative flex items-center justify-center p-2 rounded-xl transition-all ${tab === t.id ? 'text-[#ef4444]' : 'text-on-surface-variant hover:text-on-surface'}`}
+                style={tab === t.id ? { background: 'color-mix(in srgb, #ef4444 20%, transparent)' } : {}}>
                 {t.icon}
-                {t.badge > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#EC4899] text-white text-xs flex items-center justify-center">{t.badge}</span>}
+                {t.badge > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#ef4444] text-[#E1DCC9] text-xs flex items-center justify-center">{t.badge}</span>}
               </button>
             ))}
           </div>
@@ -258,19 +258,19 @@ export function Messages() {
             {(tab === 'messages' || tab === 'groups') && filteredConvs.filter(c => tab === 'messages' ? c.type !== 'group' && c.type !== 'course' : c.type === 'group' || c.type === 'course').map(conv => (
               <motion.button key={conv.id} onClick={() => setActiveConv(conv.id)}
                 whileHover={{ x: 2 }}
-                className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-all border-l-2 ${activeConv === conv.id ? 'border-[#EC4899] bg-[#EC4899]/10' : 'border-transparent hover:bg-on-surface/5'}`}>
+                className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-all border-l-2 ${activeConv === conv.id ? 'border-[#ef4444] bg-[#ef4444]/10' : 'border-transparent hover:bg-on-surface/5'}`}>
                 <div className="flex-shrink-0">
                   <Avatar name={conv.name} size="md" online={conv.online} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className={`text-sm font-semibold truncate ${activeConv === conv.id ? 'text-[#EC4899]' : 'text-on-surface'}`}>{conv.name}</span>
+                    <span className={`text-sm font-semibold truncate ${activeConv === conv.id ? 'text-[#ef4444]' : 'text-on-surface'}`}>{conv.name}</span>
                     <span className="text-xs text-outline flex-shrink-0">{conv.time}</span>
                   </div>
                   <p className="text-xs text-on-surface-variant truncate">{conv.lastMsg}</p>
                 </div>
                 {conv.unread > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-[#EC4899] text-white text-xs flex items-center justify-center flex-shrink-0">{conv.unread}</span>
+                  <span className="w-5 h-5 rounded-full bg-[#ef4444] text-[#E1DCC9] text-xs flex items-center justify-center flex-shrink-0">{conv.unread}</span>
                 )}
               </motion.button>
             ))}
@@ -279,7 +279,7 @@ export function Messages() {
               <div key={ann.id} className="px-4 py-3 border-b border-outline-variant/10 hover:bg-on-surface/[0.03] transition-colors cursor-pointer">
                 <div className="flex items-start justify-between mb-1">
                   <p className="text-sm font-semibold text-on-surface leading-tight">{ann.title}</p>
-                  {ann.pinned && <Pin size={12} className="text-amber-400 flex-shrink-0 ml-2" />}
+                  {ann.pinned && <Pin size={12} className="text-amber-500 flex-shrink-0 ml-2" />}
                 </div>
                 <p className="text-xs text-on-surface-variant line-clamp-2 mb-1">{ann.body}</p>
                 <p className="text-xs text-outline">{ann.from} · {ann.time}</p>
@@ -288,9 +288,9 @@ export function Messages() {
 
             {tab === 'notifications' && notifications.map((n, i) => (
               <div key={n.id} onClick={() => setNotifications(prev => prev.map((x, j) => j === i ? { ...x, read: true } : x))}
-                className={`px-4 py-3 border-b border-outline-variant/10 cursor-pointer transition-all hover:bg-on-surface/5 ${!n.read ? 'bg-[#EC4899]/5' : ''}`}>
+                className={`px-4 py-3 border-b border-outline-variant/10 cursor-pointer transition-all hover:bg-on-surface/5 ${!n.read ? 'bg-[#ef4444]/5' : ''}`}>
                 <div className="flex items-start gap-2.5">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${!n.read ? 'bg-[#EC4899]' : 'bg-transparent'}`} />
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${!n.read ? 'bg-[#ef4444]' : 'bg-transparent'}`} />
                   <div>
                     <p className={`text-sm ${!n.read ? 'text-on-surface font-medium' : 'text-on-surface-variant'}`}>{n.msg}</p>
                     <p className="text-xs text-outline mt-0.5">{n.time}</p>
@@ -332,7 +332,7 @@ export function Messages() {
                         {showAvatar && !isMe && <p className="text-xs text-on-surface-variant mb-1 ml-1">{msg.senderName}</p>}
                         
                         <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed overflow-hidden ${isMe ? 'rounded-br-sm text-on-surface' : 'rounded-bl-sm text-on-surface'}`}
-                          style={isMe ? { background: 'linear-gradient(135deg, #EC4899, #3B82F6)' } : { background: 'var(--surface-container-high)', backdropFilter: 'blur(8px)' }}>
+                          style={isMe ? { background: 'linear-gradient(135deg, #ef4444, #00bae2)' } : { background: 'var(--surface-container-high)', backdropFilter: 'blur(8px)' }}>
                           
                           {/* Render Attachment based on type */}
                           {msg.type === 'image' && msg.fileUrl && (
@@ -341,7 +341,7 @@ export function Messages() {
                             </div>
                           )}
                           {msg.type === 'file' && msg.fileUrl && (
-                            <a href={msg.fileUrl} download className="flex items-center gap-2 p-2 mb-1 bg-black/10 rounded-lg text-sm hover:underline">
+                            <a href={msg.fileUrl} download className="flex items-center gap-2 p-2 mb-1 bg-[#1F150C]/10 rounded-lg text-sm hover:underline">
                               <FileText size={16} /> Download File
                             </a>
                           )}
@@ -354,7 +354,7 @@ export function Messages() {
                           <span className="text-xs text-outline">
                             {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
-                          {isMe && <CheckCheck size={14} className={msg.isRead ? 'text-[#EC4899]' : 'text-outline'} />}
+                          {isMe && <CheckCheck size={14} className={msg.isRead ? 'text-[#ef4444]' : 'text-outline'} />}
                         </div>
                       </div>
                     </motion.div>
@@ -383,8 +383,8 @@ export function Messages() {
               {/* Input */}
               <div className="px-5 py-4 border-t border-outline-variant/10">
                 <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
-                <div className="flex items-end gap-3 px-4 py-3 rounded-2xl border border-outline-variant/20 bg-neutral-100/50 dark:bg-neutral-850/30">
-                  <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="text-on-surface-variant hover:text-[#EC4899] transition-colors flex-shrink-0 pb-0.5">
+                <div className="flex items-end gap-3 px-4 py-3 rounded-2xl border border-outline-variant/20 bg-[#FFFCE1]/50 dark:bg-neutral-850/30">
+                  <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="text-on-surface-variant hover:text-[#ef4444] transition-colors flex-shrink-0 pb-0.5">
                     <Paperclip size={18} />
                   </button>
                   <textarea
@@ -397,7 +397,7 @@ export function Messages() {
                     className="flex-1 bg-transparent text-sm text-on-surface placeholder-slate-500 outline-none resize-none"
                     style={{ fontFamily: 'Inter, sans-serif' }}
                   />
-                  <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="text-on-surface-variant hover:text-[#EC4899] transition-colors flex-shrink-0 pb-0.5">
+                  <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="text-on-surface-variant hover:text-[#ef4444] transition-colors flex-shrink-0 pb-0.5">
                     <Smile size={18} />
                   </button>
                   <motion.button
@@ -406,9 +406,9 @@ export function Messages() {
                     onClick={sendMessage}
                     disabled={!newMsg.trim() || isUploading}
                     className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 disabled:opacity-40 transition-all"
-                    style={{ background: 'linear-gradient(135deg, #EC4899, #3B82F6)' }}
+                    style={{ background: 'linear-gradient(135deg, #ef4444, #00bae2)' }}
                   >
-                    <Send size={15} className="text-white" />
+                    <Send size={15} className="text-[#E1DCC9]" />
                   </motion.button>
                 </div>
               </div>

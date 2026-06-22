@@ -109,25 +109,25 @@ export function AnnouncementsWidget({ theme = 'sleek' }: { theme?: 'sleek' | 'fu
   const isFunky = theme === 'funky';
 
   return (
-    <GlassCard className={`flex flex-col h-full ${isFunky ? 'border-amber-200 dark:border-amber-900/50' : ''}`}>
+    <GlassCard className={`flex flex-col h-full ${isFunky ? 'border-amber-500 dark:border-amber-500/50' : ''}`}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${isFunky ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20' : 'bg-brand-primary/10 text-brand-primary'}`}>
+          <div className={`p-2 rounded-xl ${isFunky ? 'bg-amber-500 text-amber-500 dark:bg-amber-500/20' : 'bg-brand-primary/10 text-brand-primary'}`}>
             <Megaphone size={20} />
           </div>
-          <h2 className={`font-bold ${isFunky ? 'text-xl tracking-tight' : 'text-lg'} text-neutral-900 dark:text-white`}>
+          <h2 className={`font-bold ${isFunky ? 'text-xl tracking-tight' : 'text-lg'} text-[#0e100f] dark:text-[#E1DCC9]`}>
             Announcements
           </h2>
         </div>
 
         {/* Global vs Class Toggle */}
-        <div className="flex p-1 bg-neutral-100 dark:bg-neutral-800 rounded-lg shrink-0">
+        <div className="flex p-1 bg-[#FFFCE1] dark:bg-[#412D15] rounded-lg shrink-0">
           <button
             onClick={() => setFilterMode('global')}
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               filterMode === 'global' 
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm' 
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                ? 'bg-[#FFFCE1] dark:bg-neutral-700 text-[#0e100f] dark:text-[#E1DCC9] shadow-sm' 
+                : 'text-[#7c7c6f] hover:text-[#7c7c6f] dark:hover:text-[#7c7c6f]'
             }`}
           >
             <Globe size={14} />
@@ -137,8 +137,8 @@ export function AnnouncementsWidget({ theme = 'sleek' }: { theme?: 'sleek' | 'fu
             onClick={() => setFilterMode('class')}
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
               filterMode === 'class' 
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm' 
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                ? 'bg-[#FFFCE1] dark:bg-neutral-700 text-[#0e100f] dark:text-[#E1DCC9] shadow-sm' 
+                : 'text-[#7c7c6f] hover:text-[#7c7c6f] dark:hover:text-[#7c7c6f]'
             }`}
           >
             <Users size={14} />
@@ -154,9 +154,9 @@ export function AnnouncementsWidget({ theme = 'sleek' }: { theme?: 'sleek' | 'fu
             onChange={(e) => setNewPost(e.target.value)}
             placeholder={`Post a new ${filterMode === 'global' ? 'campus-wide' : 'class'} announcement...`}
             className={`w-full p-3 rounded-xl border text-sm focus:outline-none focus:ring-2 resize-none
-              ${isFunky ? 'border-amber-200 focus:ring-amber-400 dark:bg-neutral-800 dark:border-neutral-700' 
-                        : 'border-neutral-200 focus:ring-brand-primary dark:bg-neutral-800 dark:border-neutral-700'} 
-              dark:text-white bg-white/50 backdrop-blur-sm transition-all`}
+              ${isFunky ? 'border-amber-500 focus:ring-amber-500 dark:bg-[#412D15] dark:border-[#412D15]' 
+                        : 'border-[#E1DCC9]/20 focus:ring-brand-primary dark:bg-[#412D15] dark:border-[#412D15]'} 
+              dark:text-[#E1DCC9] bg-[#FFFCE1]/50 backdrop-blur-sm transition-all`}
             rows={2}
           />
           <div className="mt-2 flex justify-end">
@@ -175,25 +175,25 @@ export function AnnouncementsWidget({ theme = 'sleek' }: { theme?: 'sleek' | 'fu
 
       <div className="space-y-4 overflow-y-auto flex-1 min-h-[150px] custom-scrollbar pr-2">
         {announcements.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-neutral-400 py-6">
+          <div className="flex flex-col items-center justify-center h-full text-[#7c7c6f] py-6">
             <Megaphone size={32} className="opacity-20 mb-2" />
             <p className="text-sm">No {filterMode === 'global' ? 'campus' : 'class'} announcements</p>
           </div>
         ) : (
           announcements.map((a) => (
-            <div key={a.id} className="relative pl-4 border-l-2 border-neutral-200 dark:border-neutral-700 group">
-              <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full transition-transform group-hover:scale-125 ${isFunky ? 'bg-amber-400' : 'bg-brand-primary'}`} />
-              <p className="text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed">
+            <div key={a.id} className="relative pl-4 border-l-2 border-[#E1DCC9]/20 dark:border-[#412D15] group">
+              <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full transition-transform group-hover:scale-125 ${isFunky ? 'bg-amber-500' : 'bg-brand-primary'}`} />
+              <p className="text-sm text-[#0e100f] dark:text-neutral-200 leading-relaxed">
                 {a.content}
               </p>
-              <div className="flex items-center gap-2 mt-1.5 text-xs text-neutral-500">
-                <span className="font-medium text-neutral-700 dark:text-neutral-400">{a.profiles?.full_name || 'Teacher'}</span>
+              <div className="flex items-center gap-2 mt-1.5 text-xs text-[#7c7c6f]">
+                <span className="font-medium text-[#7c7c6f] dark:text-[#7c7c6f]">{a.profiles?.full_name || 'Teacher'}</span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Clock size={12} />
                   {new Date(a.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </span>
-                <span className={`ml-auto px-2 py-0.5 rounded-full text-[10px] ${filterMode === 'global' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'}`}>
+                <span className={`ml-auto px-2 py-0.5 rounded-full text-[10px] ${filterMode === 'global' ? 'bg-[#00bae2] text-[#00bae2] dark:bg-[#00bae2]/30 dark:text-[#00bae2]' : 'bg-[#9d95ff] text-[#9d95ff] dark:bg-[#9d95ff]/30 dark:text-[#9d95ff]'}`}>
                   {filterMode === 'global' ? 'Global' : 'Class'}
                 </span>
               </div>

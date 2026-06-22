@@ -109,7 +109,7 @@ export function Assignments() {
                               <Clock size={12} /> {daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due today' : `${daysLeft}d left`}
                             </span>
                             <span>{new Date(a.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                            {a.score !== undefined && <span className="text-emerald-400 font-semibold">Score: {a.score}/{a.maxScore}</span>}
+                            {a.score !== undefined && <span className="text-[#00bae2] font-semibold">Score: {a.score}/{a.maxScore}</span>}
                           </div>
                         </div>
                         <ChevronRight size={16} className="text-outline group-hover:text-[#EA580C] transition-colors flex-shrink-0 mt-1" />
@@ -204,11 +204,11 @@ export function AssignmentDetail() {
         {assignment.status === 'graded' && assignment.feedback && (
           <GlassCard tint="emerald">
             <div className="flex items-start gap-3">
-              <CheckCircle size={20} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+              <CheckCircle size={20} className="text-[#00bae2] flex-shrink-0 mt-0.5" />
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-base font-bold text-on-surface">Graded</h3>
-                  <span className="text-2xl font-bold text-emerald-400">{assignment.score}/{assignment.maxScore}</span>
+                  <span className="text-2xl font-bold text-[#00bae2]">{assignment.score}/{assignment.maxScore}</span>
                 </div>
                 <p className="text-sm text-on-surface-variant leading-relaxed">{assignment.feedback}</p>
               </div>
@@ -248,10 +248,10 @@ export function AssignmentDetail() {
               <div className="space-y-2 mb-4">
                 {files.map((f, i) => (
                   <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl" style={{ background: 'color-mix(in srgb, var(--color-on-surface) 4%, transparent)' }}>
-                    <FileText size={14} className="text-blue-400 flex-shrink-0" />
+                    <FileText size={14} className="text-[#00bae2] flex-shrink-0" />
                     <span className="flex-1 text-sm text-on-surface-variant truncate">{f.name}</span>
                     <span className="text-xs text-on-surface-variant">{uploadService.formatFileSize(f.size)}</span>
-                    <button onClick={() => setFiles(p => p.filter((_, j) => j !== i))} className="text-outline hover:text-red-400 transition-colors"><X size={14} /></button>
+                    <button onClick={() => setFiles(p => p.filter((_, j) => j !== i))} className="text-outline hover:text-red-500 transition-colors"><X size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -283,17 +283,17 @@ export function AssignmentDetail() {
                 <p className="text-sm text-on-surface-variant mb-4 leading-relaxed">{aiResult.feedback}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs font-semibold text-emerald-400 mb-2">✓ Strengths</p>
+                    <p className="text-xs font-semibold text-[#00bae2] mb-2">✓ Strengths</p>
                     {aiResult.strengths.map((s, i) => <p key={i} className="text-xs text-on-surface-variant mb-1">• {s}</p>)}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-amber-400 mb-2">↑ Improvements</p>
+                    <p className="text-xs font-semibold text-amber-500 mb-2">↑ Improvements</p>
                     {aiResult.improvements.map((s, i) => <p key={i} className="text-xs text-on-surface-variant mb-1">• {s}</p>)}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-outline-variant/15">
                   <span className="text-xs text-on-surface-variant">Plagiarism score:</span>
-                  <span className={`text-xs font-bold ${aiResult.plagiarismScore < 20 ? 'text-emerald-400' : 'text-red-400'}`}>{aiResult.plagiarismScore}%</span>
+                  <span className={`text-xs font-bold ${aiResult.plagiarismScore < 20 ? 'text-[#00bae2]' : 'text-red-500'}`}>{aiResult.plagiarismScore}%</span>
                   <Badge variant={aiResult.plagiarismScore < 20 ? 'emerald' : 'red'}>{aiResult.plagiarismScore < 20 ? 'Original' : 'Review needed'}</Badge>
                 </div>
               </GlassCard>
@@ -304,7 +304,7 @@ export function AssignmentDetail() {
         {submitted && assignment.status !== 'graded' && (
           <GlassCard tint="blue">
             <div className="flex items-center gap-3">
-              <CheckCircle size={20} className="text-emerald-400" />
+              <CheckCircle size={20} className="text-[#00bae2]" />
               <div>
                 <p className="text-sm font-semibold text-on-surface">Submitted successfully</p>
                 <p className="text-xs text-on-surface-variant">Awaiting instructor review</p>
@@ -369,7 +369,7 @@ export function Quiz() {
           <GlassCard tint="emerald">
             <div className="text-center py-8">
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 12 }}
-                className={`w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl font-black text-on-surface ${results.score >= results.total * 0.7 ? 'bg-gradient-to-br from-emerald-500 to-blue-500' : 'bg-gradient-to-br from-amber-500 to-red-500'}`}
+                className={`w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl font-black text-on-surface ${results.score >= results.total * 0.7 ? 'bg-gradient-to-br from-[#00bae2] to-[#00bae2]' : 'bg-gradient-to-br from-amber-500 to-red-500'}`}
                 style={{ boxShadow: `0 0 40px ${results.score >= results.total * 0.7 ? 'rgba(78,222,163,0.4)' : 'rgba(245,158,11,0.4)'}` }}>
                 {Math.round((results.score / results.total) * 100)}%
               </motion.div>
@@ -379,8 +379,8 @@ export function Quiz() {
               <p className="text-on-surface-variant mb-6">Score: <span className="text-on-surface font-bold text-xl">{results.score}/{results.total}</span></p>
               <div className="space-y-3 text-left mb-6">
                 {quiz.questions.map((q, i) => (
-                  <div key={q.id} className={`flex items-start gap-3 p-3 rounded-xl ${results.results[q.id] ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
-                    {results.results[q.id] ? <CheckCircle size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" /> : <X size={16} className="text-red-400 flex-shrink-0 mt-0.5" />}
+                  <div key={q.id} className={`flex items-start gap-3 p-3 rounded-xl ${results.results[q.id] ? 'bg-[#00bae2]/10 border border-[#00bae2]/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+                    {results.results[q.id] ? <CheckCircle size={16} className="text-[#00bae2] flex-shrink-0 mt-0.5" /> : <X size={16} className="text-red-500 flex-shrink-0 mt-0.5" />}
                     <div>
                       <p className="text-sm font-medium text-on-surface mb-1">{q.question}</p>
                       {!results.results[q.id] && q.explanation && <p className="text-xs text-on-surface-variant">{q.explanation}</p>}
@@ -400,7 +400,7 @@ export function Quiz() {
               <h1 className="text-xl font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>{quiz.title}</h1>
               <p className="text-sm text-on-surface-variant">Question {currentQ + 1} of {quiz.questions.length}</p>
             </div>
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-bold text-lg ${timeLeft < 60 ? 'border-red-500/40 bg-red-500/10 text-red-400' : 'border-outline-variant/20 text-on-surface'}`}
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-bold text-lg ${timeLeft < 60 ? 'border-red-500/40 bg-red-500/10 text-red-500' : 'border-outline-variant/20 text-on-surface'}`}
               style={{ fontFamily: 'JetBrains Mono, monospace' }}>
               <Clock size={16} />
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
@@ -413,7 +413,7 @@ export function Quiz() {
           {/* Question progress dots */}
           <div className="flex gap-1.5">
             {quiz.questions.map((_, i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i < currentQ ? 'bg-emerald-400' : i === currentQ ? 'bg-[#EA580C]' : answers[quiz.questions[i].id] !== undefined ? 'bg-blue-500/60' : 'bg-on-surface/10'}`} />
+              <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i < currentQ ? 'bg-[#00bae2]' : i === currentQ ? 'bg-[#EA580C]' : answers[quiz.questions[i].id] !== undefined ? 'bg-[#00bae2]/60' : 'bg-on-surface/10'}`} />
             ))}
           </div>
 

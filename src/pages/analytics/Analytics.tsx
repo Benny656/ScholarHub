@@ -95,13 +95,13 @@ export function Analytics() {
 
 
                   <Line type="monotone" dataKey="score" stroke="#06B6D4" strokeWidth={2.5} dot={{ fill: '#06B6D4', r: 4 }} activeDot={{ r: 6 }} isAnimationActive animationDuration={1200} />
-                  <Line type="monotone" dataKey="avg" stroke="#3B82F6" strokeWidth={2} strokeDasharray="4 4" dot={false} isAnimationActive />
+                  <Line type="monotone" dataKey="avg" stroke="#00bae2" strokeWidth={2} strokeDasharray="4 4" dot={false} isAnimationActive />
                 </LineChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center gap-4 mt-2 text-xs text-on-surface-variant">
               <span className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-[#06B6D4] rounded" />Your score</span>
-              <span className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-b border-dashed border-blue-500" />Class average</span>
+              <span className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-b border-dashed border-[#00bae2]" />Class average</span>
             </div>
           </GlassCard>
 
@@ -115,7 +115,7 @@ export function Analytics() {
                   <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 11 }} />
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar name="Your Grade" dataKey="grade" stroke="#06B6D4" fill="#06B6D4" fillOpacity={0.25} isAnimationActive animationDuration={1200} />
-                  <Radar name="Class Avg" dataKey="avg" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} />
+                  <Radar name="Class Avg" dataKey="avg" stroke="#00bae2" fill="#00bae2" fillOpacity={0.1} />
                   <Tooltip contentStyle={TOOLTIP} formatter={(v) => [`${v ?? 0}%`]} />
 
                 </RadarChart>
@@ -138,7 +138,7 @@ export function Analytics() {
                 <Bar dataKey="hours" fill="url(#timeGrad)" radius={[6, 6, 0, 0]} isAnimationActive animationDuration={1000} />
                 <defs>
                   <linearGradient id="timeGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#3B82F6" />
+                    <stop offset="0%" stopColor="#00bae2" />
                     <stop offset="100%" stopColor="#06B6D4" />
                   </linearGradient>
                 </defs>
@@ -177,7 +177,7 @@ export function Analytics() {
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <ProgressBar value={r.grade} color={r.grade >= 80 ? 'emerald' : r.grade >= 70 ? 'blue' : 'amber'} />
-                        <span className={`text-sm font-bold w-10 flex-shrink-0 ${r.grade >= 80 ? 'text-emerald-400' : r.grade >= 70 ? 'text-blue-400' : 'text-amber-400'}`}>{r.letter}</span>
+                        <span className={`text-sm font-bold w-10 flex-shrink-0 ${r.grade >= 80 ? 'text-[#00bae2]' : r.grade >= 70 ? 'text-[#00bae2]' : 'text-amber-500'}`}>{r.letter}</span>
                       </div>
                     </td>
                     <td className="px-5 py-3.5">

@@ -108,7 +108,7 @@ export function CalendarPage() {
           </div>
           <div className="flex items-center gap-1 border border-outline-variant/20 rounded-xl overflow-hidden">
             {(['month', 'week', 'list'] as const).map(v => (
-              <button key={v} onClick={() => setView(v)} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium capitalize transition-all ${view === v ? 'bg-[#7C3AED] text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}>
+              <button key={v} onClick={() => setView(v)} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium capitalize transition-all ${view === v ? 'bg-[#9d95ff] text-on-surface' : 'text-on-surface-variant hover:text-on-surface'}`}>
                 {v === 'month' ? <CalIcon size={13} /> : v === 'week' ? <ChevronRight size={13} /> : <List size={13} />}
                 {v}
               </button>
@@ -145,9 +145,9 @@ export function CalendarPage() {
                         key={day}
                         onClick={() => setSelectedDay(new Date(year, month, day))}
                         whileHover={{ scale: 0.98 }}
-                        className={`h-24 border-b border-r border-outline-variant/10 p-2 cursor-pointer transition-all ${isSelected ? 'bg-[#7C3AED]/15' : 'hover:bg-on-surface/[0.03]'}`}
+                        className={`h-24 border-b border-r border-outline-variant/10 p-2 cursor-pointer transition-all ${isSelected ? 'bg-[#9d95ff]/15' : 'hover:bg-on-surface/[0.03]'}`}
                       >
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${isToday ? 'bg-[#7C3AED] text-on-surface' : 'text-on-surface-variant'}`}>
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${isToday ? 'bg-[#9d95ff] text-on-surface' : 'text-on-surface-variant'}`}>
                           {day}
                         </span>
                         <div className="space-y-0.5">
@@ -288,7 +288,7 @@ export function CalendarPage() {
                   <div key={label}>
                     <label className="block text-sm font-medium text-on-surface-variant mb-1">{label}</label>
                     <input type={label.toLowerCase().includes('date') ? 'date' : label.toLowerCase().includes('time') ? 'time' : 'text'}
-                      className="w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 text-on-surface text-sm outline-none focus:border-[#7C3AED]/60"
+                      className="w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 text-on-surface text-sm outline-none focus:border-[#9d95ff]/60"
                       style={{ background: 'rgba(255,255,255,0.05)', fontFamily: 'Inter, sans-serif' }} />
                   </div>
                 ))}

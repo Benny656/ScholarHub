@@ -403,7 +403,7 @@ export function StudentDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
-        <p className="text-sm text-neutral-500">Verifying workspace...</p>
+        <p className="text-sm text-[#7c7c6f]">Verifying workspace...</p>
       </div>
     );
   }
@@ -416,7 +416,7 @@ export function StudentDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading your summary dashboard...</p>
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f]">Loading your summary dashboard...</p>
       </div>
     );
   }
@@ -425,8 +425,8 @@ export function StudentDashboard() {
     return (
       <GlassCard className="max-w-md mx-auto my-12 text-center p-8">
         <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Error Loading Dashboard</h3>
-        <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">{error}</p>
+        <h3 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2">Error Loading Dashboard</h3>
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mb-6">{error}</p>
         <Button variant="primary" onClick={loadDashboardData} icon={<RefreshCw size={14} />}>Retry</Button>
       </GlassCard>
     );
@@ -446,15 +446,15 @@ export function StudentDashboard() {
         className="flex flex-col md:flex-row md:items-center justify-between gap-6"
       >
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight mb-2">
             Welcome back, {firstName}
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed">
             Here is your daily summary: You have <span className="font-semibold text-brand-primary">{stats.classesCountToday} live classes</span> scheduled today, <span className="font-semibold text-brand-primary">{stats.pendingAssignmentsCount} pending assignments</span>, and your average {isK12 ? "subject" : "course"} progress is <span className="font-semibold text-brand-primary">{stats.averageProgress}%</span>.
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <Link to="/messages" className="flex items-center gap-2 px-3 py-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-xl text-sm transition-colors border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900">
+          <Link to="/messages" className="flex items-center gap-2 px-3 py-2 text-[#7c7c6f] dark:text-[#7c7c6f] hover:text-[#0e100f] dark:hover:text-[#E1DCC9] rounded-xl text-sm transition-colors border border-[#E1DCC9]/20 dark:border-[#412D15] hover:bg-[#FFFCE1] dark:hover:bg-[#412D15]">
             <Bell size={14} />
             <span>Discussion Board</span>
           </Link>
@@ -473,8 +473,8 @@ export function StudentDashboard() {
           {/* ─── SECTION 2: ACTIVE LIVE CLASSES ─── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2">
             <GlassCard padding="p-0">
-              <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <div className="px-5 py-4 border-b border-[#E1DCC9]/60 dark:border-[#412D15] flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                     <Video size={16} className="text-red-500" />
@@ -485,28 +485,28 @@ export function StudentDashboard() {
               </div>
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {upcomingClasses.length === 0 ? (
-                  <div className="p-6 text-center text-neutral-500 dark:text-neutral-400 text-sm">
+                  <div className="p-6 text-center text-[#7c7c6f] dark:text-[#7c7c6f] text-sm">
                     No live classes right now. Check back later!
                   </div>
                 ) : (
                   upcomingClasses.map(cls => (
-                    <div key={cls.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors bg-red-50/50 dark:bg-red-900/10">
+                    <div key={cls.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/20 transition-colors bg-red-500/50 dark:bg-red-500/10">
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{cls.courses?.title || 'Live Class'}</h4>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Teacher: {cls.courses?.users?.full_name || 'Teacher'}</p>
+                        <h4 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] truncate">{cls.courses?.title || 'Live Class'}</h4>
+                        <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">Teacher: {cls.courses?.users?.full_name || 'Teacher'}</p>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
                         <div className="text-right">
-                          <p className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
-                            <div className="w-1.5 h-1.5 bg-red-600 dark:bg-red-400 rounded-full animate-pulse" />
+                          <p className="text-xs font-semibold text-red-500 dark:text-red-500 flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 bg-red-500 dark:bg-red-500 rounded-full animate-pulse" />
                             LIVE NOW
                           </p>
-                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                          <p className="text-[10px] text-[#7c7c6f] dark:text-[#7c7c6f] mt-0.5">
                             Started {Math.floor((Date.now() - new Date(cls.started_at || new Date().toISOString()).getTime()) / 60000)}m ago
                           </p>
                         </div>
                         <Link to={`/classroom/${cls.course_id}`}>
-                          <button className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-500 hover:scale-105 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-500/20 transition-all">
+                          <button className="px-4 py-2 bg-gradient-to-r from-red-500 to-amber-500 hover:scale-105 active:scale-95 text-[#E1DCC9] text-xs font-bold rounded-xl shadow-lg shadow-red-500/20 transition-all">
                             Join Now
                           </button>
                         </Link>
@@ -521,8 +521,8 @@ export function StudentDashboard() {
           {/* ─── SECTION 3: PENDING ASSIGNMENTS ─── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-2">
             <GlassCard padding="p-0">
-              <div className="px-5 py-4 border-b border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <div className="px-5 py-4 border-b border-[#E1DCC9]/60 dark:border-[#412D15] flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
                   <FileText size={16} className="text-amber-500" />
                   Pending Assignments
                 </h3>
@@ -530,27 +530,27 @@ export function StudentDashboard() {
               </div>
               <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {pendingAssignments.length === 0 ? (
-                  <div className="p-6 text-center text-neutral-500 dark:text-neutral-400 text-sm">
+                  <div className="p-6 text-center text-[#7c7c6f] dark:text-[#7c7c6f] text-sm">
                     No pending assignments. You are fully caught up! 🎉
                   </div>
                 ) : (
                   pendingAssignments.map(asg => {
                     const isOverdue = new Date(asg.due_date) < new Date();
                     return (
-                      <div key={asg.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/20 transition-colors">
+                      <div key={asg.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/20 transition-colors">
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{asg.title}</h4>
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 truncate">Course: {asg.courses?.title || 'Unknown Course'}</p>
+                          <h4 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] truncate">{asg.title}</h4>
+                          <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1 truncate">Course: {asg.courses?.title || 'Unknown Course'}</p>
                         </div>
                         <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end w-full sm:w-auto">
                           <div className="text-left sm:text-right">
-                            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Due Date</p>
+                            <p className="text-[10px] text-[#7c7c6f] dark:text-[#7c7c6f] uppercase tracking-wider">Due Date</p>
                             <p className={`text-xs font-semibold ${isOverdue ? 'text-red-500' : 'text-neutral-950 dark:text-neutral-200'}`}>
                               {new Date(asg.due_date).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </p>
                           </div>
                           <Link to={`/assignments/${asg.id}`}>
-                            <button className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 transition-colors">
+                            <button className="px-3 py-1.5 border border-[#E1DCC9]/20 dark:border-[#412D15] hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] rounded-xl text-xs font-medium text-[#7c7c6f] dark:text-[#7c7c6f] transition-colors">
                               Submit
                             </button>
                           </Link>
@@ -572,21 +572,21 @@ export function StudentDashboard() {
           {/* ─── SECTION 4: LEARNING PROGRESS SNAPSHOT ─── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="lg:col-span-1">
             <GlassCard>
-              <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
-                <GraduationCap size={16} className="text-purple-500" />
+              <h3 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2 mb-4">
+                <GraduationCap size={16} className="text-[#9d95ff]" />
                 Learning Progress
               </h3>
               
               <div className="space-y-4">
                 {enrollments.length === 0 ? (
-                  <div className="text-center py-4 text-neutral-500 dark:text-neutral-400 text-xs">
+                  <div className="text-center py-4 text-[#7c7c6f] dark:text-[#7c7c6f] text-xs">
                     Not enrolled in any active {isK12 ? "subjects" : "courses"}. Visit the catalog to start!
                   </div>
                 ) : (
                   enrollments.map((e, idx) => (
                     <div key={idx} className="space-y-1">
                       <div className="flex justify-between text-xs font-medium">
-                        <span className="text-neutral-800 dark:text-neutral-300 truncate max-w-[180px]">{e.courses?.title || `Unknown ${isK12 ? "Subject" : "Course"}`}</span>
+                        <span className="text-[#0e100f] dark:text-[#7c7c6f] truncate max-w-[180px]">{e.courses?.title || `Unknown ${isK12 ? "Subject" : "Course"}`}</span>
                         <span className="text-brand-primary font-semibold">{e.progress}%</span>
                       </div>
                       <ProgressBar value={e.progress} color="purple" size="sm" />
@@ -600,14 +600,14 @@ export function StudentDashboard() {
           {/* ─── SECTION 5: RECENT ACTIVITY ─── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1">
             <GlassCard>
-              <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
-                <Activity size={16} className="text-emerald-500" />
+              <h3 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2 mb-4">
+                <Activity size={16} className="text-[#00bae2]" />
                 Recent Activity
               </h3>
 
               <div className="space-y-4">
                 {recentActivities.length === 0 ? (
-                  <div className="text-center py-4 text-neutral-500 dark:text-neutral-400 text-xs">
+                  <div className="text-center py-4 text-[#7c7c6f] dark:text-[#7c7c6f] text-xs">
                     No recent activities recorded.
                   </div>
                 ) : (
@@ -616,24 +616,24 @@ export function StudentDashboard() {
                     return (
                       <div key={act.id} className="flex gap-3 text-xs">
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                          act.badgeVariant === 'blue' ? 'bg-blue-500/10 text-blue-400' :
-                          act.badgeVariant === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' :
-                          act.badgeVariant === 'amber' ? 'bg-amber-500/10 text-amber-400' :
-                          'bg-purple-500/10 text-purple-400'
+                          act.badgeVariant === 'blue' ? 'bg-[#00bae2]/10 text-[#00bae2]' :
+                          act.badgeVariant === 'emerald' ? 'bg-[#00bae2]/10 text-[#00bae2]' :
+                          act.badgeVariant === 'amber' ? 'bg-amber-500/10 text-amber-500' :
+                          'bg-[#9d95ff]/10 text-[#9d95ff]'
                         }`}>
                           <Icon size={14} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-neutral-800 dark:text-neutral-200 font-medium leading-normal">{act.title}</p>
+                          <p className="text-[#0e100f] dark:text-neutral-200 font-medium leading-normal">{act.title}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                            <span className="text-[10px] text-[#7c7c6f] dark:text-[#7c7c6f]">
                               {new Date(act.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </span>
                             <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
-                              act.badgeVariant === 'blue' ? 'bg-blue-500/10 text-blue-400' :
-                              act.badgeVariant === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' :
-                              act.badgeVariant === 'amber' ? 'bg-amber-500/10 text-amber-400' :
-                              'bg-purple-500/10 text-purple-400'
+                              act.badgeVariant === 'blue' ? 'bg-[#00bae2]/10 text-[#00bae2]' :
+                              act.badgeVariant === 'emerald' ? 'bg-[#00bae2]/10 text-[#00bae2]' :
+                              act.badgeVariant === 'amber' ? 'bg-amber-500/10 text-amber-500' :
+                              'bg-[#9d95ff]/10 text-[#9d95ff]'
                             }`}>
                               {act.badgeText}
                             </span>
@@ -654,33 +654,33 @@ export function StudentDashboard() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="pt-4 border-t border-neutral-200/60 dark:border-neutral-800"
+        className="pt-4 border-t border-[#E1DCC9]/60 dark:border-[#412D15]"
       >
-        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-4">
+        <h3 className="text-sm font-semibold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2 mb-4">
           Quick Actions
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           
           {/* Join Next Class */}
-          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+          <div className="p-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40 backdrop-blur-md flex flex-col justify-between h-36">
             <div>
-              <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-1">Live Classroom</p>
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+              <p className="text-xs font-bold text-red-500 uppercase tracking-wider mb-1">Live Classroom</p>
+              <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 {upcomingClasses[0] ? upcomingClasses[0].title : 'No class scheduled'}
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-1 mt-1">
+              <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] line-clamp-1 mt-1">
                 {upcomingClasses[0] ? upcomingClasses[0].courses?.title : 'Check again later'}
               </p>
             </div>
             {upcomingClasses[0] ? (
               <Link to={`/classroom/${upcomingClasses[0].courses?.id || upcomingClasses[0].id}`}>
-                <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-purple-500/20 transition-all self-start mt-2">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-[#E1DCC9] bg-gradient-to-r from-[#9d95ff] to-[#00bae2] px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-[#9d95ff]/20 transition-all self-start mt-2">
                   <PlayCircle size={14} />
                   <span>Join Class</span>
                 </button>
               </Link>
             ) : (
-              <button disabled className="flex items-center gap-1.5 text-xs font-semibold text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-4 py-2 rounded-xl cursor-not-allowed self-start mt-2">
+              <button disabled className="flex items-center gap-1.5 text-xs font-semibold text-[#7c7c6f] bg-[#FFFCE1] dark:bg-[#412D15] px-4 py-2 rounded-xl cursor-not-allowed self-start mt-2">
                 <PlayCircle size={14} />
                 <span>Join Class</span>
               </button>
@@ -688,26 +688,26 @@ export function StudentDashboard() {
           </div>
 
           {/* Continue Course */}
-          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+          <div className="p-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40 backdrop-blur-md flex flex-col justify-between h-36">
             <div>
-              <p className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Active Progress</p>
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+              <p className="text-xs font-bold text-[#9d95ff] uppercase tracking-wider mb-1">Active Progress</p>
+              <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 {enrollments[0] ? enrollments[0].courses?.title : 'Not enrolled'}
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
                 {enrollments[0] ? `Progress: ${enrollments[0].progress}%` : 'Visit course catalog'}
               </p>
             </div>
             {enrollments[0] ? (
               <Link to={`/learn/${enrollments[0].courses?.id}/l1`}>
-                <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-purple-500/20 transition-all self-start mt-2">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-[#E1DCC9] bg-[#9d95ff] hover:bg-[#9d95ff] px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-[#9d95ff]/20 transition-all self-start mt-2">
                   <BookOpen size={14} />
                   <span>Continue Course</span>
                 </button>
               </Link>
             ) : (
               <Link to="/courses">
-                <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-neutral-700 hover:bg-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-[#E1DCC9] bg-neutral-700 hover:bg-[#412D15] px-4 py-2 rounded-xl transition-all self-start mt-2">
                   <BookOpen size={14} />
                   <span>Explore Courses</span>
                 </button>
@@ -716,26 +716,26 @@ export function StudentDashboard() {
           </div>
 
           {/* View Next Assignment */}
-          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+          <div className="p-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40 backdrop-blur-md flex flex-col justify-between h-36">
             <div>
-              <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Upcoming Deadline</p>
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+              <p className="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Upcoming Deadline</p>
+              <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 {pendingAssignments[0] ? pendingAssignments[0].title : 'All caught up!'}
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
                 {pendingAssignments[0] ? `Due: ${new Date(pendingAssignments[0].due_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}` : 'No upcoming deadlines'}
               </p>
             </div>
             {pendingAssignments[0] ? (
               <Link to={`/assignments/${pendingAssignments[0].id}`}>
-                <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-950 bg-amber-400 hover:bg-amber-500 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-amber-500/20 transition-all self-start mt-2">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-950 bg-amber-500 hover:bg-amber-500 px-4 py-2 rounded-xl hover:scale-103 active:scale-97 shadow-lg shadow-amber-500/20 transition-all self-start mt-2">
                   <FileText size={14} />
                   <span>View Assignment</span>
                 </button>
               </Link>
             ) : (
               <Link to="/assignments">
-                <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2">
+                <button className="flex items-center gap-1.5 text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] border border-[#E1DCC9]/20 dark:border-[#412D15] px-4 py-2 rounded-xl transition-all self-start mt-2">
                   <FileText size={14} />
                   <span>Assignment Center</span>
                 </button>
@@ -744,18 +744,18 @@ export function StudentDashboard() {
           </div>
 
           {/* Peer-to-Peer Messaging */}
-          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+          <div className="p-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40 backdrop-blur-md flex flex-col justify-between h-36">
             <div>
-              <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Peer-to-Peer</p>
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+              <p className="text-xs font-bold text-[#00bae2] uppercase tracking-wider mb-1">Peer-to-Peer</p>
+              <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 Study Groups
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
                 3 New Messages
               </p>
             </div>
             <Link to="/messages">
-              <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2 hover:bg-neutral-100 dark:hover:bg-neutral-800">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] border border-[#E1DCC9]/20 dark:border-[#412D15] px-4 py-2 rounded-xl transition-all self-start mt-2 hover:bg-[#FFFCE1] dark:hover:bg-[#412D15]">
                 <Bell size={14} />
                 <span>Open Chat</span>
               </button>
@@ -763,18 +763,18 @@ export function StudentDashboard() {
           </div>
 
           {/* GPA Tracking */}
-          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+          <div className="p-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40 backdrop-blur-md flex flex-col justify-between h-36">
             <div>
-              <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">GPA Tracker</p>
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+              <p className="text-xs font-bold text-[#00bae2] uppercase tracking-wider mb-1">GPA Tracker</p>
+              <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 Current GPA: 3.8
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
                 Top 10% of class
               </p>
             </div>
             <Link to="/progress-analytics">
-              <button className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 px-4 py-2 rounded-xl transition-all self-start mt-2 hover:bg-neutral-100 dark:hover:bg-neutral-800">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] border border-[#E1DCC9]/20 dark:border-[#412D15] px-4 py-2 rounded-xl transition-all self-start mt-2 hover:bg-[#FFFCE1] dark:hover:bg-[#412D15]">
                 <Activity size={14} />
                 <span>View Analytics</span>
               </button>
@@ -782,18 +782,18 @@ export function StudentDashboard() {
           </div>
 
           {/* Breakout Rooms */}
-          <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md flex flex-col justify-between h-36">
+          <div className="p-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40 backdrop-blur-md flex flex-col justify-between h-36">
             <div>
-              <p className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">Study Breakout Rooms</p>
-              <h4 className="text-sm font-bold text-neutral-900 dark:text-white line-clamp-1">
+              <p className="text-xs font-bold text-[#9d95ff] uppercase tracking-wider mb-1">Study Breakout Rooms</p>
+              <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">
                 2 Active Rooms
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
                 Join peers in real-time
               </p>
             </div>
             <Link to="/live-classroom">
-              <button className="flex items-center gap-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl shadow-lg shadow-indigo-500/20 transition-all self-start mt-2">
+              <button className="flex items-center gap-1.5 text-xs font-semibold text-[#E1DCC9] bg-[#9d95ff] hover:bg-[#9d95ff] px-4 py-2 rounded-xl shadow-lg shadow-[#9d95ff]/20 transition-all self-start mt-2">
                 <Video size={14} />
                 <span>Join Room</span>
               </button>

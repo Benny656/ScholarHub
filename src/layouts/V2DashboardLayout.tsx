@@ -208,7 +208,7 @@ export function V2DashboardLayout({ children }: { children: React.ReactNode }) {
         />
 
         {/* Dynamic scroll main panel area */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-neutral-50/50 dark:bg-neutral-900/40 custom-scrollbar relative">
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-[#FFFCE1]/50 dark:bg-[#412D15]/40 custom-scrollbar relative">
           
           <AnimatePresence mode="wait">
              <motion.div

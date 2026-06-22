@@ -73,7 +73,7 @@ export function Login() {
                 transition={{ duration: 0.2 }}
                 className="absolute"
               >
-                <Sun className="w-5 h-5 text-amber-400" />
+                <Sun className="w-5 h-5 text-amber-500" />
               </motion.span>
             ) : (
               <motion.span
@@ -106,13 +106,13 @@ export function Login() {
       </Link>
 
       {/* Branding side bar (1/2 page layout on desktops) */}
-      <div className="hidden lg:flex w-1/2 bg-neutral-900 relative items-center justify-center p-12 overflow-hidden border-r border-neutral-800">
-        <div className="absolute inset-0 bg-neutral-950 opacity-60 z-0" />
+      <div className="hidden lg:flex w-1/2 bg-[#412D15] relative items-center justify-center p-12 overflow-hidden border-r border-[#412D15]">
+        <div className="absolute inset-0 bg-[#1F150C] opacity-60 z-0" />
         
         {/* Abstract decorative grid */}
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-70" />
         
-        <div className="relative z-10 max-w-md space-y-6 text-white text-center">
+        <div className="relative z-10 max-w-md space-y-6 text-[#E1DCC9] text-center">
           <div className="w-16 h-16 flex items-center justify-center mx-auto">
             <img src="/logo-dark.png" alt="Scholar Hub Logo" className="w-full h-full object-contain hidden dark:block" />
             <img src="/logo-light.png" alt="Scholar Hub Logo" className="w-full h-full object-contain block dark:hidden" />
@@ -122,13 +122,13 @@ export function Login() {
             <h2 className="font-serif font-black text-3xl tracking-tight leading-tight">
               Unified Academic Operating System
             </h2>
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-[#7c7c6f]">
               A secure, responsive campus workplace with advanced real-time virtual teaching spaces.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-neutral-400">
-            <span className="text-white/90 font-bold block mb-1">Copilot Features Active</span>
+          <div className="p-4 rounded-xl bg-[#FFFCE1]/5 border border-[#E1DCC9]/10 text-xs text-[#7c7c6f]">
+            <span className="text-[#E1DCC9]/90 font-bold block mb-1">Copilot Features Active</span>
             Equipped with Gemini structural evaluation grids, customized MCQ exams generator, and plagiarism risk meters.
           </div>
         </div>
@@ -215,7 +215,7 @@ export function Login() {
                 <input
                   type="email"
                   required
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all placeholder-on-surface-variant/50 bg-transparent border-outline-variant/30 focus:border-[#6D5DFC]"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all placeholder-on-surface-variant/50 bg-transparent border-outline-variant/30 focus:border-[#9d95ff]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -233,7 +233,7 @@ export function Login() {
                 <input
                   type="password"
                   required
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all placeholder-on-surface-variant/50 bg-transparent border-outline-variant/30 focus:border-[#6D5DFC]"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border text-on-surface text-xs outline-none transition-all placeholder-on-surface-variant/50 bg-transparent border-outline-variant/30 focus:border-[#9d95ff]"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -243,10 +243,10 @@ export function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] text-white rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+              className="w-full h-11 bg-gradient-to-r from-[#9d95ff] to-[#9d95ff] text-[#E1DCC9] rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
             >
               {isLoading ? (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-[#E1DCC9]/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   <span>Verify Credentials & Enter</span>
@@ -255,7 +255,7 @@ export function Login() {
               )}
             </button>
             <div className="flex justify-between items-center text-xs">
-              <Link to="/forgot-password" className="text-[#6D5DFC] hover:underline font-bold">Forgot Password?</Link>
+              <Link to="/forgot-password" className="text-[#9d95ff] hover:underline font-bold">Forgot Password?</Link>
             </div>
           </form>
           </motion.div>
@@ -263,7 +263,7 @@ export function Login() {
 
           <p className="text-center text-[11px] text-on-surface-variant mt-6">
             Don't have an account?{' '}
-            <Link to="/register" className="text-[#6D5DFC] hover:opacity-80 font-bold transition-opacity">Create one free</Link>
+            <Link to="/register" className="text-[#9d95ff] hover:opacity-80 font-bold transition-opacity">Create one free</Link>
           </p>
         </motion.div>
       </div>

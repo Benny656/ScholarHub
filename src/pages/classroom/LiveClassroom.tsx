@@ -511,9 +511,9 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
 
   if (viewState === 'loading') {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center bg-neutral-50 dark:bg-neutral-950">
-        <div className="flex flex-col items-center gap-3 text-neutral-600 dark:text-neutral-300">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      <div className="min-h-[70vh] flex items-center justify-center bg-[#FFFCE1] dark:bg-[#1F150C]">
+        <div className="flex flex-col items-center gap-3 text-[#7c7c6f] dark:text-[#7c7c6f]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#9d95ff]" />
           <p className="text-sm font-semibold">{message}</p>
         </div>
       </div>
@@ -522,11 +522,11 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
 
   if (viewState === 'blocked' || viewState === 'error') {
     return (
-      <div className="max-w-xl mx-auto my-12 p-6 rounded-2xl border border-red-200 dark:border-red-500/20 bg-white dark:bg-neutral-900 text-center">
+      <div className="max-w-xl mx-auto my-12 p-6 rounded-2xl border border-red-500 dark:border-red-500/20 bg-[#FFFCE1] dark:bg-[#412D15] text-center">
         <AlertCircle className="w-10 h-10 mx-auto mb-4 text-red-500" />
-        <h1 className="text-lg font-bold text-neutral-950 dark:text-white mb-2">Classroom unavailable</h1>
-        <p className="text-sm text-neutral-600 dark:text-neutral-350 mb-6">{message}</p>
-        <Link to="/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white text-sm font-bold">
+        <h1 className="text-lg font-bold text-neutral-950 dark:text-[#E1DCC9] mb-2">Classroom unavailable</h1>
+        <p className="text-sm text-[#7c7c6f] dark:text-neutral-350 mb-6">{message}</p>
+        <Link to="/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#9d95ff] text-[#E1DCC9] text-sm font-bold">
           <ArrowLeft size={16} />
           Back to Courses
         </Link>
@@ -535,25 +535,25 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
   }
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-neutral-50 dark:bg-neutral-950 text-neutral-950 dark:text-white">
-      <header className="border-b border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-925">
+    <div className="min-h-[calc(100vh-5rem)] bg-[#FFFCE1] dark:bg-[#1F150C] text-neutral-950 dark:text-[#E1DCC9]">
+      <header className="border-b border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#FFFCE1] dark:bg-neutral-925">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <button
               onClick={() => leaveClassroom(true)}
-              className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-purple-600 transition-colors mb-2"
+              className="inline-flex items-center gap-2 text-xs font-bold text-[#7c7c6f] hover:text-[#9d95ff] transition-colors mb-2"
             >
               <ArrowLeft size={15} />
               Courses
             </button>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-xl md:text-2xl font-black truncate">{headerTitle}</h1>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 dark:bg-red-500/10 px-3 py-1 text-xs font-bold text-red-600 dark:text-red-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500 dark:bg-red-500/10 px-3 py-1 text-xs font-bold text-red-500 dark:text-red-500">
                 <Radio size={13} />
                 {statusText}
               </span>
               {canModerate && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00bae2] dark:bg-[#00bae2]/10 px-3 py-1 text-xs font-bold text-[#00bae2] dark:text-[#00bae2]">
                   <ShieldCheck size={13} />
                   Moderator
                 </span>
@@ -562,14 +562,14 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-bold">
-              <Users size={15} className="text-purple-500" />
+            <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] text-xs font-bold">
+              <Users size={15} className="text-[#9d95ff]" />
               {activeParticipantCount} participants
             </span>
             {selectedSession && (
               <button
                 onClick={copyJoinLink}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-bold hover:bg-neutral-100 dark:hover:bg-neutral-850"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] text-xs font-bold hover:bg-[#FFFCE1] dark:hover:bg-neutral-850"
               >
                 <Clipboard size={15} />
                 Copy Link
@@ -578,7 +578,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
             {joined && (
               <button
                 onClick={() => leaveClassroom(true)}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 text-xs font-bold"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-[#412D15] text-[#E1DCC9] dark:bg-[#FFFCE1] dark:text-neutral-950 text-xs font-bold"
               >
                 <LogOut size={15} />
                 Leave
@@ -588,7 +588,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
               <button
                 onClick={() => endSession(selectedSession)}
                 disabled={busyAction === `end-${selectedSession.id}`}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-600 text-white text-xs font-bold disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-500 text-[#E1DCC9] text-xs font-bold disabled:opacity-60"
               >
                 {busyAction === `end-${selectedSession.id}` ? <Loader2 size={15} className="animate-spin" /> : <Square size={14} />}
                 End
@@ -599,15 +599,15 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-5">
-        <section className="min-h-[58vh] xl:min-h-[calc(100vh-11rem)] rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-850 bg-neutral-950 relative">
+        <section className="min-h-[58vh] xl:min-h-[calc(100vh-11rem)] rounded-2xl overflow-hidden border border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#1F150C] relative">
           {!joined && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center p-6 bg-neutral-950 text-white">
+            <div className="absolute inset-0 z-10 flex items-center justify-center p-6 bg-[#1F150C] text-[#E1DCC9]">
               <div className="max-w-md text-center">
-                <Video className="w-12 h-12 mx-auto mb-4 text-purple-400" />
+                <Video className="w-12 h-12 mx-auto mb-4 text-[#9d95ff]" />
                 <h2 className="text-xl font-black mb-2">
                   {hasActiveCourseSession ? 'Live class is running' : 'No live session is active'}
                 </h2>
-                <p className="text-sm text-neutral-300 leading-relaxed mb-6">
+                <p className="text-sm text-[#7c7c6f] leading-relaxed mb-6">
                   {hasActiveCourseSession
                     ? 'Join the Jitsi room connected to this course. Students, teachers, and admins use the same Supabase session.'
                     : canStartCourseSession
@@ -618,7 +618,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
                   {selectedSession && (
                     <button
                       onClick={() => joinSession(selectedSession)}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-purple-600 text-white text-sm font-bold hover:bg-purple-700"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#9d95ff] text-[#E1DCC9] text-sm font-bold hover:bg-[#9d95ff]"
                     >
                       <Video size={18} />
                       Join Class
@@ -628,7 +628,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
                     <button
                       onClick={startClass}
                       disabled={busyAction === 'start'}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-purple-600 text-white text-sm font-bold hover:bg-purple-700 disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#9d95ff] text-[#E1DCC9] text-sm font-bold hover:bg-[#9d95ff] disabled:opacity-60"
                     >
                       {busyAction === 'start' ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />}
                       Start Live Class
@@ -645,8 +645,8 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
                 domain="meet.jit.si"
                 roomName={(selectedSession.meeting_room_id || getRoomName(selectedSession.course_id)).replace(/\s+/g, '_')}
                 spinner={() => (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-neutral-950 text-white w-full h-full min-h-[600px]">
-                    <Loader2 className="w-10 h-10 animate-spin text-purple-400 mb-4" />
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#1F150C] text-[#E1DCC9] w-full h-full min-h-[600px]">
+                    <Loader2 className="w-10 h-10 animate-spin text-[#9d95ff] mb-4" />
                     <p className="text-sm font-semibold">Connecting to meeting...</p>
                   </div>
                 )}
@@ -735,51 +735,51 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
         </section>
 
         <aside className="space-y-4">
-          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900 p-4">
+          <div className="rounded-2xl border border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#FFFCE1] dark:bg-[#412D15] p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Monitor size={17} className="text-purple-500" />
+              <Monitor size={17} className="text-[#9d95ff]" />
               <h2 className="text-sm font-black">Session Information</h2>
             </div>
-            <div className="space-y-3 text-xs text-neutral-600 dark:text-neutral-350">
+            <div className="space-y-3 text-xs text-[#7c7c6f] dark:text-neutral-350">
               <div className="flex justify-between gap-3">
                 <span>Status</span>
-                <span className="font-bold text-neutral-950 dark:text-white">{statusText}</span>
+                <span className="font-bold text-neutral-950 dark:text-[#E1DCC9]">{statusText}</span>
               </div>
               <div className="flex justify-between gap-3">
                 <span>Role</span>
-                <span className="font-bold text-neutral-950 dark:text-white capitalize">{role.replace('_', ' ')}</span>
+                <span className="font-bold text-neutral-950 dark:text-[#E1DCC9] capitalize">{role.replace('_', ' ')}</span>
               </div>
               <div className="flex justify-between gap-3">
                 <span>Room</span>
-                <span className="font-mono font-bold text-neutral-950 dark:text-white truncate">{selectedSession?.meeting_room_id || '-'}</span>
+                <span className="font-mono font-bold text-neutral-950 dark:text-[#E1DCC9] truncate">{selectedSession?.meeting_room_id || '-'}</span>
               </div>
               <div className="flex justify-between gap-3">
                 <span>Duration</span>
-                <span className="font-bold text-neutral-950 dark:text-white">
+                <span className="font-bold text-neutral-950 dark:text-[#E1DCC9]">
                   {selectedSession ? formatDuration(selectedSession.started_at, selectedSession.ended_at || (durationNow ? null : null)) : '0m'}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900 p-4">
+          <div className="rounded-2xl border border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#FFFCE1] dark:bg-[#412D15] p-4">
             <div className="flex items-center gap-2 mb-3">
-              <UserCheck size={17} className="text-emerald-500" />
+              <UserCheck size={17} className="text-[#00bae2]" />
               <h2 className="text-sm font-black">Participants</h2>
             </div>
             <div className="space-y-2 max-h-72 overflow-y-auto">
               {participants.filter((participant) => !participant.left_at).length === 0 ? (
-                <p className="text-xs text-neutral-500">No participants have joined yet.</p>
+                <p className="text-xs text-[#7c7c6f]">No participants have joined yet.</p>
               ) : (
                 participants
                   .filter((participant) => !participant.left_at)
                   .map((participant) => (
-                    <div key={participant.id} className="flex items-center justify-between gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-850 px-3 py-2">
+                    <div key={participant.id} className="flex items-center justify-between gap-3 rounded-xl bg-[#FFFCE1] dark:bg-neutral-850 px-3 py-2">
                       <div className="min-w-0">
                         <p className="text-xs font-bold truncate">{participant.user_id === user?.id ? displayName : participant.user_id.slice(0, 8)}</p>
-                        <p className="text-[10px] text-neutral-500 capitalize">{participant.role || 'participant'}</p>
+                        <p className="text-[10px] text-[#7c7c6f] capitalize">{participant.role || 'participant'}</p>
                       </div>
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-[#00bae2] shrink-0" />
                     </div>
                   ))
               )}
@@ -787,22 +787,22 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
           </div>
 
           {isAdmin && (
-            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900 p-4">
+            <div className="rounded-2xl border border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#FFFCE1] dark:bg-[#412D15] p-4">
               <div className="flex items-center gap-2 mb-3">
-                <ShieldCheck size={17} className="text-blue-500" />
+                <ShieldCheck size={17} className="text-[#00bae2]" />
                 <h2 className="text-sm font-black">Admin Monitor</h2>
               </div>
               <div className="space-y-2">
                 {adminSessions.length === 0 ? (
-                  <p className="text-xs text-neutral-500">No active live sessions.</p>
+                  <p className="text-xs text-[#7c7c6f]">No active live sessions.</p>
                 ) : (
                   adminSessions.map((session) => (
-                    <div key={session.id} className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-3">
-                      <p className="text-xs font-bold text-neutral-950 dark:text-white truncate">{session.courses?.title || session.course_id}</p>
+                    <div key={session.id} className="rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] p-3">
+                      <p className="text-xs font-bold text-neutral-950 dark:text-[#E1DCC9] truncate">{session.courses?.title || session.course_id}</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           onClick={() => joinSession(session)}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-purple-600 text-white px-2 py-1.5 text-[10px] font-bold"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#9d95ff] text-[#E1DCC9] px-2 py-1.5 text-[10px] font-bold"
                         >
                           <Video size={12} />
                           Join
@@ -810,7 +810,7 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
                         <button
                           onClick={() => endSession(session)}
                           disabled={busyAction === `end-${session.id}`}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-600 text-white px-2 py-1.5 text-[10px] font-bold disabled:opacity-60"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-500 text-[#E1DCC9] px-2 py-1.5 text-[10px] font-bold disabled:opacity-60"
                         >
                           <Square size={11} />
                           End
@@ -823,8 +823,8 @@ export function LiveClassroom({ courseId: propCourseId }: { courseId?: string })
             </div>
           )}
 
-          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900 p-4 text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-            <div className="flex items-center gap-2 font-bold text-neutral-800 dark:text-neutral-200 mb-2">
+          <div className="rounded-2xl border border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#FFFCE1] dark:bg-[#412D15] p-4 text-xs text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed">
+            <div className="flex items-center gap-2 font-bold text-[#0e100f] dark:text-neutral-200 mb-2">
               <Clock size={15} />
               Realtime enabled
             </div>

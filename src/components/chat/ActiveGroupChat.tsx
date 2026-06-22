@@ -106,15 +106,15 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
   };
 
   return (
-    <GlassCard className="flex flex-col h-full border-neutral-200 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40">
-      <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-4">
+    <GlassCard className="flex flex-col h-full border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/40 dark:bg-[#412D15]/40">
+      <div className="flex items-center justify-between pb-4 border-b border-[#E1DCC9]/20 dark:border-[#412D15] mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
+          <div className="p-2 bg-[#00bae2] dark:bg-[#00bae2]/30 text-[#00bae2] dark:text-[#00bae2] rounded-lg">
             <Users size={20} />
           </div>
           <div>
-            <h2 className="font-bold text-neutral-900 dark:text-white">{groupName}</h2>
-            <p className="text-xs text-neutral-500">Live Peer Chat</p>
+            <h2 className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">{groupName}</h2>
+            <p className="text-xs text-[#7c7c6f]">Live Peer Chat</p>
           </div>
         </div>
       </div>
@@ -124,7 +124,7 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
         className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar min-h-[300px]"
       >
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-neutral-400">
+          <div className="flex flex-col items-center justify-center h-full text-[#7c7c6f]">
             <Users size={32} className="opacity-20 mb-2" />
             <p className="text-sm">Start the conversation</p>
           </div>
@@ -137,19 +137,19 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
                 className={`flex flex-col chat-bubble-bounce opacity-0 ${isMe ? 'items-end' : 'items-start'}`}
               >
                 {!isMe && (
-                  <span className="text-xs font-medium text-neutral-500 mb-1 ml-1">
+                  <span className="text-xs font-medium text-[#7c7c6f] mb-1 ml-1">
                     {msg.profiles?.full_name || 'Anonymous'}
                   </span>
                 )}
                 <div
                   className={`px-4 py-2 rounded-2xl max-w-[80%] shadow-sm ${isMe
-                    ? 'bg-brand-primary text-white rounded-br-sm'
-                    : 'bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-bl-sm border border-neutral-100 dark:border-neutral-700'
+                    ? 'bg-brand-primary text-[#E1DCC9] rounded-br-sm'
+                    : 'bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-neutral-200 rounded-bl-sm border border-[#E1DCC9]/20 dark:border-[#412D15]'
                     }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                 </div>
-                <span className="text-[10px] text-neutral-400 mt-1 mx-1">
+                <span className="text-[10px] text-[#7c7c6f] mt-1 mx-1">
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -159,20 +159,20 @@ export function ActiveGroupChat({ groupId, groupName }: { groupId: string; group
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSendMessage} className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+      <form onSubmit={handleSendMessage} className="mt-4 pt-4 border-t border-[#E1DCC9]/20 dark:border-[#412D15]">
         <div className="flex items-center gap-2 relative">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message..."
-            className="w-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-neutral-900 dark:text-white pr-12"
+            className="w-full bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-[#0e100f] dark:text-[#E1DCC9] pr-12"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={!newMessage.trim() || loading}
-            className="absolute right-1.5 p-2 bg-brand-primary hover:bg-brand-primary/90 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-1.5 p-2 bg-brand-primary hover:bg-brand-primary/90 text-[#E1DCC9] rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send size={16} />
           </button>

@@ -76,15 +76,15 @@ export function AdminSubjectAssignment() {
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       <GlassCard className="p-6 md:p-8">
-        <div className="mb-8 border-b border-neutral-200 dark:border-neutral-800 pb-4 flex items-center gap-3">
+        <div className="mb-8 border-b border-[#E1DCC9]/20 dark:border-[#412D15] pb-4 flex items-center gap-3">
           <div className="p-2 bg-brand-primary/10 rounded-lg">
             <BookOpen className="text-brand-primary" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white font-serif">
+            <h1 className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] font-serif">
               Assign K-12 Subject
             </h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
               Create a new subject and assign it directly to a K-12 Teacher.
             </p>
           </div>
@@ -92,14 +92,14 @@ export function AdminSubjectAssignment() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Subject Name <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Subject Name <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Mathematics, Science"
               required
-              className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
             />
           </div>
 
@@ -125,18 +125,18 @@ export function AdminSubjectAssignment() {
             />
 
             <div>
-              <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Assign Teacher <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Assign Teacher <span className="text-red-500">*</span></label>
               {teachersLoading ? (
-                <div className="flex items-center gap-2 px-4 py-3 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800/50">
-                  <RefreshCw className="animate-spin text-neutral-400" size={16} />
-                  <span className="text-sm text-neutral-500">Loading teachers...</span>
+                <div className="flex items-center gap-2 px-4 py-3 border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl bg-[#FFFCE1] dark:bg-[#412D15]/50">
+                  <RefreshCw className="animate-spin text-[#7c7c6f]" size={16} />
+                  <span className="text-sm text-[#7c7c6f]">Loading teachers...</span>
                 </div>
               ) : (
                 <select
                   value={selectedTeacherId}
                   onChange={(e) => setSelectedTeacherId(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                 >
                   <option value="" disabled>Select a K-12 Teacher</option>
                   {teachers.map((t) => (
@@ -149,7 +149,7 @@ export function AdminSubjectAssignment() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800 flex justify-end">
+          <div className="pt-6 border-t border-[#E1DCC9]/20 dark:border-[#412D15] flex justify-end">
             <Button
               type="submit"
               variant="primary"

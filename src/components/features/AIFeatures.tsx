@@ -339,16 +339,16 @@ export default function AIFeatures() {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden dark:bg-neutral-900 dark:border-neutral-800 shadow-sm">
+    <div className="bg-[#FFFCE1] rounded-3xl border border-[#E1DCC9]/20 overflow-hidden dark:bg-[#412D15] dark:border-[#412D15] shadow-sm">
       
       {/* Sub Tabs Selection Header */}
-      <div className="border-b border-neutral-100 bg-neutral-50 px-6 py-3 flex gap-2 dark:bg-neutral-900 dark:border-neutral-850">
+      <div className="border-b border-[#E1DCC9]/20 bg-[#FFFCE1] px-6 py-3 flex gap-2 dark:bg-[#412D15] dark:border-neutral-850">
         <button
           onClick={() => setActiveSubTab("tutor")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
             activeSubTab === "tutor"
-              ? "bg-white text-brand-primary shadow-sm dark:bg-neutral-800 dark:text-neutral-50"
-              : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              ? "bg-[#FFFCE1] text-brand-primary shadow-sm dark:bg-[#412D15] dark:text-[#E1DCC9]"
+              : "text-[#7c7c6f] hover:text-[#7c7c6f] dark:hover:text-[#7c7c6f]"
           }`}
         >
           🎓 AI Study Tutor
@@ -358,8 +358,8 @@ export default function AIFeatures() {
           onClick={() => setActiveSubTab("quiz")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
             activeSubTab === "quiz"
-              ? "bg-white text-brand-primary shadow-sm dark:bg-neutral-800 dark:text-neutral-50"
-              : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              ? "bg-[#FFFCE1] text-brand-primary shadow-sm dark:bg-[#412D15] dark:text-[#E1DCC9]"
+              : "text-[#7c7c6f] hover:text-[#7c7c6f] dark:hover:text-[#7c7c6f]"
           }`}
         >
           ⚡ Dynamic Quiz Station
@@ -369,8 +369,8 @@ export default function AIFeatures() {
           onClick={() => setActiveSubTab("grader")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
             activeSubTab === "grader"
-              ? "bg-white text-brand-primary shadow-sm dark:bg-neutral-800 dark:text-neutral-50"
-              : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              ? "bg-[#FFFCE1] text-brand-primary shadow-sm dark:bg-[#412D15] dark:text-[#E1DCC9]"
+              : "text-[#7c7c6f] hover:text-[#7c7c6f] dark:hover:text-[#7c7c6f]"
           }`}
         >
           🔍 Homework & Essay Grader
@@ -384,7 +384,7 @@ export default function AIFeatures() {
           <div className="space-y-4">
             
             {/* Header info */}
-            <div className="p-3 bg-neutral-50 text-neutral-600 rounded-xl flex items-center gap-3 dark:bg-neutral-800/40 dark:text-neutral-300 border border-neutral-200/40 dark:border-neutral-800">
+            <div className="p-3 bg-[#FFFCE1] text-[#7c7c6f] rounded-xl flex items-center gap-3 dark:bg-[#412D15]/40 dark:text-[#7c7c6f] border border-[#E1DCC9]/40 dark:border-[#412D15]">
               <Sparkles className="w-5 h-5 text-brand-primary shrink-0" />
               <p className="text-xs">
                 Your Tutor uses **Gemini-3.5-flash** to breakdown advanced topics into step-by-step concepts with formulas.
@@ -392,7 +392,7 @@ export default function AIFeatures() {
             </div>
 
             {/* Chat Box Container */}
-            <div className="h-96 border border-slate-200 rounded-3xl p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar bg-neutral-50/10 dark:border-neutral-800 dark:bg-neutral-950/20">
+            <div className="h-96 border border-[#E1DCC9]/20 rounded-3xl p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar bg-[#FFFCE1]/10 dark:border-[#412D15] dark:bg-[#1F150C]/20">
               {messages.map((msg) => {
                 const isAI = msg.sender === "ai";
                 return (
@@ -400,8 +400,8 @@ export default function AIFeatures() {
                     key={msg.id}
                     className={`max-w-[80%] p-3.5 rounded-2xl text-xs leading-relaxed ${
                       isAI
-                        ? "bg-neutral-100 text-neutral-800 self-start rounded-tl-none dark:bg-neutral-850 dark:text-neutral-200"
-                        : "bg-brand-primary text-white self-end rounded-tr-none shadow-sm shadow-brand-primary/10"
+                        ? "bg-[#FFFCE1] text-[#0e100f] self-start rounded-tl-none dark:bg-neutral-850 dark:text-neutral-200"
+                        : "bg-brand-primary text-[#E1DCC9] self-end rounded-tr-none shadow-sm shadow-brand-primary/10"
                     }`}
                   >
                     {/* Render markdown style lines simply */}
@@ -410,14 +410,14 @@ export default function AIFeatures() {
                         {line.replace(/\*\*/g, "").replace(/\*/g, "")}
                       </p>
                     ))}
-                    <span className={`block text-[9px] mt-1 text-right ${isAI ? "text-neutral-400" : "text-neutral-200"}`}>
+                    <span className={`block text-[9px] mt-1 text-right ${isAI ? "text-[#7c7c6f]" : "text-neutral-200"}`}>
                       {msg.timestamp}
                     </span>
                   </div>
                 );
               })}
               {isTutorLoading && (
-                <div className="bg-neutral-50 text-neutral-500 rounded-xl p-3 self-start border border-neutral-100 flex items-center gap-2 dark:bg-neutral-800/40 dark:border-neutral-800">
+                <div className="bg-[#FFFCE1] text-[#7c7c6f] rounded-xl p-3 self-start border border-[#E1DCC9]/20 flex items-center gap-2 dark:bg-[#412D15]/40 dark:border-[#412D15]">
                   <Loader className="w-3.5 h-3.5 animate-spin text-brand-primary" />
                   <span className="text-[10px]">Tutor is analyzing details...</span>
                 </div>
@@ -432,12 +432,12 @@ export default function AIFeatures() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask me anything: Explain nuclear fusion simply, solve high school matrices, etc..."
-                className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-xs bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                className="flex-1 px-4 py-3 border border-[#E1DCC9]/20 rounded-xl text-xs bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
               />
               <button
                 type="submit"
                 disabled={isTutorLoading || !inputValue.trim()}
-                className="px-5 bg-brand-primary text-white rounded-xl hover:bg-brand-primary-dark transition-all flex items-center justify-center disabled:opacity-50"
+                className="px-5 bg-brand-primary text-[#E1DCC9] rounded-xl hover:bg-brand-primary-dark transition-all flex items-center justify-center disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -454,29 +454,29 @@ export default function AIFeatures() {
             {!activeQuiz && !isQuizGenerating && (
               <div className="max-w-xl space-y-4">
                 <div>
-                  <h4 className="font-serif font-bold text-lg text-neutral-900 dark:text-neutral-50">
+                  <h4 className="font-serif font-bold text-lg text-[#0e100f] dark:text-[#E1DCC9]">
                     Syllabus MCQ Examination Engine
                   </h4>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-[#7c7c6f]">
                     Type any curriculum topic (e.g., Photosynthesis, Algebra, Cold War Chemistry). The system will compile a specialized interactive quiz with explanations for each option.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Topic of Choice</label>
+                    <label className="text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">Topic of Choice</label>
                     <input
                       type="text"
-                      className="w-full px-3.5 py-2.5 border border-neutral-200 rounded-lg text-xs bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                      className="w-full px-3.5 py-2.5 border border-[#E1DCC9]/20 rounded-lg text-xs bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
                       value={topic}
                       onChange={(e) => setTopic(e.target.value)}
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Target Level</label>
+                    <label className="text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">Target Level</label>
                     <select
-                      className="w-full px-3.5 py-2.5 border border-neutral-200 rounded-lg text-xs bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                      className="w-full px-3.5 py-2.5 border border-[#E1DCC9]/20 rounded-lg text-xs bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
                     >
@@ -488,7 +488,7 @@ export default function AIFeatures() {
 
                 <button
                   onClick={handleGenerateQuiz}
-                  className="px-5 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary-dark font-semibold text-xs flex items-center gap-2"
+                  className="px-5 py-2.5 bg-brand-primary text-[#E1DCC9] rounded-lg hover:bg-brand-primary-dark font-semibold text-xs flex items-center gap-2"
                 >
                   <Brain className="w-4 h-4" />
                   <span>Generate Course Quiz</span>
@@ -500,7 +500,7 @@ export default function AIFeatures() {
             {isQuizGenerating && (
               <div className="py-12 flex flex-col items-center justify-center space-y-3">
                 <Loader className="w-8 h-8 animate-spin text-brand-primary" />
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 font-medium">
+                <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] font-medium">
                   Gemini is constructing structured questions, option pairs, and answer rubrics. Please stand by...
                 </p>
               </div>
@@ -511,16 +511,16 @@ export default function AIFeatures() {
               <div className="space-y-6">
                 
                 {/* Score or Progress indicator */}
-                <div className="flex justify-between items-center bg-neutral-50 dark:bg-neutral-800 p-4 rounded-xl border border-neutral-200/40 dark:border-neutral-800">
+                <div className="flex justify-between items-center bg-[#FFFCE1] dark:bg-[#412D15] p-4 rounded-xl border border-[#E1DCC9]/40 dark:border-[#412D15]">
                   <div>
-                    <h5 className="font-serif font-bold text-neutral-900 dark:text-neutral-50 text-sm leading-none">
+                    <h5 className="font-serif font-bold text-[#0e100f] dark:text-[#E1DCC9] text-sm leading-none">
                       {activeQuiz.title}
                     </h5>
-                    <p className="text-[10px] text-neutral-400 mt-1">{activeQuiz.description}</p>
+                    <p className="text-[10px] text-[#7c7c6f] mt-1">{activeQuiz.description}</p>
                   </div>
                   
                   <div className="text-right">
-                    <span className="text-[10px] font-mono leading-none tracking-wider text-neutral-400 uppercase block font-bold">
+                    <span className="text-[10px] font-mono leading-none tracking-wider text-[#7c7c6f] uppercase block font-bold">
                       Progress Score
                     </span>
                     <strong className="font-sans text-sm text-brand-primary dark:text-brand-tertiary font-extrabold uppercase">
@@ -534,10 +534,10 @@ export default function AIFeatures() {
                     
                     {/* Active Question Title Card */}
                     <div className="p-5 border border-brand-primary/20 bg-brand-primary/5 rounded-xl">
-                      <p className="text-[9px] font-bold text-neutral-400 dark:text-neutral-300 uppercase tracking-wide leading-none mb-1.5">
+                      <p className="text-[9px] font-bold text-[#7c7c6f] dark:text-[#7c7c6f] uppercase tracking-wide leading-none mb-1.5">
                         Question {currentQuestionIndex + 1}
                       </p>
-                      <h4 className="font-serif text-sm font-bold text-neutral-900 dark:text-neutral-100">
+                      <h4 className="font-serif text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">
                         {activeQuiz.questions[currentQuestionIndex].question}
                       </h4>
                     </div>
@@ -548,15 +548,15 @@ export default function AIFeatures() {
                         const isSelected = selectedOptionIndex === idx;
                         const isCorrect = idx === activeQuiz.questions[currentQuestionIndex].answerIndex;
                         
-                        let cardStyle = "border-neutral-200 bg-white hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900";
+                        let cardStyle = "border-[#E1DCC9]/20 bg-[#FFFCE1] hover:bg-[#FFFCE1] dark:border-[#412D15] dark:bg-[#412D15]";
                         if (isSelected) {
-                          cardStyle = "border-brand-primary bg-neutral-100/50 ring-1 ring-brand-primary dark:bg-neutral-800";
+                          cardStyle = "border-brand-primary bg-[#FFFCE1]/50 ring-1 ring-brand-primary dark:bg-[#412D15]";
                         }
                         if (quizLocked) {
                           if (isCorrect) {
-                            cardStyle = "border-emerald-500 bg-emerald-50/40 text-emerald-900 font-bold dark:bg-emerald-950/20 dark:text-emerald-300";
+                            cardStyle = "border-[#00bae2] bg-[#00bae2]/40 text-[#00bae2] font-bold dark:bg-[#00bae2]/20 dark:text-[#00bae2]";
                           } else if (isSelected) {
-                            cardStyle = "border-red-500 bg-red-50/40 text-red-900 dark:bg-red-950/20 dark:text-red-300";
+                            cardStyle = "border-red-500 bg-red-500/40 text-red-500 dark:bg-red-500/20 dark:text-red-500";
                           }
                         }
 
@@ -568,7 +568,7 @@ export default function AIFeatures() {
                             className={`p-4 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between ${cardStyle}`}
                           >
                             <span>{option}</span>
-                            {quizLocked && isCorrect && <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 ml-2" />}
+                            {quizLocked && isCorrect && <CheckCircle className="w-4 h-4 text-[#00bae2] shrink-0 ml-2" />}
                           </button>
                         );
                       })}
@@ -578,7 +578,7 @@ export default function AIFeatures() {
                     <div className="flex justify-between items-center">
                       <button
                         onClick={restartQuizGame}
-                        className="text-xs text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 font-semibold"
+                        className="text-xs text-[#7c7c6f] hover:text-[#0e100f] dark:text-[#7c7c6f] dark:hover:text-neutral-200 font-semibold"
                       >
                         Exit Quiz
                       </button>
@@ -587,7 +587,7 @@ export default function AIFeatures() {
                         {selectedOptionIndex !== null && !quizLocked && (
                           <button
                             onClick={handleConfirmAnswer}
-                            className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:bg-brand-primary-dark transition"
+                            className="px-4 py-2 bg-brand-primary text-[#E1DCC9] text-xs font-bold rounded-lg hover:bg-brand-primary-dark transition"
                           >
                             Lock Answer
                           </button>
@@ -596,7 +596,7 @@ export default function AIFeatures() {
                         {quizLocked && (
                           <button
                             onClick={handleNextQuestion}
-                            className="px-4 py-2 bg-neutral-900 text-white text-xs font-bold rounded-lg hover:bg-neutral-850 dark:bg-white dark:text-neutral-950 transition flex items-center gap-1"
+                            className="px-4 py-2 bg-[#412D15] text-[#E1DCC9] text-xs font-bold rounded-lg hover:bg-neutral-850 dark:bg-[#FFFCE1] dark:text-neutral-950 transition flex items-center gap-1"
                           >
                             <span>
                               {currentQuestionIndex + 1 < activeQuiz.questions.length ? "Next Question" : "View Scorecard"}
@@ -612,7 +612,7 @@ export default function AIFeatures() {
                       <motion.div
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-4 bg-amber-50 text-amber-900 border border-amber-200/40 rounded-xl text-xs space-y-1.5 dark:bg-amber-950/20 dark:text-amber-300"
+                        className="p-4 bg-amber-500 text-amber-500 border border-amber-500/40 rounded-xl text-xs space-y-1.5 dark:bg-amber-500/20 dark:text-amber-500"
                       >
                         <strong className="block text-[10px] uppercase font-bold tracking-wider">
                           Explanation Key
@@ -625,21 +625,21 @@ export default function AIFeatures() {
                 ) : (
                   // Quiz Finished Scorecard Screen
                   <div className="py-6 text-center space-y-6 max-w-md mx-auto">
-                    <div className="w-20 h-20 rounded-full bg-yellow-50 text-yellow-500 flex items-center justify-center mx-auto border-2 border-yellow-300">
+                    <div className="w-20 h-20 rounded-full bg-amber-500 text-amber-500 flex items-center justify-center mx-auto border-2 border-amber-500">
                       <Award className="w-12 h-12" />
                     </div>
 
                     <div className="space-y-2">
-                      <h4 className="font-serif font-bold text-xl text-neutral-900 dark:text-neutral-50">
+                      <h4 className="font-serif font-bold text-xl text-[#0e100f] dark:text-[#E1DCC9]">
                         Exam Session Complete
                       </h4>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-[#7c7c6f]">
                         You successfully registered a scoring matrix on this dynamic session.
                       </p>
                     </div>
 
-                    <div className="p-4 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-100 flex items-center justify-between">
-                      <span className="text-xs text-neutral-600 dark:text-neutral-300 font-semibold">Correct Responses</span>
+                    <div className="p-4 bg-[#FFFCE1] dark:bg-[#412D15] rounded-2xl border border-[#E1DCC9]/20 flex items-center justify-between">
+                      <span className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] font-semibold">Correct Responses</span>
                       <strong className="text-xl font-sans text-brand-primary">
                         {correctAnswersCount} / {activeQuiz.questions.length}
                       </strong>
@@ -648,13 +648,13 @@ export default function AIFeatures() {
                     <div className="flex gap-4 p-2 justify-center">
                       <button
                         onClick={restartQuizGame}
-                        className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:bg-brand-primary-dark transition"
+                        className="px-4 py-2 bg-brand-primary text-[#E1DCC9] text-xs font-bold rounded-lg hover:bg-brand-primary-dark transition"
                       >
                         Try Again
                       </button>
                       <button
                         onClick={() => setActiveQuiz(null)}
-                        className="px-4 py-2 bg-neutral-100 text-neutral-700 text-xs font-bold rounded-lg hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition"
+                        className="px-4 py-2 bg-[#FFFCE1] text-[#7c7c6f] text-xs font-bold rounded-lg hover:bg-neutral-200 dark:bg-[#412D15] dark:text-[#7c7c6f] dark:hover:bg-neutral-700 transition"
                       >
                         Compile Different Topic
                       </button>
@@ -677,39 +677,39 @@ export default function AIFeatures() {
               
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-serif font-bold text-base text-neutral-900 dark:text-neutral-50">
+                  <h4 className="font-serif font-bold text-base text-[#0e100f] dark:text-[#E1DCC9]">
                     Rubric Grader & AI Editor
                   </h4>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-[#7c7c6f]">
                     Paste homework essays, program codes, or labs. Enter standard expectation guidelines and get an instant professional rubric review.
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Assignment Headline / Title</label>
+                  <label className="text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">Assignment Headline / Title</label>
                   <input
                     type="text"
-                    className="w-full px-3.5 py-2.5 border border-neutral-200 rounded-lg text-xs bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 border border-[#E1DCC9]/20 rounded-lg text-xs bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 focus:outline-none"
                     value={assignmentTitle}
                     onChange={(e) => setAssignmentTitle(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Evaluation Rubrics & Grading Norms</label>
+                  <label className="text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">Evaluation Rubrics & Grading Norms</label>
                   <textarea
                     rows={2}
-                    className="w-full p-3 border border-neutral-200 rounded-lg text-xs bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 focus:outline-none"
+                    className="w-full p-3 border border-[#E1DCC9]/20 rounded-lg text-xs bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 focus:outline-none"
                     value={rubricExpectation}
                     onChange={(e) => setRubricExpectation(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Student Submission Text</label>
+                  <label className="text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">Student Submission Text</label>
                   <textarea
                     rows={6}
-                    className="w-full p-3 border border-neutral-200 rounded-lg text-xs bg-white dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full p-3 border border-[#E1DCC9]/20 rounded-lg text-xs bg-[#FFFCE1] dark:bg-[#412D15] dark:border-[#412D15] dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     value={submissionText}
                     onChange={(e) => setSubmissionText(e.target.value)}
                   />
@@ -719,7 +719,7 @@ export default function AIFeatures() {
                   type="button"
                   onClick={handleRunGrader}
                   disabled={isGraderLoading || !submissionText.trim()}
-                  className="px-5 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary-dark font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+                  className="px-5 py-2.5 bg-brand-primary text-[#E1DCC9] rounded-lg hover:bg-brand-primary-dark font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
                 >
                   {isGraderLoading ? (
                     <>
@@ -736,20 +736,20 @@ export default function AIFeatures() {
               </div>
 
               {/* REPORT CARD DISPLAY SIDE */}
-              <div className="border border-neutral-100 rounded-2xl bg-neutral-50/40 p-6 dark:border-neutral-850 dark:bg-neutral-900/40 flex flex-col justify-center min-h-[300px]">
+              <div className="border border-[#E1DCC9]/20 rounded-2xl bg-[#FFFCE1]/40 p-6 dark:border-neutral-850 dark:bg-[#412D15]/40 flex flex-col justify-center min-h-[300px]">
                 
                 {isGraderLoading && (
                   <div className="text-center py-12 space-y-3">
                     <Loader className="w-7 h-7 animate-spin text-brand-primary mx-auto" />
-                    <p className="text-xs text-neutral-500 font-medium">
+                    <p className="text-xs text-[#7c7c6f] font-medium">
                       Gemini is compiling plagiarism scans, AI indicators, suggested weights, and structural feedback notes...
                     </p>
                   </div>
                 )}
 
                 {!graderReport && !isGraderLoading && (
-                  <div className="text-center py-12 text-neutral-400 space-y-1.5">
-                    <Brain className="w-10 h-10 text-neutral-300 mx-auto" />
+                  <div className="text-center py-12 text-[#7c7c6f] space-y-1.5">
+                    <Brain className="w-10 h-10 text-[#7c7c6f] mx-auto" />
                     <p className="text-xs font-medium">Ready to inspect scholastic works.</p>
                   </div>
                 )}
@@ -765,26 +765,26 @@ export default function AIFeatures() {
                     <div className="grid grid-cols-3 gap-3">
                       
                       {/* Metric 1 */}
-                      <div className="p-3 bg-white border border-neutral-200 rounded-xl dark:bg-neutral-900 dark:border-neutral-850">
-                        <span className="text-[9px] uppercase tracking-wider text-neutral-400 block font-bold">Suggested GPA</span>
+                      <div className="p-3 bg-[#FFFCE1] border border-[#E1DCC9]/20 rounded-xl dark:bg-[#412D15] dark:border-neutral-850">
+                        <span className="text-[9px] uppercase tracking-wider text-[#7c7c6f] block font-bold">Suggested GPA</span>
                         <strong className="text-lg font-sans text-brand-primary text-brand-secondary">{graderReport.grade}</strong>
                       </div>
 
                       {/* Metric 2 */}
-                      <div className="p-3 bg-white border border-neutral-200 rounded-xl dark:bg-neutral-900 dark:border-neutral-850">
-                        <span className="text-[9px] uppercase tracking-wider text-neutral-400 block font-bold flex items-center gap-1">
-                          <ShieldAlert className="w-3 h-3 text-emerald-500" />
+                      <div className="p-3 bg-[#FFFCE1] border border-[#E1DCC9]/20 rounded-xl dark:bg-[#412D15] dark:border-neutral-850">
+                        <span className="text-[9px] uppercase tracking-wider text-[#7c7c6f] block font-bold flex items-center gap-1">
+                          <ShieldAlert className="w-3 h-3 text-[#00bae2]" />
                           <span>Plagiarism Risk</span>
                         </span>
-                        <strong className="text-lg font-sans text-emerald-600 block">
+                        <strong className="text-lg font-sans text-[#00bae2] block">
                           {graderReport.plagiarismRisk}%
                         </strong>
                       </div>
 
                       {/* Metric 3 */}
-                      <div className="p-3 bg-white border border-neutral-200 rounded-xl dark:bg-neutral-900 dark:border-neutral-850">
-                        <span className="text-[9px] uppercase tracking-wider text-neutral-400 block font-bold">AI Probability</span>
-                        <strong className="text-lg font-sans text-neutral-700 dark:text-neutral-300 block">
+                      <div className="p-3 bg-[#FFFCE1] border border-[#E1DCC9]/20 rounded-xl dark:bg-[#412D15] dark:border-neutral-850">
+                        <span className="text-[9px] uppercase tracking-wider text-[#7c7c6f] block font-bold">AI Probability</span>
+                        <strong className="text-lg font-sans text-[#7c7c6f] dark:text-[#7c7c6f] block">
                           {graderReport.aiLikelihood}%
                         </strong>
                       </div>
@@ -793,8 +793,8 @@ export default function AIFeatures() {
 
                     {/* Critique Text description */}
                     <div className="space-y-1">
-                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 block font-bold">Autograder Critique</span>
-                      <p className="p-4 bg-white border border-neutral-100 rounded-xl text-neutral-700 leading-relaxed dark:bg-neutral-900 dark:text-neutral-300 dark:border-neutral-800">
+                      <span className="text-[9px] uppercase tracking-wider text-[#7c7c6f] block font-bold">Autograder Critique</span>
+                      <p className="p-4 bg-[#FFFCE1] border border-[#E1DCC9]/20 rounded-xl text-[#7c7c6f] leading-relaxed dark:bg-[#412D15] dark:text-[#7c7c6f] dark:border-[#412D15]">
                         {graderReport.critique}
                       </p>
                     </div>
@@ -802,7 +802,7 @@ export default function AIFeatures() {
                     {/* Interactive improvement checkpoints checklist */}
                     {graderReport.checklist && graderReport.checklist.length > 0 && (
                       <div className="space-y-2">
-                        <span className="text-[9px] uppercase tracking-wider text-neutral-400 block font-bold">
+                        <span className="text-[9px] uppercase tracking-wider text-[#7c7c6f] block font-bold">
                           Step-by-Step Improvement Checklists
                         </span>
                         
@@ -813,16 +813,16 @@ export default function AIFeatures() {
                               <button
                                 key={index}
                                 onClick={() => toggleCheckpoint(index)}
-                                className="w-full flex items-start gap-2.5 p-2 bg-white hover:bg-neutral-50 rounded-lg border border-neutral-200/40 text-left transition text-[11px] text-neutral-700 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-300"
+                                className="w-full flex items-start gap-2.5 p-2 bg-[#FFFCE1] hover:bg-[#FFFCE1] rounded-lg border border-[#E1DCC9]/40 text-left transition text-[11px] text-[#7c7c6f] dark:bg-[#412D15] dark:border-[#412D15] dark:text-[#7c7c6f]"
                               >
                                 <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${
                                   isChecked 
-                                    ? "bg-brand-primary border-brand-primary text-white" 
-                                    : "border-neutral-300 bg-white"
+                                    ? "bg-brand-primary border-brand-primary text-[#E1DCC9]" 
+                                    : "border-neutral-300 bg-[#FFFCE1]"
                                 }`}>
                                   {isChecked && <Check className="w-3 h-3" />}
                                 </span>
-                                <span className={isChecked ? "line-through text-neutral-400" : ""}>{task}</span>
+                                <span className={isChecked ? "line-through text-[#7c7c6f]" : ""}>{task}</span>
                               </button>
                             );
                           })}

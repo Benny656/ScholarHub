@@ -41,13 +41,13 @@ type HelpArticle = {
 };
 
 const categories: Array<{ title: HelpCategory; description: string; icon: React.ComponentType<{ size?: number; className?: string }>; accent: string }> = [
-  { title: 'Getting Started', description: 'Set up your dashboard, profile, and first workflow.', icon: Sparkles, accent: 'text-blue-600 bg-blue-500/10 border-blue-500/20' },
-  { title: 'Student Help', description: 'Courses, homework, attendance, grades, and learning tools.', icon: GraduationCap, accent: 'text-emerald-600 bg-emerald-500/10 border-emerald-500/20' },
-  { title: 'Teacher Help', description: 'Course setup, rosters, assignments, grading, and reports.', icon: Users, accent: 'text-purple-600 bg-purple-500/10 border-purple-500/20' },
-  { title: 'Admin Help', description: 'User management, subject assignment, analytics, and settings.', icon: UserCog, accent: 'text-amber-600 bg-amber-500/10 border-amber-500/20' },
-  { title: 'Live Classroom', description: 'Start, join, monitor, and troubleshoot live sessions.', icon: MonitorPlay, accent: 'text-red-600 bg-red-500/10 border-red-500/20' },
-  { title: 'Assignments & Grading', description: 'Submissions, feedback, quiz attempts, and gradebooks.', icon: CheckCircle, accent: 'text-teal-600 bg-teal-500/10 border-teal-500/20' },
-  { title: 'Certificates', description: 'Issue, download, verify, and manage certificates.', icon: ShieldCheck, accent: 'text-indigo-600 bg-indigo-500/10 border-indigo-500/20' },
+  { title: 'Getting Started', description: 'Set up your dashboard, profile, and first workflow.', icon: Sparkles, accent: 'text-[#00bae2] bg-[#00bae2]/10 border-[#00bae2]/20' },
+  { title: 'Student Help', description: 'Courses, homework, attendance, grades, and learning tools.', icon: GraduationCap, accent: 'text-[#00bae2] bg-[#00bae2]/10 border-[#00bae2]/20' },
+  { title: 'Teacher Help', description: 'Course setup, rosters, assignments, grading, and reports.', icon: Users, accent: 'text-[#9d95ff] bg-[#9d95ff]/10 border-[#9d95ff]/20' },
+  { title: 'Admin Help', description: 'User management, subject assignment, analytics, and settings.', icon: UserCog, accent: 'text-amber-500 bg-amber-500/10 border-amber-500/20' },
+  { title: 'Live Classroom', description: 'Start, join, monitor, and troubleshoot live sessions.', icon: MonitorPlay, accent: 'text-red-500 bg-red-500/10 border-red-500/20' },
+  { title: 'Assignments & Grading', description: 'Submissions, feedback, quiz attempts, and gradebooks.', icon: CheckCircle, accent: 'text-[#00bae2] bg-[#00bae2]/10 border-[#00bae2]/20' },
+  { title: 'Certificates', description: 'Issue, download, verify, and manage certificates.', icon: ShieldCheck, accent: 'text-[#9d95ff] bg-[#9d95ff]/10 border-[#9d95ff]/20' },
   { title: 'Account & Security', description: 'Login, profile, notifications, access, and account safety.', icon: Lock, accent: 'text-slate-600 bg-slate-500/10 border-slate-500/20' },
 ];
 
@@ -204,26 +204,26 @@ export function HelpCenter() {
       >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#E1DCC9]/20 bg-[#FFFCE1] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:border-[#412D15] dark:bg-[#412D15] dark:text-[#7c7c6f]">
               <HelpCircle size={14} />
               {getRoleLabel(role)} Help Center
             </div>
-            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[#0e100f] dark:text-[#E1DCC9]">
               Find the right answer fast.
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#7c7c6f] dark:text-[#7c7c6f]">
               Role-aware guides for learning, teaching, live classes, assignments, certificates, account access, and platform administration.
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-2xl border border-neutral-200 bg-white p-2 dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="grid grid-cols-3 gap-2 rounded-2xl border border-[#E1DCC9]/20 bg-[#FFFCE1] p-2 dark:border-[#412D15] dark:bg-[#412D15]">
             {['student', 'teacher', 'admin'].map((item) => (
               <div
                 key={item}
                 className={`rounded-xl px-3 py-2 text-center text-xs font-bold capitalize ${
                   role === item
-                    ? 'bg-brand-primary text-white'
-                    : 'bg-neutral-50 text-neutral-500 dark:bg-neutral-800/70 dark:text-neutral-400'
+                    ? 'bg-brand-primary text-[#E1DCC9]'
+                    : 'bg-[#FFFCE1] text-[#7c7c6f] dark:bg-[#412D15]/70 dark:text-[#7c7c6f]'
                 }`}
               >
                 {item}
@@ -233,13 +233,13 @@ export function HelpCenter() {
         </div>
 
         <GlassCard className="p-3">
-          <div className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950/40">
-            <Search className="h-5 w-5 shrink-0 text-neutral-400" />
+          <div className="flex items-center gap-3 rounded-2xl border border-[#E1DCC9]/20 bg-[#FFFCE1] px-4 py-3 dark:border-[#412D15] dark:bg-[#1F150C]/40">
+            <Search className="h-5 w-5 shrink-0 text-[#7c7c6f]" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search help articles, guides, or topics"
-              className="w-full bg-transparent text-sm font-medium text-neutral-900 outline-none placeholder:text-neutral-400 dark:text-neutral-50"
+              className="w-full bg-transparent text-sm font-medium text-[#0e100f] outline-none placeholder:text-[#7c7c6f] dark:text-[#E1DCC9]"
             />
           </div>
         </GlassCard>
@@ -257,15 +257,15 @@ export function HelpCenter() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
               onClick={() => setSelectedCategory(active ? 'All' : category.title)}
-              className={`group rounded-3xl border bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-neutral-900 ${
-                active ? 'border-brand-primary ring-2 ring-brand-primary/10' : 'border-neutral-200 dark:border-neutral-800'
+              className={`group rounded-3xl border bg-[#FFFCE1] p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-[#412D15] ${
+                active ? 'border-brand-primary ring-2 ring-brand-primary/10' : 'border-[#E1DCC9]/20 dark:border-[#412D15]'
               }`}
             >
               <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border ${category.accent}`}>
                 <Icon size={20} />
               </div>
-              <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-50">{category.title}</h2>
-              <p className="mt-2 text-xs leading-5 text-neutral-500 dark:text-neutral-400">{category.description}</p>
+              <h2 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">{category.title}</h2>
+              <p className="mt-2 text-xs leading-5 text-[#7c7c6f] dark:text-[#7c7c6f]">{category.description}</p>
             </motion.button>
           );
         })}
@@ -275,8 +275,8 @@ export function HelpCenter() {
         <GlassCard className="min-h-[420px]">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">Recommended Articles</h2>
-              <p className="mt-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              <h2 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9]">Recommended Articles</h2>
+              <p className="mt-1 text-xs font-medium text-[#7c7c6f] dark:text-[#7c7c6f]">
                 {selectedCategory === 'All' ? `${getRoleLabel(role)} guides` : selectedCategory}
               </p>
             </div>
@@ -301,20 +301,20 @@ export function HelpCenter() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
-                    className="rounded-2xl border border-neutral-200 bg-neutral-50/70 p-4 dark:border-neutral-800 dark:bg-neutral-950/30"
+                    className="rounded-2xl border border-[#E1DCC9]/20 bg-[#FFFCE1]/70 p-4 dark:border-[#412D15] dark:bg-[#1F150C]/30"
                   >
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
-                        <div className="mb-2 inline-flex rounded-lg bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-500 ring-1 ring-neutral-200 dark:bg-neutral-900 dark:text-neutral-400 dark:ring-neutral-800">
+                        <div className="mb-2 inline-flex rounded-lg bg-[#FFFCE1] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#7c7c6f] ring-1 ring-neutral-200 dark:bg-[#412D15] dark:text-[#7c7c6f] dark:ring-neutral-800">
                           {article.category}
                         </div>
-                        <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-50">{article.title}</h3>
-                        <p className="mt-1 text-sm leading-6 text-neutral-500 dark:text-neutral-400">{article.summary}</p>
+                        <h3 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">{article.title}</h3>
+                        <p className="mt-1 text-sm leading-6 text-[#7c7c6f] dark:text-[#7c7c6f]">{article.summary}</p>
                       </div>
                     </div>
                     <div className="mt-4 grid gap-2 md:grid-cols-3">
                       {article.steps.map((step) => (
-                        <div key={step} className="rounded-xl bg-white px-3 py-2 text-xs leading-5 text-neutral-600 ring-1 ring-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-800">
+                        <div key={step} className="rounded-xl bg-[#FFFCE1] px-3 py-2 text-xs leading-5 text-[#7c7c6f] ring-1 ring-neutral-200 dark:bg-[#412D15] dark:text-[#7c7c6f] dark:ring-neutral-800">
                           {step}
                         </div>
                       ))}
@@ -325,11 +325,11 @@ export function HelpCenter() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="rounded-2xl border border-dashed border-neutral-300 p-10 text-center dark:border-neutral-700"
+                  className="rounded-2xl border border-dashed border-neutral-300 p-10 text-center dark:border-[#412D15]"
                 >
-                  <BookOpen className="mx-auto mb-3 h-8 w-8 text-neutral-400" />
-                  <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">No matching articles yet</p>
-                  <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Try another keyword or category.</p>
+                  <BookOpen className="mx-auto mb-3 h-8 w-8 text-[#7c7c6f]" />
+                  <p className="text-sm font-semibold text-[#7c7c6f] dark:text-neutral-200">No matching articles yet</p>
+                  <p className="mt-1 text-xs text-[#7c7c6f] dark:text-[#7c7c6f]">Try another keyword or category.</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -340,7 +340,7 @@ export function HelpCenter() {
           <GlassCard>
             <div className="mb-4 flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-brand-primary" />
-              <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-50">Role Quick Links</h2>
+              <h2 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">Role Quick Links</h2>
             </div>
             <div className="space-y-2">
               {roleCollections.map((article) => (
@@ -350,7 +350,7 @@ export function HelpCenter() {
                     setSelectedCategory(article.category);
                     setQuery(article.title);
                   }}
-                  className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 p-3 text-left text-xs font-semibold text-neutral-700 transition hover:border-brand-primary/40 hover:text-brand-primary dark:border-neutral-800 dark:bg-neutral-950/40 dark:text-neutral-300"
+                  className="w-full rounded-2xl border border-[#E1DCC9]/20 bg-[#FFFCE1] p-3 text-left text-xs font-semibold text-[#7c7c6f] transition hover:border-brand-primary/40 hover:text-brand-primary dark:border-[#412D15] dark:bg-[#1F150C]/40 dark:text-[#7c7c6f]"
                 >
                   {article.title}
                 </button>
@@ -360,22 +360,22 @@ export function HelpCenter() {
 
           <GlassCard>
             <div className="mb-4 flex items-center gap-2">
-              <Mail className="h-5 w-5 text-blue-600" />
-              <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-50">Contact Support</h2>
+              <Mail className="h-5 w-5 text-[#00bae2]" />
+              <h2 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">Contact Support</h2>
             </div>
             <form onSubmit={handleSupportSubmit} className="space-y-3">
               <input
                 value={supportForm.subject}
                 onChange={(event) => setSupportForm((prev) => ({ ...prev, subject: event.target.value }))}
                 placeholder="Subject"
-                className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-brand-primary dark:border-neutral-800 dark:bg-neutral-950/40 dark:text-neutral-50"
+                className="w-full rounded-2xl border border-[#E1DCC9]/20 bg-[#FFFCE1] px-4 py-3 text-sm text-[#0e100f] outline-none transition focus:border-brand-primary dark:border-[#412D15] dark:bg-[#1F150C]/40 dark:text-[#E1DCC9]"
               />
               <textarea
                 value={supportForm.message}
                 onChange={(event) => setSupportForm((prev) => ({ ...prev, message: event.target.value }))}
                 placeholder="Tell us what you need help with"
                 rows={5}
-                className="w-full resize-none rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-brand-primary dark:border-neutral-800 dark:bg-neutral-950/40 dark:text-neutral-50"
+                className="w-full resize-none rounded-2xl border border-[#E1DCC9]/20 bg-[#FFFCE1] px-4 py-3 text-sm text-[#0e100f] outline-none transition focus:border-brand-primary dark:border-[#412D15] dark:bg-[#1F150C]/40 dark:text-[#E1DCC9]"
               />
               <Button type="submit" variant="primary" className="w-full" icon={<Mail size={14} />}>
                 Send Request
@@ -387,8 +387,8 @@ export function HelpCenter() {
 
       <GlassCard>
         <div className="mb-5">
-          <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">FAQ</h2>
-          <p className="mt-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">Fast answers for common ScholarHub workflows.</p>
+          <h2 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9]">FAQ</h2>
+          <p className="mt-1 text-xs font-medium text-[#7c7c6f] dark:text-[#7c7c6f]">Fast answers for common ScholarHub workflows.</p>
         </div>
 
         <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
@@ -401,8 +401,8 @@ export function HelpCenter() {
                   onClick={() => setOpenFaq(open ? -1 : index)}
                   className="flex w-full items-center justify-between gap-4 text-left"
                 >
-                  <span className="text-sm font-bold text-neutral-900 dark:text-neutral-50">{faq.question}</span>
-                  <ChevronDown className={`h-4 w-4 shrink-0 text-neutral-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+                  <span className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">{faq.question}</span>
+                  <ChevronDown className={`h-4 w-4 shrink-0 text-[#7c7c6f] transition-transform ${open ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence initial={false}>
                   {open && (
@@ -410,7 +410,7 @@ export function HelpCenter() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden pt-3 text-sm leading-6 text-neutral-500 dark:text-neutral-400"
+                      className="overflow-hidden pt-3 text-sm leading-6 text-[#7c7c6f] dark:text-[#7c7c6f]"
                     >
                       {faq.answer}
                     </motion.p>

@@ -104,11 +104,11 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F150C]/50 backdrop-blur-sm">
       <GlassCard className="w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800 rounded-full transition-colors z-10"
+          className="absolute top-4 right-4 p-2 text-[#7c7c6f] hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] rounded-full transition-colors z-10"
         >
           <X size={20} />
         </button>
@@ -116,10 +116,10 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
         <div className="p-6">
           <div className="flex items-start justify-between mb-6 pr-8">
             <div>
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 font-serif">
+              <h2 className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2 font-serif">
                 {course.title}
               </h2>
-              <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
+              <div className="flex items-center gap-2 text-[#7c7c6f] dark:text-[#7c7c6f]">
                 <span className="text-sm">Instructor: {course.users?.full_name || course.users?.name || 'Unassigned'}</span>
               </div>
             </div>
@@ -137,9 +137,9 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
           ) : isEditing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Description</label>
+                <label className="block text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f] mb-1">Description</label>
                 <textarea 
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-[#412D15] dark:border-slate-700 dark:text-[#E1DCC9]"
                   rows={3}
                   value={formData.course_description}
                   onChange={e => setFormData({...formData, course_description: e.target.value})}
@@ -147,20 +147,20 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Duration</label>
+                  <label className="block text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f] mb-1">Duration</label>
                   <input 
                     type="text"
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-[#412D15] dark:border-slate-700 dark:text-[#E1DCC9]"
                     placeholder="e.g. 10 weeks"
                     value={formData.course_duration}
                     onChange={e => setFormData({...formData, course_duration: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Level</label>
+                  <label className="block text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f] mb-1">Level</label>
                   <input 
                     type="text"
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-[#412D15] dark:border-slate-700 dark:text-[#E1DCC9]"
                     placeholder="e.g. Intermediate"
                     value={formData.course_level}
                     onChange={e => setFormData({...formData, course_level: e.target.value})}
@@ -168,19 +168,19 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Objectives</label>
+                <label className="block text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f] mb-1">Objectives</label>
                 <textarea 
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-[#412D15] dark:border-slate-700 dark:text-[#E1DCC9]"
                   rows={2}
                   value={formData.course_objectives}
                   onChange={e => setFormData({...formData, course_objectives: e.target.value})}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Prerequisites</label>
+                <label className="block text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f] mb-1">Prerequisites</label>
                 <input 
                   type="text"
-                  className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-[#412D15] dark:border-slate-700 dark:text-[#E1DCC9]"
                   value={formData.prerequisites}
                   onChange={e => setFormData({...formData, prerequisites: e.target.value})}
                 />
@@ -191,46 +191,46 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
               </div>
             </div>
           ) : !details ? (
-            <div className="py-12 text-center bg-neutral-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-neutral-200 dark:border-slate-700">
-              <BookOpen className="w-12 h-12 text-neutral-400 mx-auto mb-3" />
-              <p className="text-neutral-500 dark:text-neutral-400">Course information has not been added yet.</p>
+            <div className="py-12 text-center bg-[#FFFCE1] dark:bg-[#412D15]/50 rounded-xl border border-dashed border-[#E1DCC9]/20 dark:border-slate-700">
+              <BookOpen className="w-12 h-12 text-[#7c7c6f] mx-auto mb-3" />
+              <p className="text-[#7c7c6f] dark:text-[#7c7c6f]">Course information has not been added yet.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {details.course_thumbnail && (
-                <div className="w-full h-48 rounded-xl overflow-hidden bg-neutral-100 dark:bg-slate-800 flex items-center justify-center">
+                <div className="w-full h-48 rounded-xl overflow-hidden bg-[#FFFCE1] dark:bg-[#412D15] flex items-center justify-center">
                   <img src={details.course_thumbnail} alt={course.title || 'Course'} className="w-full h-full object-cover" />
                 </div>
               )}
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-neutral-100 dark:border-slate-700 flex items-start gap-3">
+                <div className="p-4 bg-[#FFFCE1] dark:bg-[#412D15]/50 rounded-xl border border-[#E1DCC9]/20 dark:border-slate-700 flex items-start gap-3">
                   <div className="p-2 bg-brand-primary/10 rounded-lg text-brand-primary">
                     <Clock size={20} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Duration</p>
-                    <p className="text-neutral-900 dark:text-white font-medium">{details.course_duration || 'N/A'}</p>
+                    <p className="text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f]">Duration</p>
+                    <p className="text-[#0e100f] dark:text-[#E1DCC9] font-medium">{details.course_duration || 'N/A'}</p>
                   </div>
                 </div>
-                <div className="p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-neutral-100 dark:border-slate-700 flex items-start gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg text-purple-500">
+                <div className="p-4 bg-[#FFFCE1] dark:bg-[#412D15]/50 rounded-xl border border-[#E1DCC9]/20 dark:border-slate-700 flex items-start gap-3">
+                  <div className="p-2 bg-[#9d95ff]/10 rounded-lg text-[#9d95ff]">
                     <BarChart size={20} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Level</p>
-                    <p className="text-neutral-900 dark:text-white font-medium">{details.course_level || course.level || 'N/A'}</p>
+                    <p className="text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f]">Level</p>
+                    <p className="text-[#0e100f] dark:text-[#E1DCC9] font-medium">{details.course_level || course.level || 'N/A'}</p>
                   </div>
                 </div>
               </div>
 
               {details.course_description && (
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-[#0e100f] dark:text-[#E1DCC9] mb-2 flex items-center gap-2">
                     <FileText size={18} className="text-brand-primary" />
                     Description
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed text-sm whitespace-pre-wrap">
+                  <p className="text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed text-sm whitespace-pre-wrap">
                     {details.course_description}
                   </p>
                 </div>
@@ -238,20 +238,20 @@ export function CourseInfoModal({ course, isOpen, onClose }: CourseInfoModalProp
 
               {details.course_objectives && (
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2 flex items-center gap-2">
-                    <CheckCircle size={18} className="text-green-500" />
+                  <h3 className="text-lg font-semibold text-[#0e100f] dark:text-[#E1DCC9] mb-2 flex items-center gap-2">
+                    <CheckCircle size={18} className="text-[#00bae2]" />
                     Objectives
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed text-sm whitespace-pre-wrap">
+                  <p className="text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed text-sm whitespace-pre-wrap">
                     {details.course_objectives}
                   </p>
                 </div>
               )}
 
               {details.prerequisites && (
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl border border-yellow-200 dark:border-yellow-900/30">
-                  <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-1">Prerequisites</h3>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-500">{details.prerequisites}</p>
+                <div className="p-4 bg-amber-500 dark:bg-amber-500/10 rounded-xl border border-amber-500 dark:border-amber-500/30">
+                  <h3 className="text-sm font-semibold text-amber-500 dark:text-amber-500 mb-1">Prerequisites</h3>
+                  <p className="text-sm text-amber-500 dark:text-amber-500">{details.prerequisites}</p>
                 </div>
               )}
             </div>

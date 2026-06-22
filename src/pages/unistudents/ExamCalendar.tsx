@@ -13,9 +13,9 @@ const EXAMS = [
     syllabus: 'Unit 1–3: Search, Knowledge Repr., Logic',
     daysLeft: 19,
     urgency: 'normal',
-    gradient: 'from-violet-500 to-purple-600',
+    gradient: 'from-[#9d95ff] to-[#9d95ff]',
     icon: '🤖',
-    typeBadge: 'bg-violet-500/15 text-violet-600 dark:text-violet-300 border-violet-500/30',
+    typeBadge: 'bg-[#9d95ff]/15 text-[#9d95ff] dark:text-[#9d95ff] border-[#9d95ff]/30',
   },
   {
     id: 'e2',
@@ -28,9 +28,9 @@ const EXAMS = [
     syllabus: 'Sorting Algorithms, Trees, Graphs (BFS/DFS)',
     daysLeft: 14,
     urgency: 'soon',
-    gradient: 'from-emerald-500 to-teal-600',
+    gradient: 'from-[#00bae2] to-[#00bae2]',
     icon: '🧩',
-    typeBadge: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border-emerald-500/30',
+    typeBadge: 'bg-[#00bae2]/15 text-[#00bae2] dark:text-[#00bae2] border-[#00bae2]/30',
   },
   {
     id: 'e3',
@@ -43,9 +43,9 @@ const EXAMS = [
     syllabus: 'Vectors, Matrices, Eigen Decomposition',
     daysLeft: 26,
     urgency: 'normal',
-    gradient: 'from-cyan-500 to-blue-600',
+    gradient: 'from-[#00bae2] to-[#00bae2]',
     icon: '📐',
-    typeBadge: 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-300 border-cyan-500/30',
+    typeBadge: 'bg-[#00bae2]/15 text-[#00bae2] dark:text-[#00bae2] border-[#00bae2]/30',
   },
   {
     id: 'e4',
@@ -58,16 +58,16 @@ const EXAMS = [
     syllabus: 'OOP, Decorators, NumPy / Pandas',
     daysLeft: 8,
     urgency: 'urgent',
-    gradient: 'from-amber-500 to-orange-600',
+    gradient: 'from-amber-500 to-amber-500',
     icon: '🐍',
-    typeBadge: 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border-amber-500/30',
+    typeBadge: 'bg-amber-500/15 text-amber-500 dark:text-amber-500 border-amber-500/30',
   },
 ];
 
 const urgencyConfig: Record<string, { label: string; classes: string; dotColor: string }> = {
-  urgent: { label: 'Coming up soon!', classes: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30', dotColor: 'bg-red-500' },
-  soon:   { label: '2 weeks away',    classes: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30', dotColor: 'bg-amber-500' },
-  normal: { label: 'On schedule',     classes: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30', dotColor: 'bg-emerald-500' },
+  urgent: { label: 'Coming up soon!', classes: 'bg-red-500/10 text-red-500 dark:text-red-500 border-red-500/30', dotColor: 'bg-red-500' },
+  soon:   { label: '2 weeks away',    classes: 'bg-amber-500/10 text-amber-500 dark:text-amber-500 border-amber-500/30', dotColor: 'bg-amber-500' },
+  normal: { label: 'On schedule',     classes: 'bg-[#00bae2]/10 text-[#00bae2] dark:text-[#00bae2] border-[#00bae2]/30', dotColor: 'bg-[#00bae2]' },
 };
 
 export function ExamCalendar() {
@@ -78,10 +78,10 @@ export function ExamCalendar() {
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight">
           Exam Calendar
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
           Upcoming midterms and practicals · Semester 1 · 2025–26
         </p>
       </motion.div>
@@ -96,10 +96,10 @@ export function ExamCalendar() {
         {Object.entries(urgencyConfig).map(([key, cfg]) => (
           <div key={key} className="flex items-center gap-1.5">
             <div className={`w-2 h-2 rounded-full ${cfg.dotColor}`} />
-            <span className="text-neutral-600 dark:text-neutral-400 capitalize">{key === 'urgent' ? '≤ 10 days' : key === 'soon' ? '11–20 days' : '20+ days'}</span>
+            <span className="text-[#7c7c6f] dark:text-[#7c7c6f] capitalize">{key === 'urgent' ? '≤ 10 days' : key === 'soon' ? '11–20 days' : '20+ days'}</span>
           </div>
         ))}
-        <div className="ml-auto flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
+        <div className="ml-auto flex items-center gap-1.5 text-[#7c7c6f] dark:text-[#7c7c6f]">
           <AlertCircle size={12} />
           <span>All times in IST</span>
         </div>
@@ -124,7 +124,7 @@ export function ExamCalendar() {
             >
               {/* Date column */}
               <div className="flex flex-col items-center gap-1 shrink-0 w-14">
-                <div className={`w-12 h-14 rounded-2xl bg-gradient-to-br ${exam.gradient} flex flex-col items-center justify-center text-white shadow-md`}>
+                <div className={`w-12 h-14 rounded-2xl bg-gradient-to-br ${exam.gradient} flex flex-col items-center justify-center text-[#E1DCC9] shadow-md`}>
                   <span className="text-[10px] font-black tracking-widest opacity-80">{monthStr}</span>
                   <span className="text-xl font-black leading-none">{dayStr}</span>
                 </div>
@@ -134,7 +134,7 @@ export function ExamCalendar() {
               </div>
 
               {/* Card */}
-              <div className="flex-1 bg-white dark:bg-neutral-900/70 border border-neutral-200/70 dark:border-white/10 rounded-2xl p-5 shadow-sm group-hover:shadow-lg group-hover:border-purple-400/30 transition-all duration-300 overflow-hidden relative">
+              <div className="flex-1 bg-[#FFFCE1] dark:bg-[#412D15]/70 border border-[#E1DCC9]/70 dark:border-[#E1DCC9]/10 rounded-2xl p-5 shadow-sm group-hover:shadow-lg group-hover:border-[#9d95ff]/30 transition-all duration-300 overflow-hidden relative">
                 <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${exam.gradient}`} />
 
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -145,11 +145,11 @@ export function ExamCalendar() {
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="text-xs font-black text-neutral-500 dark:text-neutral-400 font-mono">{exam.code}</span>
+                        <span className="text-xs font-black text-[#7c7c6f] dark:text-[#7c7c6f] font-mono">{exam.code}</span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${exam.typeBadge}`}>{exam.type}</span>
                       </div>
-                      <h3 className="text-sm font-bold text-neutral-900 dark:text-white leading-snug truncate">{exam.course}</h3>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 italic">{exam.syllabus}</p>
+                      <h3 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] leading-snug truncate">{exam.course}</h3>
+                      <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1 italic">{exam.syllabus}</p>
                     </div>
                   </div>
 
@@ -159,12 +159,12 @@ export function ExamCalendar() {
                       <div className={`w-1.5 h-1.5 rounded-full ${urg.dotColor}`} />
                       {exam.daysLeft}d left
                     </span>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{weekday}</p>
+                    <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f]">{weekday}</p>
                   </div>
                 </div>
 
                 {/* Details row */}
-                <div className="flex flex-wrap gap-4 mt-4 text-xs text-neutral-600 dark:text-neutral-400 border-t border-neutral-100 dark:border-neutral-800 pt-3">
+                <div className="flex flex-wrap gap-4 mt-4 text-xs text-[#7c7c6f] dark:text-[#7c7c6f] border-t border-[#E1DCC9]/20 dark:border-[#412D15] pt-3">
                   <span className="flex items-center gap-1.5"><Clock size={11} /> {exam.time}</span>
                   <span className="flex items-center gap-1.5"><MapPin size={11} /> {exam.venue}</span>
                   <span className="flex items-center gap-1.5"><BookOpen size={11} /> {exam.syllabus.split(':')[0]}</span>
@@ -180,7 +180,7 @@ export function ExamCalendar() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-4 text-sm text-violet-700 dark:text-violet-300 flex items-center gap-3"
+        className="bg-[#9d95ff]/10 border border-[#9d95ff]/20 rounded-2xl p-4 text-sm text-[#9d95ff] dark:text-[#9d95ff] flex items-center gap-3"
       >
         <Calendar size={16} className="shrink-0" />
         <span>

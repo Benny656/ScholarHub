@@ -62,7 +62,7 @@ type ChartDatum = {
   value: number;
 };
 
-const CHART_COLORS = ['#2563eb', '#16a34a', '#f59e0b', '#7c3aed', '#ef4444'];
+const CHART_COLORS = ['#2563eb', '#16a34a', '#f59e0b', '#9d95ff', '#ef4444'];
 
 function asArray<T>(value: T[] | null | undefined): T[] {
   return Array.isArray(value) ? value : [];
@@ -269,10 +269,10 @@ export function AnalyticsPage() {
   if (error) {
     return (
       <div className="max-w-[1400px] mx-auto p-8 mt-12 text-center">
-        <GlassCard className="inline-block p-8 border-4 border-red-500/30 rounded-3xl max-w-lg w-full bg-red-500/5 dark:bg-red-900/10">
+        <GlassCard className="inline-block p-8 border-4 border-red-500/30 rounded-3xl max-w-lg w-full bg-red-500/5 dark:bg-red-500/10">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">Error Loading Analytics</h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">{error}</p>
+          <h2 className="text-xl font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2">Error Loading Analytics</h2>
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mb-6">{error}</p>
           <Button variant="primary" onClick={loadDashboardData} icon={<RefreshCw size={14} />}>
             Retry
           </Button>
@@ -285,10 +285,10 @@ export function AnalyticsPage() {
     <div className="max-w-[1400px] mx-auto space-y-8 pb-12 font-sans">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight mb-2">
             Platform Analytics
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] max-w-2xl">
             Live account, course, K-12, university, enrollment, attendance, and classroom activity from the platform database.
           </p>
         </div>
@@ -307,7 +307,7 @@ export function AnalyticsPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <motion.div variants={itemVariants} className="xl:col-span-2">
-            <ChartCard title="Account Creation Trend" icon={<BarChart3 size={18} className="text-blue-600" />}>
+            <ChartCard title="Account Creation Trend" icon={<BarChart3 size={18} className="text-[#00bae2]" />}>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={analytics.accountTrend} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
                   <defs>
@@ -327,7 +327,7 @@ export function AnalyticsPage() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <ChartCard title="Role Mix" icon={<Users size={18} className="text-emerald-600" />}>
+            <ChartCard title="Role Mix" icon={<Users size={18} className="text-[#00bae2]" />}>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie data={analytics.roleData.length ? analytics.roleData : [{ name: 'No Accounts', value: 1 }]} dataKey="value" nameKey="name" innerRadius={64} outerRadius={100} paddingAngle={3}>
@@ -345,7 +345,7 @@ export function AnalyticsPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <motion.div variants={itemVariants}>
-            <ChartCard title="K-12 vs University Accounts" icon={<School size={18} className="text-amber-600" />}>
+            <ChartCard title="K-12 vs University Accounts" icon={<School size={18} className="text-amber-500" />}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={analytics.institutionData} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -354,7 +354,7 @@ export function AnalyticsPage() {
                   <Tooltip />
                   <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                     {analytics.institutionData.map((_, index) => (
-                      <Cell key={index} fill={index === 0 ? '#16a34a' : '#7c3aed'} />
+                      <Cell key={index} fill={index === 0 ? '#16a34a' : '#9d95ff'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -363,7 +363,7 @@ export function AnalyticsPage() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <ChartCard title="Course Distribution" icon={<GraduationCap size={18} className="text-purple-600" />}>
+            <ChartCard title="Course Distribution" icon={<GraduationCap size={18} className="text-[#9d95ff]" />}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={analytics.courseData} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -383,7 +383,7 @@ export function AnalyticsPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <motion.div variants={itemVariants} className="xl:col-span-2">
-            <ChartCard title="Engagement Snapshot" icon={<Activity size={18} className="text-emerald-600" />}>
+            <ChartCard title="Engagement Snapshot" icon={<Activity size={18} className="text-[#00bae2]" />}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={analytics.engagementData} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -399,8 +399,8 @@ export function AnalyticsPage() {
           <motion.div variants={itemVariants}>
             <GlassCard className="h-full">
               <div className="flex items-center gap-2 mb-5">
-                <Video size={18} className="text-red-600" />
-                <h3 className="font-bold text-neutral-900 dark:text-white">Live Platform Health</h3>
+                <Video size={18} className="text-red-500" />
+                <h3 className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">Live Platform Health</h3>
               </div>
               <div className="space-y-4">
                 <HealthRow label="Average progress" value={`${analytics.avgProgress}%`} />
@@ -414,13 +414,13 @@ export function AnalyticsPage() {
 
         <motion.div variants={itemVariants}>
           <GlassCard className="p-0 overflow-hidden">
-            <div className="p-5 border-b border-neutral-100 dark:border-neutral-800 flex items-center gap-2">
-              <GraduationCap className="text-blue-600" size={18} />
-              <h3 className="font-bold text-neutral-900 dark:text-white">Top Courses by Enrollment</h3>
+            <div className="p-5 border-b border-[#E1DCC9]/20 dark:border-[#412D15] flex items-center gap-2">
+              <GraduationCap className="text-[#00bae2]" size={18} />
+              <h3 className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">Top Courses by Enrollment</h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-400">
-                <thead className="bg-neutral-50/70 dark:bg-neutral-900 text-xs uppercase font-semibold border-b border-neutral-100 dark:border-neutral-800">
+              <table className="w-full text-left text-sm text-[#7c7c6f] dark:text-[#7c7c6f]">
+                <thead className="bg-[#FFFCE1]/70 dark:bg-[#412D15] text-xs uppercase font-semibold border-b border-[#E1DCC9]/20 dark:border-[#412D15]">
                   <tr>
                     <th className="px-5 py-3">Course</th>
                     <th className="px-5 py-3">Type</th>
@@ -430,25 +430,25 @@ export function AnalyticsPage() {
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
                   {analytics.popularCourses.length ? (
                     analytics.popularCourses.map((course) => (
-                      <tr key={course.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
-                        <td className="px-5 py-4 font-semibold text-neutral-900 dark:text-white">{course.title}</td>
+                      <tr key={course.id} className="hover:bg-[#FFFCE1] dark:hover:bg-[#412D15]/40 transition-colors">
+                        <td className="px-5 py-4 font-semibold text-[#0e100f] dark:text-[#E1DCC9]">{course.title}</td>
                         <td className="px-5 py-4">
                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase border ${
                             course.type === 'K-12'
-                              ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
-                              : 'bg-blue-500/10 text-blue-700 border-blue-500/20'
+                              ? 'bg-[#00bae2]/10 text-[#00bae2] border-[#00bae2]/20'
+                              : 'bg-[#00bae2]/10 text-[#00bae2] border-[#00bae2]/20'
                           }`}>
                             {course.type}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-right font-bold text-neutral-900 dark:text-white">
+                        <td className="px-5 py-4 text-right font-bold text-[#0e100f] dark:text-[#E1DCC9]">
                           {course.enrolled.toLocaleString()}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td className="px-5 py-6 text-center text-neutral-500" colSpan={3}>
+                      <td className="px-5 py-6 text-center text-[#7c7c6f]" colSpan={3}>
                         No courses found yet.
                       </td>
                     </tr>
@@ -483,19 +483,19 @@ function MetricCard({
   color: 'blue' | 'emerald' | 'amber' | 'purple';
 }) {
   const colorClasses = {
-    blue: 'text-blue-600 bg-blue-500/10 border-blue-500/20',
-    emerald: 'text-emerald-600 bg-emerald-500/10 border-emerald-500/20',
-    amber: 'text-amber-600 bg-amber-500/10 border-amber-500/20',
-    purple: 'text-purple-600 bg-purple-500/10 border-purple-500/20',
+    blue: 'text-[#00bae2] bg-[#00bae2]/10 border-[#00bae2]/20',
+    emerald: 'text-[#00bae2] bg-[#00bae2]/10 border-[#00bae2]/20',
+    amber: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+    purple: 'text-[#9d95ff] bg-[#9d95ff]/10 border-[#9d95ff]/20',
   };
 
   return (
     <GlassCard className="h-full">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{label}</p>
-          <p className="text-3xl font-bold text-neutral-900 dark:text-white mt-2">{typeof value === 'number' ? value.toLocaleString() : value}</p>
-          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-2">{helper}</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">{label}</p>
+          <p className="text-3xl font-bold text-[#0e100f] dark:text-[#E1DCC9] mt-2">{typeof value === 'number' ? value.toLocaleString() : value}</p>
+          <p className="text-xs font-medium text-[#7c7c6f] dark:text-[#7c7c6f] mt-2">{helper}</p>
         </div>
         <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center shrink-0 ${colorClasses[color]}`}>
           {icon}
@@ -510,7 +510,7 @@ function ChartCard({ title, icon, children }: { title: string; icon: React.React
     <GlassCard className="h-full">
       <div className="flex items-center gap-2 mb-5">
         {icon}
-        <h3 className="font-bold text-neutral-900 dark:text-white">{title}</h3>
+        <h3 className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">{title}</h3>
       </div>
       {children}
     </GlassCard>
@@ -519,9 +519,9 @@ function ChartCard({ title, icon, children }: { title: string; icon: React.React
 
 function HealthRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950/40 px-4 py-3">
-      <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">{label}</span>
-      <span className="text-sm font-bold text-neutral-900 dark:text-white">{value}</span>
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#1F150C]/40 px-4 py-3">
+      <span className="text-sm font-medium text-[#7c7c6f] dark:text-[#7c7c6f]">{label}</span>
+      <span className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9]">{value}</span>
     </div>
   );
 }

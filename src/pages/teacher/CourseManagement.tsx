@@ -141,13 +141,13 @@ export default function CourseManagement() {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6"
       >
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9d95ff] dark:text-[#9d95ff] mb-2">
             <BookOpen size={16} /> College Workspace
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-[#0e100f] dark:text-[#E1DCC9] tracking-tight">
             Course Management Command Center 🏫
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-455">
+          <p className="text-sm text-[#7c7c6f] dark:text-neutral-455">
             Configure lecture materials, monitor syllabus completion rates, and manage academic resources.
           </p>
         </div>
@@ -161,10 +161,10 @@ export default function CourseManagement() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Active Courses', value: courses.length, icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-500/10' },
-          { label: 'Combined Enrollments', value: totalEnrolled, icon: Users, color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
-          { label: 'Weekly Active Files', value: materials.length, icon: FolderOpen, color: 'text-amber-600', bg: 'bg-amber-500/10' },
-          { label: 'Semester Schedule', value: 'Week 8 / 16', icon: Calendar, color: 'text-purple-600', bg: 'bg-purple-500/10' },
+          { label: 'Active Courses', value: courses.length, icon: BookOpen, color: 'text-[#9d95ff]', bg: 'bg-[#9d95ff]/10' },
+          { label: 'Combined Enrollments', value: totalEnrolled, icon: Users, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
+          { label: 'Weekly Active Files', value: materials.length, icon: FolderOpen, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+          { label: 'Semester Schedule', value: 'Week 8 / 16', icon: Calendar, color: 'text-[#9d95ff]', bg: 'bg-[#9d95ff]/10' },
         ].map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants}>
             <GlassCard className="flex items-center gap-4 p-5 h-full hover:shadow-md transition-shadow">
@@ -172,8 +172,8 @@ export default function CourseManagement() {
                 <stat.icon size={24} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-1">{stat.label}</p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white leading-none">{stat.value}</p>
+                <p className="text-xs font-semibold text-[#7c7c6f] uppercase tracking-wider mb-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] leading-none">{stat.value}</p>
               </div>
             </GlassCard>
           </motion.div>
@@ -182,7 +182,7 @@ export default function CourseManagement() {
 
       {/* ACTIVE COURSES GRID */}
       <div className="space-y-4">
-        <h2 className="text-lg font-black text-neutral-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-lg font-black text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
           <span>Active Courses Overview</span>
           <Badge variant="purple">{courses.length} courses</Badge>
         </h2>
@@ -195,41 +195,41 @@ export default function CourseManagement() {
         >
           {courses.map((course) => (
             <motion.div key={course.id} variants={itemVariants}>
-              <GlassCard className="h-full border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900/60 p-6 flex flex-col justify-between hover:shadow-lg transition-shadow relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+              <GlassCard className="h-full border border-[#E1DCC9]/20 dark:border-neutral-850 bg-[#FFFCE1] dark:bg-[#412D15]/60 p-6 flex flex-col justify-between hover:shadow-lg transition-shadow relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#9d95ff]/5 dark:bg-[#9d95ff]/10 rounded-full blur-2xl pointer-events-none" />
                 
                 <div>
                   {/* Top line */}
                   <div className="flex justify-between items-start gap-3 mb-3">
                     <div>
-                      <span className="text-[10px] font-black tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded uppercase">
+                      <span className="text-[10px] font-black tracking-widest text-[#9d95ff] dark:text-[#9d95ff] bg-[#9d95ff]/10 px-2 py-0.5 rounded uppercase">
                         {course.code}
                       </span>
-                      <h3 className="text-base font-extrabold text-neutral-900 dark:text-white tracking-tight mt-1.5 leading-snug">
+                      <h3 className="text-base font-extrabold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight mt-1.5 leading-snug">
                         {course.title}
                       </h3>
                     </div>
-                    <span className="text-xs font-bold text-neutral-450 whitespace-nowrap bg-neutral-100 dark:bg-neutral-800 px-2.5 py-1 rounded-lg">
+                    <span className="text-xs font-bold text-neutral-450 whitespace-nowrap bg-[#FFFCE1] dark:bg-[#412D15] px-2.5 py-1 rounded-lg">
                       {course.currentWeek}
                     </span>
                   </div>
 
                   {/* Description */}
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed mb-5">
+                  <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] line-clamp-2 leading-relaxed mb-5">
                     {course.description}
                   </p>
 
                   {/* Metrics */}
-                  <div className="space-y-3.5 border-t border-b border-neutral-100 dark:border-neutral-800/80 py-4 my-4">
-                    <div className="flex justify-between text-xs font-bold text-neutral-700 dark:text-neutral-300">
-                      <span className="flex items-center gap-1"><Users size={13} className="text-neutral-400" /> Students Enrolled</span>
-                      <span className="font-mono text-neutral-900 dark:text-white">{course.enrollment} Enrolled</span>
+                  <div className="space-y-3.5 border-t border-b border-[#E1DCC9]/20 dark:border-[#412D15]/80 py-4 my-4">
+                    <div className="flex justify-between text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">
+                      <span className="flex items-center gap-1"><Users size={13} className="text-[#7c7c6f]" /> Students Enrolled</span>
+                      <span className="font-mono text-[#0e100f] dark:text-[#E1DCC9]">{course.enrollment} Enrolled</span>
                     </div>
 
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-bold">
-                        <span className="text-neutral-500">Syllabus Completion</span>
-                        <span className="text-indigo-600 dark:text-indigo-400">{course.progress}%</span>
+                        <span className="text-[#7c7c6f]">Syllabus Completion</span>
+                        <span className="text-[#9d95ff] dark:text-[#9d95ff]">{course.progress}%</span>
                       </div>
                       <ProgressBar value={course.progress} color="purple" />
                     </div>
@@ -240,20 +240,20 @@ export default function CourseManagement() {
                 <div className="flex gap-2 mt-4">
                   <button 
                     onClick={() => handleOpenUpload(course)}
-                    className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/10 active:scale-95 transition-all"
+                    className="flex-1 py-2 bg-[#9d95ff] hover:bg-[#9d95ff] text-[#E1DCC9] rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#9d95ff]/10 active:scale-95 transition-all"
                   >
                     <Upload size={13} /> Upload Materials
                   </button>
                   <button 
                     onClick={() => handleOpenEdit(course)}
-                    className="py-2 px-3 bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-350 hover:bg-neutral-200 dark:hover:bg-neutral-750 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+                    className="py-2 px-3 bg-[#FFFCE1] text-[#7c7c6f] dark:bg-[#412D15] dark:text-neutral-350 hover:bg-neutral-200 dark:hover:bg-neutral-750 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                     title="Edit syllabus description & progress"
                   >
                     <Edit size={13} /> Syllabus
                   </button>
                   <button 
                     onClick={() => handleViewRoster(course.code)}
-                    className="py-2 px-3 bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-350 hover:bg-neutral-200 dark:hover:bg-neutral-750 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+                    className="py-2 px-3 bg-[#FFFCE1] text-[#7c7c6f] dark:bg-[#412D15] dark:text-neutral-350 hover:bg-neutral-200 dark:hover:bg-neutral-750 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                     title="View students roster"
                   >
                     <Users size={13} /> Roster
@@ -268,7 +268,7 @@ export default function CourseManagement() {
 
       {/* RECENT MATERIALS TABLE */}
       <div className="space-y-4 pt-4">
-        <h2 className="text-lg font-black text-neutral-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-lg font-black text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
           <span>Recent Materials &amp; Activity</span>
           <Badge variant="slate">Updated</Badge>
         </h2>
@@ -278,26 +278,26 @@ export default function CourseManagement() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <GlassCard padding="p-0" className="overflow-hidden border border-neutral-200 dark:border-neutral-850">
+          <GlassCard padding="p-0" className="overflow-hidden border border-[#E1DCC9]/20 dark:border-neutral-850">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-800/80 bg-neutral-50/50 dark:bg-neutral-900/30">
-                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">File Name</th>
-                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Course Code</th>
-                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Upload Date</th>
-                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Size</th>
-                    <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Actions</th>
+                  <tr className="border-b border-[#E1DCC9]/20 dark:border-[#412D15]/80 bg-[#FFFCE1]/50 dark:bg-[#412D15]/30">
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">File Name</th>
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Course Code</th>
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Upload Date</th>
+                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Size</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/40">
                   {materials.map((file) => (
                     <tr 
                       key={file.id}
-                      className="hover:bg-neutral-50/50 dark:hover:bg-neutral-850/10 transition-colors"
+                      className="hover:bg-[#FFFCE1]/50 dark:hover:bg-neutral-850/10 transition-colors"
                     >
                       {/* Name */}
-                      <td className="px-6 py-4 font-bold text-neutral-900 dark:text-white">
+                      <td className="px-6 py-4 font-bold text-[#0e100f] dark:text-[#E1DCC9]">
                         <div className="flex items-center gap-2.5">
                           <FileText size={16} className="text-neutral-450 shrink-0" />
                           {file.name}
@@ -310,12 +310,12 @@ export default function CourseManagement() {
                       </td>
 
                       {/* Upload Date */}
-                      <td className="px-6 py-4 text-neutral-550 dark:text-neutral-400 font-semibold text-xs font-mono">
+                      <td className="px-6 py-4 text-neutral-550 dark:text-[#7c7c6f] font-semibold text-xs font-mono">
                         {new Date(file.uploadDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
 
                       {/* Size */}
-                      <td className="px-6 py-4 text-neutral-500 font-mono text-xs">
+                      <td className="px-6 py-4 text-[#7c7c6f] font-mono text-xs">
                         {file.size}
                       </td>
 
@@ -324,14 +324,14 @@ export default function CourseManagement() {
                         <div className="flex justify-end gap-1.5">
                           <button
                             onClick={() => handleDownload(file.name)}
-                            className="p-1.5 hover:bg-neutral-150 dark:hover:bg-neutral-800 text-neutral-550 dark:text-neutral-400 rounded-lg hover:text-indigo-600 transition-colors"
+                            className="p-1.5 hover:bg-neutral-150 dark:hover:bg-[#412D15] text-neutral-550 dark:text-[#7c7c6f] rounded-lg hover:text-[#9d95ff] transition-colors"
                             title="Download File"
                           >
                             <Download size={14} />
                           </button>
                           <button
                             onClick={() => handleDeleteMaterial(file.id, file.name)}
-                            className="p-1.5 hover:bg-neutral-150 dark:hover:bg-neutral-800 text-neutral-550 dark:text-neutral-450 rounded-lg hover:text-red-500 transition-colors"
+                            className="p-1.5 hover:bg-neutral-150 dark:hover:bg-[#412D15] text-neutral-550 dark:text-neutral-450 rounded-lg hover:text-red-500 transition-colors"
                             title="Delete File"
                           >
                             <Trash2 size={14} />
@@ -356,49 +356,49 @@ export default function CourseManagement() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setUploadCourse(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-[#1F150C]/60 backdrop-blur-sm"
             />
             
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 shadow-2xl z-10"
+              className="relative w-full max-w-md bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-3xl p-6 shadow-2xl z-10"
             >
               <div className="flex justify-between items-center mb-4">
-                <h4 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <Upload size={16} className="text-indigo-600" /> Upload: {uploadCourse.code}
+                <h4 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
+                  <Upload size={16} className="text-[#9d95ff]" /> Upload: {uploadCourse.code}
                 </h4>
                 <button 
                   onClick={() => setUploadCourse(null)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#7c7c6f] hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] transition-colors"
                 >
                   <X size={16} />
                 </button>
               </div>
 
               <form onSubmit={handleMockUpload} className="space-y-4">
-                <div className="border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 text-center bg-neutral-50/50 dark:bg-neutral-950/20">
-                  <FolderOpen size={32} className="mx-auto text-neutral-350 dark:text-neutral-600 mb-2 animate-bounce" />
-                  <p className="text-xs text-neutral-500">Drag &amp; drop course handouts, slides, or zip files</p>
+                <div className="border-2 border-dashed border-[#E1DCC9]/20 dark:border-[#412D15] rounded-2xl p-6 text-center bg-[#FFFCE1]/50 dark:bg-[#1F150C]/20">
+                  <FolderOpen size={32} className="mx-auto text-neutral-350 dark:text-[#7c7c6f] mb-2 animate-bounce" />
+                  <p className="text-xs text-[#7c7c6f]">Drag &amp; drop course handouts, slides, or zip files</p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-600 dark:text-neutral-300">File Name (with extension)</label>
+                  <label className="block text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">File Name (with extension)</label>
                   <input
                     type="text"
                     required
                     value={newFileName}
                     onChange={e => setNewFileName(e.target.value)}
                     placeholder="e.g. Lecture_09_DecisionTrees.pdf"
-                    className="w-full text-xs p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
+                    className="w-full text-xs p-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/50 dark:bg-[#412D15]/50 text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:border-[#9d95ff] focus:ring-1 focus:ring-[#9d95ff]"
                   />
                 </div>
 
                 <div className="flex gap-2 pt-2">
                   <button 
                     type="button"
-                    className="flex-1 text-xs py-2.5 bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300 font-bold rounded-xl active:scale-95 transition-all hover:bg-neutral-250" 
+                    className="flex-1 text-xs py-2.5 bg-[#FFFCE1] text-[#7c7c6f] dark:bg-[#412D15] dark:text-[#7c7c6f] font-bold rounded-xl active:scale-95 transition-all hover:bg-neutral-250" 
                     onClick={() => setUploadCourse(null)}
                   >
                     Cancel
@@ -406,7 +406,7 @@ export default function CourseManagement() {
                   <Button 
                     type="submit"
                     variant="primary" 
-                    className="flex-1 text-xs py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md font-bold" 
+                    className="flex-1 text-xs py-2.5 bg-[#9d95ff] hover:bg-[#9d95ff] text-[#E1DCC9] rounded-xl shadow-md font-bold" 
                   >
                     Upload File
                   </Button>
@@ -426,22 +426,22 @@ export default function CourseManagement() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setEditCourse(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-[#1F150C]/60 backdrop-blur-sm"
             />
             
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 shadow-2xl z-10"
+              className="relative w-full max-w-md bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-3xl p-6 shadow-2xl z-10"
             >
               <div className="flex justify-between items-center mb-4">
-                <h4 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                  <Edit size={16} className="text-indigo-600" /> Syllabus: {editCourse.code}
+                <h4 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
+                  <Edit size={16} className="text-[#9d95ff]" /> Syllabus: {editCourse.code}
                 </h4>
                 <button 
                   onClick={() => setEditCourse(null)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#7c7c6f] hover:bg-[#FFFCE1] dark:hover:bg-[#412D15] transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -449,9 +449,9 @@ export default function CourseManagement() {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-bold text-neutral-600 dark:text-neutral-300">
+                  <div className="flex justify-between text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">
                     <span>Syllabus Progress Completion</span>
-                    <span className="text-indigo-600">{syllabusProgress}%</span>
+                    <span className="text-[#9d95ff]">{syllabusProgress}%</span>
                   </div>
                   <input
                     type="range"
@@ -459,30 +459,30 @@ export default function CourseManagement() {
                     max="100"
                     value={syllabusProgress}
                     onChange={e => setSyllabusProgress(Number(e.target.value))}
-                    className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-[#9d95ff]"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-600 dark:text-neutral-300">Course Scope &amp; Topics Summary</label>
+                  <label className="block text-xs font-bold text-[#7c7c6f] dark:text-[#7c7c6f]">Course Scope &amp; Topics Summary</label>
                   <textarea
                     value={syllabusDesc}
                     onChange={e => setSyllabusDesc(e.target.value)}
                     placeholder="Provide syllabus details..."
-                    className="w-full text-xs p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 h-24 resize-none"
+                    className="w-full text-xs p-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/50 dark:bg-[#412D15]/50 text-[#0e100f] dark:text-[#E1DCC9] outline-none focus:border-[#9d95ff] focus:ring-1 focus:ring-[#9d95ff] h-24 resize-none"
                   />
                 </div>
 
                 <div className="flex gap-2 pt-2">
                   <button 
-                    className="flex-1 text-xs py-2.5 bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-350 font-bold rounded-xl active:scale-95 transition-all hover:bg-neutral-250" 
+                    className="flex-1 text-xs py-2.5 bg-[#FFFCE1] text-[#7c7c6f] dark:bg-[#412D15] dark:text-neutral-350 font-bold rounded-xl active:scale-95 transition-all hover:bg-neutral-250" 
                     onClick={() => setEditCourse(null)}
                   >
                     Cancel
                   </button>
                   <Button 
                     variant="primary" 
-                    className="flex-1 text-xs py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md font-bold" 
+                    className="flex-1 text-xs py-2.5 bg-[#9d95ff] hover:bg-[#9d95ff] text-[#E1DCC9] rounded-xl shadow-md font-bold" 
                     onClick={handleSaveSyllabus}
                   >
                     Save Changes

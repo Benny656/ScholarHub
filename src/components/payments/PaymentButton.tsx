@@ -92,7 +92,7 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
         description: 'Course Enrollment Fee',
         order_id: data.order_id, 
         theme: {
-          color: '#7C3AED', // Amethyst Theme Color
+          color: '#9d95ff', // Amethyst Theme Color
         },
         handler: async function (rzpResponse: any) {
           // 4. Handle success — verify on the backend so it can flip status to 'captured'
@@ -141,10 +141,10 @@ export function PaymentButton({ courseId, onSuccess }: PaymentButtonProps) {
     <button
       onClick={handlePayment}
       disabled={loading}
-      className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-violet-600/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      className="bg-[#9d95ff] hover:bg-[#9d95ff] text-[#E1DCC9] px-4 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-[#9d95ff]/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
     >
       {loading ? (
-        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        <span className="w-4 h-4 border-2 border-[#E1DCC9]/30 border-t-white rounded-full animate-spin" />
       ) : (
         <span className="text-sm">💰</span>
       )}

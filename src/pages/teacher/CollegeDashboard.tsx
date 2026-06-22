@@ -119,17 +119,17 @@ export function CollegeDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
-        <p className="text-sm text-neutral-500">Loading your college dashboard...</p>
+        <p className="text-sm text-[#7c7c6f]">Loading your college dashboard...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-md mx-auto my-12 text-center p-8 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-800/30">
+      <div className="max-w-md mx-auto my-12 text-center p-8 bg-red-500 dark:bg-red-500/10 rounded-2xl border border-red-500 dark:border-red-500/30">
         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2 font-serif">Oops!</h3>
-        <p className="text-sm text-neutral-500 dark:text-slate-400 mb-6">{error}</p>
+        <h3 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2 font-serif">Oops!</h3>
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mb-6">{error}</p>
         <Button variant="primary" onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
@@ -143,11 +143,11 @@ export function CollegeDashboard() {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6"
       >
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight mb-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-[#0e100f] dark:text-[#E1DCC9] tracking-tight mb-2">
             Welcome back, Prof. {lastName}
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            You have <span className="font-medium text-neutral-900 dark:text-neutral-200">{upcomingClasses.length} upcoming classes</span> and <span className="font-medium text-neutral-900 dark:text-neutral-200">{assignmentsToGrade} pending evaluations</span>.
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f]">
+            You have <span className="font-medium text-[#0e100f] dark:text-neutral-200">{upcomingClasses.length} upcoming classes</span> and <span className="font-medium text-[#0e100f] dark:text-neutral-200">{assignmentsToGrade} pending evaluations</span>.
           </p>
         </div>
         
@@ -172,10 +172,10 @@ export function CollegeDashboard() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Active Courses', value: courses.length, icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Total Students', value: totalStudents, icon: Users, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+          { label: 'Active Courses', value: courses.length, icon: BookOpen, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
+          { label: 'Total Students', value: totalStudents, icon: Users, color: 'text-[#9d95ff]', bg: 'bg-[#9d95ff]/10' },
           { label: 'Pending Evaluations', value: assignmentsToGrade, icon: Activity, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-          { label: 'Upcoming Classes', value: upcomingClasses.length, icon: Calendar, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Upcoming Classes', value: upcomingClasses.length, icon: Calendar, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
         ].map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants}>
             <GlassCard className="flex items-center gap-4 p-5 h-full">
@@ -183,8 +183,8 @@ export function CollegeDashboard() {
                 <stat.icon size={24} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-1">{stat.label}</p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white leading-none">{stat.value}</p>
+                <p className="text-xs font-semibold text-[#7c7c6f] uppercase tracking-wider mb-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] leading-none">{stat.value}</p>
               </div>
             </GlassCard>
           </motion.div>
@@ -202,7 +202,7 @@ export function CollegeDashboard() {
             <motion.div variants={itemVariants} className="lg:col-span-2">
               <GlassCard>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2">
                     <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
                     Live Classes Now
                   </h3>
@@ -211,17 +211,17 @@ export function CollegeDashboard() {
                 <div className="grid gap-3">
                   {currentLiveSessions.map(session => (
                     <Link key={session.id} to={`/classroom/${session.course_id}`} className="group">
-                      <div className="flex items-center justify-between p-4 rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50/50 dark:bg-red-900/10 hover:bg-red-100/50 dark:hover:bg-red-900/20 transition-colors">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-red-500 dark:border-red-500/50 bg-red-500/50 dark:bg-red-500/10 hover:bg-red-500/50 dark:hover:bg-red-500/20 transition-colors">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center text-lg shrink-0 animate-pulse">
+                          <div className="w-10 h-10 rounded-lg bg-red-500 text-[#E1DCC9] flex items-center justify-center text-lg shrink-0 animate-pulse">
                             🔴
                           </div>
                           <div className="min-w-0">
-                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-red-600 transition-colors truncate">{session.courses?.title}</h4>
-                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5 truncate">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
+                            <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] group-hover:text-red-500 transition-colors truncate">{session.courses?.title}</h4>
+                            <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-0.5 truncate">Started {Math.floor((Date.now() - new Date(session.started_at).getTime()) / 60000)}m ago</p>
                           </div>
                         </div>
-                        <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-colors shrink-0">Join</button>
+                        <button className="px-4 py-2 bg-red-500 text-[#E1DCC9] rounded-lg text-xs font-bold hover:bg-red-500 transition-colors shrink-0">Join</button>
                       </div>
                     </Link>
                   ))}
@@ -234,32 +234,32 @@ export function CollegeDashboard() {
           <motion.div variants={itemVariants} className="lg:col-span-2">
             <GlassCard>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white">My Active Courses</h3>
-                <Link to="/courses" className="text-xs font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400 flex items-center gap-1 transition-colors">
+                <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9]">My Active Courses</h3>
+                <Link to="/courses" className="text-xs font-semibold text-[#9d95ff] hover:text-[#9d95ff] dark:text-[#9d95ff] flex items-center gap-1 transition-colors">
                   View All <ArrowRight size={14} />
                 </Link>
               </div>
               
               {courses.length === 0 ? (
-                <div className="py-8 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
-                  <p className="text-sm text-neutral-500">You don't have any active courses yet.</p>
-                  <Link to="/courses/create" className="text-xs text-purple-600 font-semibold hover:underline mt-2 inline-block">Create your first course</Link>
+                <div className="py-8 text-center border border-dashed border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl">
+                  <p className="text-sm text-[#7c7c6f]">You don't have any active courses yet.</p>
+                  <Link to="/courses/create" className="text-xs text-[#9d95ff] font-semibold hover:underline mt-2 inline-block">Create your first course</Link>
                 </div>
               ) : (
                 <div className="grid gap-3">
                   {courses.slice(0, 5).map(course => (
                     <button key={course.id} onClick={() => setSelectedCourse(course)} className="group text-left w-full">
-                      <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-200 dark:border-neutral-800/80 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40 transition-colors">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15]/80 hover:bg-[#FFFCE1]/50 dark:hover:bg-[#412D15]/40 transition-colors">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xl shrink-0">
+                          <div className="w-10 h-10 rounded-lg bg-[#FFFCE1] dark:bg-[#412D15] flex items-center justify-center text-xl shrink-0">
                             {course.icon || '📚'}
                           </div>
                           <div className="min-w-0">
-                            <h4 className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">{course.title}</h4>
-                            <p className="text-xs text-neutral-500 mt-0.5 truncate">{course.category} • {course.level}</p>
+                            <h4 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] group-hover:text-[#9d95ff] dark:group-hover:text-[#9d95ff] transition-colors truncate">{course.title}</h4>
+                            <p className="text-xs text-[#7c7c6f] mt-0.5 truncate">{course.category} • {course.level}</p>
                           </div>
                         </div>
-                        <ChevronRightIcon className="w-5 h-5 text-neutral-400 group-hover:text-purple-600 transition-colors" />
+                        <ChevronRightIcon className="w-5 h-5 text-[#7c7c6f] group-hover:text-[#9d95ff] transition-colors" />
                       </div>
                     </button>
                   ))}

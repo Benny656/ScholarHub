@@ -56,26 +56,26 @@ export function AssignmentManager() {
               const courseTitle = Array.isArray(a.courses) ? a.courses[0]?.title : (a.courses as any)?.title;
               return (
                 <Link to={`/courses/${a.course_id}`} key={a.id} className="block transition-all hover:scale-[1.02]">
-                  <GlassCard className="h-full flex flex-col justify-between hover:border-purple-500/50">
+                  <GlassCard className="h-full flex flex-col justify-between hover:border-[#9d95ff]/50">
                     <div>
                       <div className="flex justify-between items-start gap-2 mb-2">
-                        <h3 className="text-base font-bold text-neutral-900 dark:text-white line-clamp-1">{a.title}</h3>
+                        <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9] line-clamp-1">{a.title}</h3>
                       </div>
-                      <p className="text-xs text-neutral-500 line-clamp-2 mb-4">{a.description}</p>
+                      <p className="text-xs text-[#7c7c6f] line-clamp-2 mb-4">{a.description}</p>
                     </div>
-                    <div className="space-y-2 mt-auto border-t border-neutral-100 dark:border-neutral-800 pt-3">
-                      <div className="flex items-center text-xs text-neutral-600 dark:text-neutral-400 gap-2">
-                        <BookOpen size={14} className="text-purple-500" />
+                    <div className="space-y-2 mt-auto border-t border-[#E1DCC9]/20 dark:border-[#412D15] pt-3">
+                      <div className="flex items-center text-xs text-[#7c7c6f] dark:text-[#7c7c6f] gap-2">
+                        <BookOpen size={14} className="text-[#9d95ff]" />
                         <span className="truncate">{courseTitle || 'Unknown Course'}</span>
                       </div>
-                      <div className="flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-400">
+                      <div className="flex items-center justify-between text-xs text-[#7c7c6f] dark:text-[#7c7c6f]">
                         <div className="flex items-center gap-2">
                           <Clock size={14} className={daysLeft < 0 ? 'text-red-500' : 'text-amber-500'} />
                           <span className={daysLeft < 0 ? 'text-red-500 font-semibold' : ''}>
                             {daysLeft < 0 ? 'Overdue' : `${daysLeft} days left`}
                           </span>
                         </div>
-                        <span className="font-bold text-purple-600 dark:text-purple-400">Max: {a.max_grade}</span>
+                        <span className="font-bold text-[#9d95ff] dark:text-[#9d95ff]">Max: {a.max_grade}</span>
                       </div>
                     </div>
                   </GlassCard>

@@ -73,7 +73,7 @@ export function Profile() {
     { id: 'preferences', label: 'Preferences', icon: <Tag size={15} /> },
   ];
 
-  const inputStyle = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant';
+  const inputStyle = 'w-full px-4 py-2.5 rounded-xl border border-outline-variant/20 focus:border-[#9d95ff] focus:ring-2 focus:ring-[#9d95ff]/20 text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant';
   const style = { background: 'color-mix(in srgb, var(--color-on-surface) 5%, transparent)', fontFamily: 'Inter, sans-serif' };
 
   return (
@@ -86,7 +86,7 @@ export function Profile() {
             <div className="relative flex-shrink-0">
               <motion.div
                 whileHover={{ scale: 1.03 }}
-                className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-3xl font-black text-on-surface cursor-pointer relative overflow-hidden group"
+                className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#9d95ff] to-[#00bae2] flex items-center justify-center text-3xl font-black text-on-surface cursor-pointer relative overflow-hidden group"
                 onClick={handleAvatarUpload}
                 style={{ boxShadow: '0 8px 32px rgba(139,92,246,0.3)' }}
               >
@@ -96,15 +96,15 @@ export function Profile() {
                   <span>{form.name[0]}</span>
                 )}
                 {/* Hover Camera Overlay */}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1 text-white text-[10px] font-semibold transition-opacity duration-200">
+                <div className="absolute inset-0 bg-[#1F150C]/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1 text-[#E1DCC9] text-[10px] font-semibold transition-opacity duration-200">
                   <Camera size={14} />
                   <span>Update</span>
                 </div>
               </motion.div>
               {/* Online status indicator */}
-              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white dark:border-neutral-900 bg-emerald-500 flex items-center justify-center shadow-lg" title="Active & Online">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-ping absolute" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 relative" />
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-[#E1DCC9] dark:border-neutral-900 bg-[#00bae2] flex items-center justify-center shadow-lg" title="Active & Online">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00bae2] animate-ping absolute" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00bae2] relative" />
               </span>
             </div>
             <div className="flex-1 w-full">
@@ -115,16 +115,16 @@ export function Profile() {
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                     <span className={`px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs font-semibold border ${
                       user?.role === 'teacher' 
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                        ? 'bg-[#00bae2]/10 text-[#00bae2] border-[#00bae2]/20' 
                         : user?.role === 'admin' 
-                          ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' 
-                          : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                          ? 'bg-[#9d95ff]/10 text-[#9d95ff] border-[#9d95ff]/20' 
+                          : 'bg-[#00bae2]/10 text-[#00bae2] border-[#00bae2]/20'
                     }`}>
                       <Shield size={12} />
                       <span className="capitalize">{user?.role || 'student'}</span>
                     </span>
-                    <span className="px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="px-2.5 py-1 rounded-xl flex items-center gap-1.5 text-xs font-semibold bg-[#00bae2]/10 text-[#00bae2] border border-[#00bae2]/20">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00bae2] animate-pulse" />
                       Active & Online
                     </span>
                   </div>
@@ -147,7 +147,7 @@ export function Profile() {
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id as any)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:outline-none ${tab === t.id ? 'text-on-surface font-semibold shadow-sm' : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'}`}
-              style={tab === t.id ? { background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' } : {}}>
+              style={tab === t.id ? { background: 'linear-gradient(135deg, #9d95ff, #00bae2)' } : {}}>
               <span className="scale-110">{t.icon}</span> <span>{t.label}</span>
             </button>
           ))}
@@ -253,8 +253,8 @@ export function Profile() {
               <h2 className="text-base font-bold text-on-surface mb-4" style={{ fontFamily: 'Geist, sans-serif' }}>Two-Factor Authentication</h2>
               <div className="flex items-center justify-between p-4 rounded-xl border border-outline-variant/15" style={{ background: 'color-mix(in srgb, var(--color-on-surface) 4%, transparent)' }}>
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${twoFAEnabled ? 'bg-emerald-500/20' : 'bg-on-surface/[0.08]'}`}>
-                    <Smartphone size={18} className={twoFAEnabled ? 'text-emerald-400' : 'text-on-surface-variant'} />
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${twoFAEnabled ? 'bg-[#00bae2]/20' : 'bg-on-surface/[0.08]'}`}>
+                    <Smartphone size={18} className={twoFAEnabled ? 'text-[#00bae2]' : 'text-on-surface-variant'} />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-on-surface">Authenticator App</p>
@@ -263,14 +263,14 @@ export function Profile() {
                 </div>
                 <button
                   onClick={() => { setTwoFAEnabled(e => !e); toast.success(twoFAEnabled ? '2FA disabled' : '2FA enabled — Use any TOTP app'); }}
-                  className={`relative w-12 h-6 rounded-full transition-all ${twoFAEnabled ? 'bg-emerald-500' : 'bg-on-surface/20'}`}
+                  className={`relative w-12 h-6 rounded-full transition-all ${twoFAEnabled ? 'bg-[#00bae2]' : 'bg-on-surface/20'}`}
                 >
-                  <motion.div animate={{ x: twoFAEnabled ? 24 : 2 }} className="absolute top-1 w-4 h-4 rounded-full bg-white shadow" />
+                  <motion.div animate={{ x: twoFAEnabled ? 24 : 2 }} className="absolute top-1 w-4 h-4 rounded-full bg-[#FFFCE1] shadow" />
                 </button>
               </div>
 
               <div className="mt-4 flex items-start gap-3 p-3 rounded-xl border border-amber-500/20" style={{ background: 'rgba(245,158,11,0.08)' }}>
-                <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-on-surface-variant">Sessions from unrecognized devices require email verification. Last login: Today at 10:23 AM from Chrome/Windows</p>
               </div>
             </GlassCard>
@@ -280,14 +280,14 @@ export function Profile() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-xl border border-red-500/15" style={{ background: 'rgba(239,68,68,0.05)' }}>
                   <div>
-                    <p className="text-sm font-semibold text-red-300">Sign out all devices</p>
+                    <p className="text-sm font-semibold text-red-500">Sign out all devices</p>
                     <p className="text-xs text-on-surface-variant">Invalidate all active sessions</p>
                   </div>
                   <Button variant="danger" size="sm" onClick={() => toast.success('All sessions cleared')}>Sign Out All</Button>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl border border-red-500/15" style={{ background: 'rgba(239,68,68,0.05)' }}>
                   <div>
-                    <p className="text-sm font-semibold text-red-300">Delete Account</p>
+                    <p className="text-sm font-semibold text-red-500">Delete Account</p>
                     <p className="text-xs text-on-surface-variant">Permanently remove all your data</p>
                   </div>
                   <Button variant="danger" size="sm" onClick={() => toast.error('Contact support to delete your account')}>Delete</Button>
@@ -314,8 +314,8 @@ export function Profile() {
                     onClick={toggleTheme}
                     className={`relative flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 ${
                       isDark
-                        ? 'bg-neutral-800 border-neutral-700 text-amber-400 hover:bg-neutral-700'
-                        : 'bg-neutral-100 border-neutral-200 text-neutral-600 hover:bg-neutral-200'
+                        ? 'bg-[#412D15] border-[#412D15] text-amber-500 hover:bg-neutral-700'
+                        : 'bg-[#FFFCE1] border-[#E1DCC9]/20 text-[#7c7c6f] hover:bg-neutral-200'
                     }`}
                     aria-label="Toggle theme"
                   >
@@ -346,7 +346,7 @@ export function Profile() {
                         <p className="text-xs text-on-surface-variant">{pref.desc}</p>
                       </div>
                       <button onClick={() => setOn(!on)} className={`relative w-12 h-6 rounded-full transition-all ${on ? 'bg-[#64748B]' : 'bg-on-surface/20'}`}>
-                        <motion.div animate={{ x: on ? 24 : 2 }} className="absolute top-1 w-4 h-4 rounded-full bg-white shadow" />
+                        <motion.div animate={{ x: on ? 24 : 2 }} className="absolute top-1 w-4 h-4 rounded-full bg-[#FFFCE1] shadow" />
                       </button>
                     </div>
                   );

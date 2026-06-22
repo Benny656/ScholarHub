@@ -127,7 +127,7 @@ export function Register() {
   };
 
   const inputClass = (field: string) =>
-    `w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors[field] ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#6D5DFC]'}`;
+    `w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors[field] ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#9d95ff]'}`;
   const inputStyle = { fontFamily: 'Inter, sans-serif' };
 
   const totalSteps = 2;
@@ -141,8 +141,8 @@ export function Register() {
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center gap-6 py-4 text-center"
         >
-          <div className="w-20 h-20 rounded-full bg-[#6D5DFC]/10 flex items-center justify-center">
-            <MailCheck className="w-10 h-10 text-[#6D5DFC]" />
+          <div className="w-20 h-20 rounded-full bg-[#9d95ff]/10 flex items-center justify-center">
+            <MailCheck className="w-10 h-10 text-[#9d95ff]" />
           </div>
           <div className="space-y-2">
             <h3 className="font-bold text-lg text-on-surface">Confirm your email</h3>
@@ -152,18 +152,18 @@ export function Register() {
               Click the link in the email to activate your account.
             </p>
           </div>
-          <div className="w-full p-4 rounded-xl bg-[#6D5DFC]/5 border border-[#6D5DFC]/20 text-xs text-on-surface-variant">
+          <div className="w-full p-4 rounded-xl bg-[#9d95ff]/5 border border-[#9d95ff]/20 text-xs text-on-surface-variant">
             Didn't receive it? Check your spam folder, or{' '}
             <button
               onClick={() => setEmailConfirmationSent(false)}
-              className="text-[#6D5DFC] font-semibold hover:underline"
+              className="text-[#9d95ff] font-semibold hover:underline"
             >
               try a different email
             </button>.
           </div>
           <Link
             to="/login"
-            className="text-sm font-semibold text-[#6D5DFC] hover:opacity-80 transition-opacity"
+            className="text-sm font-semibold text-[#9d95ff] hover:opacity-80 transition-opacity"
           >
             Back to Sign In
           </Link>
@@ -187,7 +187,7 @@ export function Register() {
                   setTrack(null);
                   setForm(p => ({ ...p, gradeLevel: '', department: '' }));
                 }}
-                className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 text-[#6D5DFC]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#6D5DFC]/30'}`}
+                className={`flex items-center gap-2.5 p-3.5 rounded-xl border transition-all ${role === r ? 'border-[#9d95ff]/50 bg-[#9d95ff]/10 text-[#9d95ff]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#9d95ff]/30'}`}
               >
                 {r === 'student' ? <GraduationCap size={18} /> : <BookOpen size={18} />}
                 <span className="text-sm font-semibold capitalize">{r}</span>
@@ -211,7 +211,7 @@ export function Register() {
                       return copy;
                     });
                   }}
-                  className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border transition-all ${track === t ? 'border-[#6D5DFC]/50 bg-[#6D5DFC]/10 text-[#6D5DFC]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#6D5DFC]/30'}`}
+                  className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border transition-all ${track === t ? 'border-[#9d95ff]/50 bg-[#9d95ff]/10 text-[#9d95ff]' : 'border-outline-variant/30 bg-surface text-on-surface-variant hover:border-[#9d95ff]/30'}`}
                 >
                   <span className="text-sm font-semibold">
                     {t === 'k12' ? 'K-12 School' : 'College / University'}
@@ -229,7 +229,7 @@ export function Register() {
           {Array.from({ length: totalSteps }).map((_, i) => {
             const s = i + 1;
             return (
-              <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5]' : 'bg-on-surface/10'}`} />
+              <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-gradient-to-r from-[#9d95ff] to-[#9d95ff]' : 'bg-on-surface/10'}`} />
             );
           })}
         <span className="text-xs text-on-surface-variant ml-1" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Step {step}/{totalSteps}</span>
@@ -273,7 +273,7 @@ export function Register() {
               </div>
               {errors.confirm && <p className="text-xs text-error mt-1">{errors.confirm}</p>}
             </div>
-            <button type="button" onClick={handleNext} className="w-full py-3 rounded-xl font-semibold text-white text-sm mt-2 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
+            <button type="button" onClick={handleNext} className="w-full py-3 rounded-xl font-semibold text-[#E1DCC9] text-sm mt-2 bg-gradient-to-r from-[#9d95ff] to-[#9d95ff] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
               Continue →
             </button>
           </motion.div>
@@ -369,7 +369,7 @@ export function Register() {
               <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 ← Back
               </button>
-              <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
+              <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-[#E1DCC9] text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-gradient-to-r from-[#9d95ff] to-[#9d95ff] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
                 {isLoading ? (<><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Creating...</>) : 'Create Account'}
               </button>
             </div>
@@ -467,7 +467,7 @@ export function Register() {
               <button type="button" onClick={handleBack} className="flex-1 py-3 rounded-xl font-semibold text-on-surface text-sm border border-outline-variant/30 hover:bg-on-surface/5 transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 ← Back
               </button>
-              <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-gradient-to-r from-[#6D5DFC] to-[#4F46E5] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
+              <button type="submit" disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold text-[#E1DCC9] text-sm disabled:opacity-60 flex items-center justify-center gap-2 bg-gradient-to-r from-[#9d95ff] to-[#9d95ff] hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
                 {isLoading ? (<><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Creating...</>) : 'Create Account'}
               </button>
             </div>
@@ -477,7 +477,7 @@ export function Register() {
 
       <p className="text-center text-sm text-on-surface-variant mt-6" style={{ fontFamily: 'Inter, sans-serif' }}>
         Already have an account?{' '}
-        <Link to="/login" className="text-[#6D5DFC] hover:opacity-80 font-medium transition-opacity">Sign in</Link>
+        <Link to="/login" className="text-[#9d95ff] hover:opacity-80 font-medium transition-opacity">Sign in</Link>
       </p>
     </AuthLayout>
   );

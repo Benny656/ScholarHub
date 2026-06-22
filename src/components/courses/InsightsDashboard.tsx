@@ -119,62 +119,62 @@ export function InsightsDashboard({ courseId }: InsightsDashboardProps) {
   return (
     <div className="space-y-6 font-sans">
       <div className="flex items-center gap-2 mb-2">
-        <Activity className="text-purple-600" size={24} />
-        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Course Analytics Dashboard</h2>
+        <Activity className="text-[#9d95ff]" size={24} />
+        <h2 className="text-xl font-bold text-[#0e100f] dark:text-[#E1DCC9]">Course Analytics Dashboard</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <GlassCard>
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Enrolled Students</p>
-              <p className="text-3xl font-black text-neutral-900 dark:text-white mt-1">{stats.totalStudents}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#7c7c6f]">Enrolled Students</p>
+              <p className="text-3xl font-black text-[#0e100f] dark:text-[#E1DCC9] mt-1">{stats.totalStudents}</p>
             </div>
-            <div className="p-2 bg-blue-500/10 rounded-xl text-blue-600"><Users size={20} /></div>
+            <div className="p-2 bg-[#00bae2]/10 rounded-xl text-[#00bae2]"><Users size={20} /></div>
           </div>
         </GlassCard>
         <GlassCard>
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Class Average Grade</p>
-              <p className="text-3xl font-black text-emerald-500 mt-1">{stats.avgGrade}%</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#7c7c6f]">Class Average Grade</p>
+              <p className="text-3xl font-black text-[#00bae2] mt-1">{stats.avgGrade}%</p>
             </div>
-            <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-600"><GraduationCap size={20} /></div>
+            <div className="p-2 bg-[#00bae2]/10 rounded-xl text-[#00bae2]"><GraduationCap size={20} /></div>
           </div>
         </GlassCard>
         <GlassCard>
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Average Attendance</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#7c7c6f]">Average Attendance</p>
               <p className="text-3xl font-black text-brand-primary mt-1">{stats.attendanceRate}%</p>
             </div>
-            <div className="p-2 bg-purple-500/10 rounded-xl text-purple-600"><CheckCircle size={20} /></div>
+            <div className="p-2 bg-[#9d95ff]/10 rounded-xl text-[#9d95ff]"><CheckCircle size={20} /></div>
           </div>
         </GlassCard>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <GlassCard>
-          <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-4">Attendance Trend (7 Days)</h3>
+          <h3 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-4">Attendance Trend (7 Days)</h3>
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={attendanceTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorPresent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#9d95ff" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#9d95ff" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis dataKey="name" tickLine={false} axisLine={false} fontSize={12} />
               <YAxis tickLine={false} axisLine={false} fontSize={12} />
               <Tooltip cursor={{ stroke: '#e5e7eb', strokeWidth: 2 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-              <Area type="monotone" dataKey="present" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorPresent)" />
+              <Area type="monotone" dataKey="present" stroke="#9d95ff" strokeWidth={3} fillOpacity={1} fill="url(#colorPresent)" />
             </AreaChart>
           </ResponsiveContainer>
         </GlassCard>
 
         <GlassCard>
-          <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-4">Engagement Snapshot</h3>
+          <h3 className="text-sm font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-4">Engagement Snapshot</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={engagementData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -183,7 +183,7 @@ export function InsightsDashboard({ courseId }: InsightsDashboardProps) {
               <Tooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
               <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={50}>
                 {engagementData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={index === 0 ? '#10b981' : index === 1 ? '#8b5cf6' : '#f59e0b'} />
+                  <Cell key={`cell-${index}`} fill={index === 0 ? '#00bae2' : index === 1 ? '#9d95ff' : '#f59e0b'} />
                 ))}
               </Bar>
             </BarChart>

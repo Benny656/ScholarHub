@@ -150,7 +150,7 @@ export function AdminLogin() {
           <div className="w-14 h-14 rounded-2xl bg-[#EF4444]/10 flex items-center justify-center text-[#EF4444] border border-[#EF4444]/25 mb-4 shadow-lg shadow-[#EF4444]/10 animate-pulse">
             <ShieldAlert className="w-7 h-7" />
           </div>
-          <h2 className="text-3xl font-bold font-display text-white tracking-wide">Scholar Hub</h2>
+          <h2 className="text-3xl font-bold font-display text-[#E1DCC9] tracking-wide">Scholar Hub</h2>
           <p className="text-xs uppercase font-semibold text-[#EF4444] tracking-widest mt-1">Admin Console</p>
         </div>
 
@@ -158,8 +158,8 @@ export function AdminLogin() {
         <div className="mb-6 p-4 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/5 flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-[#EF4444] flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Authorized Personnel Only</h4>
-            <p className="text-[11px] text-white/60 leading-normal mt-0.5">
+            <h4 className="text-xs font-bold text-[#E1DCC9] uppercase tracking-wider">Authorized Personnel Only</h4>
+            <p className="text-[11px] text-[#E1DCC9]/60 leading-normal mt-0.5">
               Access to this console is restricted. Logins and actions are audited. Unapproved attempts are logged.
             </p>
           </div>
@@ -179,15 +179,15 @@ export function AdminLogin() {
 
             {/* Email input */}
             <div className="space-y-1">
-              <label className="text-xs font-bold tracking-wider text-white/50 uppercase">Email Address</label>
+              <label className="text-xs font-bold tracking-wider text-[#E1DCC9]/50 uppercase">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#E1DCC9]/30" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-white/20 focus:border-[#EF4444]/40 focus:ring-1 focus:ring-[#EF4444]/40 outline-none transition-all"
+                  className="w-full bg-[#FFFCE1]/5 border border-[#E1DCC9]/10 rounded-xl py-3 pl-11 pr-4 text-sm text-[#E1DCC9] placeholder-white/20 focus:border-[#EF4444]/40 focus:ring-1 focus:ring-[#EF4444]/40 outline-none transition-all"
                   placeholder="admin@scholarhub.io"
                 />
               </div>
@@ -195,15 +195,15 @@ export function AdminLogin() {
 
             {/* Password input */}
             <div className="space-y-1">
-              <label className="text-xs font-bold tracking-wider text-white/50 uppercase">Secure Password</label>
+              <label className="text-xs font-bold tracking-wider text-[#E1DCC9]/50 uppercase">Secure Password</label>
               <div className="relative">
-                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#E1DCC9]/30" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-white/20 focus:border-[#EF4444]/40 focus:ring-1 focus:ring-[#EF4444]/40 outline-none transition-all"
+                  className="w-full bg-[#FFFCE1]/5 border border-[#E1DCC9]/10 rounded-xl py-3 pl-11 pr-4 text-sm text-[#E1DCC9] placeholder-white/20 focus:border-[#EF4444]/40 focus:ring-1 focus:ring-[#EF4444]/40 outline-none transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -211,7 +211,7 @@ export function AdminLogin() {
 
             {/* 6-digit MFA Code */}
             <div className="space-y-1">
-              <label className="text-xs font-bold tracking-wider text-white/50 uppercase">6-Digit 2FA Code</label>
+              <label className="text-xs font-bold tracking-wider text-[#E1DCC9]/50 uppercase">6-Digit 2FA Code</label>
               <input
                 type="text"
                 required
@@ -219,7 +219,7 @@ export function AdminLogin() {
                 pattern="\d{6}"
                 value={mfaCode}
                 onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-center text-white placeholder-white/20 focus:border-[#EF4444]/40 focus:ring-1 focus:ring-[#EF4444]/40 tracking-[0.6em] text-[1.2rem] font-bold outline-none transition-all font-mono"
+                className="w-full bg-[#FFFCE1]/5 border border-[#E1DCC9]/10 rounded-xl py-3 px-4 text-sm text-center text-[#E1DCC9] placeholder-white/20 focus:border-[#EF4444]/40 focus:ring-1 focus:ring-[#EF4444]/40 tracking-[0.6em] text-[1.2rem] font-bold outline-none transition-all font-mono"
                 placeholder="000000"
               />
             </div>
@@ -228,11 +228,11 @@ export function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-[#EF4444] text-white font-bold hover:bg-[#EF4444]/90 active:scale-[0.98] transition-all shadow-xl shadow-[#EF4444]/25 disabled:opacity-50 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-[#EF4444] text-[#E1DCC9] font-bold hover:bg-[#EF4444]/90 active:scale-[0.98] transition-all shadow-xl shadow-[#EF4444]/25 disabled:opacity-50 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                  <div className="w-4 h-4 animate-spin rounded-full border-2 border-[#E1DCC9]/20 border-t-white" />
                   Verifying Credentials...
                 </>
               ) : (

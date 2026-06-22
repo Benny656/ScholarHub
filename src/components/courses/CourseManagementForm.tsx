@@ -84,32 +84,32 @@ export function CourseManagementForm() {
   return (
     <GlassCard className="max-w-3xl mx-auto p-6 md:p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-white font-serif">Create New Course</h2>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Course Management - Section 3</p>
+        <h2 className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] font-serif">Create New Course</h2>
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">Course Management - Section 3</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Course Title <span className="text-red-500">*</span></label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
             placeholder="e.g. Introduction to Quantum Computing"
-            className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-shadow"
+            className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-shadow"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Course Description <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Course Description <span className="text-red-500">*</span></label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
             rows={4}
             placeholder="Provide a comprehensive overview of what the course covers..."
-            className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-shadow resize-y"
+            className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-shadow resize-y"
           />
         </div>
 
@@ -124,7 +124,7 @@ export function CourseManagementForm() {
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">Learning Outcomes</label>
+            <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f]">Learning Outcomes</label>
             <button
               type="button"
               onClick={handleAddOutcome}
@@ -143,14 +143,14 @@ export function CourseManagementForm() {
                     value={outcome}
                     onChange={(e) => handleOutcomeChange(index, e.target.value)}
                     placeholder={`Outcome ${index + 1}`}
-                    className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 text-neutral-900 dark:text-white focus:outline-none focus:border-brand-primary transition-colors text-sm"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15]/50 text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:border-brand-primary transition-colors text-sm"
                   />
                 </div>
                 {outcomes.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleRemoveOutcome(index)}
-                    className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors shrink-0"
+                    className="p-2 text-[#7c7c6f] hover:text-red-500 hover:bg-red-500 dark:hover:bg-red-500/10 rounded-lg transition-colors shrink-0"
                     title="Remove outcome"
                   >
                     <X size={18} />
@@ -161,7 +161,7 @@ export function CourseManagementForm() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 flex justify-end">
+        <div className="pt-4 border-t border-[#E1DCC9]/20 dark:border-[#412D15] flex justify-end">
           <Button
             type="submit"
             variant="primary"

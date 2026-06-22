@@ -49,7 +49,7 @@ export function CourseAITutor({ courseId, courseTitle }: CourseAITutorProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full shadow-xl shadow-purple-500/20 flex items-center justify-center z-40 text-white"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-[#9d95ff] to-[#9d95ff] rounded-full shadow-xl shadow-[#9d95ff]/20 flex items-center justify-center z-40 text-[#E1DCC9]"
       >
         <Sparkles size={24} />
       </motion.button>
@@ -63,14 +63,14 @@ export function CourseAITutor({ courseId, courseTitle }: CourseAITutorProps) {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed bottom-24 right-6 w-[360px] max-w-[calc(100vw-48px)] z-50 flex flex-col"
           >
-            <GlassCard tint="purple" className="flex flex-col h-[500px] shadow-2xl shadow-purple-500/10 p-0 overflow-hidden border-purple-500/30">
+            <GlassCard tint="purple" className="flex flex-col h-[500px] shadow-2xl shadow-[#9d95ff]/10 p-0 overflow-hidden border-[#9d95ff]/30">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-purple-500/10">
-                <div className="flex items-center gap-2 text-white">
-                  <Bot size={20} className="text-purple-400" />
+              <div className="flex items-center justify-between p-4 border-b border-[#9d95ff]/20 bg-[#9d95ff]/10">
+                <div className="flex items-center gap-2 text-[#E1DCC9]">
+                  <Bot size={20} className="text-[#9d95ff]" />
                   <span className="font-bold">AI Course Tutor</span>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="text-purple-300 hover:text-white transition-colors">
+                <button onClick={() => setIsOpen(false)} className="text-[#9d95ff] hover:text-[#E1DCC9] transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -79,13 +79,13 @@ export function CourseAITutor({ courseId, courseTitle }: CourseAITutorProps) {
               <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-indigo-500 text-white' : 'bg-purple-500/20 text-purple-300'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-[#9d95ff] text-[#E1DCC9]' : 'bg-[#9d95ff]/20 text-[#9d95ff]'}`}>
                       {msg.role === 'user' ? <User size={14} /> : <Sparkles size={14} />}
                     </div>
                     <div className={`p-3 rounded-2xl max-w-[80%] text-sm ${
                       msg.role === 'user' 
-                        ? 'bg-indigo-500 text-white rounded-tr-sm' 
-                        : 'bg-white/5 border border-white/10 text-white rounded-tl-sm'
+                        ? 'bg-[#9d95ff] text-[#E1DCC9] rounded-tr-sm' 
+                        : 'bg-[#FFFCE1]/5 border border-[#E1DCC9]/10 text-[#E1DCC9] rounded-tl-sm'
                     }`}>
                       {msg.content}
                     </div>
@@ -93,10 +93,10 @@ export function CourseAITutor({ courseId, courseTitle }: CourseAITutorProps) {
                 ))}
                 {loading && (
                   <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                      <Sparkles size={14} className="text-purple-300 animate-pulse" />
+                    <div className="w-8 h-8 rounded-full bg-[#9d95ff]/20 flex items-center justify-center flex-shrink-0">
+                      <Sparkles size={14} className="text-[#9d95ff] animate-pulse" />
                     </div>
-                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white rounded-tl-sm">
+                    <div className="p-3 rounded-2xl bg-[#FFFCE1]/5 border border-[#E1DCC9]/10 text-[#E1DCC9] rounded-tl-sm">
                       <span className="animate-pulse">Thinking...</span>
                     </div>
                   </div>
@@ -105,7 +105,7 @@ export function CourseAITutor({ courseId, courseTitle }: CourseAITutorProps) {
               </div>
 
               {/* Input Area */}
-              <div className="p-4 border-t border-purple-500/20 bg-black/20">
+              <div className="p-4 border-t border-[#9d95ff]/20 bg-[#1F150C]/20">
                 <form 
                   onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                   className="flex items-center gap-2"
@@ -115,7 +115,7 @@ export function CourseAITutor({ courseId, courseTitle }: CourseAITutorProps) {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about the lesson..."
-                    className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white text-sm outline-none focus:border-purple-500/50"
+                    className="flex-1 bg-[#FFFCE1]/10 border border-[#E1DCC9]/20 rounded-xl px-4 py-2 text-[#E1DCC9] text-sm outline-none focus:border-[#9d95ff]/50"
                   />
                   <Button variant="primary" type="submit" disabled={!input.trim() || loading} className="!p-2.5 rounded-xl">
                     <Send size={16} />

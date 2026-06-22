@@ -54,12 +54,12 @@ function GeometricThumbnail({ category }: { category: string }) {
           <line x1="50" y1="10" x2="50" y2="90" />
         </g>
         <circle cx="50" cy="50" r="8" fill="#d8bcea" className="animate-pulse" />
-        <circle cx="25" cy="30" r="4" fill="#3B82F6" />
-        <circle cx="75" cy="30" r="4" fill="#3B82F6" />
+        <circle cx="25" cy="30" r="4" fill="#00bae2" />
+        <circle cx="75" cy="30" r="4" fill="#00bae2" />
         <circle cx="25" cy="70" r="4" fill="#4edea3" />
         <circle cx="75" cy="70" r="4" fill="#4edea3" />
-        <line x1="25" y1="30" x2="50" y2="50" stroke="#3B82F6" strokeWidth="2" />
-        <line x1="75" y1="30" x2="50" y2="50" stroke="#3B82F6" strokeWidth="2" />
+        <line x1="25" y1="30" x2="50" y2="50" stroke="#00bae2" strokeWidth="2" />
+        <line x1="75" y1="30" x2="50" y2="50" stroke="#00bae2" strokeWidth="2" />
         <line x1="25" y1="70" x2="50" y2="50" stroke="#4edea3" strokeWidth="2" />
         <line x1="75" y1="70" x2="50" y2="50" stroke="#4edea3" strokeWidth="2" />
         <defs>
@@ -200,11 +200,11 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDe
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1 relative z-10">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1.5">{course.category || 'General'}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#9d95ff] mb-1.5">{course.category || 'General'}</span>
         
         {isK12 ? (
           <>
-             <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+             <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-[#9d95ff] transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
                {course.title}
              </h3>
              <p className="text-xs text-on-surface-variant mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -213,7 +213,7 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDe
           </>
         ) : (
           <>
-             <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-purple-300 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+             <h3 className="text-base font-bold text-on-surface leading-tight mb-2 group-hover:text-[#9d95ff] transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
                {course.title}
              </h3>
              <p className="text-xs text-on-surface-variant mb-4 line-clamp-2 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -228,7 +228,7 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDe
         {/* Progress Bar for Enrolled Students */}
         {enrolled && (
           <div className="mb-4">
-            <div className="flex justify-between text-[10px] text-neutral-500 dark:text-slate-400 mb-1">
+            <div className="flex justify-between text-[10px] text-[#7c7c6f] dark:text-[#7c7c6f] mb-1">
               <span>Enrollment Progress</span>
               <span>{progress}%</span>
             </div>
@@ -248,7 +248,7 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDe
           <div className="flex items-center gap-2">
             {enrolled ? (
               <Link to={`/learn/${course.id}/l1`}>
-                <button className="px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-lg hover:scale-105 active:scale-95 duration-200" style={{ background: 'linear-gradient(135deg, #d8bcea, #8B5CF6)' }}>
+                <button className="px-4 py-2 rounded-xl text-xs font-semibold text-[#E1DCC9] transition-all shadow-lg hover:scale-105 active:scale-95 duration-200" style={{ background: 'linear-gradient(135deg, #d8bcea, #9d95ff)' }}>
                   Continue Learning
                 </button>
               </Link>
@@ -261,7 +261,7 @@ function CourseCard({ course, _index, enrolled, onEnroll, progress = 0, onViewDe
                   !isK12 ? (
                     <PaymentButton courseId={course.id} onSuccess={() => onEnroll(course.id)} />
                   ) : (
-                    <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
+                    <button onClick={() => onEnroll(course.id)} className="px-3.5 py-2 rounded-xl text-xs font-semibold text-[#E1DCC9] transition-all hover:scale-105 duration-200" style={{ background: 'linear-gradient(135deg, #9d95ff, #00bae2)' }}>
                       Enroll
                     </button>
                   )
@@ -417,7 +417,7 @@ export function CourseCatalog() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="animate-spin text-brand-primary" size={32} />
-        <p className="text-sm text-neutral-500">Verifying workspace...</p>
+        <p className="text-sm text-[#7c7c6f]">Verifying workspace...</p>
       </div>
     );
   }
@@ -445,20 +445,20 @@ export function CourseCatalog() {
               value={searchVal}
               onChange={e => setSearchVal(e.target.value)}
               placeholder={`Search ${isK12User ? "subjects" : "courses"}, titles, categories...`}
-              className="pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/30 text-on-surface text-sm outline-none focus:border-purple-500/60 placeholder-on-surface-variant/50 w-full transition-all bg-neutral-100/50 dark:bg-white/5"
+              className="pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/30 text-on-surface text-sm outline-none focus:border-[#9d95ff]/60 placeholder-on-surface-variant/50 w-full transition-all bg-[#FFFCE1]/50 dark:bg-[#FFFCE1]/5"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             />
           </div>
           
           <div className="flex flex-wrap gap-2">
             {/* Sliding Framer Motion Category Indicator */}
-            <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl border border-outline-variant/15 bg-neutral-150/40 dark:bg-white/3">
+            <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl border border-outline-variant/15 bg-neutral-150/40 dark:bg-[#FFFCE1]/3">
               {categories.slice(0, 5).map(cat => (
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative ${
-                    category === cat ? 'text-white' : 'text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
+                    category === cat ? 'text-[#E1DCC9]' : 'text-[#7c7c6f] hover:text-[#0e100f] dark:text-[#7c7c6f] dark:hover:text-neutral-200'
                   }`}
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
@@ -467,7 +467,7 @@ export function CourseCatalog() {
                     <motion.div
                       layoutId="activeCatalogTab"
                       className="absolute inset-0 rounded-xl"
-                      style={{ background: 'linear-gradient(135deg, var(--color-primary), #8B5CF6)' }}
+                      style={{ background: 'linear-gradient(135deg, var(--color-primary), #9d95ff)' }}
                       transition={{ type: 'spring', stiffness: 350, damping: 28 }}
                     />
                   )}
@@ -483,10 +483,10 @@ export function CourseCatalog() {
             {[1,2,3,4,5,6,7,8].map(i => <CourseSkeleton key={i} />)}
           </div>
         ) : courses.length === 0 ? (
-          <div className="text-center py-24 glass rounded-3xl border border-white/5 max-w-lg mx-auto">
+          <div className="text-center py-24 glass rounded-3xl border border-[#E1DCC9]/5 max-w-lg mx-auto">
             <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No {isK12User ? "subjects" : "courses"} available yet</h3>
-            <p className="text-sm text-neutral-500 dark:text-slate-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
+            <h3 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>No {isK12User ? "subjects" : "courses"} available yet</h3>
+            <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Try adjusting your filters or search terms</p>
           </div>
         ) : (
           <motion.div 

@@ -85,23 +85,23 @@ export default function TeacherTimetable() {
   // Get color styles for the slots
   const getSlotStyles = (slot: ScheduleSlot) => {
     if (slot.type === 'break') {
-      return 'bg-amber-500/5 border-amber-500/20 text-amber-700 dark:text-amber-300 dark:bg-amber-500/10 hover:bg-amber-500/10 transition-colors';
+      return 'bg-amber-500/5 border-amber-500/20 text-amber-500 dark:text-amber-500 dark:bg-amber-500/10 hover:bg-amber-500/10 transition-colors';
     }
     if (slot.type === 'planning') {
-      return 'bg-neutral-100/50 dark:bg-neutral-800/40 border-neutral-300/30 dark:border-neutral-700/30 text-neutral-450 border-dashed hover:bg-neutral-100/80 transition-colors';
+      return 'bg-[#FFFCE1]/50 dark:bg-[#412D15]/40 border-neutral-300/30 dark:border-[#412D15]/30 text-neutral-450 border-dashed hover:bg-[#FFFCE1]/80 transition-colors';
     }
     if (slot.type === 'admin') {
-      return 'bg-blue-500/5 border-blue-500/20 text-blue-700 dark:text-blue-300 dark:bg-blue-500/10 hover:bg-blue-500/10 transition-colors';
+      return 'bg-[#00bae2]/5 border-[#00bae2]/20 text-[#00bae2] dark:text-[#00bae2] dark:bg-[#00bae2]/10 hover:bg-[#00bae2]/10 transition-colors';
     }
 
     // Classes can be colored based on rooms or titles
     if (slot.room === 'Room 104') {
-      return 'bg-purple-600/10 dark:bg-purple-600/20 border-purple-500/20 dark:border-purple-500/40 text-purple-700 dark:text-purple-300 hover:border-purple-500/60 transition-all';
+      return 'bg-[#9d95ff]/10 dark:bg-[#9d95ff]/20 border-[#9d95ff]/20 dark:border-[#9d95ff]/40 text-[#9d95ff] dark:text-[#9d95ff] hover:border-[#9d95ff]/60 transition-all';
     }
     if (slot.room === 'Room 201') {
-      return 'bg-indigo-600/10 dark:bg-indigo-600/20 border-indigo-500/20 dark:border-indigo-500/40 text-indigo-700 dark:text-indigo-300 hover:border-indigo-500/60 transition-all';
+      return 'bg-[#9d95ff]/10 dark:bg-[#9d95ff]/20 border-[#9d95ff]/20 dark:border-[#9d95ff]/40 text-[#9d95ff] dark:text-[#9d95ff] hover:border-[#9d95ff]/60 transition-all';
     }
-    return 'bg-teal-600/10 dark:bg-teal-600/20 border-teal-500/20 dark:border-teal-500/40 text-teal-700 dark:text-teal-300 hover:border-teal-500/60 transition-all';
+    return 'bg-[#00bae2]/10 dark:bg-[#00bae2]/20 border-[#00bae2]/20 dark:border-[#00bae2]/40 text-[#00bae2] dark:text-[#00bae2] hover:border-[#00bae2]/60 transition-all';
   };
 
   return (
@@ -114,13 +114,13 @@ export default function TeacherTimetable() {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6"
       >
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9d95ff] dark:text-[#9d95ff] mb-2">
             <Calendar size={16} /> Educator Workspace
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-[#0e100f] dark:text-[#E1DCC9] tracking-tight">
             Weekly Teaching Timetable 📅
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-455">
+          <p className="text-sm text-[#7c7c6f] dark:text-neutral-455">
             Manage your daily class lectures, planning periods, and classroom locations.
           </p>
         </div>
@@ -130,7 +130,7 @@ export default function TeacherTimetable() {
             variant="secondary" 
             size="sm" 
             onClick={handlePrint}
-            className="rounded-xl font-bold flex items-center gap-1.5 text-xs py-2 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            className="rounded-xl font-bold flex items-center gap-1.5 text-xs py-2 dark:bg-[#412D15] dark:hover:bg-[#412D15]"
           >
             <Printer size={14} /> Print
           </Button>
@@ -138,7 +138,7 @@ export default function TeacherTimetable() {
             variant="primary" 
             size="sm" 
             onClick={handleExport}
-            className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-md font-bold flex items-center gap-1.5 text-xs py-2"
+            className="bg-[#9d95ff] hover:bg-[#9d95ff] text-[#E1DCC9] rounded-xl shadow-md font-bold flex items-center gap-1.5 text-xs py-2"
           >
             <Download size={14} /> Export iCal
           </Button>
@@ -150,9 +150,9 @@ export default function TeacherTimetable() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="flex items-center justify-between gap-4 flex-wrap bg-neutral-100/50 dark:bg-neutral-900/35 border border-neutral-200/55 dark:border-neutral-850 p-4 rounded-2xl"
+        className="flex items-center justify-between gap-4 flex-wrap bg-[#FFFCE1]/50 dark:bg-[#412D15]/35 border border-[#E1DCC9]/55 dark:border-neutral-850 p-4 rounded-2xl"
       >
-        <div className="flex items-center gap-2 text-xs font-bold text-neutral-600 dark:text-neutral-350">
+        <div className="flex items-center gap-2 text-xs font-bold text-[#7c7c6f] dark:text-neutral-350">
           <Filter size={14} className="text-neutral-450" /> Filter Room:
         </div>
         <div className="flex gap-1.5">
@@ -162,8 +162,8 @@ export default function TeacherTimetable() {
               onClick={() => setRoomFilter(room)}
               className={`px-3 py-1.5 text-xs font-extrabold rounded-lg transition-all ${
                 roomFilter === room
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/10'
-                  : 'bg-white dark:bg-neutral-900 text-neutral-500 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50'
+                  ? 'bg-[#9d95ff] text-[#E1DCC9] shadow-md shadow-[#9d95ff]/10'
+                  : 'bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] border border-[#E1DCC9]/20 dark:border-[#412D15] hover:bg-[#FFFCE1]'
               }`}
             >
               {room}
@@ -179,17 +179,17 @@ export default function TeacherTimetable() {
         transition={{ delay: 0.2 }}
         className="overflow-x-auto"
       >
-        <GlassCard padding="p-0" className="overflow-hidden border border-neutral-200 dark:border-neutral-800 min-w-[800px]">
+        <GlassCard padding="p-0" className="overflow-hidden border border-[#E1DCC9]/20 dark:border-[#412D15] min-w-[800px]">
           <table className="w-full text-xs text-left border-collapse table-fixed">
             <thead>
-              <tr className="border-b-2 border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
-                <th className="px-5 py-4 font-black text-neutral-500 dark:text-neutral-400 w-[160px] border-r border-neutral-100 dark:border-neutral-800/80">
+              <tr className="border-b-2 border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/50 dark:bg-[#412D15]/30">
+                <th className="px-5 py-4 font-black text-[#7c7c6f] dark:text-[#7c7c6f] w-[160px] border-r border-[#E1DCC9]/20 dark:border-[#412D15]/80">
                   <span className="flex items-center gap-1"><Clock size={13} /> Time Slot</span>
                 </th>
                 {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => (
                   <th 
                     key={day} 
-                    className="px-4 py-4 font-black text-neutral-800 dark:text-neutral-250 text-center uppercase tracking-wider"
+                    className="px-4 py-4 font-black text-[#0e100f] dark:text-neutral-250 text-center uppercase tracking-wider"
                   >
                     {day}
                   </th>
@@ -203,10 +203,10 @@ export default function TeacherTimetable() {
                 return (
                   <tr 
                     key={slotInfo.timeKey} 
-                    className="border-b border-neutral-150 dark:border-neutral-800/50 last:border-0"
+                    className="border-b border-neutral-150 dark:border-[#412D15]/50 last:border-0"
                   >
                     {/* Time Slot column */}
-                    <td className="px-5 py-5 font-semibold text-neutral-600 dark:text-neutral-400 border-r border-neutral-150 dark:border-neutral-800/80 font-mono bg-neutral-50/30 dark:bg-neutral-900/10">
+                    <td className="px-5 py-5 font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] border-r border-neutral-150 dark:border-[#412D15]/80 font-mono bg-[#FFFCE1]/30 dark:bg-[#412D15]/10">
                       {slotInfo.label}
                     </td>
 
@@ -219,8 +219,8 @@ export default function TeacherTimetable() {
                       
                       if (isFilteredOut) {
                         return (
-                          <td key={day} className="px-2.5 py-2.5 text-center bg-neutral-50/10 dark:bg-neutral-950/10">
-                            <span className="text-neutral-300 dark:text-neutral-800 font-extrabold">—</span>
+                          <td key={day} className="px-2.5 py-2.5 text-center bg-[#FFFCE1]/10 dark:bg-[#1F150C]/10">
+                            <span className="text-[#7c7c6f] dark:text-[#0e100f] font-extrabold">—</span>
                           </td>
                         );
                       }
@@ -263,37 +263,37 @@ export default function TeacherTimetable() {
         transition={{ delay: 0.3 }}
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
-        <GlassCard className="border border-neutral-200 dark:border-neutral-800/80 p-5 bg-white dark:bg-neutral-900 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+        <GlassCard className="border border-[#E1DCC9]/20 dark:border-[#412D15]/80 p-5 bg-[#FFFCE1] dark:bg-[#412D15] flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[#9d95ff]/10 text-[#9d95ff] dark:text-[#9d95ff] flex items-center justify-center shrink-0">
             <Compass size={20} />
           </div>
           <div>
-            <h4 className="font-extrabold text-neutral-900 dark:text-white text-sm mb-1">Interactive Views</h4>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+            <h4 className="font-extrabold text-[#0e100f] dark:text-[#E1DCC9] text-sm mb-1">Interactive Views</h4>
+            <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed">
               Hover over class blocks to inspect course contents. Planning periods can be used to set test materials.
             </p>
           </div>
         </GlassCard>
         
-        <GlassCard className="border border-neutral-200 dark:border-neutral-800/80 p-5 bg-white dark:bg-neutral-900 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+        <GlassCard className="border border-[#E1DCC9]/20 dark:border-[#412D15]/80 p-5 bg-[#FFFCE1] dark:bg-[#412D15] flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[#9d95ff]/10 text-[#9d95ff] dark:text-[#9d95ff] flex items-center justify-center shrink-0">
             <BookOpen size={20} />
           </div>
           <div>
-            <h4 className="font-extrabold text-neutral-900 dark:text-white text-sm mb-1">Room Allocation</h4>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+            <h4 className="font-extrabold text-[#0e100f] dark:text-[#E1DCC9] text-sm mb-1">Room Allocation</h4>
+            <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed">
               Timetable room changes are managed by the administrator. Contact support if classroom overlap occurs.
             </p>
           </div>
         </GlassCard>
 
-        <GlassCard className="border border-neutral-200 dark:border-neutral-800/80 p-5 bg-white dark:bg-neutral-900 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+        <GlassCard className="border border-[#E1DCC9]/20 dark:border-[#412D15]/80 p-5 bg-[#FFFCE1] dark:bg-[#412D15] flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 dark:text-amber-500 flex items-center justify-center shrink-0">
             <Bookmark size={20} />
           </div>
           <div>
-            <h4 className="font-extrabold text-neutral-900 dark:text-white text-sm mb-1">Lunch &amp; Planning</h4>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+            <h4 className="font-extrabold text-[#0e100f] dark:text-[#E1DCC9] text-sm mb-1">Lunch &amp; Planning</h4>
+            <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] leading-relaxed">
               A daily 60-minute lunch slot is automatically allocated for all faculty members.
             </p>
           </div>

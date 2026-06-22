@@ -18,7 +18,7 @@ function CertificateCard({ cert, onView }: { cert: Certificate; onView: (c: Cert
         <div className="h-44 relative flex items-center justify-center" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-bg) 80%, transparent), rgba(59,130,246,0.1))' }}>
           <div className="text-center">
             <motion.div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-2"
-              style={{ background: 'linear-gradient(135deg, #D97706, #3B82F6)', boxShadow: '0 8px 32px rgba(217,119,6,0.3)' }}>
+              style={{ background: 'linear-gradient(135deg, #D97706, #00bae2)', boxShadow: '0 8px 32px rgba(217,119,6,0.3)' }}>
               <Award size={32} className="text-on-surface" />
             </motion.div>
             <p className="text-xs font-bold text-[#D97706] uppercase tracking-wider">Certificate</p>
@@ -76,7 +76,7 @@ function CertificateViewer({ cert, onClose }: { cert: Certificate; onClose: () =
 
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
             className="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: 'linear-gradient(135deg, #D97706, #3B82F6)', boxShadow: '0 0 40px rgba(217,119,6,0.4)' }}>
+            style={{ background: 'linear-gradient(135deg, #D97706, #00bae2)', boxShadow: '0 0 40px rgba(217,119,6,0.4)' }}>
             <Award size={40} className="text-on-surface" />
           </motion.div>
 
@@ -343,9 +343,9 @@ export function CertificateVerify() {
               {cryptoResult.authentic ? (
                 <>
                   <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <CheckCircle size={100} className="text-emerald-500" />
+                    <CheckCircle size={100} className="text-[#00bae2]" />
                   </div>
-                  <h3 className="text-lg font-bold text-emerald-500 flex items-center gap-2 mb-2">
+                  <h3 className="text-lg font-bold text-[#00bae2] flex items-center gap-2 mb-2">
                     <CheckCircle size={20} /> Authentic Credentials Verified
                   </h3>
                   <p className="text-sm text-on-surface-variant mb-4">This document's SHA-256 hash perfectly matches a locked record on the Polygon Blockchain.</p>
@@ -353,7 +353,7 @@ export function CertificateVerify() {
                   <div className="space-y-3 mt-6">
                     <div className="text-xs">
                       <p className="text-on-surface-variant mb-1 uppercase tracking-wider font-bold">SHA-256 Hash</p>
-                      <p className="font-mono bg-on-surface/5 p-2 rounded-lg text-emerald-600 dark:text-emerald-400 break-all">{cryptoResult.hash}</p>
+                      <p className="font-mono bg-on-surface/5 p-2 rounded-lg text-[#00bae2] dark:text-[#00bae2] break-all">{cryptoResult.hash}</p>
                     </div>
                     {cryptoResult.certData?.blockchain_tx_hash && (
                       <div className="pt-2">
@@ -375,7 +375,7 @@ export function CertificateVerify() {
                   <p className="text-sm text-on-surface-variant mb-4">Invalid or Altered Certificate File. The hash does not match any official records in our ledger.</p>
                   <div className="text-xs mt-6">
                     <p className="text-on-surface-variant mb-1 uppercase tracking-wider font-bold">Computed Hash</p>
-                    <p className="font-mono bg-red-500/10 text-red-600 dark:text-red-400 p-2 rounded-lg break-all">{cryptoResult.hash}</p>
+                    <p className="font-mono bg-red-500/10 text-red-500 dark:text-red-500 p-2 rounded-lg break-all">{cryptoResult.hash}</p>
                   </div>
                 </>
               )}
@@ -384,10 +384,10 @@ export function CertificateVerify() {
             {/* Gemini Vision Parsing */}
             <GlassCard className="p-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-5">
-                <Sparkles size={100} className="text-[#EC4899]" />
+                <Sparkles size={100} className="text-[#ef4444]" />
               </div>
               <h3 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-2">
-                <Sparkles size={18} className="text-[#EC4899]" /> Scanned Document Details
+                <Sparkles size={18} className="text-[#ef4444]" /> Scanned Document Details
               </h3>
               <p className="text-sm text-on-surface-variant mb-6">Metrics extracted via Gemini Vision.</p>
               

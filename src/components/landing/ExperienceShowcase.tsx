@@ -211,7 +211,7 @@ export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStart
                 onClick={() => handleTabClick(role.id as any)}
                 className={`relative py-3.5 px-3 text-sm font-semibold uppercase tracking-wider transition-all duration-300 focus:outline-none cursor-pointer ${
                   isActive 
-                    ? "text-primary dark:text-white" 
+                    ? "text-primary dark:text-[#E1DCC9]" 
                     : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
@@ -268,7 +268,7 @@ export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStart
             boxShadow: "0 40px 80px -15px rgba(109, 93, 252, 0.22)" 
           }}
           transition={{ type: "spring", stiffness: 120, damping: 22 }}
-          className="relative aspect-[16/9] w-full max-w-[1400px] overflow-hidden rounded-2xl bg-black/90 cursor-pointer border border-outline-variant/10 shadow-2xl"
+          className="relative aspect-[16/9] w-full max-w-[1400px] overflow-hidden rounded-2xl bg-[#1F150C]/90 cursor-pointer border border-outline-variant/10 shadow-2xl"
           style={{ transformStyle: "preserve-3d", perspective: 1000 }}
           onClick={togglePlay}
         >
@@ -337,7 +337,7 @@ export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStart
 
           {/* Floating Minimal Glass Controls */}
           <motion.div
-            className="absolute bottom-6 right-6 flex items-center justify-center rounded-full bg-black/10 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/20 shadow-xl cursor-pointer text-black dark:text-white z-20"
+            className="absolute bottom-6 right-6 flex items-center justify-center rounded-full bg-[#1F150C]/10 dark:bg-[#FFFCE1]/10 backdrop-blur-md border border-black/10 dark:border-[#E1DCC9]/20 shadow-xl cursor-pointer text-black dark:text-[#E1DCC9] z-20"
             whileHover={{ 
               scale: 1.08, 
               backgroundColor: "rgba(255, 255, 255, 0.2)",
@@ -364,7 +364,7 @@ export default function ExperienceShowcase({ activeTab, setActiveTab, onGetStart
                 cx="24"
                 cy="24"
                 r={radius}
-                stroke="var(--color-primary, #6D5DFC)"
+                stroke="var(--color-primary, #9d95ff)"
                 strokeWidth="2.5"
                 fill="transparent"
                 strokeLinecap="round"

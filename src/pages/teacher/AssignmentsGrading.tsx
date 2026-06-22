@@ -77,13 +77,13 @@ export default function AssignmentsGrading() {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6"
       >
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9d95ff] dark:text-[#9d95ff] mb-2">
             <GraduationCap size={16} /> Educator Workspace
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-[#0e100f] dark:text-[#E1DCC9] tracking-tight">
             Assignments &amp; Grading 📝
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-450">
+          <p className="text-sm text-[#7c7c6f] dark:text-neutral-450">
             Review student submissions, check deadlines, and launch the grading evaluation tool.
           </p>
         </div>
@@ -97,10 +97,10 @@ export default function AssignmentsGrading() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Active Assignments', value: totalActive, icon: ClipboardList, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+          { label: 'Active Assignments', value: totalActive, icon: ClipboardList, color: 'text-[#9d95ff]', bg: 'bg-[#9d95ff]/10' },
           { label: 'Pending Reviews', value: pendingGrading, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-          { label: 'Submission Rate', value: `${overallSubmissionRate}%`, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-          { label: 'Total Enrolled', value: totalPossible, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Submission Rate', value: `${overallSubmissionRate}%`, icon: CheckCircle2, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
+          { label: 'Total Enrolled', value: totalPossible, icon: Users, color: 'text-[#00bae2]', bg: 'bg-[#00bae2]/10' },
         ].map((stat, idx) => (
           <motion.div key={idx} variants={itemVariants}>
             <GlassCard className="flex items-center gap-4 p-5 h-full hover:shadow-md transition-shadow">
@@ -108,8 +108,8 @@ export default function AssignmentsGrading() {
                 <stat.icon size={24} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-1">{stat.label}</p>
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white leading-none">{stat.value}</p>
+                <p className="text-xs font-semibold text-[#7c7c6f] uppercase tracking-wider mb-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] leading-none">{stat.value}</p>
               </div>
             </GlassCard>
           </motion.div>
@@ -125,13 +125,13 @@ export default function AssignmentsGrading() {
       >
         {/* Search */}
         <div className="relative w-full sm:max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7c7c6f] pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by assignment title..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-50 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-neutral-400"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] text-sm outline-none focus:border-[#9d95ff] focus:ring-1 focus:ring-[#9d95ff] transition-all placeholder-neutral-400"
           />
         </div>
 
@@ -143,8 +143,8 @@ export default function AssignmentsGrading() {
               onClick={() => setClassFilter(cls)}
               className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
                 classFilter === cls
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
-                  : 'bg-white dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-850'
+                  ? 'bg-[#9d95ff] text-[#E1DCC9] shadow-lg shadow-[#9d95ff]/20'
+                  : 'bg-[#FFFCE1] dark:bg-[#412D15] text-[#7c7c6f] dark:text-[#7c7c6f] border border-[#E1DCC9]/20 dark:border-[#412D15] hover:bg-[#FFFCE1] dark:hover:bg-neutral-850'
               }`}
             >
               {cls}
@@ -159,25 +159,25 @@ export default function AssignmentsGrading() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <GlassCard padding="p-0" className="overflow-hidden border border-neutral-200 dark:border-neutral-800">
+        <GlassCard padding="p-0" className="overflow-hidden border border-[#E1DCC9]/20 dark:border-[#412D15]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left border-collapse">
               <thead>
-                <tr className="border-b border-neutral-200 dark:border-neutral-800/80 bg-neutral-50/50 dark:bg-neutral-900/30">
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Assignment Title</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Class</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Due Date</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Submission Status</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Actions</th>
+                <tr className="border-b border-[#E1DCC9]/20 dark:border-[#412D15]/80 bg-[#FFFCE1]/50 dark:bg-[#412D15]/30">
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Assignment Title</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Class</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Due Date</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Submission Status</th>
+                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/40">
                 {filteredAssignments.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-neutral-500 dark:text-neutral-400">
-                      <BookOpen className="w-10 h-10 mx-auto text-neutral-300 dark:text-neutral-700 mb-3" />
-                      <p className="font-semibold text-neutral-600 dark:text-neutral-350">No assignments found</p>
-                      <p className="text-xs text-neutral-400 mt-1">Try adjusting your search criteria or class filters.</p>
+                    <td colSpan={5} className="text-center py-12 text-[#7c7c6f] dark:text-[#7c7c6f]">
+                      <BookOpen className="w-10 h-10 mx-auto text-[#7c7c6f] dark:text-[#7c7c6f] mb-3" />
+                      <p className="font-semibold text-[#7c7c6f] dark:text-neutral-350">No assignments found</p>
+                      <p className="text-xs text-[#7c7c6f] mt-1">Try adjusting your search criteria or class filters.</p>
                     </td>
                   </tr>
                 ) : (
@@ -188,12 +188,12 @@ export default function AssignmentsGrading() {
                     return (
                       <tr 
                         key={assignment.id} 
-                        className="hover:bg-neutral-50/50 dark:hover:bg-neutral-850/10 transition-colors"
+                        className="hover:bg-[#FFFCE1]/50 dark:hover:bg-neutral-850/10 transition-colors"
                       >
                         {/* Title */}
-                        <td className="px-6 py-4.5 font-bold text-neutral-900 dark:text-white">
+                        <td className="px-6 py-4.5 font-bold text-[#0e100f] dark:text-[#E1DCC9]">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#9d95ff] shrink-0" />
                             {assignment.title}
                           </div>
                         </td>
@@ -206,9 +206,9 @@ export default function AssignmentsGrading() {
                         </td>
 
                         {/* Due Date */}
-                        <td className="px-6 py-4.5 text-neutral-600 dark:text-neutral-455 font-semibold text-xs">
+                        <td className="px-6 py-4.5 text-[#7c7c6f] dark:text-neutral-455 font-semibold text-xs">
                           <div className="flex items-center gap-1.5 font-mono">
-                            <Calendar size={13} className="text-neutral-400" />
+                            <Calendar size={13} className="text-[#7c7c6f]" />
                             {new Date(assignment.dueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                             {isDueToday && <span className="ml-1 text-red-500 font-sans font-bold">(Today)</span>}
                           </div>
@@ -218,8 +218,8 @@ export default function AssignmentsGrading() {
                         <td className="px-6 py-4.5 w-[250px]">
                           <div className="space-y-1.5">
                             <div className="flex justify-between text-xs font-bold">
-                              <span className="text-purple-600 dark:text-purple-400">{assignment.submittedCount} / {assignment.totalCount} Submitted</span>
-                              <span className="text-neutral-500">{progressValue}%</span>
+                              <span className="text-[#9d95ff] dark:text-[#9d95ff]">{assignment.submittedCount} / {assignment.totalCount} Submitted</span>
+                              <span className="text-[#7c7c6f]">{progressValue}%</span>
                             </div>
                             <ProgressBar value={assignment.submittedCount} max={assignment.totalCount} color="purple" />
                           </div>
@@ -231,7 +231,7 @@ export default function AssignmentsGrading() {
                             variant="primary" 
                             size="sm"
                             loading={gradingId === assignment.id}
-                            className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-md shadow-purple-600/10 gap-1.5 py-1.5 px-3.5 text-xs font-bold"
+                            className="bg-[#9d95ff] hover:bg-[#9d95ff] text-[#E1DCC9] rounded-xl shadow-md shadow-[#9d95ff]/10 gap-1.5 py-1.5 px-3.5 text-xs font-bold"
                             onClick={() => handleGrade(assignment.id, assignment.title)}
                           >
                             Grade Submissions <ChevronRight size={13} />

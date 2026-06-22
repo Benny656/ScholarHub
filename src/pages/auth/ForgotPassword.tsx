@@ -42,7 +42,7 @@ export function ForgotPassword() {
                   value={email}
                   onChange={e => { setEmail(e.target.value); setError(''); }}
                   placeholder="you@example.com"
-                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${error ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#6D5DFC]'}`}
+                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${error ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#9d95ff]'}`}
                   style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
@@ -51,13 +51,13 @@ export function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
-              style={{ background: 'linear-gradient(135deg, #6D5DFC, #4F46E5)', fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}
+              className="w-full py-3 rounded-xl font-semibold text-[#E1DCC9] text-sm disabled:opacity-60 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              style={{ background: 'linear-gradient(135deg, #9d95ff, #9d95ff)', fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}
             >
               {loading ? (<><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Sending...</>) : 'Send reset link'}
             </button>
             <p className="text-center text-sm text-on-surface-variant mt-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-              Remembered it? <Link to="/login" className="text-[#6D5DFC] hover:opacity-80 font-medium transition-opacity">Sign in</Link>
+              Remembered it? <Link to="/login" className="text-[#9d95ff] hover:opacity-80 font-medium transition-opacity">Sign in</Link>
             </p>
           </motion.form>
         ) : (
@@ -66,14 +66,14 @@ export function ForgotPassword() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', damping: 12 }}
-              className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4"
+              className="w-16 h-16 rounded-full bg-[#00bae2]/20 border border-[#00bae2]/30 flex items-center justify-center mx-auto mb-4"
             >
-              <CheckCircle size={32} className="text-emerald-400" />
+              <CheckCircle size={32} className="text-[#00bae2]" />
             </motion.div>
             <h3 className="text-lg font-bold text-on-surface mb-2">Check your email</h3>
-            <p className="text-sm text-on-surface-variant mb-6">We sent a reset link to <span className="text-[#6D5DFC] font-medium">{email}</span></p>
+            <p className="text-sm text-on-surface-variant mb-6">We sent a reset link to <span className="text-[#9d95ff] font-medium">{email}</span></p>
             <p className="text-xs text-on-surface-variant mb-4">Didn't receive it? Check spam or</p>
-            <button onClick={() => setSubmitted(false)} className="text-sm text-[#6D5DFC] hover:opacity-85 font-medium transition-colors">
+            <button onClick={() => setSubmitted(false)} className="text-sm text-[#9d95ff] hover:opacity-85 font-medium transition-colors">
               Try a different email
             </button>
           </motion.div>
@@ -118,7 +118,7 @@ export function ResetPassword() {
                   value={password}
                   onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: '' })); }}
                   placeholder="••••••••"
-                  className={`w-full px-4 pr-11 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors.password ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#6D5DFC]'}`}
+                  className={`w-full px-4 pr-11 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors.password ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#9d95ff]'}`}
                   style={{ fontFamily: 'Inter, sans-serif' }}
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors text-sm">
@@ -130,7 +130,7 @@ export function ResetPassword() {
               {password && (
                 <div className="flex gap-1 mt-2">
                   {[1, 2, 3, 4].map(i => (
-                    <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${password.length >= i * 2 ? i <= 1 ? 'bg-red-500' : i <= 2 ? 'bg-amber-500' : i <= 3 ? 'bg-blue-500' : 'bg-emerald-500' : 'bg-on-surface/10'}`} />
+                    <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${password.length >= i * 2 ? i <= 1 ? 'bg-red-500' : i <= 2 ? 'bg-amber-500' : i <= 3 ? 'bg-[#00bae2]' : 'bg-[#00bae2]' : 'bg-on-surface/10'}`} />
                   ))}
                 </div>
               )}
@@ -142,23 +142,23 @@ export function ResetPassword() {
                 value={confirm}
                 onChange={e => { setConfirm(e.target.value); setErrors(p => ({ ...p, confirm: '' })); }}
                 placeholder="••••••••"
-                className={`w-full px-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors.confirm ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#6D5DFC]'}`}
+                className={`w-full px-4 py-2.5 rounded-xl border text-on-surface text-sm outline-none transition-all placeholder-on-surface-variant/50 bg-transparent ${errors.confirm ? 'border-error/50' : 'border-outline-variant/30 focus:border-[#9d95ff]'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               />
               {errors.confirm && <p className="text-xs text-error mt-1">{errors.confirm}</p>}
             </div>
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #6D5DFC, #4F46E5)', fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
+            <button type="submit" disabled={loading} className="w-full py-3 rounded-xl font-semibold text-[#E1DCC9] text-sm disabled:opacity-60 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #9d95ff, #9d95ff)', fontFamily: 'Inter, sans-serif', boxShadow: '0 4px 20px rgba(109,93,252,0.25)' }}>
               {loading ? (<><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Updating...</>) : 'Reset Password'}
             </button>
           </motion.form>
         ) : (
           <motion.div key="done" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-4">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 12 }} className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle size={32} className="text-emerald-400" />
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 12 }} className="w-16 h-16 rounded-full bg-[#00bae2]/20 border border-[#00bae2]/30 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle size={32} className="text-[#00bae2]" />
             </motion.div>
             <h3 className="text-lg font-bold text-on-surface mb-2">Password updated!</h3>
             <p className="text-sm text-on-surface-variant mb-6">You can now sign in with your new password.</p>
-            <Link to="/login" className="inline-flex items-center justify-center w-full py-3 rounded-xl font-semibold text-white text-sm hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #6D5DFC, #4F46E5)' }}>
+            <Link to="/login" className="inline-flex items-center justify-center w-full py-3 rounded-xl font-semibold text-[#E1DCC9] text-sm hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #9d95ff, #9d95ff)' }}>
               Sign in →
             </Link>
           </motion.div>

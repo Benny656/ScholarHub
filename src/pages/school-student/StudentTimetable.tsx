@@ -26,11 +26,11 @@ export default function StudentTimetable() {
   };
 
   const subjectColors: Record<string, string> = {
-    'Mathematics':    'bg-violet-500/20 border-violet-500/40 text-violet-700 dark:text-violet-300',
-    'Science':        'bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-emerald-300',
-    'English Lit.':   'bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300',
-    'History':        'bg-amber-500/20 border-amber-500/40 text-amber-700 dark:text-amber-300',
-    'Comp. Science':  'bg-cyan-500/20 border-cyan-500/40 text-cyan-700 dark:text-cyan-300',
+    'Mathematics':    'bg-[#9d95ff]/20 border-[#9d95ff]/40 text-[#9d95ff] dark:text-[#9d95ff]',
+    'Science':        'bg-[#00bae2]/20 border-[#00bae2]/40 text-[#00bae2] dark:text-[#00bae2]',
+    'English Lit.':   'bg-red-500/20 border-red-500/40 text-red-500 dark:text-red-500',
+    'History':        'bg-amber-500/20 border-amber-500/40 text-amber-500 dark:text-amber-500',
+    'Comp. Science':  'bg-[#00bae2]/20 border-[#00bae2]/40 text-[#00bae2] dark:text-[#00bae2]',
   };
 
   return (
@@ -42,14 +42,14 @@ export default function StudentTimetable() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-3"
       >
-        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/35 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center shadow-inner shrink-0">
+        <div className="w-10 h-10 bg-[#9d95ff] dark:bg-[#9d95ff]/35 text-[#9d95ff] dark:text-[#9d95ff] rounded-xl flex items-center justify-center shadow-inner shrink-0">
           <Calendar size={20} />
         </div>
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-[#0e100f] dark:text-[#E1DCC9] tracking-tight">
             Class Weekly Timetable 📅
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-455">
+          <p className="text-sm text-[#7c7c6f] dark:text-neutral-455">
             Your daily lectures, breaks, and classroom locations for this term.
           </p>
         </div>
@@ -61,14 +61,14 @@ export default function StudentTimetable() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
       >
-        <GlassCard padding="p-6 md:p-8" className="border border-neutral-200 dark:border-purple-500/20 bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl">
+        <GlassCard padding="p-6 md:p-8" className="border border-[#E1DCC9]/20 dark:border-[#9d95ff]/20 bg-[#FFFCE1]/40 dark:bg-[#1F150C]/60 backdrop-blur-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-xs min-w-[640px] border-separate border-spacing-0">
               <thead>
                 <tr>
-                  <th className="sticky left-0 bg-white/85 dark:bg-[#161224]/95 backdrop-blur px-4 py-3 text-left font-black text-neutral-500 dark:text-neutral-400 w-36 border-b-2 border-purple-500/20 z-10">Time</th>
+                  <th className="sticky left-0 bg-[#FFFCE1]/85 dark:bg-[#1F150C]/95 backdrop-blur px-4 py-3 text-left font-black text-[#7c7c6f] dark:text-[#7c7c6f] w-36 border-b-2 border-[#9d95ff]/20 z-10">Time</th>
                   {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => (
-                    <th key={d} className="px-3 py-3 font-black text-neutral-700 dark:text-white text-center border-b-2 border-purple-500/20">{d}</th>
+                    <th key={d} className="px-3 py-3 font-black text-[#7c7c6f] dark:text-[#E1DCC9] text-center border-b-2 border-[#9d95ff]/20">{d}</th>
                   ))}
                 </tr>
               </thead>
@@ -80,8 +80,8 @@ export default function StudentTimetable() {
                   if (isBreak) {
                     return (
                       <tr key={time}>
-                        <td className="sticky left-0 bg-neutral-100/80 dark:bg-neutral-800/50 backdrop-blur px-4 py-2 text-neutral-400 font-mono z-10 border-b border-neutral-200/50 dark:border-neutral-700/50">10:15 – 10:30</td>
-                        <td colSpan={5} className="px-4 py-2 text-center text-[11px] font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100/50 dark:bg-neutral-800/30 border-b border-neutral-200/50 dark:border-neutral-700/50 tracking-widest uppercase">☕ Short Break</td>
+                        <td className="sticky left-0 bg-[#FFFCE1]/80 dark:bg-[#412D15]/50 backdrop-blur px-4 py-2 text-[#7c7c6f] font-mono z-10 border-b border-[#E1DCC9]/50 dark:border-[#412D15]/50">10:15 – 10:30</td>
+                        <td colSpan={5} className="px-4 py-2 text-center text-[11px] font-bold text-[#7c7c6f] dark:text-[#7c7c6f] bg-[#FFFCE1]/50 dark:bg-[#412D15]/30 border-b border-[#E1DCC9]/50 dark:border-[#412D15]/50 tracking-widest uppercase">☕ Short Break</td>
                       </tr>
                     );
                   }
@@ -89,27 +89,27 @@ export default function StudentTimetable() {
                   if (isLunch) {
                     return (
                       <tr key={time}>
-                        <td className="sticky left-0 bg-amber-50/80 dark:bg-amber-900/20 backdrop-blur px-4 py-3 text-amber-600 dark:text-amber-400 font-mono z-10 border-b border-amber-200/40 dark:border-amber-700/30">12:00 – 12:45</td>
-                        <td colSpan={5} className="px-4 py-3 text-center text-sm font-black text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-900/10 border-b border-amber-200/40 dark:border-amber-700/30">🍱 Lunch Break</td>
+                        <td className="sticky left-0 bg-amber-500/80 dark:bg-amber-500/20 backdrop-blur px-4 py-3 text-amber-500 dark:text-amber-500 font-mono z-10 border-b border-amber-500/40 dark:border-amber-500/30">12:00 – 12:45</td>
+                        <td colSpan={5} className="px-4 py-3 text-center text-sm font-black text-amber-500 dark:text-amber-500 bg-amber-500/50 dark:bg-amber-500/10 border-b border-amber-500/40 dark:border-amber-500/30">🍱 Lunch Break</td>
                       </tr>
                     );
                   }
                   
                   return (
                     <tr key={time} className="group">
-                      <td className="sticky left-0 bg-white/85 dark:bg-[#161224]/95 backdrop-blur px-4 py-2.5 font-mono text-neutral-500 dark:text-neutral-400 z-10 border-b border-purple-500/10 whitespace-nowrap">{time}</td>
+                      <td className="sticky left-0 bg-[#FFFCE1]/85 dark:bg-[#1F150C]/95 backdrop-blur px-4 py-2.5 font-mono text-[#7c7c6f] dark:text-[#7c7c6f] z-10 border-b border-[#9d95ff]/10 whitespace-nowrap">{time}</td>
                       {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => {
                         const subj = staticTimetable[day][i];
-                        const color = subj ? (subjectColors[subj] || 'bg-purple-500/10 border-purple-500/30 text-purple-700 dark:text-purple-300') : '';
+                        const color = subj ? (subjectColors[subj] || 'bg-[#9d95ff]/10 border-[#9d95ff]/30 text-[#9d95ff] dark:text-[#9d95ff]') : '';
                         
                         return (
-                          <td key={day} className="px-2 py-2 border-b border-purple-500/10 text-center">
+                          <td key={day} className="px-2 py-2 border-b border-[#9d95ff]/10 text-center">
                             {subj ? (
                               <motion.div whileHover={{ scale: 1.05 }} className={`rounded-lg px-2 py-1.5 border font-semibold ${color}`}>
                                 {subj}
                               </motion.div>
                             ) : (
-                              <span className="text-neutral-300 dark:text-neutral-700">—</span>
+                              <span className="text-[#7c7c6f] dark:text-[#7c7c6f]">—</span>
                             )}
                           </td>
                         );

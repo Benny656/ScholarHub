@@ -65,7 +65,7 @@ export function IssueCertificate() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-bold text-on-surface flex items-center gap-2">
-            <Award className="text-[#EC4899]" size={20} /> Issue Certificate
+            <Award className="text-[#ef4444]" size={20} /> Issue Certificate
           </h2>
           <p className="text-sm text-on-surface-variant mt-1">Generate and lock certificates on the Polygon blockchain.</p>
         </div>
@@ -133,18 +133,18 @@ export function IssueCertificate() {
       </form>
 
       {result && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 p-4 rounded-xl border border-[#10B981]/30 bg-[#10B981]/10">
-          <h3 className="text-sm font-bold text-[#10B981] mb-2 flex items-center gap-2">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 p-4 rounded-xl border border-[#00bae2]/30 bg-[#00bae2]/10">
+          <h3 className="text-sm font-bold text-[#00bae2] mb-2 flex items-center gap-2">
             <Award size={16} /> Success!
           </h3>
           <div className="flex flex-col gap-2">
             {result.certificateUrl && (
-              <a href={result.certificateUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#EC4899] transition-colors">
+              <a href={result.certificateUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#ef4444] transition-colors">
                 <Download size={16} /> Download Generated PDF
               </a>
             )}
             {result.txHash && (
-              <a href={`https://amoy.polygonscan.com/tx/${result.txHash}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#EC4899] transition-colors">
+              <a href={`https://amoy.polygonscan.com/tx/${result.txHash}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-on-surface hover:text-[#ef4444] transition-colors">
                 <ExternalLink size={16} /> View Polygonscan Transaction
               </a>
             )}

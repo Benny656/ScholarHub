@@ -95,7 +95,7 @@ export function NotFound() {
           style={{
             background: isDark
               ? 'linear-gradient(135deg, #d8bcea 0%, #f3b6cd 50%, #d0c2d6 100%)'
-              : 'linear-gradient(135deg, #1978e5 0%, #6e5676 100%)',
+              : 'linear-gradient(135deg, #00bae2 0%, #6e5676 100%)',
             color: isDark ? '#3c284c' : '#ffffff',
             boxShadow: isDark
               ? '0 8px 32px rgba(216,188,234,0.45), 0 2px 8px rgba(0,0,0,0.3)'

@@ -92,7 +92,7 @@ const MagneticButton = ({ children, className = "", onClick, ...props }: Magneti
       whileTap={{ scale: 0.97 }}
       {...props}
     >
-      <span className="absolute inset-0 bg-white/10 dark:bg-black/5 scale-0 group-hover:scale-150 transition-transform duration-700 rounded-full pointer-events-none" />
+      <span className="absolute inset-0 bg-[#FFFCE1]/10 dark:bg-[#1F150C]/5 scale-0 group-hover:scale-150 transition-transform duration-700 rounded-full pointer-events-none" />
       <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
     </motion.button>
   );
@@ -436,7 +436,7 @@ const MegaMenuDropdown = ({ isOpen, onMouseEnter, onMouseLeave, title, isActive,
         onClick={onClick}
         className={`relative py-2 px-3 transition-all duration-300 rounded-md focus:outline-none cursor-pointer flex items-center gap-1 ${
           isActive || isOpen
-            ? "text-primary dark:text-white" 
+            ? "text-primary dark:text-[#E1DCC9]" 
             : "text-on-surface-variant hover:text-on-surface hover:bg-outline-variant/10 dark:hover:bg-outline-variant/5"
         }`}
       >
@@ -784,7 +784,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
               onClick={() => scrollToSection("pricing-plans-stack")}
               className={`relative py-2 px-3 transition-all duration-300 rounded-md focus:outline-none cursor-pointer flex items-center gap-1 ${
                 activeSection === "pricing-plans-stack" 
-                  ? "text-primary dark:text-white" 
+                  ? "text-primary dark:text-[#E1DCC9]" 
                   : "text-on-surface-variant hover:text-on-surface hover:bg-outline-variant/10 dark:hover:bg-outline-variant/5"
               }`}
             >
@@ -813,7 +813,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
               title="Toggle Theme"
             >
               {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
+                <Sun className="w-5 h-5 text-amber-500" />
               ) : (
                 <Moon className="w-5 h-5 text-slate-700" />
               )}
@@ -1011,7 +1011,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                   y: -8, 
                   scale: 1.03,
                   boxShadow: "0 30px 60px -15px rgba(109, 93, 252, 0.22)",
-                  borderColor: "var(--color-primary, #6D5DFC)"
+                  borderColor: "var(--color-primary, #9d95ff)"
                 }}
                 className="relative overflow-hidden p-6 md:p-8 rounded-3xl bg-surface/40 dark:bg-surface-container-lowest/30 backdrop-blur-md border border-outline-variant/30 hover:border-primary/55 transition-all duration-300 flex flex-col justify-center items-center text-center group cursor-pointer"
                 style={{ transformStyle: "preserve-3d", perspective: 800 }}
@@ -1147,7 +1147,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   {/* Role label badge on image */}
                   <div className="absolute bottom-5 left-5">
-                    <span className="inline-flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/15 text-white text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full">
+                    <span className="inline-flex items-center gap-2 bg-[#1F150C]/40 backdrop-blur-md border border-[#E1DCC9]/15 text-[#E1DCC9] text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       {roleSlides[activeRoleIndex].label}
                     </span>
@@ -1629,7 +1629,7 @@ export default function LandingPage({ theme, toggleTheme, onGetStarted }: Landin
         </div>
 
         {/* Large Decorative Text Watermark with hover & lighting effects */}
-        <div className="font-serif text-[11vw] font-extrabold text-black dark:text-white select-none leading-none mt-20 text-center tracking-wider uppercase cursor-default transition-all duration-700 hover:scale-105 hover:tracking-widest drop-shadow-[0_5px_15px_rgba(0,0,0,0.12)] dark:drop-shadow-[0_5px_25px_rgba(255,255,255,0.2)] hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-transparent hover:bg-clip-text">
+        <div className="font-serif text-[11vw] font-extrabold text-black dark:text-[#E1DCC9] select-none leading-none mt-20 text-center tracking-wider uppercase cursor-default transition-all duration-700 hover:scale-105 hover:tracking-widest drop-shadow-[0_5px_15px_rgba(0,0,0,0.12)] dark:drop-shadow-[0_5px_25px_rgba(255,255,255,0.2)] hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-transparent hover:bg-clip-text">
           Scholar Hub
         </div>
 

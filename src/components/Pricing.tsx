@@ -93,7 +93,7 @@ const getPlanColors = (color: string) => {
     };
   }
   return {
-    main: 'var(--color-tertiary, #7c3aed)',
+    main: 'var(--color-tertiary, #9d95ff)',
     glow: 'rgba(200, 180, 240, 0.2)',
     glowHover: 'rgba(200, 180, 240, 0.35)',
   };

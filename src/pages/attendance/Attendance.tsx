@@ -91,7 +91,7 @@ export function Attendance() {
               key={t.id}
               onClick={() => setTab(t.id as any)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium flex-shrink-0 transition-all ${tab === t.id ? 'text-on-surface' : 'text-on-surface-variant hover:text-on-surface hover:bg-on-surface/5'}`}
-              style={tab === t.id ? { background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' } : {}}
+              style={tab === t.id ? { background: 'linear-gradient(135deg, #9d95ff, #00bae2)' } : {}}
             >
               {t.icon} {t.label}
             </button>
@@ -105,9 +105,9 @@ export function Attendance() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   { label: 'Total Classes', value: summary.total, color: 'text-on-surface' },
-                  { label: 'Present', value: summary.present, color: 'text-emerald-400' },
-                  { label: 'Absent', value: summary.absent, color: 'text-red-400' },
-                  { label: 'Late', value: summary.late, color: 'text-amber-400' },
+                  { label: 'Present', value: summary.present, color: 'text-[#00bae2]' },
+                  { label: 'Absent', value: summary.absent, color: 'text-red-500' },
+                  { label: 'Late', value: summary.late, color: 'text-amber-500' },
                 ].map((s, i) => (
                   <GlassCard key={i}>
                     <p className="text-xs text-on-surface-variant mb-1">{s.label}</p>
@@ -164,8 +164,8 @@ export function Attendance() {
                 <SectionHeader title="QR Code Generator" subtitle="Generate a QR for today's class" />
                 {!qrData ? (
                   <div className="text-center py-10">
-                    <div className="w-24 h-24 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-5">
-                      <QrCode size={48} className="text-blue-400" />
+                    <div className="w-24 h-24 rounded-3xl bg-[#00bae2]/10 border border-[#00bae2]/20 flex items-center justify-center mx-auto mb-5">
+                      <QrCode size={48} className="text-[#00bae2]" />
                     </div>
                     <Button variant="primary" onClick={generateQR} loading={generatingQR} icon={<QrCode size={16} />}>
                       Generate QR Code
@@ -174,14 +174,14 @@ export function Attendance() {
                 ) : (
                   <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
                     {/* Fake QR Code */}
-                    <div className="w-48 h-48 mx-auto mb-4 rounded-2xl p-4 bg-white flex items-center justify-center">
+                    <div className="w-48 h-48 mx-auto mb-4 rounded-2xl p-4 bg-[#FFFCE1] flex items-center justify-center">
                       <div className="grid grid-cols-8 gap-0.5 w-full h-full">
                         {Array.from({ length: 64 }, (_, i) => (
                           <div key={i} className="rounded-sm" style={{ background: Math.random() > 0.4 ? 'var(--color-bg)' : 'white' }} />
                         ))}
                       </div>
                     </div>
-                    <div className={`text-lg font-bold mb-2 ${qrTimer < 60 ? 'text-red-400' : 'text-emerald-400'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+                    <div className={`text-lg font-bold mb-2 ${qrTimer < 60 ? 'text-red-500' : 'text-[#00bae2]'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                       {Math.floor(qrTimer / 60)}:{String(qrTimer % 60).padStart(2, '0')} remaining
                     </div>
                     <p className="text-xs text-on-surface-variant mb-4" style={{ fontFamily: 'JetBrains Mono, monospace' }}>Session: {qrData.sessionId}</p>
@@ -199,12 +199,12 @@ export function Attendance() {
                 <SectionHeader title="QR Code Scanner" subtitle="Scan to mark your attendance" />
                 <div className="rounded-2xl overflow-hidden border border-outline-variant/20 aspect-square flex items-center justify-center mb-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
                   <div className="relative w-48 h-48">
-                    <div className="absolute inset-0 border-2 border-[#10B981]/60 rounded-xl" />
-                    <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#10B981] rounded-tl-xl" />
-                    <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#10B981] rounded-tr-xl" />
-                    <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#10B981] rounded-bl-xl" />
-                    <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#10B981] rounded-br-xl" />
-                    <motion.div className="absolute left-0 right-0 h-0.5 bg-[#10B981]/60"
+                    <div className="absolute inset-0 border-2 border-[#00bae2]/60 rounded-xl" />
+                    <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#00bae2] rounded-tl-xl" />
+                    <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#00bae2] rounded-tr-xl" />
+                    <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#00bae2] rounded-bl-xl" />
+                    <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#00bae2] rounded-br-xl" />
+                    <motion.div className="absolute left-0 right-0 h-0.5 bg-[#00bae2]/60"
                       animate={{ top: ['10%', '90%', '10%'] }}
                       transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                     />
@@ -292,7 +292,7 @@ export function Attendance() {
             <motion.div key="insights" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-2xl mx-auto space-y-4">
               <GlassCard tint="purple">
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles size={20} className="text-[#10B981]" />
+                  <Sparkles size={20} className="text-[#00bae2]" />
                   <h2 className="text-lg font-bold text-on-surface" style={{ fontFamily: 'Geist, sans-serif' }}>AI Attendance Insights</h2>
                 </div>
                 {insights.length === 0 ? (
@@ -306,7 +306,7 @@ export function Attendance() {
                   <div className="space-y-3">
                     {insights.map((ins, i) => (
                       <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
-                        className={`p-4 rounded-xl border ${ins.type === 'warning' ? 'border-amber-500/25 bg-amber-500/8' : ins.type === 'success' ? 'border-emerald-500/25 bg-emerald-500/8' : 'border-blue-500/25 bg-blue-500/8'}`}>
+                        className={`p-4 rounded-xl border ${ins.type === 'warning' ? 'border-amber-500/25 bg-amber-500/8' : ins.type === 'success' ? 'border-[#00bae2]/25 bg-[#00bae2]/8' : 'border-[#00bae2]/25 bg-[#00bae2]/8'}`}>
                         <p className="text-sm font-semibold text-on-surface mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>{ins.insight}</p>
                         <p className="text-xs text-on-surface-variant">{ins.recommendation}</p>
                       </motion.div>

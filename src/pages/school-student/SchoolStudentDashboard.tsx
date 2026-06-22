@@ -181,11 +181,11 @@ export function SchoolStudentDashboard() {
   };
 
   const subjectColors: Record<string, string> = {
-    'Mathematics':    'bg-violet-500/20 border-violet-500/40 text-violet-700 dark:text-violet-300',
-    'Science':        'bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-emerald-300',
-    'English Lit.':   'bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300',
-    'History':        'bg-amber-500/20 border-amber-500/40 text-amber-700 dark:text-amber-300',
-    'Comp. Science':  'bg-cyan-500/20 border-cyan-500/40 text-cyan-700 dark:text-cyan-300',
+    'Mathematics':    'bg-[#9d95ff]/20 border-[#9d95ff]/40 text-[#9d95ff] dark:text-[#9d95ff]',
+    'Science':        'bg-[#00bae2]/20 border-[#00bae2]/40 text-[#00bae2] dark:text-[#00bae2]',
+    'English Lit.':   'bg-red-500/20 border-red-500/40 text-red-500 dark:text-red-500',
+    'History':        'bg-amber-500/20 border-amber-500/40 text-amber-500 dark:text-amber-500',
+    'Comp. Science':  'bg-[#00bae2]/20 border-[#00bae2]/40 text-[#00bae2] dark:text-[#00bae2]',
   };
 
   // ════════════════════════════════════════════════════════════════════════
@@ -429,7 +429,7 @@ export function SchoolStudentDashboard() {
           description: 'Created account',
           icon: '🌱',
           earned: true,
-          color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+          color: 'bg-[#00bae2]/10 text-[#00bae2] border-[#00bae2]/20'
         },
         {
           id: 'streak-3',
@@ -437,7 +437,7 @@ export function SchoolStudentDashboard() {
           description: '3+ Days Streak',
           icon: '🔥',
           earned: stats.streak >= 3,
-          color: 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+          color: 'bg-amber-500/10 text-amber-500 border-amber-500/20'
         },
         {
           id: 'level-5',
@@ -445,7 +445,7 @@ export function SchoolStudentDashboard() {
           description: 'Reach Level 5',
           icon: '⚡',
           earned: stats.level >= 5,
-          color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+          color: 'bg-amber-500/10 text-amber-500 border-amber-500/20'
         },
         {
           id: 'xp-1000',
@@ -453,7 +453,7 @@ export function SchoolStudentDashboard() {
           description: 'Earn 1000+ XP',
           icon: '🏆',
           earned: stats.xp >= 1000,
-          color: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+          color: 'bg-[#9d95ff]/10 text-[#9d95ff] border-[#9d95ff]/20'
         }
       ];
       setBadges(badgesConfig);
@@ -489,17 +489,17 @@ export function SchoolStudentDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="w-8 h-8 text-brand-primary animate-spin" />
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading K-12 Student Dashboard...</p>
+        <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f]">Loading K-12 Student Dashboard...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <GlassCard className="max-w-md mx-auto my-12 text-center p-8 border-4 border-red-500/40 rounded-3xl bg-red-50 dark:bg-red-950/20">
+      <GlassCard className="max-w-md mx-auto my-12 text-center p-8 border-4 border-red-500/40 rounded-3xl bg-red-500 dark:bg-red-500/20">
         <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Failed to Load Dashboard</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{error}</p>
+        <h3 className="text-lg font-bold text-[#0e100f] dark:text-[#E1DCC9] mb-2">Failed to Load Dashboard</h3>
+        <p className="text-sm text-slate-500 dark:text-[#7c7c6f] mb-6">{error}</p>
         <Button variant="primary" onClick={loadDashboardData} icon={<RefreshCw size={14} />}>Retry</Button>
       </GlassCard>
     );
@@ -513,20 +513,20 @@ export function SchoolStudentDashboard() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={bounceTransition}
-        className="relative bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-500 rounded-[36px] p-6 sm:p-8 md:p-10 text-white overflow-hidden shadow-2xl border-4 border-white dark:border-neutral-800"
+        className="relative bg-gradient-to-r from-pink-500 via-[#9d95ff] to-[#9d95ff] rounded-[36px] p-6 sm:p-8 md:p-10 text-[#E1DCC9] overflow-hidden shadow-2xl border-4 border-[#E1DCC9] dark:border-[#412D15]"
       >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-yellow-300 opacity-20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3 animate-pulse"></div>
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500 opacity-20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3 animate-pulse"></div>
         
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
             <motion.h1 
               initial={{ y: -10 }}
               animate={{ y: 0 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight font-serif text-yellow-300 drop-shadow"
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight font-serif text-amber-500 drop-shadow"
             >
               {getGreetingMessage()}, {firstName}! 🎒
             </motion.h1>
-            <p className="text-base sm:text-lg text-white/95 font-semibold max-w-md leading-relaxed">
+            <p className="text-base sm:text-lg text-[#E1DCC9]/95 font-semibold max-w-md leading-relaxed">
               Welcome to your cool classroom space! You are doing awesome. Ready to learn something fun today? 🚀
             </p>
           </div>
@@ -537,14 +537,14 @@ export function SchoolStudentDashboard() {
             <motion.div 
               whileHover={{ scale: 1.1, rotate: -2 }}
               transition={bounceTransition}
-              className="bg-white/20 backdrop-blur-md rounded-3xl p-4 border-2 border-orange-400 flex items-center gap-4 cursor-default shadow-lg"
+              className="bg-[#FFFCE1]/20 backdrop-blur-md rounded-3xl p-4 border-2 border-amber-500 flex items-center gap-4 cursor-default shadow-lg"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <Flame className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                <Flame className="w-7 h-7 text-[#E1DCC9]" />
               </div>
               <div>
-                <p className="text-white/80 text-[10px] font-black uppercase tracking-widest">Fire Streak</p>
-                <p className="text-2xl font-black text-yellow-300">{gamifiedStats.streak} <span className="text-sm font-medium text-white/85">Days</span></p>
+                <p className="text-[#E1DCC9]/80 text-[10px] font-black uppercase tracking-widest">Fire Streak</p>
+                <p className="text-2xl font-black text-amber-500">{gamifiedStats.streak} <span className="text-sm font-medium text-[#E1DCC9]/85">Days</span></p>
               </div>
             </motion.div>
 
@@ -552,14 +552,14 @@ export function SchoolStudentDashboard() {
             <motion.div 
               whileHover={{ scale: 1.1, rotate: 2 }}
               transition={bounceTransition}
-              className="bg-white/20 backdrop-blur-md rounded-3xl p-4 border-2 border-yellow-300 flex items-center gap-4 cursor-default shadow-lg"
+              className="bg-[#FFFCE1]/20 backdrop-blur-md rounded-3xl p-4 border-2 border-amber-500 flex items-center gap-4 cursor-default shadow-lg"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg shrink-0 animate-bounce">
-                <Star className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg shrink-0 animate-bounce">
+                <Star className="w-7 h-7 text-[#E1DCC9]" />
               </div>
               <div>
-                <p className="text-white/80 text-[10px] font-black uppercase tracking-widest">Learner XP</p>
-                <p className="text-2xl font-black text-yellow-300">{gamifiedStats.xp}</p>
+                <p className="text-[#E1DCC9]/80 text-[10px] font-black uppercase tracking-widest">Learner XP</p>
+                <p className="text-2xl font-black text-amber-500">{gamifiedStats.xp}</p>
               </div>
             </motion.div>
 
@@ -567,14 +567,14 @@ export function SchoolStudentDashboard() {
             <motion.div 
               whileHover={{ scale: 1.1, rotate: -1 }}
               transition={bounceTransition}
-              className="bg-white/20 backdrop-blur-md rounded-3xl p-4 border-2 border-cyan-300 flex items-center gap-4 cursor-default shadow-lg"
+              className="bg-[#FFFCE1]/20 backdrop-blur-md rounded-3xl p-4 border-2 border-[#00bae2] flex items-center gap-4 cursor-default shadow-lg"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <Trophy className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-[#00bae2] to-[#00bae2] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                <Trophy className="w-7 h-7 text-[#E1DCC9]" />
               </div>
               <div>
-                <p className="text-white/80 text-[10px] font-black uppercase tracking-widest">Rank Level</p>
-                <p className="text-2xl font-black text-yellow-300">{gamifiedStats.level}</p>
+                <p className="text-[#E1DCC9]/80 text-[10px] font-black uppercase tracking-widest">Rank Level</p>
+                <p className="text-2xl font-black text-amber-500">{gamifiedStats.level}</p>
               </div>
             </motion.div>
 
@@ -597,17 +597,17 @@ export function SchoolStudentDashboard() {
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.1 }}
-            className="lg:col-span-2 border-4 border-dashed border-yellow-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative overflow-hidden"
+            className="lg:col-span-2 border-4 border-dashed border-amber-500/80 rounded-[32px] p-6 bg-[#FFFCE1] dark:bg-[#412D15]/60 shadow-lg relative overflow-hidden"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 tracking-tight">
+              <h2 className="text-xl font-extrabold text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-2 tracking-tight">
                 <span className="text-2xl">📝</span> Homework Board
               </h2>
             </div>
             
             <div className="space-y-4">
               {homeworkList.length === 0 ? (
-                <div className="p-8 text-center text-sm font-semibold text-neutral-500 dark:text-neutral-400 bg-yellow-50/50 dark:bg-neutral-950/20 rounded-2xl border-2 border-dashed border-yellow-200">
+                <div className="p-8 text-center text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] bg-amber-500/50 dark:bg-[#1F150C]/20 rounded-2xl border-2 border-dashed border-amber-500">
                   No homework left! You are a super scholar! 🏆🌟
                 </div>
               ) : (
@@ -617,27 +617,27 @@ export function SchoolStudentDashboard() {
                     <motion.div 
                       key={hw.id}
                       whileHover={{ scale: 1.02, x: 5 }}
-                      className="p-4 bg-yellow-500/5 dark:bg-neutral-800/30 rounded-2xl border-2 border-yellow-400/20 hover:border-yellow-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-205"
+                      className="p-4 bg-amber-500/5 dark:bg-[#412D15]/30 rounded-2xl border-2 border-amber-500/20 hover:border-amber-500 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-205"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverdue ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverdue ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'}`}>
                           <CheckCircle2 size={20} className="animate-bounce" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="text-sm font-extrabold text-neutral-900 dark:text-white leading-tight truncate">{hw.title}</h4>
-                          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mt-1 truncate">Subject: {hw.courses?.title || 'Class'}</p>
+                          <h4 className="text-sm font-extrabold text-[#0e100f] dark:text-[#E1DCC9] leading-tight truncate">{hw.title}</h4>
+                          <p className="text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mt-1 truncate">Subject: {hw.courses?.title || 'Class'}</p>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-4 justify-between sm:justify-end">
-                        <span className={`text-xs font-extrabold px-3 py-1 rounded-xl border ${isOverdue ? 'bg-red-100 text-red-600 border-red-200' : 'bg-yellow-100/60 text-yellow-600 border-yellow-400/20'}`}>
+                        <span className={`text-xs font-extrabold px-3 py-1 rounded-xl border ${isOverdue ? 'bg-red-500 text-red-500 border-red-500' : 'bg-amber-500/60 text-amber-500 border-amber-500/20'}`}>
                           Due: {new Date(hw.due_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                         </span>
                         <Link to={`/assignments/${hw.id}`}>
                           <motion.button 
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="bg-yellow-400 hover:bg-yellow-500 text-neutral-950 px-5 py-2 rounded-xl text-xs font-black shadow-md shadow-yellow-400/20 transition-all"
+                            className="bg-amber-500 hover:bg-amber-500 text-neutral-950 px-5 py-2 rounded-xl text-xs font-black shadow-md shadow-amber-500/20 transition-all"
                           >
                             Solve! ✏️
                           </motion.button>
@@ -661,20 +661,20 @@ export function SchoolStudentDashboard() {
           <motion.section 
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
-            className="lg:col-span-1 border-4 border-dashed border-emerald-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg relative text-center"
+            className="lg:col-span-1 border-4 border-dashed border-[#00bae2]/80 rounded-[32px] p-6 bg-[#FFFCE1] dark:bg-[#412D15]/60 shadow-lg relative text-center"
           >
-            <h3 className="font-extrabold text-neutral-900 dark:text-neutral-50 text-sm mb-4">My Attendance</h3>
+            <h3 className="font-extrabold text-[#0e100f] dark:text-[#E1DCC9] text-sm mb-4">My Attendance</h3>
             <div className="relative w-28 h-28 mx-auto mb-4">
               <svg className="w-full h-full" viewBox="0 0 36 36">
                 <path
-                  className="text-neutral-100 dark:text-neutral-850"
+                  className="text-[#E1DCC9] dark:text-neutral-850"
                   strokeWidth="4"
                   stroke="currentColor"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
                 <motion.path
-                  className="text-emerald-500"
+                  className="text-[#00bae2]"
                   strokeWidth="4"
                   strokeDasharray={`${attendancePercent}, 100`}
                   strokeLinecap="round"
@@ -687,13 +687,13 @@ export function SchoolStudentDashboard() {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-neutral-900 dark:text-white leading-none">{attendancePercent}%</span>
-                <span className="text-[10px] font-bold text-emerald-500 mt-1">
+                <span className="text-2xl font-black text-[#0e100f] dark:text-[#E1DCC9] leading-none">{attendancePercent}%</span>
+                <span className="text-[10px] font-bold text-[#00bae2] mt-1">
                   {attendancePercent >= 90 ? '😊 Awesome!' : attendancePercent >= 75 ? '🙂 Nice!' : '😢 Uh oh!'}
                 </span>
               </div>
             </div>
-            <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 leading-normal">
+            <p className="text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] leading-normal">
               {attendancePercent >= 90 ? 'Outstanding class presence! Keep shining!' : 'Try to join all scheduled live classrooms.'}
             </p>
           </motion.section>
@@ -703,9 +703,9 @@ export function SchoolStudentDashboard() {
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.15 }}
-            className="lg:col-span-1 border-4 border-dashed border-purple-400/80 rounded-[32px] p-6 bg-white dark:bg-neutral-900/60 shadow-lg"
+            className="lg:col-span-1 border-4 border-dashed border-[#9d95ff]/80 rounded-[32px] p-6 bg-[#FFFCE1] dark:bg-[#412D15]/60 shadow-lg"
           >
-            <h3 className="font-extrabold text-neutral-900 dark:text-neutral-50 text-sm mb-4 flex items-center gap-2 justify-center sm:justify-start">
+            <h3 className="font-extrabold text-[#0e100f] dark:text-[#E1DCC9] text-sm mb-4 flex items-center gap-2 justify-center sm:justify-start">
               🏆 Badges & Trophies
             </h3>
             
@@ -716,13 +716,13 @@ export function SchoolStudentDashboard() {
                   whileHover={{ scale: 1.1, rotate: badge.earned ? [0, -5, 5, 0] : 0 }}
                   className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all ${
                     badge.earned 
-                      ? badge.color + ' border-purple-400/30'
-                      : 'bg-neutral-100/50 dark:bg-neutral-950/20 text-neutral-400 border-neutral-200 dark:border-neutral-850 opacity-50'
+                      ? badge.color + ' border-[#9d95ff]/30'
+                      : 'bg-[#FFFCE1]/50 dark:bg-[#1F150C]/20 text-[#7c7c6f] border-[#E1DCC9]/20 dark:border-neutral-850 opacity-50'
                   }`}
                 >
                   <span className="text-3xl mb-1.5">{badge.icon}</span>
                   <span className="text-xs font-extrabold truncate max-w-full leading-tight">{badge.title}</span>
-                  <span className="text-[9px] font-semibold text-neutral-500 dark:text-slate-400 mt-0.5 line-clamp-1">{badge.description}</span>
+                  <span className="text-[9px] font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mt-0.5 line-clamp-1">{badge.description}</span>
                 </motion.div>
               ))}
             </div>
@@ -734,19 +734,19 @@ export function SchoolStudentDashboard() {
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.25 }}
             whileHover={{ scale: 1.03 }}
-            className="lg:col-span-1 p-5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[32px] text-white shadow-xl relative overflow-hidden text-center border-4 border-white dark:border-neutral-800"
+            className="lg:col-span-1 p-5 bg-gradient-to-br from-[#9d95ff] to-[#9d95ff] rounded-[32px] text-[#E1DCC9] shadow-xl relative overflow-hidden text-center border-4 border-[#E1DCC9] dark:border-[#412D15]"
           >
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-yellow-300/10 via-transparent to-transparent pointer-events-none"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none"></div>
             <div className="text-4xl mb-2 animate-bounce">🤖</div>
-            <h4 className="text-base font-black text-yellow-300">Need Homework Help?</h4>
-            <p className="text-xs font-semibold text-white/90 mt-1 max-w-xs mx-auto leading-relaxed">
+            <h4 className="text-base font-black text-amber-500">Need Homework Help?</h4>
+            <p className="text-xs font-semibold text-[#E1DCC9]/90 mt-1 max-w-xs mx-auto leading-relaxed">
               "Hi! I'm your AI Buddy. Click here and let's solve your hard homework questions together!"
             </p>
             <Link to="/ai-tutor">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="mt-4 bg-white text-purple-700 px-5 py-2 rounded-2xl text-xs font-black shadow-lg shadow-purple-950/20"
+                className="mt-4 bg-[#FFFCE1] text-[#9d95ff] px-5 py-2 rounded-2xl text-xs font-black shadow-lg shadow-[#9d95ff]/20"
               >
                 Chat with AI Tutor ✨
               </motion.button>
@@ -766,48 +766,48 @@ export function SchoolStudentDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
+        className="bg-[#FFFCE1]/40 dark:bg-[#1F150C]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-[#E1DCC9]/20 dark:border-[#9d95ff]/20 shadow-xl"
       >
-        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
-          <span className="w-9 h-9 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center text-lg shadow-md">📚</span>
+        <h2 className="text-2xl font-black mb-6 text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-3">
+          <span className="w-9 h-9 bg-gradient-to-br from-[#9d95ff] to-[#9d95ff] rounded-xl flex items-center justify-center text-lg shadow-md">📚</span>
           My Subjects
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {subjects.map((subject, i) => {
             const icons = ['➗', '🔬', '📖', '🏛️', '💻'];
             const gradients = [
-              'from-violet-500 to-purple-600',
-              'from-emerald-500 to-teal-600',
-              'from-rose-500 to-pink-600',
-              'from-amber-500 to-orange-600',
-              'from-cyan-500 to-blue-600',
+              'from-[#9d95ff] to-[#9d95ff]',
+              'from-[#00bae2] to-[#00bae2]',
+              'from-red-500 to-pink-600',
+              'from-amber-500 to-amber-500',
+              'from-[#00bae2] to-[#00bae2]',
             ];
             const bars = [
-              'from-violet-500 to-purple-600',
-              'from-emerald-500 to-teal-500',
-              'from-rose-500 to-pink-500',
-              'from-amber-500 to-orange-500',
-              'from-cyan-500 to-blue-500',
+              'from-[#9d95ff] to-[#9d95ff]',
+              'from-[#00bae2] to-[#00bae2]',
+              'from-red-500 to-pink-500',
+              'from-amber-500 to-amber-500',
+              'from-[#00bae2] to-[#00bae2]',
             ];
             return (
               <motion.div
                 key={subject.id}
                 whileHover={{ translateY: -6, scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                className="relative p-5 bg-white dark:bg-neutral-900/60 rounded-2xl border border-neutral-200/60 dark:border-purple-500/20 shadow-md hover:shadow-xl hover:border-purple-400/50 transition-all duration-300 flex flex-col gap-4 overflow-hidden"
+                className="relative p-5 bg-[#FFFCE1] dark:bg-[#412D15]/60 rounded-2xl border border-[#E1DCC9]/60 dark:border-[#9d95ff]/20 shadow-md hover:shadow-xl hover:border-[#9d95ff]/50 transition-all duration-300 flex flex-col gap-4 overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl opacity-10 bg-purple-500 -translate-y-6 translate-x-6" />
+                <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl opacity-10 bg-[#9d95ff] -translate-y-6 translate-x-6" />
                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-xl shadow-lg`}>
                   {icons[i]}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-black text-neutral-900 dark:text-white leading-tight">{subject.name}</h3>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">👨‍🏫 {subject.instructor}</p>
+                  <h3 className="text-sm font-black text-[#0e100f] dark:text-[#E1DCC9] leading-tight">{subject.name}</h3>
+                  <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">👨‍🏫 {subject.instructor}</p>
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-[11px] font-bold">
-                    <span className="text-neutral-500 dark:text-neutral-400">Syllabus</span>
-                    <span className="text-purple-600 dark:text-purple-400">{subject.completion}%</span>
+                    <span className="text-[#7c7c6f] dark:text-[#7c7c6f]">Syllabus</span>
+                    <span className="text-[#9d95ff] dark:text-[#9d95ff]">{subject.completion}%</span>
                   </div>
                   <div className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
                     <motion.div
@@ -831,40 +831,40 @@ export function SchoolStudentDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
+        className="bg-[#FFFCE1]/40 dark:bg-[#1F150C]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-[#E1DCC9]/20 dark:border-[#9d95ff]/20 shadow-xl"
       >
-        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
-          <span className="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center text-lg shadow-md">✏️</span>
+        <h2 className="text-2xl font-black mb-6 text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-3">
+          <span className="w-9 h-9 bg-gradient-to-br from-amber-500 to-amber-500 rounded-xl flex items-center justify-center text-lg shadow-md">✏️</span>
           Homework &amp; Assignments
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[540px]">
             <thead>
-              <tr className="border-b-2 border-purple-500/20">
-                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Assignment</th>
-                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Subject</th>
-                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Due Date</th>
-                <th className="text-center px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Status</th>
+              <tr className="border-b-2 border-[#9d95ff]/20">
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Assignment</th>
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Subject</th>
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Due Date</th>
+                <th className="text-center px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-purple-500/10">
+            <tbody className="divide-y divide-[#9d95ff]/10">
               {assignments.map(a => {
                 const isOverdue = a.status === 'Pending' && new Date(a.dueDate) < new Date();
                 const effectiveStatus = isOverdue ? 'Overdue' : a.status;
                 const statusStyles: Record<string, string> = {
-                  Pending:   'bg-amber-100  dark:bg-amber-500/15  text-amber-700  dark:text-amber-300  border border-amber-300/50',
-                  Submitted: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-300/50',
-                  Overdue:   'bg-red-100    dark:bg-red-500/15    text-red-700    dark:text-red-300    border border-red-300/50',
-                  Graded:    'bg-blue-100   dark:bg-blue-500/15   text-blue-700   dark:text-blue-300   border border-blue-300/50',
+                  Pending:   'bg-amber-500  dark:bg-amber-500/15  text-amber-500  dark:text-amber-500  border border-amber-500/50',
+                  Submitted: 'bg-[#00bae2] dark:bg-[#00bae2]/15 text-[#00bae2] dark:text-[#00bae2] border border-[#00bae2]/50',
+                  Overdue:   'bg-red-500    dark:bg-red-500/15    text-red-500    dark:text-red-500    border border-red-500/50',
+                  Graded:    'bg-[#00bae2]   dark:bg-[#00bae2]/15   text-[#00bae2]   dark:text-[#00bae2]   border border-[#00bae2]/50',
                 };
                 const statusDots: Record<string, string> = { Pending: '🟡', Submitted: '🟢', Overdue: '🔴', Graded: '🔵' };
                 return (
                   <motion.tr key={a.id} whileHover={{ backgroundColor: 'rgba(168,85,247,0.04)' }} className="transition-colors">
                     <td className="px-4 py-3.5">
-                      <span className="font-semibold text-neutral-900 dark:text-white">{a.title}</span>
+                      <span className="font-semibold text-[#0e100f] dark:text-[#E1DCC9]">{a.title}</span>
                     </td>
-                    <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400">{a.subject}</td>
-                    <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400 font-mono text-xs">
+                    <td className="px-4 py-3.5 text-[#7c7c6f] dark:text-[#7c7c6f]">{a.subject}</td>
+                    <td className="px-4 py-3.5 text-[#7c7c6f] dark:text-[#7c7c6f] font-mono text-xs">
                       {new Date(a.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-3.5 text-center">
@@ -887,19 +887,19 @@ export function SchoolStudentDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
+        className="bg-[#FFFCE1]/40 dark:bg-[#1F150C]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-[#E1DCC9]/20 dark:border-[#9d95ff]/20 shadow-xl"
       >
-        <h2 className="text-2xl font-black mb-6 text-neutral-900 dark:text-white flex items-center gap-3">
-          <span className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-lg shadow-md">📅</span>
+        <h2 className="text-2xl font-black mb-6 text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-3">
+          <span className="w-9 h-9 bg-gradient-to-br from-[#00bae2] to-[#00bae2] rounded-xl flex items-center justify-center text-lg shadow-md">📅</span>
           Weekly Class Timetable
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[640px] border-separate border-spacing-0">
             <thead>
               <tr>
-                <th className="sticky left-0 bg-white/80 dark:bg-[#161224]/90 backdrop-blur px-4 py-3 text-left font-black text-neutral-500 dark:text-neutral-400 w-36 border-b-2 border-purple-500/20 z-10">Time</th>
+                <th className="sticky left-0 bg-[#FFFCE1]/80 dark:bg-[#1F150C]/90 backdrop-blur px-4 py-3 text-left font-black text-[#7c7c6f] dark:text-[#7c7c6f] w-36 border-b-2 border-[#9d95ff]/20 z-10">Time</th>
                 {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => (
-                  <th key={d} className="px-3 py-3 font-black text-neutral-700 dark:text-white text-center border-b-2 border-purple-500/20">{d}</th>
+                  <th key={d} className="px-3 py-3 font-black text-[#7c7c6f] dark:text-[#E1DCC9] text-center border-b-2 border-[#9d95ff]/20">{d}</th>
                 ))}
               </tr>
             </thead>
@@ -909,30 +909,30 @@ export function SchoolStudentDashboard() {
                 const isBreak = time.startsWith('10:15');
                 if (isBreak) return (
                   <tr key={time}>
-                    <td className="sticky left-0 bg-neutral-100/80 dark:bg-neutral-800/50 backdrop-blur px-4 py-2 text-neutral-400 font-mono z-10 border-b border-neutral-200/50 dark:border-neutral-700/50">10:15 – 10:30</td>
-                    <td colSpan={5} className="px-4 py-2 text-center text-[11px] font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100/50 dark:bg-neutral-800/30 border-b border-neutral-200/50 dark:border-neutral-700/50 tracking-widest uppercase">☕ Short Break</td>
+                    <td className="sticky left-0 bg-[#FFFCE1]/80 dark:bg-[#412D15]/50 backdrop-blur px-4 py-2 text-[#7c7c6f] font-mono z-10 border-b border-[#E1DCC9]/50 dark:border-[#412D15]/50">10:15 – 10:30</td>
+                    <td colSpan={5} className="px-4 py-2 text-center text-[11px] font-bold text-[#7c7c6f] dark:text-[#7c7c6f] bg-[#FFFCE1]/50 dark:bg-[#412D15]/30 border-b border-[#E1DCC9]/50 dark:border-[#412D15]/50 tracking-widest uppercase">☕ Short Break</td>
                   </tr>
                 );
                 if (isLunch) return (
                   <tr key={time}>
-                    <td className="sticky left-0 bg-amber-50/80 dark:bg-amber-900/20 backdrop-blur px-4 py-3 text-amber-600 dark:text-amber-400 font-mono z-10 border-b border-amber-200/40 dark:border-amber-700/30">12:00 – 12:45</td>
-                    <td colSpan={5} className="px-4 py-3 text-center text-sm font-black text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-900/10 border-b border-amber-200/40 dark:border-amber-700/30">🍱 Lunch Break</td>
+                    <td className="sticky left-0 bg-amber-500/80 dark:bg-amber-500/20 backdrop-blur px-4 py-3 text-amber-500 dark:text-amber-500 font-mono z-10 border-b border-amber-500/40 dark:border-amber-500/30">12:00 – 12:45</td>
+                    <td colSpan={5} className="px-4 py-3 text-center text-sm font-black text-amber-500 dark:text-amber-500 bg-amber-500/50 dark:bg-amber-500/10 border-b border-amber-500/40 dark:border-amber-500/30">🍱 Lunch Break</td>
                   </tr>
                 );
                 return (
                   <tr key={time} className="group">
-                    <td className="sticky left-0 bg-white/80 dark:bg-[#161224]/90 backdrop-blur px-4 py-2.5 font-mono text-neutral-500 dark:text-neutral-400 z-10 border-b border-purple-500/10 whitespace-nowrap">{time}</td>
+                    <td className="sticky left-0 bg-[#FFFCE1]/80 dark:bg-[#1F150C]/90 backdrop-blur px-4 py-2.5 font-mono text-[#7c7c6f] dark:text-[#7c7c6f] z-10 border-b border-[#9d95ff]/10 whitespace-nowrap">{time}</td>
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => {
                       const subj = staticTimetable[day][i];
-                      const color = subj ? (subjectColors[subj] || 'bg-purple-500/10 border-purple-500/30 text-purple-700 dark:text-purple-300') : '';
+                      const color = subj ? (subjectColors[subj] || 'bg-[#9d95ff]/10 border-[#9d95ff]/30 text-[#9d95ff] dark:text-[#9d95ff]') : '';
                       return (
-                        <td key={day} className="px-2 py-2 border-b border-purple-500/10 text-center">
+                        <td key={day} className="px-2 py-2 border-b border-[#9d95ff]/10 text-center">
                           {subj ? (
                             <motion.div whileHover={{ scale: 1.05 }} className={`rounded-lg px-2 py-1.5 border font-semibold ${color}`}>
                               {subj}
                             </motion.div>
                           ) : (
-                            <span className="text-neutral-300 dark:text-neutral-700">–</span>
+                            <span className="text-[#7c7c6f] dark:text-[#7c7c6f]">–</span>
                           )}
                         </td>
                       );
@@ -952,20 +952,20 @@ export function SchoolStudentDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
-        className="bg-white/40 dark:bg-[#161224]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-white/20 dark:border-purple-500/20 shadow-xl"
+        className="bg-[#FFFCE1]/40 dark:bg-[#1F150C]/60 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-[#E1DCC9]/20 dark:border-[#9d95ff]/20 shadow-xl"
       >
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-black text-neutral-900 dark:text-white flex items-center gap-3">
-              <span className="w-9 h-9 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center text-lg shadow-md">📋</span>
+            <h2 className="text-2xl font-black text-[#0e100f] dark:text-[#E1DCC9] flex items-center gap-3">
+              <span className="w-9 h-9 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center text-lg shadow-md">📋</span>
               Academic Report Card
             </h2>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 ml-12">Term 2 — Academic Year 2025–26</p>
+            <p className="text-xs text-[#7c7c6f] dark:text-[#7c7c6f] mt-1 ml-12">Term 2 — Academic Year 2025–26</p>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="self-start bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white px-5 py-2 rounded-xl font-bold text-sm shadow-lg shadow-purple-600/30 transition-all"
+            className="self-start bg-gradient-to-r from-[#9d95ff] to-[#9d95ff] hover:from-[#9d95ff] hover:to-[#9d95ff] text-[#E1DCC9] px-5 py-2 rounded-xl font-bold text-sm shadow-lg shadow-[#9d95ff]/30 transition-all"
           >
             📥 Download PDF
           </motion.button>
@@ -976,23 +976,23 @@ export function SchoolStudentDashboard() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
-          className="mb-6 p-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-purple-600/30"
+          className="mb-6 p-4 bg-gradient-to-r from-[#9d95ff] via-[#9d95ff] to-[#9d95ff] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-[#9d95ff]/30"
         >
-          <div className="text-white text-center sm:text-left">
-            <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-1">Current GPA — Term 2</p>
-            <p className="text-4xl font-black text-white drop-shadow">{STATIC_GPA} <span className="text-lg font-semibold text-white/70">/ 4.00</span></p>
+          <div className="text-[#E1DCC9] text-center sm:text-left">
+            <p className="text-xs font-black uppercase tracking-widest text-[#E1DCC9]/70 mb-1">Current GPA — Term 2</p>
+            <p className="text-4xl font-black text-[#E1DCC9] drop-shadow">{STATIC_GPA} <span className="text-lg font-semibold text-[#E1DCC9]/70">/ 4.00</span></p>
           </div>
           <div className="flex gap-4">
-            <div className="text-center bg-white/15 rounded-xl px-4 py-2">
-              <p className="text-[11px] font-bold text-white/70">Rank</p>
-              <p className="text-xl font-black text-yellow-300">#3</p>
+            <div className="text-center bg-[#FFFCE1]/15 rounded-xl px-4 py-2">
+              <p className="text-[11px] font-bold text-[#E1DCC9]/70">Rank</p>
+              <p className="text-xl font-black text-amber-500">#3</p>
             </div>
-            <div className="text-center bg-white/15 rounded-xl px-4 py-2">
-              <p className="text-[11px] font-bold text-white/70">Attendance</p>
-              <p className="text-xl font-black text-emerald-300">{attendancePercent}%</p>
+            <div className="text-center bg-[#FFFCE1]/15 rounded-xl px-4 py-2">
+              <p className="text-[11px] font-bold text-[#E1DCC9]/70">Attendance</p>
+              <p className="text-xl font-black text-[#00bae2]">{attendancePercent}%</p>
             </div>
-            <div className="text-center bg-white/15 rounded-xl px-4 py-2">
-              <p className="text-[11px] font-bold text-white/70">Honours</p>
+            <div className="text-center bg-[#FFFCE1]/15 rounded-xl px-4 py-2">
+              <p className="text-[11px] font-bold text-[#E1DCC9]/70">Honours</p>
               <p className="text-xl font-black text-pink-300">⭐ Merit</p>
             </div>
           </div>
@@ -1001,15 +1001,15 @@ export function SchoolStudentDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-purple-500/20">
-                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Subject</th>
-                <th className="text-center px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Grade</th>
-                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Teacher Remarks</th>
+              <tr className="border-b-2 border-[#9d95ff]/20">
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Subject</th>
+                <th className="text-center px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Grade</th>
+                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-[#7c7c6f] dark:text-[#7c7c6f]">Teacher Remarks</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-purple-500/10">
+            <tbody className="divide-y divide-[#9d95ff]/10">
               {reportCard.map((row, i) => {
-                const gradeColor = row.grade.startsWith('A') ? 'from-emerald-500 to-teal-500' : 'from-amber-500 to-orange-500';
+                const gradeColor = row.grade.startsWith('A') ? 'from-[#00bae2] to-[#00bae2]' : 'from-amber-500 to-amber-500';
                 return (
                   <motion.tr
                     key={row.id}
@@ -1019,13 +1019,13 @@ export function SchoolStudentDashboard() {
                     whileHover={{ backgroundColor: 'rgba(168,85,247,0.04)' }}
                     className="transition-colors"
                   >
-                    <td className="px-4 py-3.5 font-semibold text-neutral-900 dark:text-white">{row.subject}</td>
+                    <td className="px-4 py-3.5 font-semibold text-[#0e100f] dark:text-[#E1DCC9]">{row.subject}</td>
                     <td className="px-4 py-3.5 text-center">
-                      <span className={`inline-block bg-gradient-to-r ${gradeColor} text-white px-3 py-1 rounded-lg font-black text-sm shadow-sm`}>
+                      <span className={`inline-block bg-gradient-to-r ${gradeColor} text-[#E1DCC9] px-3 py-1 rounded-lg font-black text-sm shadow-sm`}>
                         {row.grade}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400 italic text-xs leading-relaxed">
+                    <td className="px-4 py-3.5 text-[#7c7c6f] dark:text-[#7c7c6f] italic text-xs leading-relaxed">
                       💬 {row.remarks}
                     </td>
                   </motion.tr>

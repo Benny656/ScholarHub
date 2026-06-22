@@ -37,14 +37,14 @@ export function AdminAnnouncementSender() {
   };
 
   return (
-    <GlassCard className="p-0 overflow-hidden border-neutral-200 dark:border-neutral-800">
-      <div className="p-5 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900 flex items-center gap-2">
+    <GlassCard className="p-0 overflow-hidden border-[#E1DCC9]/20 dark:border-[#412D15]">
+      <div className="p-5 border-b border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1]/50 dark:bg-[#412D15] flex items-center gap-2">
         <Megaphone className="text-brand-primary" size={18} />
-        <h3 className="font-bold text-neutral-900 dark:text-white">Global Announcement</h3>
+        <h3 className="font-bold text-[#0e100f] dark:text-[#E1DCC9]">Global Announcement</h3>
       </div>
       <form onSubmit={handleBroadcast} className="p-5 space-y-4 text-left">
         <div>
-          <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+          <label className="block text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">
             Announcement Title
           </label>
           <input
@@ -52,12 +52,12 @@ export function AdminAnnouncementSender() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Platform Maintenance Notice"
-            className="w-full px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-neutral-900 dark:text-white"
+            className="w-full px-3 py-2 bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-[#0e100f] dark:text-[#E1DCC9]"
             disabled={loading}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
+          <label className="block text-xs font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">
             Message
           </label>
           <textarea
@@ -65,7 +65,7 @@ export function AdminAnnouncementSender() {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Write your message here..."
             rows={4}
-            className="w-full px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-neutral-900 dark:text-white resize-none"
+            className="w-full px-3 py-2 bg-[#FFFCE1] dark:bg-[#412D15] border border-[#E1DCC9]/20 dark:border-[#412D15] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50 text-[#0e100f] dark:text-[#E1DCC9] resize-none"
             disabled={loading}
           />
         </div>

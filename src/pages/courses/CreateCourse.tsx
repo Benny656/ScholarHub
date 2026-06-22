@@ -90,7 +90,7 @@ export function CreateCourse() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <RefreshCw className="animate-spin text-brand-primary" size={32} />
-        <p className="text-sm text-neutral-500">Verifying workspace...</p>
+        <p className="text-sm text-[#7c7c6f]">Verifying workspace...</p>
       </div>
     );
   }
@@ -99,8 +99,8 @@ export function CreateCourse() {
     return (
       <div className="max-w-3xl mx-auto py-12 px-4 text-center">
         <GlassCard className="p-8">
-          <h1 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
+          <h1 className="text-2xl font-bold text-red-500 mb-2">Access Denied</h1>
+          <p className="text-[#7c7c6f] dark:text-[#7c7c6f]">
             K-12 Teachers cannot manually create subjects. Subjects must be assigned by an Administrator.
           </p>
           <Button variant="secondary" className="mt-6" onClick={() => navigate('/k12-teacher/dashboard')}>
@@ -114,36 +114,36 @@ export function CreateCourse() {
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       <GlassCard className="p-6 md:p-8">
-        <div className="mb-8 border-b border-neutral-200 dark:border-neutral-800 pb-4">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white font-serif">
+        <div className="mb-8 border-b border-[#E1DCC9]/20 dark:border-[#412D15] pb-4">
+          <h1 className="text-2xl font-bold text-[#0e100f] dark:text-[#E1DCC9] font-serif">
             Create University Course
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+          <p className="text-sm text-[#7c7c6f] dark:text-[#7c7c6f] mt-1">
             Set up a new college course offering.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Course Title <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Course Title <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Intro to Computer Science"
               required
-              className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+              className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Description</label>
+            <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
               placeholder="Comprehensive overview of the course..."
-              className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50 resize-y"
+              className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50 resize-y"
             />
           </div>
 
@@ -162,25 +162,25 @@ export function CreateCourse() {
             />
 
             <div>
-              <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Price ($)</label>
+              <label className="block text-sm font-semibold text-[#7c7c6f] dark:text-[#7c7c6f] mb-1.5">Price ($)</label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                className="w-full px-4 py-3 rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15] bg-[#FFFCE1] dark:bg-[#412D15] text-[#0e100f] dark:text-[#E1DCC9] focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
               />
             </div>
           </div>
 
           {(!isK12 && !isUni && user?.role === 'admin') && (
-            <div className="p-4 rounded-xl bg-blue-50 text-blue-700 border border-blue-200">
+            <div className="p-4 rounded-xl bg-[#00bae2] text-[#00bae2] border border-[#00bae2]">
               Admin View: Admins can manage courses via the main Admin Dashboard instead.
             </div>
           )}
 
-          <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800 flex justify-end">
+          <div className="pt-6 border-t border-[#E1DCC9]/20 dark:border-[#412D15] flex justify-end">
             <Button
               type="submit"
               variant="primary"

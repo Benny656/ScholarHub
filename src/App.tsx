@@ -74,9 +74,9 @@ function LiveClassroomWrapper() {
 
   if (!courseId) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[60vh] bg-neutral-50 dark:bg-neutral-950">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500 mb-4" />
-        <p className="text-neutral-500 dark:text-neutral-400 font-medium">Resolving classroom session details...</p>
+      <div className="flex flex-col items-center justify-center h-full min-h-[60vh] bg-[#FFFCE1] dark:bg-[#1F150C]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#9d95ff] mb-4" />
+        <p className="text-[#7c7c6f] dark:text-[#7c7c6f] font-medium">Resolving classroom session details...</p>
       </div>
     );
   }
@@ -325,7 +325,7 @@ function ThemeAwareToaster() {
               background: 'rgba(255, 255, 255, 0.96)',
               backdropFilter: 'blur(12px)',
               border: '1px solid rgba(0, 0, 0, 0.08)',
-              color: '#181c22',
+              color: '#1F150C',
               borderRadius: '12px',
               fontFamily: 'Inter, sans-serif',
               fontSize: '14px',

@@ -45,7 +45,7 @@ export function RoleSelection() {
           <AnimatePresence mode="wait" initial={false}>
             {isDark ? (
               <motion.span key="sun" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} className="absolute">
-                <Sun className="w-5 h-5 text-amber-400" />
+                <Sun className="w-5 h-5 text-amber-500" />
               </motion.span>
             ) : (
               <motion.span key="moon" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} className="absolute">
@@ -75,9 +75,9 @@ export function RoleSelection() {
             <button
               onClick={() => handleRoleSelection('student', 'k12')}
               disabled={isLoading}
-              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
+              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#9d95ff] bg-surface hover:bg-[#9d95ff]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
             >
-              <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 mx-auto bg-[#9d95ff]/10 text-[#9d95ff] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <GraduationCap className="w-8 h-8" />
               </div>
               <div className="font-bold text-lg text-on-surface">School Student</div>
@@ -87,9 +87,9 @@ export function RoleSelection() {
             <button
               onClick={() => handleRoleSelection('student', 'college')}
               disabled={isLoading}
-              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
+              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#9d95ff] bg-surface hover:bg-[#9d95ff]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
             >
-              <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 mx-auto bg-[#9d95ff]/10 text-[#9d95ff] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <GraduationCap className="w-8 h-8" />
               </div>
               <div className="font-bold text-lg text-on-surface">University Student</div>
@@ -99,9 +99,9 @@ export function RoleSelection() {
             <button
               onClick={() => handleRoleSelection('teacher', 'k12')}
               disabled={isLoading}
-              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
+              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#9d95ff] bg-surface hover:bg-[#9d95ff]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
             >
-              <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 mx-auto bg-[#9d95ff]/10 text-[#9d95ff] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Users className="w-8 h-8" />
               </div>
               <div className="font-bold text-lg text-on-surface">K-12 Teacher</div>
@@ -111,9 +111,9 @@ export function RoleSelection() {
             <button
               onClick={() => handleRoleSelection('teacher', 'college')}
               disabled={isLoading}
-              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#6D5DFC] bg-surface hover:bg-[#6D5DFC]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
+              className="p-6 rounded-2xl border border-outline-variant/30 hover:border-[#9d95ff] bg-surface hover:bg-[#9d95ff]/5 transition-all text-center group cursor-pointer disabled:opacity-50"
             >
-              <div className="w-16 h-16 mx-auto bg-[#6D5DFC]/10 text-[#6D5DFC] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 mx-auto bg-[#9d95ff]/10 text-[#9d95ff] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <BookOpen className="w-8 h-8" />
               </div>
               <div className="font-bold text-lg text-on-surface">College Teacher</div>

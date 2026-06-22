@@ -4,8 +4,8 @@ import * as React from "react";
 import * as THREE from "three";
 
 const COLORS = {
-  primary: "#6D5DFC",
-  deep: "#4F46E5",
+  primary: "#9d95ff",
+  deep: "#9d95ff",
 };
 
 const MATERIALS = [
@@ -208,7 +208,7 @@ function PerformanceLighting({
 
   return (
     <>
-      <ambientLight ref={ambientRef} intensity={0.42} color="#C9C4FF" />
+      <ambientLight ref={ambientRef} intensity={0.42} color="#9d95ff" />
       <pointLight position={[3.8, 3.2, 4.5]} intensity={2.25} color={COLORS.primary} />
       <pointLight position={[-4.2, -2.6, -3.4]} intensity={1.15} color={COLORS.deep} />
     </>

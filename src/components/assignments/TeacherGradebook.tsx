@@ -120,9 +120,9 @@ export function TeacherGradebook({ courseId }: TeacherGradebookProps) {
   if (assignments.length === 0) {
     return (
       <GlassCard className="text-center py-12">
-        <FileText size={48} className="mx-auto text-neutral-400 mb-4 opacity-50" />
-        <h3 className="text-base font-bold text-neutral-900 dark:text-white">No Assignments Yet</h3>
-        <p className="text-sm text-neutral-500 mt-2">Create assignments to start using the gradebook.</p>
+        <FileText size={48} className="mx-auto text-[#7c7c6f] mb-4 opacity-50" />
+        <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9]">No Assignments Yet</h3>
+        <p className="text-sm text-[#7c7c6f] mt-2">Create assignments to start using the gradebook.</p>
       </GlassCard>
     );
   }
@@ -131,32 +131,32 @@ export function TeacherGradebook({ courseId }: TeacherGradebookProps) {
     <div className="space-y-6">
       <GlassCard>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-neutral-900 dark:text-white">Course Gradebook</h3>
+          <h3 className="text-base font-bold text-[#0e100f] dark:text-[#E1DCC9]">Course Gradebook</h3>
           <Badge variant="purple">{students.length} Students</Badge>
         </div>
         
-        <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
-          <table className="w-full text-left text-sm text-neutral-600 dark:text-neutral-400">
-            <thead className="bg-neutral-50 dark:bg-neutral-850 text-xs uppercase font-bold">
+        <div className="overflow-x-auto rounded-xl border border-[#E1DCC9]/20 dark:border-[#412D15]">
+          <table className="w-full text-left text-sm text-[#7c7c6f] dark:text-[#7c7c6f]">
+            <thead className="bg-[#FFFCE1] dark:bg-neutral-850 text-xs uppercase font-bold">
               <tr>
-                <th className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 sticky left-0 bg-neutral-50 dark:bg-neutral-850 z-10 shadow-[1px_0_0_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_0_0_rgba(255,255,255,0.05)]">Student Name</th>
+                <th className="px-4 py-3 border-b border-[#E1DCC9]/20 dark:border-[#412D15] sticky left-0 bg-[#FFFCE1] dark:bg-neutral-850 z-10 shadow-[1px_0_0_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_0_0_rgba(255,255,255,0.05)]">Student Name</th>
                 {assignments.map(asg => (
-                  <th key={asg.id} className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 min-w-[140px] text-center">
+                  <th key={asg.id} className="px-4 py-3 border-b border-[#E1DCC9]/20 dark:border-[#412D15] min-w-[140px] text-center">
                     <div className="line-clamp-1" title={asg.title}>{asg.title}</div>
-                    <div className="text-[10px] text-neutral-400 font-normal mt-1 text-center">Max: {asg.max_grade}</div>
+                    <div className="text-[10px] text-[#7c7c6f] font-normal mt-1 text-center">Max: {asg.max_grade}</div>
                   </th>
                 ))}
-                <th className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 text-center font-black">Course Average</th>
+                <th className="px-4 py-3 border-b border-[#E1DCC9]/20 dark:border-[#412D15] text-center font-black">Course Average</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800 bg-white dark:bg-neutral-900">
+            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800 bg-[#FFFCE1] dark:bg-[#412D15]">
               {students.map(student => {
                 let totalScore = 0;
                 let totalMax = 0;
 
                 return (
-                  <tr key={student.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-neutral-900 dark:text-white sticky left-0 bg-white dark:bg-neutral-900 z-10 shadow-[1px_0_0_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_0_0_rgba(255,255,255,0.05)]">
+                  <tr key={student.id} className="hover:bg-[#FFFCE1] dark:hover:bg-[#412D15]/50 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-[#0e100f] dark:text-[#E1DCC9] sticky left-0 bg-[#FFFCE1] dark:bg-[#412D15] z-10 shadow-[1px_0_0_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_0_0_rgba(255,255,255,0.05)]">
                       {student.name || 'Unknown'}
                     </td>
                     {assignments.map(asg => {
@@ -168,36 +168,36 @@ export function TeacherGradebook({ courseId }: TeacherGradebookProps) {
                       }
 
                       return (
-                        <td key={asg.id} className="px-4 py-3 text-center border-l border-neutral-100 dark:border-neutral-800/50">
+                        <td key={asg.id} className="px-4 py-3 text-center border-l border-[#E1DCC9]/20 dark:border-[#412D15]/50">
                           {sub ? (
                             sub.grade !== null ? (
                               <button 
                                 onClick={() => { setGradingSubmission(sub); setScore(sub.grade); setFeedback(sub.feedback || ''); }}
-                                className="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-md font-bold text-xs hover:bg-emerald-500/20 w-full"
+                                className="px-2 py-1 bg-[#00bae2]/10 text-[#00bae2] dark:text-[#00bae2] rounded-md font-bold text-xs hover:bg-[#00bae2]/20 w-full"
                               >
                                 {sub.grade} / {asg.max_grade}
                               </button>
                             ) : (
                               <button 
                                 onClick={() => { setGradingSubmission(sub); setScore(asg.max_grade); setFeedback(''); }}
-                                className="px-2 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-md font-bold text-xs hover:bg-amber-500/20 w-full"
+                                className="px-2 py-1 bg-amber-500/10 text-amber-500 dark:text-amber-500 rounded-md font-bold text-xs hover:bg-amber-500/20 w-full"
                               >
                                 Grade Now
                               </button>
                             )
                           ) : (
-                            <span className="text-[10px] text-neutral-400 italic">No Sub</span>
+                            <span className="text-[10px] text-[#7c7c6f] italic">No Sub</span>
                           )}
                         </td>
                       );
                     })}
-                    <td className="px-4 py-3 text-center font-black border-l border-neutral-200 dark:border-neutral-800">
+                    <td className="px-4 py-3 text-center font-black border-l border-[#E1DCC9]/20 dark:border-[#412D15]">
                       {totalMax > 0 ? (
-                        <span className={totalScore/totalMax >= 0.7 ? 'text-emerald-500' : 'text-amber-500'}>
+                        <span className={totalScore/totalMax >= 0.7 ? 'text-[#00bae2]' : 'text-amber-500'}>
                           {Math.round((totalScore / totalMax) * 100)}%
                         </span>
                       ) : (
-                        <span className="text-neutral-400">-</span>
+                        <span className="text-[#7c7c6f]">-</span>
                       )}
                     </td>
                   </tr>
@@ -205,7 +205,7 @@ export function TeacherGradebook({ courseId }: TeacherGradebookProps) {
               })}
               {students.length === 0 && (
                 <tr>
-                  <td colSpan={assignments.length + 2} className="px-4 py-8 text-center text-neutral-500">
+                  <td colSpan={assignments.length + 2} className="px-4 py-8 text-center text-[#7c7c6f]">
                     No students enrolled in this course yet.
                   </td>
                 </tr>
@@ -217,37 +217,37 @@ export function TeacherGradebook({ courseId }: TeacherGradebookProps) {
 
       {/* Grading Modal Overlay */}
       {gradingSubmission && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1F150C]/60 backdrop-blur-sm p-4">
           <GlassCard className="w-full max-w-md" tint="purple">
-            <h3 className="text-lg font-bold text-white mb-1">Evaluate Submission</h3>
-            <p className="text-sm text-purple-200 mb-6">Student: {gradingSubmission.users?.name}</p>
+            <h3 className="text-lg font-bold text-[#E1DCC9] mb-1">Evaluate Submission</h3>
+            <p className="text-sm text-[#9d95ff] mb-6">Student: {gradingSubmission.users?.name}</p>
 
             <div className="space-y-4 text-sm">
-              <div className="p-3 bg-white/10 rounded-xl">
-                <p className="text-xs text-purple-300 font-semibold mb-1">Submission File/Link:</p>
-                <a href={gradingSubmission.file_url} target="_blank" rel="noreferrer" className="text-white hover:underline break-all">
+              <div className="p-3 bg-[#FFFCE1]/10 rounded-xl">
+                <p className="text-xs text-[#9d95ff] font-semibold mb-1">Submission File/Link:</p>
+                <a href={gradingSubmission.file_url} target="_blank" rel="noreferrer" className="text-[#E1DCC9] hover:underline break-all">
                   {gradingSubmission.file_url}
                 </a>
               </div>
 
               <div>
-                <label className="block text-white font-semibold mb-1">Score</label>
+                <label className="block text-[#E1DCC9] font-semibold mb-1">Score</label>
                 <input 
                   type="number"
                   value={score}
                   onChange={e => setScore(Number(e.target.value))}
-                  className="w-full p-2.5 rounded-lg bg-white/10 border border-white/20 text-white outline-none focus:border-white/40"
+                  className="w-full p-2.5 rounded-lg bg-[#FFFCE1]/10 border border-[#E1DCC9]/20 text-[#E1DCC9] outline-none focus:border-[#E1DCC9]/40"
                 />
               </div>
 
               <div>
-                <label className="block text-white font-semibold mb-1">Teacher Feedback</label>
+                <label className="block text-[#E1DCC9] font-semibold mb-1">Teacher Feedback</label>
                 <textarea 
                   rows={3}
                   value={feedback}
                   onChange={e => setFeedback(e.target.value)}
                   placeholder="Great job on..."
-                  className="w-full p-2.5 rounded-lg bg-white/10 border border-white/20 text-white outline-none focus:border-white/40"
+                  className="w-full p-2.5 rounded-lg bg-[#FFFCE1]/10 border border-[#E1DCC9]/20 text-[#E1DCC9] outline-none focus:border-[#E1DCC9]/40"
                 />
               </div>
 
@@ -257,8 +257,8 @@ export function TeacherGradebook({ courseId }: TeacherGradebookProps) {
                   size="sm" 
                   onClick={handleAIGrade} 
                   loading={aiGrading}
-                  icon={<Sparkles size={14} className="text-purple-500" />}
-                  className="w-full justify-center bg-purple-500/10 text-purple-200 border-purple-500/20 hover:bg-purple-500/20"
+                  icon={<Sparkles size={14} className="text-[#9d95ff]" />}
+                  className="w-full justify-center bg-[#9d95ff]/10 text-[#9d95ff] border-[#9d95ff]/20 hover:bg-[#9d95ff]/20"
                 >
                   Auto-grade with AI
                 </Button>
